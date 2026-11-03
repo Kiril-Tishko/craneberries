@@ -213,6 +213,17 @@ s { text-decoration-thickness: 1.5px; text-decoration-color: var(--bad); }
   padding-bottom: .5rem;
 }
 
+.forms { margin-top: 1.6rem; gap: 1rem 2.5rem; }
+.forms p { margin: 0; }
+.forms .sub { display: block; border: 0; padding: 0; margin-bottom: .15rem; }
+
+.end {
+  margin: 2.5rem 0 0;
+  font-size: 1.3em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
 ul.plain {
   list-style: none;
   padding: 0;
