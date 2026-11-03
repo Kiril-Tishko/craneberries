@@ -1,6 +1,6 @@
 # Passive voice + modal verbs
 
-A minimal slide-deck website for one lesson (B1–B2): short exercises and lots of open questions. American English throughout.
+A minimal slide-deck website for one lesson (B1–B2) for learners who already know the passive: a quick modal-verbs reminder, short exercises and lots of open questions. American English throughout.
 
 Open `index.html` in a browser. It is plain HTML, CSS and JS with no build step and no dependencies.
 
@@ -16,7 +16,7 @@ Open `index.html` in a browser. It is plain HTML, CSS and JS with no build step 
 
 | Type | Slides |
 | --- | --- |
-| Form & meaning | modal + be + V3 (with negatives & questions) · modal + have been + V3 · what each past modal means · summary |
+| Form & meaning | modal verbs reminder · modal + be + V3 (with negatives & questions) · modal + have been + V3 · what each past modal means · summary |
 | Short exercises | complete · rewrite · choose · find the mistake |
 | Open questions | warm-up · why the passive? · write the rules · should it be allowed? · what happened here? · in hindsight · “mistakes were made” |
 
