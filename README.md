@@ -7,7 +7,7 @@ Open `index.html` in a browser. It is plain HTML, CSS and JS with no build step 
 ## Using it
 
 - **← / →**, Space, or swipe to move between slides
-- Click the **slide counter** (e.g. `7 / 17`) to jump to any slide
+- Click the **slide counter** (e.g. `7 / 19`) to jump to any slide
 - **F** toggles fullscreen; **◐** switches light / dark
 - Each slide has its own link (`index.html#12`)
 - Printing gives one slide per page, which works as a worksheet
@@ -18,7 +18,7 @@ Open `index.html` in a browser. It is plain HTML, CSS and JS with no build step 
 | --- | --- |
 | Form & meaning | modal verbs reminder · modal + be + V3 (with negatives & questions) · modal + have been + V3 · what each past modal means · summary |
 | Short exercises | complete · rewrite · choose · find the mistake |
-| Open questions | warm-up · why the passive? · write the rules · should it be allowed? · what happened here? · in hindsight · “mistakes were made” |
+| Open questions | warm-up · why the passive? · write the rules · should it be allowed? · what happened here? · in hindsight · “mistakes were made” · 12 closing discussion questions |
 
 Typed exercises are checked on **Check** (or Enter). Contractions are accepted, so *can't* and *cannot* both count. Answers on the open-question slides are saved in the viewer's own browser only.
 

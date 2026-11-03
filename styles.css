@@ -206,11 +206,31 @@ s { text-decoration-thickness: 1.5px; text-decoration-color: var(--bad); }
 .forms p { margin: 0; }
 .forms .sub { display: block; border: 0; padding: 0; margin-bottom: .15rem; }
 
-.end {
-  margin: 2.5rem 0 0;
-  font-size: 1.3em;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+ol.talk {
+  list-style: none;
+  counter-reset: t;
+  padding: 0;
+  margin: 0;
+}
+
+ol.talk[start="7"] { counter-reset: t 6; }
+
+ol.talk li {
+  counter-increment: t;
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  padding: .55rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+ol.talk li:first-child { border-top: 1px solid var(--line); }
+
+ol.talk li::before {
+  content: counter(t);
+  padding-top: .15em;
+  font-size: .8em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 ul.plain {
