@@ -280,6 +280,7 @@ td.en{font-weight:600}
       const total = arr(latest.nextLesson).reduce((a, b) => a + (Number(b.min) || 0), 0);
       next = `<section class="panel"><div class="panel-h"><h2>Next lesson</h2>
           <span class="muted small">From the ${esc(fmtDate(latest.date))} lesson</span></div>
+        ${latest.nextWhen ? `<p class="callout" style="margin:0 0 16px"><b>${esc(latest.nextWhen)}</b></p>` : ''}
         <div class="next">
           <div><div class="group-h">Talk about</div><ul class="todo">${items.map((it) => {
             const done = st.discussed && st.discussed[it.id];

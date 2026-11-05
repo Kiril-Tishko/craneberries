@@ -5,7 +5,7 @@
 //
 // Reads `date` and `studentCards` from the lesson file, writes <out-dir>/cards.html
 // and <out-dir>/card-1.png … card-N.png (420 CSS px wide at 3x = 1260 px).
-// Card types: words, phrases, grammar, fixes, pron. See CLAUDE.md for the shape.
+// Card types: words, phrases, grammar, forms, fixes, pron. See CLAUDE.md for the shape.
 
 const fs = require('fs');
 const path = require('path');
@@ -62,6 +62,11 @@ const body = {
         <span class="right">${esc(f.right)}</span>
         ${f.why ? `<span class="why">${esc(f.why)}</span>` : ''}
       </div></li>`).join('')}</ol>`,
+
+  forms: (c) => `<div class="pp-grid">${c.items.map((f) => `
+    <div class="pp"><span class="base">${esc(f.base)} →</span><span class="ppf"><span class="hl">${esc(f.pp)}</span></span></div>`).join('')}</div>
+    ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
+      ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`,
 
   pron: (c) => `
     <div class="pairs">${c.pairs.map((p) => `
@@ -137,6 +142,12 @@ const html = `<!doctype html>
   .family{margin-top:14px;font-size:16.5px;line-height:1.45}
   .practice{margin-top:16px;border-top:1.5px solid var(--line);padding-top:14px}
   .say{font-size:22px;font-weight:700;padding:7px 0}
+  .small-say{font-size:19px;font-weight:500}
+  .small-say .hl{font-weight:700}
+  .pp-grid{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pp{background:var(--tile);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+  .pp .base{font-size:15.5px;color:var(--muted)}
+  .pp .ppf{font-size:23px;font-weight:750;line-height:1.2}
 </style></head><body>
 ${cards.map((c, i) => `<section class="card" id="card-${i + 1}">${header(c)}${body[c.type](c)}</section>`).join('\n')}
 </body></html>`;

@@ -39,7 +39,7 @@ in the teacher report.
 ## Lesson JSON shape
 
 ```
-student, date (YYYY-MM-DD), durationMin, topics[], grammar, summary, talk, strengths[]
+student, date (YYYY-MM-DD), durationMin, topics[], grammar, summary, talk, strengths[], nextWhen (optional)
 words[]        {t, ua, en, ex}
 mistakes[]     {id, priority: high|medium|low, cat, count, t[], said, better, note}
 pronunciation[]{id, confidence: clear|check, issue, evidence, tip}
@@ -50,10 +50,12 @@ studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex}]}
   {type: "phrases", kicker, title, sub, items[{en, note}]}
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
+  {type: "forms",   kicker, title, sub, items[{base, pp}], examples[]}   (verb-form cheat sheet)
   {type: "fixes",   kicker, title, sub, items[{wrong, right, why}]}
   {type: "pron",    kicker, title, sub, pairs[{word, ipa, tip}], family, practice[]}
 ```
-In `grammar` text, `[used to]` marks a highlighted span.
+In `grammar` and `forms` text, `[used to]` marks a highlighted span. When a lesson covers two grammar
+points, give each its own grammar card.
 
 ## Site
 
