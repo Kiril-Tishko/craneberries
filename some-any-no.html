@@ -4,9 +4,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;700&display=swap">
 <style>
-  /* Short and structured: rule → word map (some | any | no side by side) → one family per screen
-     with everyday sentences → the same situation in + ? – → mistakes → practice → learn by heart.
-     some = amber, any = indigo, no = rose. Every word keeps its colour on every screen. */
+  /* Endings → rule → "n't + any = no" → word map (some | any | no side by side) → one family per screen
+     → -one = -body → real dialogues → offers → mistakes → practice with drawn scenes → learn by heart.
+     some = amber, any = indigo, no = rose on every screen. Scenes are line drawings in the same tokens. */
   :root {
     --bg: #f3f4f7;
     --surface: #ffffff;
@@ -22,6 +22,8 @@
     --ok: #1d8549;
     --ok-soft: #d3f2df;
     --bad: #c3372b;
+    --skin: #f3c6a0;
+    --hair: #6b4430;
     --f-disp: "Unbounded", "Arial Black", system-ui, sans-serif;
     --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
     --f-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
@@ -42,6 +44,8 @@
       --ok: #5fd394;
       --ok-soft: #173d29;
       --bad: #ff7d70;
+      --skin: #e2b089;
+      --hair: #a77452;
       color-scheme: dark;
     }
   }
@@ -60,6 +64,8 @@
     --ok: #5fd394;
     --ok-soft: #173d29;
     --bad: #ff7d70;
+    --skin: #e2b089;
+    --hair: #a77452;
     color-scheme: dark;
   }
 
@@ -119,14 +125,14 @@
   .xl { font-size: clamp(2.5rem, 11vw, 7.5rem); }
   .l  { font-size: clamp(1.8rem, 6.2vw, 4.4rem); }
   .head { font-size: clamp(1.5rem, 4.6vw, 2.7rem); }
-  .m  { font-size: clamp(1.6rem, 5.2vw, 3.8rem); font-weight: 800; line-height: 1.3; letter-spacing: -0.01em; text-wrap: balance; }
+  .m  { font-size: clamp(1.5rem, 5vw, 3.6rem); font-weight: 800; line-height: 1.3; letter-spacing: -0.01em; text-wrap: balance; }
   .formula {
     font-size: clamp(1rem, 2.6vw, 1.45rem);
     font-weight: 700;
     color: var(--muted);
     letter-spacing: .03em;
   }
-  .note { font-size: clamp(.95rem, 2.4vw, 1.25rem); font-weight: 700; color: var(--muted); }
+  .note { font-size: clamp(1rem, 2.6vw, 1.4rem); font-weight: 700; color: var(--muted); }
   .pic { font-family: var(--f-emoji); font-size: clamp(2.8rem, 10vw, 5rem); line-height: 1.1; }
 
   .k-s { --k: var(--some); --ks: var(--some-soft); }
@@ -134,6 +140,8 @@
   .k-n { --k: var(--no);   --ks: var(--no-soft); }
   .hl { color: var(--k); background: linear-gradient(transparent 56%, var(--ks) 56%); padding: 0 .05em; border-radius: .12em; }
   .ok-mark { color: var(--ok); }
+  .x { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--bad); text-decoration-thickness: .08em; }
+  .bad-mark { color: var(--bad); }
 
   .uk {
     display: block;
@@ -162,6 +170,24 @@
     background: color-mix(in srgb, var(--glow) 80%, transparent);
   }
   .hint { font-size: clamp(1rem, 2.6vw, 1.6rem); font-weight: 600; color: var(--muted); }
+
+  /* Drawn scenes: ink outlines, soft fills from the lesson colours. */
+  .scene { display: block; width: min(250px, 64vw); height: auto; overflow: visible; }
+  .scene .o { fill: var(--surface); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+  .scene .l { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+  .scene .d { fill: none; stroke: var(--muted); stroke-width: 3; stroke-dasharray: 5 6; stroke-linecap: round; }
+  .scene .ink { fill: var(--ink); }
+  .scene .a { fill: var(--any-soft); }
+  .scene .s { fill: var(--some-soft); }
+  .scene .n { fill: var(--no-soft); }
+  .scene .g { fill: var(--line); }
+  .scene .sk { fill: var(--skin); }
+  .scene .hr { fill: var(--hair); }
+  .scene .nn { fill: var(--no); }
+  .scene .tx { font: 800 13px var(--f-body); letter-spacing: .06em; fill: var(--ink); }
+  .scene .tx.lg { font-size: 24px; letter-spacing: 0; }
+  .scene .tx.q { font-size: 30px; fill: var(--muted); letter-spacing: 0; }
+  .scene .tx.wt { fill: var(--surface); }
 
   /* Rows: picture or sign | word | sentence, one line per word so they compare at a glance. */
   .rows {
@@ -197,9 +223,15 @@
     background: var(--ks);
   }
   .w { font-family: var(--f-disp); font-weight: 700; white-space: nowrap; }
-  .w small, .map small { display: block; font-size: .72em; margin-top: .1em; }
   .sen { font-weight: 700; line-height: 1.3; }
+  .slide.xwide { max-width: 1000px; }
+  @media (min-width: 761px) {
+    .rows.c2.two { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); }
+    .rows.two .row:nth-child(2) > .cell { border-top: none; }
+    .rows.two .row:nth-child(even) > .lead { padding-left: clamp(14px, 3vw, 32px); }
+  }
   @media (max-width: 560px) {
+    .rows.c2 .cell { padding-block: .5rem; }
     .rows.c3 { grid-template-columns: auto minmax(0, 1fr); }
     .rows.c3 .lead { grid-row: span 2; }
     .rows.c3 .w { padding-bottom: 0; }
@@ -221,7 +253,7 @@
     align-items: center;
     gap: .2em;
     min-width: 0;
-    padding: .6em .3em;
+    padding: .65em .3em;
     border-radius: 12px;
     font-weight: 700;
     line-height: 1.25;
@@ -229,9 +261,35 @@
   }
   .map .cell-m { background: color-mix(in srgb, var(--ks) 45%, var(--surface)); }
   .map .ch { font-family: var(--f-disp); font-size: 1.2em; color: var(--k); padding-block: .2em; }
-  .map .ch small { font-family: var(--f-body); color: var(--muted); font-size: .6em; }
+  .map .ch small { display: block; font-family: var(--f-body); color: var(--muted); font-size: .6em; }
   .map .rh { padding-inline: 0 .2em; color: var(--muted); font-size: .8em; }
   .map .rh .ic { font-size: 1.8em; }
+
+  /* Dialogue: question bubble left, answer bubble right. */
+  .chat {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: min(560px, 100%);
+    text-align: left;
+    font-size: clamp(1.15rem, 3.3vw, 1.7rem);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .bub { display: flex; flex-direction: column; gap: .2em; max-width: 88%; padding: .6em .9em; border-radius: 20px; }
+  .bub.q { align-self: flex-start; background: var(--surface); border: 1.5px solid var(--line); border-bottom-left-radius: 6px; }
+  .bub.r { align-self: flex-end; background: color-mix(in srgb, var(--line) 60%, var(--surface)); border-bottom-right-radius: 6px; }
+
+  /* "n't + any = no": the two parts light up, then the short form appears, then the mistake. */
+  .neg { color: var(--no); }
+  .neg, .mark { border-radius: .15em; box-shadow: 0 0 0 .08em var(--no); animation: flag .45s .7s backwards; }
+  .eq { font-family: var(--f-disp); font-weight: 700; font-size: clamp(1.6rem, 5vw, 3rem); color: var(--muted); line-height: 1; animation: pop .4s 1.4s backwards; }
+  .step2 { animation: up .45s 1.8s backwards; }
+  .step3 { animation: up .45s 2.6s backwards; }
+  .step4 { animation: up .45s 3.4s backwards; }
+  @keyframes flag { from { box-shadow: 0 0 0 0 transparent; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.5); } }
+  @keyframes up { from { opacity: 0; transform: translateY(12px); } }
 
   /* Mistakes: wrong | right side by side. */
   .fix {
@@ -246,7 +304,6 @@
   .fix > .fh { border-top: none; padding-block: 0 .3rem; font-size: .75em; font-weight: 800; letter-spacing: .1em; }
   .fh.bad-h { color: var(--bad); }
   .fh.ok-h { color: var(--ok); }
-  .fix .wrong { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--bad); text-decoration-thickness: .08em; }
 
   input {
     font: inherit;
@@ -273,7 +330,7 @@
   .match { display: grid; grid-template-columns: 1fr 1fr; gap: 12px clamp(14px, 4vw, 40px); width: 100%; }
   .col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .opts { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 12px; width: 100%; }
-  @media (max-width: 560px) { .opts.n3 { grid-template-columns: minmax(0, 1fr); width: min(300px, 100%); } }
+  @media (max-width: 560px) { .opts.n3 { grid-template-columns: minmax(0, 1fr); width: min(300px, 100%); gap: 10px; } }
   .tile {
     font: 700 clamp(1rem, 2.6vw, 1.35rem)/1.2 var(--f-body);
     color: var(--ink);
@@ -285,7 +342,7 @@
     overflow-wrap: anywhere;
     transition: border-color .15s, background .15s, opacity .3s;
   }
-  .opts .tile { padding: .75em .6em; font-size: clamp(1.1rem, 3vw, 1.55rem); }
+  .opts .tile { padding: .7em .6em; font-size: clamp(1.1rem, 3vw, 1.5rem); }
   .tile:hover { border-color: var(--muted); }
   .tile.sel { border-color: var(--c); background: color-mix(in srgb, var(--glow) 50%, var(--surface)); }
   .tile.done { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); opacity: .6; cursor: default; }
@@ -359,116 +416,185 @@
 </div>
 
 <script>
-// Slide kinds: text, rows (picture or sign | word | sentence), map (some | any | no table),
-// fix (wrong | right), pick (tap the right word), fill (type the blank ___), match (connect to Ukrainian).
+// ---------- Drawn scenes (viewBox 200 × 140) ----------
+const svg = body => `<svg class="scene" viewBox="0 0 200 140" aria-hidden="true">${body}</svg>`;
+const wallet = `<rect class="o s" x="40" y="62" width="120" height="66" rx="10"/><path class="l" d="M40 84h120"/>
+  <rect class="o" x="128" y="92" width="32" height="20" rx="6"/><circle class="ink" cx="140" cy="102" r="3"/>`;
+const fridge = inside => svg(`<path class="l" d="M28 132H178"/>
+  <rect class="o" x="54" y="8" width="70" height="124" rx="6"/><rect class="o g" x="61" y="15" width="56" height="110" rx="3"/>
+  ${inside}<path class="l" d="M61 48h56M61 80h56M61 106h56"/>
+  <path class="o a" d="M124 8L162 18V122L124 132Z"/><path class="l" d="M133 58v24"/>`);
+const SCN = {
+  door: svg(`<text class="tx" x="100" y="15" text-anchor="middle">KNOCK! KNOCK!</text>
+    <path class="l" d="M16 128H184"/>
+    <rect class="o s" x="72" y="26" width="56" height="102" rx="3"/>
+    <rect class="l" x="81" y="36" width="38" height="28" rx="2"/><rect class="l" x="81" y="80" width="38" height="38" rx="2"/>
+    <circle class="ink" cx="119" cy="72" r="3.5"/>
+    <path class="l" d="M140 62q8 10 0 20M151 55q14 17 0 34M60 62q-8 10 0 20M49 55q-14 17 0 34"/>`),
+  classroom: svg(`<path class="l" d="M10 128H190"/>
+    <rect class="o a" x="50" y="10" width="100" height="44" rx="4"/><path class="l" d="M64 26h28M64 38h46"/>
+    ${[20, 82, 144].map(x => `<rect class="o g" x="${x + 9}" y="66" width="18" height="26" rx="4"/>
+      <rect class="o s" x="${x}" y="88" width="36" height="8" rx="2"/><path class="l" d="M${x + 5} 96v32M${x + 31} 96v32"/>`).join('')}`),
+  shh: svg(`<circle class="o sk" cx="94" cy="72" r="40"/>
+    <path class="o hr" d="M54 68Q56 28 94 28Q132 28 134 68Q118 50 94 50Q70 50 54 68Z"/>
+    <circle class="ink" cx="80" cy="72" r="4"/><circle class="ink" cx="108" cy="72" r="4"/>
+    <rect class="o sk" x="78" y="110" width="32" height="26" rx="10"/><rect class="o sk" x="88" y="80" width="12" height="44" rx="6"/>
+    <text class="tx lg" x="164" y="44" text-anchor="middle">Shh!</text>`),
+  fridgeEmpty: fridge(''),
+  fridgePizza: fridge(`<path class="o s" d="M72 79L108 79L90 57Z"/><circle class="nn" cx="89" cy="69" r="3"/><circle class="nn" cx="97" cy="74" r="2.5"/><circle class="nn" cx="82" cy="74" r="2.5"/>`),
+  bag: svg(`<text class="tx" x="100" y="16" text-anchor="middle">RING! RING!</text>
+    <path class="l" d="M74 62Q74 32 100 32Q126 32 126 62"/>
+    <path class="o s" d="M44 60H156L146 128H54Z"/>
+    <path class="l" d="M36 80l-10-4M34 94h-12M36 108l-10 4M164 80l10-4M166 94h12M164 108l10 4"/>`),
+  seats: svg(`<path class="l" d="M6 128H194"/>
+    ${[[8, 's'], [50, 'n'], [92, 'g']].map(([x, c]) => `<rect class="o a" x="${x}" y="58" width="38" height="46" rx="8"/>
+      <path class="l" d="M${x + 8} 112v16M${x + 30} 112v16"/>
+      <rect class="o ${c}" x="${x + 7}" y="60" width="24" height="40" rx="10"/><circle class="o sk" cx="${x + 19}" cy="47" r="11"/>
+      <rect class="o a" x="${x}" y="98" width="38" height="14" rx="5"/>`).join('')}
+    <path class="l" d="M156 98v30M168 98v30"/><rect class="o s" x="150" y="50" width="24" height="50" rx="10"/>
+    <circle class="o sk" cx="162" cy="37" r="11"/><text class="tx q" x="186" y="34" text-anchor="middle">?</text>`),
+  keys: svg(`<circle class="d" cx="62" cy="72" r="20"/><path class="d" d="M82 72h62M126 72v14M140 72v10"/>
+    <text class="tx q" x="34" y="38">?</text><text class="tx q" x="152" y="44">?</text><text class="tx q" x="100" y="126">?</text>`),
+  walletEmpty: svg(`${wallet}<path class="d" d="M98 58q-14-14 6-24"/>
+    <path class="o g" d="M112 26q-18-16-22 4q10 8 22-4z"/><path class="o g" d="M116 26q18-16 22 4q-10 8-22-4z"/>
+    <ellipse class="ink" cx="114" cy="27" rx="3" ry="8"/>`),
+  walletMoney: svg(`<rect class="o a" x="58" y="36" width="76" height="36" rx="3"/><circle class="l" cx="96" cy="52" r="8"/>
+    ${wallet}<circle class="o s" cx="178" cy="116" r="11"/><circle class="o s" cx="180" cy="92" r="9"/>`),
+  onlyChild: svg(`<path class="l" d="M10 128H190"/>
+    ${[48, 152].map(x => `<circle class="d" cx="${x}" cy="58" r="13"/><rect class="d" x="${x - 13}" y="76" width="26" height="40" rx="10"/>`).join('')}
+    <path class="l" d="M93 104v24M107 104v24"/><rect class="o a" x="86" y="62" width="28" height="44" rx="11"/>
+    <circle class="o sk" cx="100" cy="46" r="15"/><path class="o hr" d="M85 44Q86 30 100 30Q114 30 115 44Q108 38 100 38Q92 38 85 44Z"/>`),
+  phone: svg(`<rect class="o" x="60" y="8" width="80" height="124" rx="12"/><rect class="o a" x="68" y="20" width="64" height="100" rx="5"/>
+    <text class="tx" x="100" y="66" text-anchor="middle">MISSED</text><text class="tx" x="100" y="82" text-anchor="middle">CALL</text>
+    <circle class="nn" cx="140" cy="12" r="11"/><text class="tx wt" x="140" y="17" text-anchor="middle">1</text>`),
+  cart: svg(`<rect class="o s" x="78" y="30" width="20" height="28" rx="3"/><rect class="o n" x="104" y="22" width="13" height="36" rx="5"/>
+    <circle class="o s" cx="135" cy="46" r="11"/>
+    <path class="o a" d="M56 52H166L154 98H68Z"/><path class="l" d="M24 38H44L68 98L62 108H152"/>
+    <circle class="o" cx="76" cy="118" r="8"/><circle class="o" cx="142" cy="118" r="8"/>`),
+  home: svg(`<path class="l" d="M16 62L100 16L184 62"/><path class="l" d="M30 54V128H170V54"/>
+    <rect class="o a" x="86" y="34" width="28" height="26" rx="2"/><path class="l" d="M100 34v26M86 47h28"/>
+    <rect class="o n" x="54" y="76" width="92" height="28" rx="9"/><rect class="o n" x="50" y="96" width="100" height="22" rx="8"/>
+    <rect class="o n" x="42" y="88" width="18" height="32" rx="8"/><rect class="o n" x="140" y="88" width="18" height="32" rx="8"/>
+    <path class="l" d="M56 120v8M144 120v8"/>`),
+};
+
+// ---------- Lesson ----------
+// Slide kinds: text, html, rows (picture or sign | word | sentence), map (some | any | no table),
+// chat (question + answer), fix (wrong | right), pick (tap the right word), fill (type), match.
 // [s:…] some, [a:…] any, [n:…] no: each keeps its colour everywhere.
 const T = (h, uk, size = 'l', pic) => ({ t: 'text', h, uk, size, pic });
 const R = o => ({ t: 'rows', ...o });
 const E = (pic, word, sen, uk) => ({ pic, word, sen, uk });
 const S = (k, sign, word, sen, uk) => ({ k, sign, word, sen, uk });
-const P = (q, o, a, pic) => ({ t: 'pick', q, o, a, pic });
+const C = (scene, q, qUk, r, rUk) => ({ t: 'chat', scene, q, qUk, r, rUk });
+const P = (scene, q, o, a) => ({ t: 'pick', scene, q, o, a });
 const F = (q, a, hint, pic) => ({ t: 'fill', q, a: [].concat(a), hint, pic });
 const ONE = ['someone', 'anyone', 'no one'], THING = ['something', 'anything', 'nothing'], WHERE = ['somewhere', 'anywhere', 'nowhere'];
 const cap = a => a.map(w => w[0].toUpperCase() + w.slice(1));
 
 const parts = [
   ['mix', [
-    T('[s:some] · [a:any] · [n:no]', 'хтось, щось, десь, ніхто, нічого… Як не плутати?', 'xl'),
-    R({ pic: '☕', head: 'The rule', uk: '+ → some · ? → any · – → not any = no', rows: [
-      S('s', '+', '[s:some]', 'I have [s:some] tea.', 'У мене є чай.'),
-      S('a', '?', '[a:any]', 'Do you have [a:any] tea?', 'У тебе є чай?'),
-      S('a', '–', 'not … [a:any]', "I don't have [a:any] tea.", 'У мене немає чаю.'),
-      S('n', '–', '[n:no]', 'I have [n:no] tea.', 'У мене немає чаю.'),
+    T('[s:some] · [a:any] · [n:no]', 'хтось, щось, кудись, ніхто, нічого… Як не плутати?', 'xl'),
+    R({ head: 'The endings', uk: 'Закінчення кажуть: хто, що чи де', rows: [
+      E('👤', '-one', 'person', 'людина — хто?'),
+      E('📦', '-thing', 'thing', 'річ — що?'),
+      E('📍', '-where', 'place', 'місце — де? куди?'),
     ] }),
-    { t: 'map', head: 'Word map', uk: 'Однакові закінчення: -one / -body = хто, -thing = що, -where = де', rows: [
-      ['🍎', 'noun', 'іменник', [['[s:some]', 'трохи, кілька'], ['[a:any]', 'якийсь? · жодного'], ['[n:no]', 'жодного']]],
-      ['👤', 'person', 'людина', [['[s:some]one<small>[s:some]body</small>', 'хтось'], ['[a:any]one<small>[a:any]body</small>', 'хтось? · нікого'], ['[n:no] one<small>[n:no]body</small>', 'ніхто']]],
+    R({ scene: 'walletMoney', head: 'The rule', uk: '+ → some · ? → any · not → any', rows: [
+      S('s', '+', '[s:some]', 'I have [s:some] money.', 'У мене є трохи грошей.'),
+      S('a', '?', '[a:any]', 'Do you have [a:any] money?', 'У тебе є гроші?'),
+      S('a', '–', 'not … [a:any]', "I don't have [a:any] money.", 'У мене немає грошей.'),
+    ] }),
+    { t: 'html', uk: 'Обидва речення означають одне: «У мене немає грошей». В англійській — тільки одне заперечення!', html:
+      `<p class="m">I do<span class="neg">n't</span> have <span class="hl k-a mark">any</span> money.</p>
+       <p class="eq">=</p>
+       <p class="m step2">I have [n:no] money.</p>
+       <p class="note step3"><span class="neg">n't</span> + [a:any] = [n:no]</p>
+       <p class="note step4"><span class="x">I don't have no money.</span> <span class="bad-mark">✗</span></p>` },
+    { t: 'map', head: 'Word map', uk: 'Усі слова разом: some — any — no', rows: [
+      ['🍎', '+ noun', '+ іменник', [['[s:some]', 'трохи, кілька'], ['[a:any]', 'якісь? · жодних'], ['[n:no]', 'жодних, немає']]],
+      ['👤', 'person', 'людина', [['[s:some]one', 'хтось'], ['[a:any]one', 'хтось? · нікого'], ['[n:no] one', 'ніхто']]],
       ['📦', 'thing', 'річ', [['[s:some]thing', 'щось'], ['[a:any]thing', 'щось? · нічого'], ['[n:no]thing', 'нічого']]],
       ['📍', 'place', 'місце', [['[s:some]where', 'десь, кудись'], ['[a:any]where', 'десь? · ніде'], ['[n:no]where', 'ніде, нікуди']]],
     ] },
   ]],
   ['some', [
     R({ head: '[s:some] family', sub: '+ positive sentences', uk: 'some… — у стверджувальних реченнях', rows: [
-      E('☕', '[s:some]', 'I want [s:some] tea.', 'Я хочу чаю.'),
-      E('🚪', '[s:some]one<small>[s:some]body</small>', '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
-      E('🍕', '[s:some]thing', 'I want [s:some]thing to eat.', 'Я хочу щось поїсти.'),
+      E('🙋', '[s:some]', 'I need [s:some] help.', 'Мені потрібна допомога.'),
+      E('🚪', '[s:some]one', '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
+      E('🎁', '[s:some]thing', 'I have [s:some]thing for you.', 'У мене є щось для тебе.'),
       E('🗺️', '[s:some]where', "Let's go [s:some]where!", 'Ходімо кудись!'),
     ] }),
   ]],
   ['any', [
     R({ head: '[a:any] family', sub: '? questions · – with not', uk: 'any… — у питаннях і з not', rows: [
-      E('💸', '[a:any]', "I don't have [a:any] money.", 'У мене немає грошей.'),
-      E('👋', '[a:any]one<small>[a:any]body</small>', 'Is [a:any]one here?', 'Тут хтось є?'),
-      E('🛒', '[a:any]thing', 'Do you need [a:any]thing?', 'Тобі щось потрібно?'),
-      E('🔑', '[a:any]where', "I can't find my keys [a:any]where.", 'Я ніде не можу знайти ключі.'),
+      E('❓', '[a:any]', 'Do you have [a:any] questions?', 'У вас є питання?'),
+      E('🏠', '[a:any]one', 'Is [a:any]one home?', 'Є хтось удома?'),
+      E('🛒', '[a:any]thing', "I don't need [a:any]thing.", 'Мені нічого не потрібно.'),
+      E('📱', '[a:any]where', "I can't find my phone [a:any]where.", 'Я ніде не можу знайти телефон.'),
     ] }),
   ]],
   ['no', [
-    R({ head: '[n:no] family', sub: '– no = not any', note: '[n:no] one = 2 words', uk: 'no вже означає «не», тому дієслово без not!', rows: [
-      E('⏰', '[n:no]', 'I have [n:no] time.', 'У мене немає часу.'),
-      E('🤷', '[n:no] one<small>[n:no]body</small>', '[n:No]body knows.', 'Ніхто не знає.'),
+    R({ head: '[n:no] family', sub: '– without not', note: '[n:no] one = 2 words', uk: 'no вже означає «не», тому not не потрібен!', rows: [
+      E('🤔', '[n:no]', 'I have [n:no] idea.', 'Гадки не маю.'),
+      E('🤷', '[n:no] one', '[n:No] one knows.', 'Ніхто не знає.'),
       E('😴', '[n:no]thing', 'I have [n:no]thing to do.', 'Мені нема чого робити.'),
-      E('💺', '[n:no]where', "There's [n:no]where to sit.", 'Нема де сісти.'),
+      E('🚗', '[n:no]where', "There's [n:no]where to park.", 'Нема де припаркуватися.'),
     ] }),
   ]],
   ['mix', [
-    R({ pic: '🚪', head: 'Compare', rows: [
-      S('s', '+', null, "There's [s:some]one at the door.", 'За дверима хтось є.'),
-      S('a', '?', null, 'Is there [a:any]one at the door?', 'За дверима хтось є?'),
-      S('a', '–', null, "There isn't [a:any]one at the door.", 'За дверима нікого немає.'),
-      S('n', '–', null, "There's [n:no] one at the door.", 'За дверима нікого немає.'),
-    ] }),
-    R({ pic: '🎒', head: 'Compare', rows: [
-      S('s', '+', null, "There's [s:some]thing in my bag.", 'У моїй сумці щось є.'),
-      S('a', '?', null, 'Is there [a:any]thing in your bag?', 'У твоїй сумці щось є?'),
-      S('a', '–', null, "There isn't [a:any]thing in my bag.", 'У моїй сумці нічого немає.'),
-      S('n', '–', null, "There's [n:no]thing in my bag.", 'У моїй сумці нічого немає.'),
-    ] }),
-    R({ pic: '💺', head: 'Compare', rows: [
-      S('s', '+', null, "There's [s:some]where to sit.", 'Тут є де сісти.'),
-      S('a', '?', null, 'Is there [a:any]where to sit?', 'Тут є де сісти?'),
-      S('a', '–', null, "There isn't [a:any]where to sit.", 'Тут нема де сісти.'),
-      S('n', '–', null, "There's [n:no]where to sit.", 'Тут нема де сісти.'),
-    ] }),
+    { t: 'html', uk: 'Однакове значення. Можна казати і так, і так.', html:
+      `<p class="l">[s:some]one = [s:some]body<br>[a:any]one = [a:any]body<br>[n:no] one = [n:no]body</p>
+       <p class="note">Same meaning. Both are very common.</p>` },
+    C('phone', 'Did [a:any]one call me?', 'Мені хтось дзвонив?', 'Yes, [s:some]one called an hour ago.', 'Так, хтось дзвонив годину тому.'),
+    C('fridgePizza', 'Is there [a:any]thing to eat?', 'Є щось поїсти?', "Yes, there's [s:some] pizza in the fridge.", 'Так, у холодильнику є піца.'),
+    C('cart', 'Do you need [a:any]thing else?', 'Вам ще щось потрібно?', 'No, [n:no]thing. Thanks!', 'Ні, нічого. Дякую!'),
+    C('home', 'Did you go [a:any]where on the weekend?', 'Ви кудись їздили на вихідних?', 'No, [n:no]where. We stayed home.', 'Ні, нікуди. Ми були вдома.'),
   ]],
   ['some', [
-    T('Would you like<br>[s:some]thing to drink?', 'Хочеш щось попити? Коли щось пропонуєш — some, навіть у питанні.', 'm', '🥤'),
+    R({ head: 'Offers & requests', sub: '→ [s:some], even in questions', uk: 'Коли пропонуєш або просиш — some, навіть у питанні', rows: [
+      E('🥤', null, 'Would you like [s:some]thing to drink?', 'Хочеш щось попити?'),
+      E('💧', null, 'Can I have [s:some] water, please?', 'Можна мені води, будь ласка?'),
+    ] }),
   ]],
   ['mix', [
     { t: 'fix', head: 'Common mistakes', uk: 'Типові помилки', rows: [
-      ["I don't know nobody.", "I don't know [a:any]body.", 'Я нікого не знаю. В англійській — тільки одне «не».'],
-      ["I don't have nothing.", "I don't have [a:any]thing.", 'У мене нічого немає.'],
-      ['I have any money.', 'I have [s:some] money.', 'У мене є гроші. (+) → some'],
+      ["I don't need nothing.", "I don't need [a:any]thing.", 'Мені нічого не потрібно. Тільки одне «не»!'],
+      ["No one don't know.", '[n:No] one knows.', 'Ніхто не знає. Після no one — без don’t.'],
+      ["We didn't go nowhere.", "We didn't go [a:any]where.", 'Ми нікуди не ходили.'],
       ['noone', '[n:no] one', 'no one — два слова'],
     ] },
-    P('Listen! ___ is singing.', cap(ONE), 'Someone', '🎤'),
-    P('Is ___ at home? Hello?', ONE, 'anyone', '🏠'),
-    P("I don't know ___ at this party.", ONE, 'anyone', '🎉'),
-    P("I'm hungry. I want ___ to eat.", THING, 'something', '🍔'),
-    P("The fridge is empty. There's ___ in it.", THING, 'nothing', '🍽️'),
-    P("I don't have ___ money.", ['some', 'any', 'no'], 'any', '💸'),
-    P('Did you go ___ on Sunday?', WHERE, 'anywhere', '🗓️'),
-    P("There's ___ to sit. Let's stand.", WHERE, 'nowhere', '💺'),
-    F('___ is calling you.', ['someone', 'somebody'], 'хтось', '📱'),
-    F('Do you need ___?', 'anything', 'щось', '🛒'),
-    F("I don't need ___.", 'anything', 'нічого', '🙅'),
-    F('___ knows.', ['nobody', 'no one'], 'ніхто', '🤷'),
-    F("I can't find my keys ___.", 'anywhere', 'ніде', '🔑'),
+    P('door', 'Knock, knock! ___ is at the door.', cap(ONE), 'Someone'),
+    P('classroom', 'The classroom is empty. ___ is here.', cap(ONE), 'No one'),
+    P('shh', "It's a secret. Don't tell ___!", ONE, 'anyone'),
+    P('fridgeEmpty', "The fridge is empty. There's ___ to eat.", THING, 'nothing'),
+    P('bag', 'My phone is ___ in my bag. I can hear it!', WHERE, 'somewhere'),
+    P('seats', "All the seats are taken. There's ___ to sit.", WHERE, 'nowhere'),
+    P('keys', "Where are my keys? I can't find them ___.", WHERE, 'anywhere'),
+    P('walletEmpty', 'My wallet is empty. I have ___ money.', ['some', 'any', 'no'], 'no'),
+    P('onlyChild', "I'm an only child. I don't have ___ brothers or sisters.", ['some', 'any', 'no'], 'any'),
+    F("I'm hungry. I want ___ to eat.", 'something', 'щось', '🍔'),
+    F("I don't need ___, thanks.", 'anything', 'нічого', '🛒'),
+    F('___ knows the answer.', ['no one', 'nobody'], 'ніхто', '🤷'),
+    F('___ called you.', ['someone', 'somebody'], 'хтось', '📱'),
+    F("Let's go ___!", 'somewhere', 'кудись', '🗺️'),
     { t: 'match', pairs: [
       ['someone', 'хтось'],
       ['something', 'щось'],
       ['somewhere', 'десь'],
-      ['nobody', 'ніхто'],
+      ['no one', 'ніхто'],
       ['nothing', 'нічого'],
       ['nowhere', 'ніде'],
     ] },
-    R({ head: 'Learn by heart', uk: "Вивчи напам'ять", rows: [
+    R({ head: 'Learn by heart', uk: "Вивчи напам'ять", two: true, rows: [
       E('🚪', null, '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
-      E('🍕', null, 'I want [s:some]thing to eat.', 'Я хочу щось поїсти.'),
-      E('👋', null, 'Is [a:any]one here?', 'Тут хтось є?'),
-      E('🛒', null, 'Do you need [a:any]thing?', 'Тобі щось потрібно?'),
-      E('🔑', null, "I can't find it [a:any]where.", 'Я ніде не можу це знайти.'),
-      E('🤷', null, '[n:No]body knows.', 'Ніхто не знає.'),
+      E('🗺️', null, "Let's go [s:some]where!", 'Ходімо кудись!'),
+      E('🏠', null, 'Is [a:any]one home?', 'Є хтось удома?'),
+      E('🤫', null, "Don't tell [a:any]one!", 'Нікому не кажи!'),
+      E('🔑', null, "I can't find my keys [a:any]where.", 'Я ніде не можу знайти ключі.'),
+      E('🤷', null, '[n:No] one knows.', 'Ніхто не знає.'),
+      E('🤔', null, 'I have [n:no] idea.', 'Гадки не маю.'),
+      E('🍽️', null, "There's [n:no]thing to eat.", 'Нема чого їсти.'),
     ] }),
     T('Great job!', 'Молодець!', 'xl'),
   ]],
@@ -483,7 +609,7 @@ const norm = s => s.toLowerCase().replace(/[’‘`]/g, "'").replace(/-/g, ' ').
 const shuffle = a => { for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
 const ukLine = s => s.uk ? `<p class="uk" lang="uk"><span class="tag">UA</span>${s.uk}</p>` : '';
 const ukSm = t => t ? `<span class="uk sm" lang="uk">${t}</span>` : '';
-const picEl = s => s.pic ? `<p class="pic" aria-hidden="true">${s.pic}</p>` : '';
+const picEl = s => s.scene ? SCN[s.scene] : s.pic ? `<p class="pic" aria-hidden="true">${s.pic}</p>` : '';
 const headEl = s => (s.head ? `<p class="head">${fmt(s.head)}</p>` : '') + (s.sub ? `<p class="formula">${fmt(s.sub)}</p>` : '');
 
 let i = 0;
@@ -523,7 +649,7 @@ function renderRows(s) {
     return `<div class="row"><div class="cell lead">${lead}</div>${word}<div class="cell sen"><span>${fmt(r.sen)}</span>${ukSm(r.uk)}</div></div>`;
   }).join('');
   const note = s.note ? `<p class="note">${fmt(s.note)}</p>` : '';
-  stage.innerHTML = `<div class="slide wide">${picEl(s)}${headEl(s)}<div class="rows ${c3 ? 'c3' : 'c2'}">${rows}</div>${note}${ukLine(s)}</div>`;
+  stage.innerHTML = `<div class="slide ${s.two ? 'xwide' : 'wide'}">${picEl(s)}${headEl(s)}<div class="rows ${c3 ? 'c3' : 'c2'}${s.two ? ' two' : ''}">${rows}</div>${note}${ukLine(s)}</div>`;
 }
 
 function renderMap(s) {
@@ -535,8 +661,14 @@ function renderMap(s) {
   stage.innerHTML = `<div class="slide wide">${headEl(s)}<div class="map">${head}${rows}</div>${ukLine(s)}</div>`;
 }
 
+function renderChat(s) {
+  stage.innerHTML = `<div class="slide wide">${SCN[s.scene]}<p class="formula">In real life</p>
+    <div class="chat"><div class="bub q"><span>${fmt(s.q)}</span>${ukSm(s.qUk)}</div>
+    <div class="bub r"><span>${fmt(s.r)}</span>${ukSm(s.rUk)}</div></div></div>`;
+}
+
 function renderFix(s) {
-  const rows = s.rows.map(([bad, good, ua]) => `<div class="wrong">${bad}</div><div>${fmt(good)} <span class="ok-mark">✓</span>${ukSm(ua)}</div>`).join('');
+  const rows = s.rows.map(([bad, good, ua]) => `<div class="x">${bad}</div><div>${fmt(good)} <span class="ok-mark">✓</span>${ukSm(ua)}</div>`).join('');
   stage.innerHTML = `<div class="slide wide">${headEl(s)}<div class="fix"><div class="fh bad-h">✗ WRONG</div><div class="fh ok-h">✓ RIGHT</div>${rows}</div>${ukLine(s)}</div>`;
 }
 
@@ -551,10 +683,14 @@ function render() {
 
   if (s.t === 'text') {
     stage.innerHTML = `<div class="slide">${picEl(s)}<p class="${s.size}">${fmt(s.h)}</p>${ukLine(s)}</div>`;
+  } else if (s.t === 'html') {
+    stage.innerHTML = `<div class="slide">${fmt(s.html)}${ukLine(s)}</div>`;
   } else if (s.t === 'rows') {
     renderRows(s);
   } else if (s.t === 'map') {
     renderMap(s);
+  } else if (s.t === 'chat') {
+    renderChat(s);
   } else if (s.t === 'fix') {
     renderFix(s);
   } else if (s.t === 'fill') {
@@ -581,7 +717,7 @@ function renderPick(s) {
       b.classList.add('done');
       btns.forEach(x => { x.disabled = true; });
       setAct('Next →', () => go(1));
-      setTimeout(() => { if (b.isConnected) go(1); }, 1100);
+      setTimeout(() => { if (b.isConnected) go(1); }, 1200);
     } else {
       b.classList.add('bad');
       b.disabled = true;
@@ -594,7 +730,7 @@ function renderFill(s) {
   const len = Math.max(...s.a.map(x => x.length)) + 1;
   const width = whole ? 'min(22ch, 100%)' : len + 'ch';
   const input = `<input id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Your answer" style="width:${width}">`;
-  const hint = s.hint ? `<p class="hint">(${s.hint})</p>` : '';
+  const hint = s.hint ? `<p class="hint" lang="uk">(${s.hint})</p>` : '';
   stage.innerHTML = `<div class="slide${whole ? ' wide' : ''}">${picEl(s)}<p class="m">${s.q.replace('___', input)}</p>${hint}<p class="answer" id="ans"></p></div>`;
 
   const el = $('#in');
