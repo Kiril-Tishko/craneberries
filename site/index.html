@@ -1,0 +1,497 @@
+<title>Lesson Notebook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a teacher's notebook. One column of sections, summary first (next lesson), detail below (lesson reports). */
+:root{
+  --paper:#F3F5FA; --surface:#FFFFFF; --sunk:#E9EDF5; --ink:#141E36; --muted:#5A6479; --line:#DCE2EE;
+  --accent:#2742C4; --accent-soft:#E5EAFC;
+  --hl:#FFE14D; --hl-text:#141E36;
+  --red:#B3302A; --red-soft:#FBE8E6; --green:#11764A; --green-soft:#E1F3E9; --amber:#8F5600; --amber-soft:#FCEFD6;
+  --display:"Literata", Georgia, "Times New Roman", serif;
+  --sans:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1320; --surface:#161D2E; --sunk:#1D2539; --ink:#E7EBF5; --muted:#9CA5BB; --line:#2A3449;
+    --accent:#93A6FF; --accent-soft:#222C4F; --hl:#4A4214; --hl-text:#FFE98A;
+    --red:#FF8B80; --red-soft:#3A1F1E; --green:#63D6A0; --green-soft:#15302A; --amber:#F3B860; --amber-soft:#372A10;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1320; --surface:#161D2E; --sunk:#1D2539; --ink:#E7EBF5; --muted:#9CA5BB; --line:#2A3449;
+  --accent:#93A6FF; --accent-soft:#222C4F; --hl:#4A4214; --hl-text:#FFE98A;
+  --red:#FF8B80; --red-soft:#3A1F1E; --green:#63D6A0; --green-soft:#15302A; --amber:#F3B860; --amber-soft:#372A10;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;margin:0;
+  -webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+.bar .wrap{display:flex;align-items:center;gap:16px;padding-block:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:20px;text-decoration:none;color:var(--ink);margin-right:auto;letter-spacing:-.01em}
+.brand span{background:linear-gradient(transparent 55%, var(--hl) 55%, var(--hl) 92%, transparent 92%);color:var(--hl-text)}
+.nav{display:flex;gap:4px}
+.nav a{text-decoration:none;color:var(--muted);font-weight:600;font-size:15px;padding:6px 12px;border-radius:99px}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+
+main{padding-block:28px 64px}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.01em;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px, 5vw, 38px);line-height:1.1}
+h2{font-size:22px;line-height:1.2}
+h3{font-size:18px}
+.lede{color:var(--muted);max-width:62ch;margin:8px 0 0}
+.stack{display:flex;flex-direction:column;gap:28px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.mark{background:linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 92%, transparent 92%);color:var(--hl-text);padding:0 2px;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:99px;
+  background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.high{background:var(--red-soft);color:var(--red)}
+.chip.medium{background:var(--amber-soft);color:var(--amber)}
+.chip.low{background:var(--sunk);color:var(--muted)}
+.chip.new{background:var(--accent-soft);color:var(--accent)}
+.chip.recurring{background:var(--red-soft);color:var(--red)}
+.chip.improving{background:var(--amber-soft);color:var(--amber)}
+.chip.fixed{background:var(--green-soft);color:var(--green)}
+.chip.check{background:transparent;border:1.5px dashed var(--line);color:var(--muted)}
+.chip.clear{background:var(--green-soft);color:var(--green)}
+.ts{font-family:var(--mono);font-size:12.5px;color:var(--muted);background:var(--sunk);border-radius:6px;padding:1px 6px;white-space:nowrap}
+
+/* home */
+.students{display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:14px;margin-top:20px}
+.scard{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r);padding:18px;transition:border-color .15s, transform .15s}
+.scard:hover{border-color:var(--accent);transform:translateY(-1px)}
+.scard .name{font-family:var(--display);font-size:24px;font-weight:700}
+.scard ul{margin:0;padding-left:18px;font-size:14.5px}
+.scard .open{margin-top:auto;font-weight:600;color:var(--accent);font-size:14.5px}
+
+/* student */
+.back{display:inline-block;text-decoration:none;font-weight:600;font-size:14.5px;margin-bottom:14px}
+.profile{display:grid;grid-template-columns:minmax(0, 1.4fr) minmax(0, 1fr);gap:20px;align-items:start}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14.5px;margin:0}
+.facts dt{color:var(--muted)} .facts dd{margin:0}
+.next{display:grid;grid-template-columns:minmax(0, 1.2fr) minmax(0, 1fr);gap:20px}
+.todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.todo li{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.todo li:first-child{border-top:0;padding-top:0}
+.todo input{width:20px;height:20px;margin-top:3px;flex:none;accent-color:var(--green)}
+.todo .done .said, .todo .done .better{opacity:.5}
+.said{color:var(--red);text-decoration:line-through;text-decoration-thickness:1.5px}
+.better{color:var(--green);font-weight:600}
+.issue{font-weight:700}
+.pair{display:flex;flex-direction:column;gap:2px;min-width:0}
+.plan{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.plan li{display:grid;grid-template-columns:52px 1fr;gap:12px}
+.plan .min{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:3px 0;text-align:center;height:fit-content}
+.plan b{display:block}
+.plan span{color:var(--muted);font-size:14.5px}
+
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th{text-align:left;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1.5px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.en{font-weight:600}
+
+/* lessons */
+.lesson{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.lesson + .lesson{margin-top:12px}
+.lesson > summary{list-style:none;cursor:pointer;padding:16px 20px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.lesson > summary::-webkit-details-marker{display:none}
+.lesson > summary::before{content:"▸";color:var(--muted);transition:transform .15s}
+.lesson[open] > summary::before{transform:rotate(90deg)}
+.lesson .ldate{font-family:var(--display);font-weight:700;font-size:19px}
+.lesson .lmeta{color:var(--muted);font-size:14.5px}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding:0 20px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:2.5px solid transparent;padding:10px 10px 9px;font-weight:600;font-size:14.5px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabpanel{padding:20px}
+.mlist{list-style:none;margin:0;padding:0}
+.mlist > li{display:grid;grid-template-columns:24px minmax(0, 1fr);gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.mlist > li:first-child{border-top:0;padding-top:0}
+.mlist input{width:18px;height:18px;margin-top:4px;accent-color:var(--green)}
+.mhead{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.note{color:var(--muted);font-size:14.5px;margin-top:4px}
+.group-h{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
+.group-h:first-child{margin-top:0}
+.bullets{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.cols{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:14px}
+.cardimg{display:flex;flex-direction:column;gap:8px}
+.cardimg img{width:100%;aspect-ratio:9/16;object-fit:cover;object-position:top;border-radius:10px;border:1px solid var(--line);background:var(--sunk)}
+.cardimg .t{font-size:13.5px;font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:10px;
+  padding:6px 10px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.check{display:flex;gap:6px;align-items:center;font-size:13.5px;color:var(--muted)}
+.check input{accent-color:var(--green)}
+.callout{background:var(--sunk);border-radius:10px;padding:10px 14px;font-size:14.5px;color:var(--muted)}
+
+.empty{text-align:left;max-width:560px;padding:32px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);
+  padding:10px 16px;border-radius:10px;font-size:14.5px;z-index:20;max-width:calc(100% - 32px)}
+
+@media (max-width: 760px){
+  .profile, .next, .cols{grid-template-columns:minmax(0, 1fr)}
+  .panel{padding:16px}
+  .tabpanel{padding:16px}
+  .tabs{padding:0 12px}
+  .lesson > summary{padding:14px 16px}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#students"><span>Lesson</span> Notebook</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#students" id="nav-students">Students</a>
+      <a href="#teaching" id="nav-teaching">My teaching</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main">
+  <div class="empty">
+    <h1>Loading reports…</h1>
+    <p class="lede">Your students, their lesson reports, and notes on your own teaching appear here.</p>
+  </div>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+  const S = { students: {}, lessons: {}, states: {}, teacher: null, got: new Set(), status: 'loading' };
+  const UI = { open: new Set(), tab: {} };
+  const NEED = ['students', 'lessons', 'state', 'teacher'];
+  let db = null, dl = null;
+  const main = document.getElementById('main');
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const arr = (x) => (Array.isArray(x) ? x : []);
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const parseD = (iso) => { const [y, m, d] = String(iso || '').split('-').map(Number); return new Date(y || 1970, (m || 1) - 1, d || 1); };
+  const fmtDate = (iso, long) => {
+    const d = parseD(iso);
+    return long ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+                : `${MON[d.getMonth()]} ${d.getDate()}`;
+  };
+  const prioRank = { high: 0, medium: 1, low: 2 };
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 3200);
+  }
+
+  const lessonsOf = (sid) => Object.values(S.lessons).filter((l) => l.student === sid).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const stateOf = (lid) => S.states[lid] || {};
+
+  // ---------- writes (teacher's own ticks) ----------
+  let chain = Promise.resolve();
+  function patchState(lid, path, value) {
+    const next = JSON.parse(JSON.stringify(stateOf(lid)));
+    next[path[0]] = next[path[0]] || {};
+    if (value) next[path[0]][path[1]] = true; else delete next[path[0]][path[1]];
+    S.states[lid] = next;
+    render();
+    if (!db) return;
+    chain = chain.then(() => db.collection('state').doc(lid).set(next)).catch((e) => {
+      toast(e && e.code === 'invalid_argument' ? 'You can view this notebook but not change it.' : 'Couldn’t save that tick. Try again in a moment.');
+    });
+  }
+
+  // ---------- views ----------
+  function viewHome() {
+    const list = Object.values(S.students).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    const tp = S.teacher;
+    if (!list.length) {
+      return `<div class="empty"><div class="eyebrow">Students</div><h1>No students yet</h1>
+        <p class="lede">Send Claude a lesson transcript in chat. It adds the student, the lesson report, the student cards and notes on your teaching here.</p></div>`;
+    }
+    const cards = list.map((s) => {
+      const ls = lessonsOf(s.id);
+      const last = ls[0];
+      const focus = arr(s.focus).filter((f) => f.status !== 'fixed').slice(0, 3);
+      return `<a class="scard" href="#s-${esc(s.id)}">
+        <div class="chips"><span class="chip">${esc(s.level || 'Level not set')}</span></div>
+        <div class="name">${esc(s.name)}</div>
+        <div class="muted small">${ls.length} lesson${ls.length === 1 ? '' : 's'}${last ? ` · last on ${esc(fmtDate(last.date))}` : ''}</div>
+        ${focus.length ? `<div><div class="eyebrow" style="margin-bottom:4px">Working on</div><ul>${focus.map((f) => `<li>${esc(f.issue)}</li>`).join('')}</ul></div>` : ''}
+        <span class="open">Open report →</span></a>`;
+    }).join('');
+    return `<div class="eyebrow">Students</div><h1>Your students</h1>
+      <p class="lede">One report per lesson, built from the transcript. Open a student to see what to cover next time.</p>
+      <div class="students">${cards}</div>
+      ${tp ? `<div class="panel" style="margin-top:28px"><div class="panel-h"><h2>Your current focus</h2><a href="#teaching" class="small">All teaching notes →</a></div>
+        <div class="cols"><div><div class="group-h">Your English</div><ul class="bullets">${arr(tp.englishFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div><div class="group-h">Your teaching</div><ul class="bullets">${arr(tp.teachingFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div></div>` : ''}`;
+  }
+
+  function viewStudent(sid) {
+    const s = S.students[sid];
+    if (!s) {
+      return `<a class="back" href="#students">← All students</a><div class="empty"><h1>Student not found</h1>
+        <p class="lede">This link points to a student who isn’t in the notebook.</p></div>`;
+    }
+    const ls = lessonsOf(sid);
+    const latest = ls[0];
+    if (latest && UI.open.size === 0 && !UI.touched) UI.open.add(latest.id);
+
+    const profile = `<div class="profile">
+      <div><div class="eyebrow">Student</div><h1>${esc(s.name)}</h1>
+        ${s.about ? `<p class="lede">${esc(s.about)}</p>` : ''}
+        ${arr(s.interests).length ? `<div class="chips" style="margin-top:12px">${arr(s.interests).map((i) => `<span class="chip">${esc(i)}</span>`).join('')}</div>` : ''}</div>
+      <dl class="facts panel">
+        <dt>Level</dt><dd>${esc(s.level || '—')}</dd>
+        <dt>First language</dt><dd>${esc(s.l1 || '—')}</dd>
+        <dt>Lessons</dt><dd>${ls.length}</dd>
+        <dt>Last lesson</dt><dd>${latest ? esc(fmtDate(latest.date, true)) : '—'}</dd>
+      </dl></div>`;
+
+    let next = '';
+    if (latest) {
+      const st = stateOf(latest.id);
+      const talk = arr(latest.mistakes).filter((m) => m.priority === 'high');
+      const pron = arr(latest.pronunciation).filter((p) => p.confidence === 'clear');
+      const rest = arr(latest.mistakes).length - talk.length;
+      const items = [
+        ...pron.map((p) => ({ id: p.id, said: p.issue, better: p.tip, area: 'Pronunciation', plain: true })),
+        ...talk.map((m) => ({ id: m.id, said: m.said, better: m.better, area: m.cat, count: m.count })),
+      ];
+      const total = arr(latest.nextLesson).reduce((a, b) => a + (Number(b.min) || 0), 0);
+      next = `<section class="panel"><div class="panel-h"><h2>Next lesson</h2>
+          <span class="muted small">From the ${esc(fmtDate(latest.date))} lesson</span></div>
+        <div class="next">
+          <div><div class="group-h">Talk about</div><ul class="todo">${items.map((it) => {
+            const done = st.discussed && st.discussed[it.id];
+            return `<li class="${done ? 'done' : ''}"><input type="checkbox" id="d-${esc(latest.id)}-${esc(it.id)}" data-lid="${esc(latest.id)}" data-key="discussed" data-id="${esc(it.id)}" ${done ? 'checked' : ''} aria-label="Discussed">
+              <label class="pair" for="d-${esc(latest.id)}-${esc(it.id)}"><span class="chips"><span class="chip">${esc(it.area)}</span>${it.count > 1 ? `<span class="chip">×${esc(it.count)}</span>` : ''}</span>
+              <span class="${it.plain ? 'issue' : 'said'}">${esc(it.said)}</span><span class="${it.plain ? 'small' : 'better'}">${esc(it.better)}</span></label></li>`;
+          }).join('')}</ul>
+          ${rest > 0 ? `<p class="note">${rest} more mistakes are in the lesson report below.</p>` : ''}</div>
+          <div><div class="group-h">Plan${total ? ` · ${total} min` : ''}</div><ol class="plan">${arr(latest.nextLesson).map((p) => `
+            <li><span class="min">${esc(p.min)}′</span><div><b>${esc(p.title)}</b><span>${esc(p.detail)}</span></div></li>`).join('')}</ol></div>
+        </div></section>`;
+    }
+
+    const focus = arr(s.focus);
+    const tracker = focus.length ? `<section class="panel"><div class="panel-h"><h2>Focus tracker</h2>
+        <span class="muted small">Patterns across lessons</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Issue</th><th>Area</th><th>Status</th><th>Seen</th><th>Note</th></tr></thead><tbody>
+      ${focus.map((f) => `<tr><td class="en">${esc(f.issue)}</td><td>${esc(f.area)}</td><td><span class="chip ${esc(f.status)}">${esc(f.status)}</span></td>
+        <td class="small">${arr(f.seen).map((d) => esc(fmtDate(d))).join(', ')}</td><td class="muted small">${esc(f.note)}</td></tr>`).join('')}
+      </tbody></table></div></section>` : '';
+
+    const lessons = `<section><div class="panel-h"><h2>Lesson reports</h2><span class="muted small">Newest first</span></div>
+      ${ls.length ? ls.map(lessonBlock).join('') : '<p class="muted">No lessons yet.</p>'}</section>`;
+
+    return `<a class="back" href="#students">← All students</a><div class="stack">${profile}${next}${tracker}${lessons}</div>`;
+  }
+
+  const TABS = [
+    ['overview', 'Overview'], ['mistakes', 'Mistakes'], ['words', 'Words'],
+    ['pron', 'Pronunciation'], ['cards', 'Student cards'], ['teacher', 'My teaching'],
+  ];
+
+  function lessonBlock(l) {
+    const tab = UI.tab[l.id] || 'overview';
+    const counts = { mistakes: arr(l.mistakes).length, words: arr(l.words).length, pron: arr(l.pronunciation).length, cards: arr(l.cards).length };
+    return `<details class="lesson" data-lid="${esc(l.id)}" ${UI.open.has(l.id) ? 'open' : ''}>
+      <summary><span class="ldate">${esc(fmtDate(l.date, true))}</span>
+        <span class="lmeta">${l.durationMin ? `${esc(l.durationMin)} min · ` : ''}${esc(arr(l.topics).slice(0, 3).join(' · '))}</span></summary>
+      <div class="tabs" role="tablist">${TABS.map(([k, label]) => `<button class="tab" role="tab" type="button" id="tab-${esc(l.id)}-${k}"
+        aria-selected="${tab === k}" data-lid="${esc(l.id)}" data-tab="${k}">${label}${counts[k] != null ? ` (${counts[k]})` : ''}</button>`).join('')}</div>
+      <div class="tabpanel" role="tabpanel">${panel(l, tab)}</div></details>`;
+  }
+
+  function panel(l, tab) {
+    const st = stateOf(l.id);
+    if (tab === 'overview') {
+      return `<div class="cols"><div>
+          <div class="group-h">Summary</div><p style="margin:0">${esc(l.summary)}</p>
+          ${l.talk ? `<p class="note">${esc(l.talk)}</p>` : ''}
+          <div class="group-h">Topics</div><div class="chips">${arr(l.topics).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+          ${l.grammar ? `<div class="group-h">Grammar</div><p style="margin:0">${esc(l.grammar)}</p>` : ''}
+        </div><div>
+          <div class="group-h">What went well</div><ul class="bullets">${arr(l.strengths).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+          <div class="group-h">Phrases given</div><ul class="bullets">${arr(l.phrases).map((p) => `<li><b>${esc(p.en)}</b>${p.note ? ` <span class="muted small">${esc(p.note)}</span>` : ''}</li>`).join('')}</ul>
+        </div></div>`;
+    }
+    if (tab === 'mistakes') {
+      const ms = arr(l.mistakes).slice().sort((a, b) => (prioRank[a.priority] ?? 3) - (prioRank[b.priority] ?? 3));
+      const groups = ['high', 'medium', 'low'].map((p) => [p, ms.filter((m) => m.priority === p)]).filter(([, g]) => g.length);
+      const label = { high: 'Discuss first', medium: 'If there’s time', low: 'Minor' };
+      return `<p class="callout" style="margin-top:0">Tick a mistake once you’ve gone over it with the student. Timestamps point to the transcript.</p>` +
+        groups.map(([p, g]) => `<div class="group-h">${label[p]}</div><ul class="mlist">${g.map((m) => {
+          const done = st.discussed && st.discussed[m.id];
+          return `<li><input type="checkbox" id="m-${esc(l.id)}-${esc(m.id)}" data-lid="${esc(l.id)}" data-key="discussed" data-id="${esc(m.id)}" ${done ? 'checked' : ''} aria-label="Discussed">
+            <div><div class="mhead"><span class="chip ${esc(m.priority)}">${esc(m.priority)}</span><span class="chip">${esc(m.cat)}</span>
+              ${m.count > 1 ? `<span class="chip">×${esc(m.count)}</span>` : ''}${arr(m.t).map((t) => `<span class="ts">${esc(t)}</span>`).join('')}</div>
+              <label class="pair" for="m-${esc(l.id)}-${esc(m.id)}"><span class="said">${esc(m.said)}</span><span class="better">${esc(m.better)}</span></label>
+              ${m.note ? `<div class="note">${esc(m.note)}</div>` : ''}</div></li>`;
+        }).join('')}</ul>`).join('');
+    }
+    if (tab === 'words') {
+      return `<p class="callout" style="margin-top:0">Moments the student switched to Ukrainian to find a word.</p>
+        <div class="table-wrap"><table><thead><tr><th>Ukrainian</th><th>English</th><th>Example</th><th>Time</th></tr></thead><tbody>
+        ${arr(l.words).map((w) => `<tr><td>${esc(w.ua)}</td><td class="en"><span class="mark">${esc(w.en)}</span></td><td class="muted">${esc(w.ex)}</td><td><span class="ts">${esc(w.t)}</span></td></tr>`).join('')}
+        </tbody></table></div>`;
+    }
+    if (tab === 'pron') {
+      return `<ul class="mlist">${arr(l.pronunciation).map((p) => `<li><span></span><div>
+        <div class="mhead"><span class="chip ${p.confidence === 'clear' ? 'clear' : 'check'}">${p.confidence === 'clear' ? 'Clear in transcript' : 'Check the recording'}</span></div>
+        <h3>${esc(p.issue)}</h3><div class="note">${esc(p.evidence)}</div><p style="margin:6px 0 0">${esc(p.tip)}</p></div></li>`).join('')}</ul>`;
+    }
+    if (tab === 'cards') {
+      const cs = arr(l.cards);
+      if (!cs.length) return '<p class="muted">No student cards for this lesson.</p>';
+      return `<p class="callout" style="margin-top:0">Phone-sized images for the student. “Save image” downloads it on a computer and opens the share sheet on a phone.</p>
+        <div class="cards">${cs.map((c) => {
+          const sent = st.sent && st.sent[c.n];
+          return `<div class="cardimg"><img src="/_blob/${esc(c.asset)}" alt="${esc(c.title)}" loading="lazy">
+            <span class="t">${esc(c.n)}. ${esc(c.title)}</span>
+            ${dl ? `<button class="btn" type="button" data-save="${esc(c.asset)}" data-name="${esc(l.id)}-card-${esc(c.n)}.png">Save image</button>` : ''}
+            <label class="check"><input type="checkbox" data-lid="${esc(l.id)}" data-key="sent" data-id="${esc(c.n)}" ${sent ? 'checked' : ''}> Sent to student</label></div>`;
+        }).join('')}</div>`;
+    }
+    if (tab === 'teacher') {
+      const t = l.teacher || {};
+      return `${t.note ? `<p class="callout" style="margin-top:0">${esc(t.note)}</p>` : ''}
+        <div class="group-h">Your English</div>
+        <ul class="mlist">${arr(t.english).map((e) => `<li><span></span><div><div class="mhead"><span class="ts">${esc(e.t)}</span></div>
+          <div class="pair"><span class="said">${esc(e.said)}</span><span class="better">${esc(e.better)}</span></div><div class="note">${esc(e.why)}</div></div></li>`).join('')}</ul>
+        ${arr(t.habits).length ? `<div class="group-h">Habits</div><ul class="bullets">${arr(t.habits).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+        <div class="cols" style="margin-top:8px"><div><div class="group-h">What worked</div><ul class="bullets">${arr(t.strengths).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div><div class="group-h">Try next time</div><ul class="bullets">${arr(t.improve).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
+    }
+    return '';
+  }
+
+  function viewTeaching() {
+    const tp = S.teacher;
+    const all = Object.values(S.lessons).filter((l) => l.teacher).sort((a, b) => (a.date < b.date ? 1 : -1));
+    const head = `<div class="eyebrow">My teaching</div><h1>Your English and your lessons</h1>
+      <p class="lede">Built from the same transcripts. The focus list updates as more lessons come in.</p>`;
+    if (!tp && !all.length) return head + '<p class="muted" style="margin-top:20px">No teaching notes yet. They appear with the first lesson report.</p>';
+    const focus = tp ? `<section class="panel"><div class="panel-h"><h2>Current focus</h2><span class="muted small">${esc(tp.lessonsReviewed || all.length)} lesson${(tp.lessonsReviewed || all.length) === 1 ? '' : 's'} reviewed${tp.updated ? ` · updated ${esc(fmtDate(tp.updated))}` : ''}</span></div>
+      <div class="cols"><div><div class="group-h">Your English</div><ul class="bullets">${arr(tp.englishFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div><div class="group-h">Your teaching</div><ul class="bullets">${arr(tp.teachingFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div></section>` : '';
+    const per = all.map((l) => {
+      const s = S.students[l.student];
+      const id = `t-${l.id}`;
+      return `<details class="lesson" data-lid="${esc(id)}" ${UI.open.has(id) || all.length === 1 ? 'open' : ''}>
+        <summary><span class="ldate">${esc(s ? s.name : l.student)} · ${esc(fmtDate(l.date))}</span><span class="lmeta">${esc(arr(l.topics).slice(0, 2).join(' · '))}</span></summary>
+        <div class="tabpanel">${panel(l, 'teacher')}</div></details>`;
+    }).join('');
+    return `${head}<div class="stack" style="margin-top:24px">${focus}<section><div class="panel-h"><h2>By lesson</h2><span class="muted small">Newest first</span></div>${per}</section></div>`;
+  }
+
+  // ---------- render ----------
+  function route() {
+    const h = location.hash.replace(/^#/, '');
+    if (h.startsWith('s-')) return { name: 'student', id: h.slice(2) };
+    if (h === 'teaching') return { name: 'teaching' };
+    return { name: 'home' };
+  }
+
+  function render() {
+    const r = route();
+    const [on, off] = r.name === 'teaching' ? ['nav-teaching', 'nav-students'] : ['nav-students', 'nav-teaching'];
+    document.getElementById(on).setAttribute('aria-current', 'page');
+    document.getElementById(off).removeAttribute('aria-current');
+
+    if (S.status === 'nodb') {
+      main.innerHTML = `<div class="empty"><h1>Open this notebook in Claude</h1><p class="lede">The reports are stored with the page and load only when you open it on claude.ai or in the Claude app, signed in.</p></div>`;
+      return;
+    }
+    if (S.status === 'loading') {
+      main.innerHTML = `<div class="empty"><h1>Loading reports…</h1><p class="lede">Your students, their lesson reports, and notes on your own teaching appear here.</p></div>`;
+      return;
+    }
+    if (S.status === 'slow' && !Object.keys(S.students).length) {
+      main.innerHTML = `<div class="empty"><h1>Can’t reach the reports yet</h1><p class="lede">They’ll appear as soon as the connection comes back. You don’t need to reload.</p></div>`;
+      return;
+    }
+    main.innerHTML = r.name === 'student' ? viewStudent(r.id) : r.name === 'teaching' ? viewTeaching() : viewHome();
+  }
+
+  // ---------- events ----------
+  main.addEventListener('click', async (e) => {
+    const tabBtn = e.target.closest('.tab');
+    if (tabBtn) {
+      UI.tab[tabBtn.dataset.lid] = tabBtn.dataset.tab;
+      const det = tabBtn.closest('details');
+      const l = S.lessons[tabBtn.dataset.lid];
+      det.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b === tabBtn)));
+      det.querySelector('.tabpanel').innerHTML = panel(l, tabBtn.dataset.tab);
+      return;
+    }
+    const save = e.target.closest('[data-save]');
+    if (save && dl) {
+      save.disabled = true;
+      try {
+        const res = await fetch('/_blob/' + save.dataset.save);
+        if (!res.ok) throw new Error('missing');
+        await dl.save({ filename: save.dataset.name, data: await res.blob() });
+      } catch (err) {
+        if (!(err && err.code === 'declined')) toast('Couldn’t save the image. Try again in a moment.');
+      } finally { save.disabled = false; }
+    }
+  });
+  main.addEventListener('change', (e) => {
+    const cb = e.target.closest('input[type="checkbox"][data-lid]');
+    if (cb) patchState(cb.dataset.lid, [cb.dataset.key, cb.dataset.id], cb.checked);
+  });
+  main.addEventListener('toggle', (e) => {
+    const d = e.target;
+    if (!(d instanceof HTMLDetailsElement) || !d.dataset.lid) return;
+    UI.touched = true;
+    if (d.open) UI.open.add(d.dataset.lid); else UI.open.delete(d.dataset.lid);
+  }, true);
+  window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
+
+  // ---------- data ----------
+  function ready() {
+    if (S.status !== 'ready' && NEED.every((n) => S.got.has(n))) { S.status = 'ready'; clearTimeout(slowTimer); }
+  }
+  let slowTimer = null;
+  async function start() {
+    render();
+    const claude = window.claude;
+    db = claude && claude.use ? await claude.use('db') : null;
+    if (!db) { S.status = 'nodb'; render(); return; }
+    claude.use('downloads').then((d) => { dl = d; if (S.status === 'ready') render(); }).catch(() => {});
+    slowTimer = setTimeout(() => { if (S.status === 'loading') { S.status = 'slow'; render(); } }, 10000);
+    const sub = (name, onDocs) => db.collection(name).onSnapshot((snap) => {
+      onDocs(snap.docs.filter((d) => d.exists));
+      if (!snap.metadata.fromCache) S.got.add(name);
+      if (S.status === 'slow') S.status = 'loading';
+      ready(); render();
+    }, () => { S.got.add(name); ready(); render(); });
+    sub('students', (docs) => { S.students = {}; docs.forEach((d) => { S.students[d.id] = { ...d.data(), id: d.id }; }); });
+    sub('lessons', (docs) => { S.lessons = {}; docs.forEach((d) => { S.lessons[d.id] = { ...d.data(), id: d.id }; }); });
+    sub('state', (docs) => { S.states = {}; docs.forEach((d) => { S.states[d.id] = d.data() || {}; }); });
+    sub('teacher', (docs) => { const p = docs.find((d) => d.id === 'profile'); S.teacher = p ? p.data() : null; });
+  }
+  start();
+})();
+</script>

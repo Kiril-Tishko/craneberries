@@ -1,0 +1,62 @@
+# Lesson Notebook
+
+Turns English-lesson transcripts into:
+1. **Student cards**: phone-sized PNGs the teacher sends to the student.
+2. **A per-student report site** for the teacher: https://claude.ai/artifact/XKucktSiX3sqHTdqUBjsZD
+
+Student data (transcripts, lesson JSON, card images) never goes into this repo. It lives in the
+artifact's database and asset store.
+
+## When the user sends a transcript
+
+The transcript is auto-generated and has no speaker labels. The teacher is a Ukrainian speaker who
+teaches in English; students are mostly Ukrainian speakers. Infer who said what from context, and say so
+in the teacher report.
+
+1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
+2. Render the cards: `node tools/render-cards.js <lesson.json> <out-dir>`, then look at them.
+3. Upload the PNGs to the artifact: Artifact tool, `asset: true`, `url`, `file_paths`. Put the returned
+   ids into `cards[].asset`.
+4. Write the database rows with ArtifactData `batch` (read first, then pin `if_version` on existing docs):
+   - `students/<slug>`: create the student, or update `focus` (bump `seen`, set `status` to recurring,
+     improving or fixed).
+   - `lessons/<slug>-<YYYY-MM-DD>`: the lesson JSON without `studentCards`, plus `cards`.
+   - `teacher/profile`: refresh `englishFocus`, `teachingFocus`, `lessonsReviewed`, `updated`.
+5. Send the cards to the user with SendUserFile and give them the site link.
+
+## What the teacher asked for
+
+- **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/).
+- **Student cards**: readable on a phone, no student name on them, no homework or mini-task. Usual set:
+  words they looked for (split by theme if long), "Say it like this" phrases, the grammar point, the
+  **3 most important fixes** only, and **pronunciation as its own card**.
+- The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
+- A **report on the teacher**: their own English (quote, better version, why) and their teaching
+  (what worked, what to try next time).
+- Keep sensitive details (health, conflicts at work, opinions about named people) off the cards.
+
+## Lesson JSON shape
+
+```
+student, date (YYYY-MM-DD), durationMin, topics[], grammar, summary, talk, strengths[]
+words[]        {t, ua, en, ex}
+mistakes[]     {id, priority: high|medium|low, cat, count, t[], said, better, note}
+pronunciation[]{id, confidence: clear|check, issue, evidence, tip}
+phrases[]      {en, note}
+nextLesson[]   {min, title, detail}
+teacher        {note, english[{t, said, better, why}], habits[], strengths[], improve[]}
+studentCards[] one of:
+  {type: "words",   kicker, title, sub, items[{ua, en, ex}]}
+  {type: "phrases", kicker, title, sub, items[{en, note}]}
+  {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
+  {type: "fixes",   kicker, title, sub, items[{wrong, right, why}]}
+  {type: "pron",    kicker, title, sub, pairs[{word, ipa, tip}], family, practice[]}
+```
+In `grammar` text, `[used to]` marks a highlighted span.
+
+## Site
+
+`site/index.html` is the artifact page. Republish it with the Artifact tool and
+`url: https://claude.ai/artifact/XKucktSiX3sqHTdqUBjsZD` (read it first from a new session).
+Capabilities: `db`, `assets`, `downloads`. Collections: `students`, `lessons`, `teacher` (Claude writes),
+`state` (the page writes the teacher's "discussed" and "sent" ticks; Claude doesn't overwrite it).

@@ -1,0 +1,6 @@
+node_modules/
+# Student data stays out of the repo
+lessons/
+cards-out/
+*.png
+*.json.local
