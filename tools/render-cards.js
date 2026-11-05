@@ -5,7 +5,7 @@
 //
 // Reads `date` and `studentCards` from the lesson file, writes <out-dir>/cards.html
 // and <out-dir>/card-1.png … card-N.png (420 CSS px wide at 3x = 1260 px).
-// Card types: words, phrases, grammar, verbs, forms, fixes, pron. See CLAUDE.md for the shape.
+// Card types: words, phrases, grammar, compare, verbs, forms, fixes, pron. See CLAUDE.md for the shape.
 
 const fs = require('fs');
 const path = require('path');
@@ -68,6 +68,14 @@ const body = {
     ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`,
 
+  compare: (c) => `<div class="cmp">${c.cols.map((col) => `
+    <div class="cmp-col"><div class="cmp-h"><span class="cmp-emo">${esc(col.emoji)}</span>
+      <div><div class="cmp-verb"><span class="hl">${esc(col.head)}</span></div><div class="cmp-rule">${esc(col.rule)}</div></div></div>
+      <div class="cmp-items">${col.items.map((i) => `<span class="chip2">${esc(i)}</span>`).join('')}</div></div>`).join('')}</div>
+    ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
+      ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}
+    ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}`,
+
   verbs: (c) => {
     const f = c.focus ?? 2;
     const cls = (i) => (i === f ? 'vfocus' : '');
@@ -86,6 +94,7 @@ const body = {
       <div class="pair"><div class="pw">${esc(p.word)}</div><div class="ipa">${esc(p.ipa)}</div>
         <div class="ptip">${esc(p.tip)}</div></div>`).join('')}</div>
     ${c.family ? `<p class="family">${esc(c.family)}</p>` : ''}
+    ${c.also ? `<div class="also"><div class="flabel">${esc(c.also.label)}</div>${c.also.lines.map((l) => `<div>${mark(l)}</div>`).join('')}</div>` : ''}
     ${c.practice ? `<div class="practice"><div class="flabel">Say each one 5 times</div>
       ${c.practice.map((s) => `<div class="say">${esc(s)}</div>`).join('')}</div>` : ''}`,
 };
@@ -98,7 +107,7 @@ const html = `<!doctype html>
   :root{
     --paper:#F4F6FB; --ink:#141E36; --muted:#56607A; --line:#DCE2EE;
     --hl:#FFE14D; --red:#B8322A; --green:#11764A; --blue:#2742C4; --tile:#FFFFFF;
-    --sans:"Golos Text","Inter","DejaVu Sans",sans-serif;
+    --sans:"Golos Text","Inter","DejaVu Sans","Noto Color Emoji",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--paper);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
@@ -168,6 +177,16 @@ const html = `<!doctype html>
   .vt th.vfocus{background:var(--hl);color:var(--ink);border-radius:12px 12px 0 0}
   .vt td.vfocus{background:var(--hl);color:var(--ink);font-weight:800;font-size:21px;border-top-color:rgba(20,30,54,.12)}
   .vt tr:last-child td.vfocus{border-radius:0 0 12px 12px}
+  .cmp{margin-top:16px;display:grid;gap:10px}
+  .cmp-col{background:var(--tile);border-radius:16px;padding:14px 14px 15px}
+  .cmp-h{display:flex;gap:12px;align-items:center}
+  .cmp-emo{font-size:34px;line-height:1;font-family:"Noto Color Emoji",sans-serif}
+  .cmp-verb{font-size:25px;font-weight:800;line-height:1.15}
+  .cmp-rule{font-size:15.5px;color:var(--muted);line-height:1.3}
+  .cmp-items{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+  .chip2{font-size:16.5px;font-weight:600;background:var(--paper);border-radius:99px;padding:4px 11px}
+  .also .hl{font-weight:800}
+  .also{margin-top:14px;background:var(--tile);border-radius:14px;padding:12px 14px;font-size:19px;line-height:1.5}
   .pp-grid{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .pp{background:var(--tile);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
   .pp .base{font-size:15.5px;color:var(--muted)}

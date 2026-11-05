@@ -31,6 +31,8 @@ in the teacher report.
   (only a small, quiet date beside the kicker), no homework or mini-task. Usual set:
   words they looked for (split by theme if long), "Say it like this" phrases, the grammar point, the
   **3 most important fixes** only, and **pronunciation as its own card**.
+- The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
+  comparison with emojis) for the lesson's main topic. Put those first; keep subtitles short or leave them out.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time).
@@ -50,11 +52,13 @@ studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex}]}
   {type: "phrases", kicker, title, sub, items[{en, note}]}
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
+  {type: "compare", kicker, title, cols[{emoji, head, rule, items[]}], examples[], tip}
+                    visual cheat sheet for "A vs B vs C" topics (drive / ride / go), emojis in items
   {type: "verbs",   kicker, title, sub, focus (0|1|2), head[{label, hint}], rows[{emoji, base, past, pp}], examples[]}
                     irregular verbs: all 3 forms, highlight the column the lesson needs, emojis, no subtitle
   {type: "forms",   kicker, title, sub, items[{base, pp}], examples[]}   (older two-form version)
   {type: "fixes",   kicker, title, sub, items[{wrong, right, why}]}
-  {type: "pron",    kicker, title, sub, pairs[{word, ipa, tip}], family, practice[]}
+  {type: "pron",    kicker, title, sub, pairs[{word, ipa, tip}], family, also{label, lines[]}, practice[]}
 ```
 In `grammar` and `forms` text, `[used to]` marks a highlighted span. When a lesson covers two grammar
 points, give each its own grammar card.
