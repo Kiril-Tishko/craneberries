@@ -50,7 +50,9 @@ studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex}]}
   {type: "phrases", kicker, title, sub, items[{en, note}]}
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
-  {type: "forms",   kicker, title, sub, items[{base, pp}], examples[]}   (verb-form cheat sheet)
+  {type: "verbs",   kicker, title, sub, focus (0|1|2), head[{label, hint}], rows[{emoji, base, past, pp}], examples[]}
+                    irregular verbs: always show all 3 forms, highlight the column the lesson needs, add emojis
+  {type: "forms",   kicker, title, sub, items[{base, pp}], examples[]}   (older two-form version)
   {type: "fixes",   kicker, title, sub, items[{wrong, right, why}]}
   {type: "pron",    kicker, title, sub, pairs[{word, ipa, tip}], family, practice[]}
 ```

@@ -5,7 +5,7 @@
 //
 // Reads `date` and `studentCards` from the lesson file, writes <out-dir>/cards.html
 // and <out-dir>/card-1.png … card-N.png (420 CSS px wide at 3x = 1260 px).
-// Card types: words, phrases, grammar, forms, fixes, pron. See CLAUDE.md for the shape.
+// Card types: words, phrases, grammar, verbs, forms, fixes, pron. See CLAUDE.md for the shape.
 
 const fs = require('fs');
 const path = require('path');
@@ -67,6 +67,19 @@ const body = {
     <div class="pp"><span class="base">${esc(f.base)} →</span><span class="ppf"><span class="hl">${esc(f.pp)}</span></span></div>`).join('')}</div>
     ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`,
+
+  verbs: (c) => {
+    const f = c.focus ?? 2;
+    const cls = (i) => (i === f ? 'vfocus' : '');
+    return `<table class="vt"><thead><tr>${c.head.map((h, i) => `
+      <th class="${cls(i)}">${esc(h.label)}<span>${esc(h.hint || '')}</span></th>`).join('')}</tr></thead>
+      <tbody>${c.rows.map((r) => {
+        const cells = [r.base, r.past, r.pp];
+        return `<tr>${cells.map((x, i) => `<td class="${cls(i)}">${i === 0 ? `<span class="emo">${esc(r.emoji || '')}</span>` : ''}${esc(x)}</td>`).join('')}</tr>`;
+      }).join('')}</tbody></table>
+    ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
+      ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`;
+  },
 
   pron: (c) => `
     <div class="pairs">${c.pairs.map((p) => `
@@ -144,6 +157,17 @@ const html = `<!doctype html>
   .say{font-size:22px;font-weight:700;padding:7px 0}
   .small-say{font-size:19px;font-weight:500}
   .small-say .hl{font-weight:700}
+  .vt{width:100%;margin-top:16px;border-collapse:separate;border-spacing:0;font-size:19px;table-layout:fixed}
+  .vt th{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;
+         padding:10px 10px 8px;vertical-align:bottom}
+  .vt th span{display:block;font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;margin-top:2px}
+  .vt th:first-child{width:38%}
+  .vt td{padding:10px 10px;border-top:1.5px solid var(--line);color:var(--muted)}
+  .vt td:first-child{color:var(--ink);font-weight:600}
+  .vt .emo{display:inline-block;width:30px;font-family:"Noto Color Emoji",sans-serif}
+  .vt th.vfocus{background:var(--hl);color:var(--ink);border-radius:12px 12px 0 0}
+  .vt td.vfocus{background:var(--hl);color:var(--ink);font-weight:800;font-size:21px;border-top-color:rgba(20,30,54,.12)}
+  .vt tr:last-child td.vfocus{border-radius:0 0 12px 12px}
   .pp-grid{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .pp{background:var(--tile);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
   .pp .base{font-size:15.5px;color:var(--muted)}
