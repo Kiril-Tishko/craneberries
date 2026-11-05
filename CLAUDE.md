@@ -26,7 +26,8 @@ in the teacher report.
 
 ## What the teacher asked for
 
-- **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/).
+- **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/). IPA goes on the
+  teacher site only: **no phonetic transcription on student cards**.
 - **Student cards**: readable on a phone, no student name, no page count, no "lesson notes" caption
   (only a small, quiet date beside the kicker), no homework or mini-task. Usual set:
   words they looked for (split by theme if long), "Say it like this" phrases, the grammar point, the
