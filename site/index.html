@@ -395,7 +395,7 @@ td.en{font-weight:600}
     if (!tp && !all.length) return head + '<p class="muted" style="margin-top:20px">No teaching notes yet. They appear with the first lesson report.</p>';
     const focus = tp ? `<section class="panel"><div class="panel-h"><h2>Current focus</h2><span class="muted small">${esc(tp.lessonsReviewed || all.length)} lesson${(tp.lessonsReviewed || all.length) === 1 ? '' : 's'} reviewed${tp.updated ? ` · updated ${esc(fmtDate(tp.updated))}` : ''}</span></div>
       <div class="cols"><div><div class="group-h">Your English</div><ul class="bullets">${arr(tp.englishFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div><div class="group-h">Your teaching</div><ul class="bullets">${arr(tp.teachingFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div></section>` : '';
+      <div><div class="group-h">Your teaching</div><ul class="bullets">${arr(tp.teachingFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div>${arr(tp.strengths).length ? `<div class="group-h">What you do well</div><ul class="bullets">${arr(tp.strengths).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</section>` : '';
     const per = all.map((l) => {
       const s = S.students[l.student];
       const id = `t-${l.id}`;
