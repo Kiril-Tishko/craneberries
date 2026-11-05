@@ -32,7 +32,11 @@ in the teacher report.
   words they looked for (split by theme if long), "Say it like this" phrases, the grammar point, the
   **3 most important fixes** only, and **pronunciation as its own card**.
 - The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
-  comparison with emojis) for the lesson's main topic. Put those first; keep subtitles short or leave them out.
+  comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
+  Put those first; keep subtitles short or leave them out.
+- **"Say it like this"**: plain, everyday sentences from the lesson. Skip idioms, slang and jokes
+  (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
+- **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time).
