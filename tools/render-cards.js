@@ -91,12 +91,12 @@ const body = {
 
   pron: (c) => `
     <div class="pairs">${c.pairs.map((p) => `
-      <div class="pair"><div class="pw">${esc(p.word)}</div><div class="ipa">${esc(p.ipa)}</div>
+      <div class="pair"><div class="pw">${mark(p.word)}</div><div class="ipa">${esc(p.ipa)}</div>
         <div class="ptip">${esc(p.tip)}</div></div>`).join('')}</div>
     ${c.family ? `<p class="family">${esc(c.family)}</p>` : ''}
     ${c.also ? `<div class="also"><div class="flabel">${esc(c.also.label)}</div>${c.also.lines.map((l) => `<div>${mark(l)}</div>`).join('')}</div>` : ''}
     ${c.practice ? `<div class="practice"><div class="flabel">Say each one 5 times</div>
-      ${c.practice.map((s) => `<div class="say">${esc(s)}</div>`).join('')}</div>` : ''}`,
+      ${c.practice.map((s) => `<div class="say">${mark(s)}</div>`).join('')}</div>` : ''}`,
 };
 
 const html = `<!doctype html>
@@ -159,6 +159,7 @@ const html = `<!doctype html>
   .pair{background:var(--tile);border-radius:16px;padding:16px 14px}
   .pw{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1}
   .pair:first-child .pw{color:var(--blue)}
+  .pw .hl, .pair:first-child .pw .hl{color:var(--ink)}
   .ipa{font-family:"DejaVu Sans",sans-serif;font-size:18px;color:var(--muted);margin-top:6px}
   .ptip{font-size:16px;line-height:1.35;margin-top:8px}
   .family{margin-top:14px;font-size:16.5px;line-height:1.45}

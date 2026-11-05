@@ -37,6 +37,7 @@ in the teacher report.
 - **"Say it like this"**: plain, everyday sentences from the lesson. Skip idioms, slang and jokes
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
+  Highlight the two words in yellow (`[word]`), in the tiles and in the practice sentences.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time).
