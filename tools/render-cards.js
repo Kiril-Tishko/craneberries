@@ -31,10 +31,9 @@ const dateLabel = `${MONTHS[m - 1]} ${d}`;
 const cards = lesson.studentCards || [];
 const total = cards.length;
 
-function header(c, i) {
+function header(c) {
   return `
-  <div class="top"><span>Lesson notes · ${dateLabel}</span><span class="pager">${i + 1}/${total}</span></div>
-  <div class="kicker">${esc(c.kicker || '')}</div>
+  <div class="top"><span class="kicker">${esc(c.kicker || '')}</span><span class="date">${dateLabel}</span></div>
   <h1>${esc(c.title)}</h1>
   ${c.sub ? `<p class="sub">${esc(c.sub)}</p>` : ''}`;
 }
@@ -86,10 +85,9 @@ const html = `<!doctype html>
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--paper);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
   .card{width:420px;background:var(--paper);padding:26px 24px 30px;margin:0 auto 20px}
-  .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;
-       color:var(--muted);letter-spacing:.02em}
-  .pager{font-variant-numeric:tabular-nums;border:1.5px solid var(--line);border-radius:99px;padding:2px 9px;color:var(--muted)}
-  .kicker{margin-top:22px;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--blue)}
+  .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .date{font-size:12.5px;color:var(--muted);opacity:.8;white-space:nowrap}
+  .kicker{font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--blue)}
   h1{font-size:31px;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin-top:6px;text-wrap:balance}
   .sub{font-size:16.5px;line-height:1.4;color:var(--muted);margin-top:8px}
   .hl{background:linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 92%, transparent 92%);padding:0 2px;
@@ -140,7 +138,7 @@ const html = `<!doctype html>
   .practice{margin-top:16px;border-top:1.5px solid var(--line);padding-top:14px}
   .say{font-size:22px;font-weight:700;padding:7px 0}
 </style></head><body>
-${cards.map((c, i) => `<section class="card" id="card-${i + 1}">${header(c, i)}${body[c.type](c)}</section>`).join('\n')}
+${cards.map((c, i) => `<section class="card" id="card-${i + 1}">${header(c)}${body[c.type](c)}</section>`).join('\n')}
 </body></html>`;
 
 const htmlPath = path.resolve(outDir, 'cards.html');

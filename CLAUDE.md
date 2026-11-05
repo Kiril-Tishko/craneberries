@@ -27,7 +27,8 @@ in the teacher report.
 ## What the teacher asked for
 
 - **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/).
-- **Student cards**: readable on a phone, no student name on them, no homework or mini-task. Usual set:
+- **Student cards**: readable on a phone, no student name, no page count, no "lesson notes" caption
+  (only a small, quiet date beside the kicker), no homework or mini-task. Usual set:
   words they looked for (split by theme if long), "Say it like this" phrases, the grammar point, the
   **3 most important fixes** only, and **pronunciation as its own card**.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
