@@ -1,0 +1,703 @@
+<title>Some, Any, No</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;700&display=swap">
+<style>
+  /* Short and structured: rule → word map (some | any | no side by side) → one family per screen
+     with everyday sentences → the same situation in + ? – → mistakes → practice → learn by heart.
+     some = amber, any = indigo, no = rose. Every word keeps its colour on every screen. */
+  :root {
+    --bg: #f3f4f7;
+    --surface: #ffffff;
+    --ink: #161b26;
+    --muted: #697186;
+    --line: #dde1e9;
+    --some: #a85400;
+    --some-soft: #ffdcae;
+    --any: #3443c4;
+    --any-soft: #d9defe;
+    --no: #b0275f;
+    --no-soft: #fdd3e4;
+    --ok: #1d8549;
+    --ok-soft: #d3f2df;
+    --bad: #c3372b;
+    --f-disp: "Unbounded", "Arial Black", system-ui, sans-serif;
+    --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --f-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10131a;
+      --surface: #1a1f2a;
+      --ink: #eef1f7;
+      --muted: #8c94a8;
+      --line: #2b313e;
+      --some: #ffb757;
+      --some-soft: #4d3313;
+      --any: #9ca7ff;
+      --any-soft: #262d5e;
+      --no: #ff8dbb;
+      --no-soft: #4e1c34;
+      --ok: #5fd394;
+      --ok-soft: #173d29;
+      --bad: #ff7d70;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10131a;
+    --surface: #1a1f2a;
+    --ink: #eef1f7;
+    --muted: #8c94a8;
+    --line: #2b313e;
+    --some: #ffb757;
+    --some-soft: #4d3313;
+    --any: #9ca7ff;
+    --any-soft: #262d5e;
+    --no: #ff8dbb;
+    --no-soft: #4e1c34;
+    --ok: #5fd394;
+    --ok-soft: #173d29;
+    --bad: #ff7d70;
+    color-scheme: dark;
+  }
+
+  html { box-sizing: border-box; height: 100%; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--f-body);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    -webkit-tap-highlight-color: transparent;
+    --c: var(--ink);
+    --glow: var(--line);
+  }
+  body[data-mode="some"] { --c: var(--some); --glow: var(--some-soft); }
+  body[data-mode="any"]  { --c: var(--any);  --glow: var(--any-soft); }
+  body[data-mode="no"]   { --c: var(--no);   --glow: var(--no-soft); }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(55% 45% at 50% 46%, color-mix(in srgb, var(--glow) 70%, transparent), transparent 75%);
+    transition: background .4s;
+  }
+
+  #stage {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-block: 56px 104px;
+    overflow-y: auto;
+    text-align: center;
+  }
+  .slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(14px, 2.4vh, 26px);
+    width: 100%;
+    max-width: 1100px;
+    min-width: 0;
+    margin: auto;
+    animation: rise .3s cubic-bezier(.2, .7, .3, 1);
+  }
+  .slide.wide { max-width: 720px; }
+  .slide > * { max-width: 100%; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  p { margin: 0; }
+
+  .xl, .l, .head { font-family: var(--f-disp); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; }
+  .xl { font-size: clamp(2.5rem, 11vw, 7.5rem); }
+  .l  { font-size: clamp(1.8rem, 6.2vw, 4.4rem); }
+  .head { font-size: clamp(1.5rem, 4.6vw, 2.7rem); }
+  .m  { font-size: clamp(1.6rem, 5.2vw, 3.8rem); font-weight: 800; line-height: 1.3; letter-spacing: -0.01em; text-wrap: balance; }
+  .formula {
+    font-size: clamp(1rem, 2.6vw, 1.45rem);
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .03em;
+  }
+  .note { font-size: clamp(.95rem, 2.4vw, 1.25rem); font-weight: 700; color: var(--muted); }
+  .pic { font-family: var(--f-emoji); font-size: clamp(2.8rem, 10vw, 5rem); line-height: 1.1; }
+
+  .k-s { --k: var(--some); --ks: var(--some-soft); }
+  .k-a { --k: var(--any);  --ks: var(--any-soft); }
+  .k-n { --k: var(--no);   --ks: var(--no-soft); }
+  .hl { color: var(--k); background: linear-gradient(transparent 56%, var(--ks) 56%); padding: 0 .05em; border-radius: .12em; }
+  .ok-mark { color: var(--ok); }
+
+  .uk {
+    display: block;
+    text-wrap: balance;
+    font-size: clamp(1.05rem, 2.8vw, 1.7rem);
+    font-weight: 600;
+    color: var(--ink);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .2s, transform .2s, visibility .2s;
+  }
+  .uk.on { visibility: visible; opacity: 1; transform: none; }
+  .uk.sm { display: none; font-size: .78em; font-weight: 600; color: var(--muted); transform: none; }
+  .uk.sm.on { display: block; }
+  .tag {
+    display: inline-block;
+    margin-right: .6em;
+    vertical-align: .15em;
+    font-size: .55em;
+    font-weight: 800;
+    letter-spacing: .12em;
+    padding: .35em .6em;
+    border-radius: 999px;
+    color: var(--c);
+    background: color-mix(in srgb, var(--glow) 80%, transparent);
+  }
+  .hint { font-size: clamp(1rem, 2.6vw, 1.6rem); font-weight: 600; color: var(--muted); }
+
+  /* Rows: picture or sign | word | sentence, one line per word so they compare at a glance. */
+  .rows {
+    display: grid;
+    width: 100%;
+    column-gap: clamp(10px, 2.4vw, 22px);
+    text-align: left;
+    font-size: clamp(1.05rem, 2.7vw, 1.5rem);
+  }
+  .rows.c3 { grid-template-columns: auto auto minmax(0, 1fr); }
+  .rows.c2 { grid-template-columns: auto minmax(0, 1fr); }
+  .row { display: contents; }
+  .cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .2em;
+    min-width: 0;
+    padding-block: .7rem;
+    border-top: 1px solid var(--line);
+  }
+  .row:first-child > .cell { border-top: none; }
+  .lead { align-items: center; }
+  .ic { font-family: var(--f-emoji); font-size: 1.6em; line-height: 1; }
+  .sign {
+    display: grid;
+    place-items: center;
+    width: 1.9em;
+    height: 1.9em;
+    border-radius: 50%;
+    font-weight: 800;
+    color: var(--k);
+    background: var(--ks);
+  }
+  .w { font-family: var(--f-disp); font-weight: 700; white-space: nowrap; }
+  .w small, .map small { display: block; font-size: .72em; margin-top: .1em; }
+  .sen { font-weight: 700; line-height: 1.3; }
+  @media (max-width: 560px) {
+    .rows.c3 { grid-template-columns: auto minmax(0, 1fr); }
+    .rows.c3 .lead { grid-row: span 2; }
+    .rows.c3 .w { padding-bottom: 0; }
+    .rows.c3 .sen { border-top: none; padding-top: .25rem; }
+  }
+
+  /* Word map: some | any | no in three tinted columns. */
+  .map {
+    display: grid;
+    grid-template-columns: auto repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+    font-size: clamp(.85rem, 2.4vw, 1.3rem);
+  }
+  .map > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .2em;
+    min-width: 0;
+    padding: .6em .3em;
+    border-radius: 12px;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .map .cell-m { background: color-mix(in srgb, var(--ks) 45%, var(--surface)); }
+  .map .ch { font-family: var(--f-disp); font-size: 1.2em; color: var(--k); padding-block: .2em; }
+  .map .ch small { font-family: var(--f-body); color: var(--muted); font-size: .6em; }
+  .map .rh { padding-inline: 0 .2em; color: var(--muted); font-size: .8em; }
+  .map .rh .ic { font-size: 1.8em; }
+
+  /* Mistakes: wrong | right side by side. */
+  .fix {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(14px, 3vw, 32px);
+    width: 100%;
+    text-align: left;
+    font-size: clamp(1rem, 2.6vw, 1.45rem);
+  }
+  .fix > div { min-width: 0; padding-block: .75rem; border-top: 1px solid var(--line); font-weight: 700; line-height: 1.3; }
+  .fix > .fh { border-top: none; padding-block: 0 .3rem; font-size: .75em; font-weight: 800; letter-spacing: .1em; }
+  .fh.bad-h { color: var(--bad); }
+  .fh.ok-h { color: var(--ok); }
+  .fix .wrong { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--bad); text-decoration-thickness: .08em; }
+
+  input {
+    font: inherit;
+    color: var(--c);
+    background: transparent;
+    border: none;
+    border-bottom: .07em solid var(--line);
+    border-radius: 0;
+    outline: none;
+    text-align: center;
+    padding: 0 .1em;
+    min-width: 2.5ch;
+    max-width: 100%;
+  }
+  input:focus { border-bottom-color: var(--c); }
+  input.ok { color: var(--ok); border-bottom-color: var(--ok); }
+  input.bad { color: var(--bad); border-bottom-color: var(--bad); animation: shake .3s; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .answer { font-size: clamp(1rem, 2.8vw, 1.7rem); font-weight: 700; color: var(--ok); min-height: 1.4em; }
+
+  .blank { display: inline-block; min-width: 3.5ch; line-height: 1.1; border-bottom: .07em solid var(--line); }
+  .blank.ok { color: var(--ok); border-bottom-color: var(--ok); padding: 0 .1em; }
+
+  .match { display: grid; grid-template-columns: 1fr 1fr; gap: 12px clamp(14px, 4vw, 40px); width: 100%; }
+  .col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .opts { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 12px; width: 100%; }
+  @media (max-width: 560px) { .opts.n3 { grid-template-columns: minmax(0, 1fr); width: min(300px, 100%); } }
+  .tile {
+    font: 700 clamp(1rem, 2.6vw, 1.35rem)/1.2 var(--f-body);
+    color: var(--ink);
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    padding: .7em .6em;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+    transition: border-color .15s, background .15s, opacity .3s;
+  }
+  .opts .tile { padding: .75em .6em; font-size: clamp(1.1rem, 3vw, 1.55rem); }
+  .tile:hover { border-color: var(--muted); }
+  .tile.sel { border-color: var(--c); background: color-mix(in srgb, var(--glow) 50%, var(--surface)); }
+  .tile.done { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); opacity: .6; cursor: default; }
+  .opts .tile.done { opacity: 1; }
+  .tile.bad { color: var(--bad); border-color: var(--bad); animation: shake .3s; }
+  .tile:disabled:not(.done) { opacity: .45; cursor: default; }
+
+  #bar {
+    position: fixed;
+    left: 0;
+    top: env(safe-area-inset-top, 0px);
+    height: 4px;
+    width: 0;
+    background: var(--c);
+    border-radius: 0 4px 4px 0;
+    transition: width .3s, background .3s;
+  }
+  .dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
+  }
+  .dock > * { pointer-events: auto; }
+  .nav {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .nav:hover { border-color: var(--muted); }
+  .nav:disabled { opacity: .35; cursor: default; }
+  #act {
+    font: 700 1rem/1 var(--f-body);
+    letter-spacing: .02em;
+    color: var(--surface);
+    background: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 15px 26px;
+    cursor: pointer;
+  }
+  #act[aria-pressed="true"] { color: var(--ink); background: var(--glow); }
+  #act[hidden] { display: block !important; visibility: hidden; }
+  button:focus-visible { outline: 3px solid var(--c); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<main id="stage" aria-live="polite"></main>
+<div id="bar"></div>
+<div class="dock">
+  <button class="nav" id="prev" aria-label="Back">&#8592;</button>
+  <button id="act" type="button" hidden>Translate</button>
+  <button class="nav" id="next" aria-label="Next">&#8594;</button>
+</div>
+
+<script>
+// Slide kinds: text, rows (picture or sign | word | sentence), map (some | any | no table),
+// fix (wrong | right), pick (tap the right word), fill (type the blank ___), match (connect to Ukrainian).
+// [s:…] some, [a:…] any, [n:…] no: each keeps its colour everywhere.
+const T = (h, uk, size = 'l', pic) => ({ t: 'text', h, uk, size, pic });
+const R = o => ({ t: 'rows', ...o });
+const E = (pic, word, sen, uk) => ({ pic, word, sen, uk });
+const S = (k, sign, word, sen, uk) => ({ k, sign, word, sen, uk });
+const P = (q, o, a, pic) => ({ t: 'pick', q, o, a, pic });
+const F = (q, a, hint, pic) => ({ t: 'fill', q, a: [].concat(a), hint, pic });
+const ONE = ['someone', 'anyone', 'no one'], THING = ['something', 'anything', 'nothing'], WHERE = ['somewhere', 'anywhere', 'nowhere'];
+const cap = a => a.map(w => w[0].toUpperCase() + w.slice(1));
+
+const parts = [
+  ['mix', [
+    T('[s:some] · [a:any] · [n:no]', 'хтось, щось, десь, ніхто, нічого… Як не плутати?', 'xl'),
+    R({ pic: '☕', head: 'The rule', uk: '+ → some · ? → any · – → not any = no', rows: [
+      S('s', '+', '[s:some]', 'I have [s:some] tea.', 'У мене є чай.'),
+      S('a', '?', '[a:any]', 'Do you have [a:any] tea?', 'У тебе є чай?'),
+      S('a', '–', 'not … [a:any]', "I don't have [a:any] tea.", 'У мене немає чаю.'),
+      S('n', '–', '[n:no]', 'I have [n:no] tea.', 'У мене немає чаю.'),
+    ] }),
+    { t: 'map', head: 'Word map', uk: 'Однакові закінчення: -one / -body = хто, -thing = що, -where = де', rows: [
+      ['🍎', 'noun', 'іменник', [['[s:some]', 'трохи, кілька'], ['[a:any]', 'якийсь? · жодного'], ['[n:no]', 'жодного']]],
+      ['👤', 'person', 'людина', [['[s:some]one<small>[s:some]body</small>', 'хтось'], ['[a:any]one<small>[a:any]body</small>', 'хтось? · нікого'], ['[n:no] one<small>[n:no]body</small>', 'ніхто']]],
+      ['📦', 'thing', 'річ', [['[s:some]thing', 'щось'], ['[a:any]thing', 'щось? · нічого'], ['[n:no]thing', 'нічого']]],
+      ['📍', 'place', 'місце', [['[s:some]where', 'десь, кудись'], ['[a:any]where', 'десь? · ніде'], ['[n:no]where', 'ніде, нікуди']]],
+    ] },
+  ]],
+  ['some', [
+    R({ head: '[s:some] family', sub: '+ positive sentences', uk: 'some… — у стверджувальних реченнях', rows: [
+      E('☕', '[s:some]', 'I want [s:some] tea.', 'Я хочу чаю.'),
+      E('🚪', '[s:some]one<small>[s:some]body</small>', '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
+      E('🍕', '[s:some]thing', 'I want [s:some]thing to eat.', 'Я хочу щось поїсти.'),
+      E('🗺️', '[s:some]where', "Let's go [s:some]where!", 'Ходімо кудись!'),
+    ] }),
+  ]],
+  ['any', [
+    R({ head: '[a:any] family', sub: '? questions · – with not', uk: 'any… — у питаннях і з not', rows: [
+      E('💸', '[a:any]', "I don't have [a:any] money.", 'У мене немає грошей.'),
+      E('👋', '[a:any]one<small>[a:any]body</small>', 'Is [a:any]one here?', 'Тут хтось є?'),
+      E('🛒', '[a:any]thing', 'Do you need [a:any]thing?', 'Тобі щось потрібно?'),
+      E('🔑', '[a:any]where', "I can't find my keys [a:any]where.", 'Я ніде не можу знайти ключі.'),
+    ] }),
+  ]],
+  ['no', [
+    R({ head: '[n:no] family', sub: '– no = not any', note: '[n:no] one = 2 words', uk: 'no вже означає «не», тому дієслово без not!', rows: [
+      E('⏰', '[n:no]', 'I have [n:no] time.', 'У мене немає часу.'),
+      E('🤷', '[n:no] one<small>[n:no]body</small>', '[n:No]body knows.', 'Ніхто не знає.'),
+      E('😴', '[n:no]thing', 'I have [n:no]thing to do.', 'Мені нема чого робити.'),
+      E('💺', '[n:no]where', "There's [n:no]where to sit.", 'Нема де сісти.'),
+    ] }),
+  ]],
+  ['mix', [
+    R({ pic: '🚪', head: 'Compare', rows: [
+      S('s', '+', null, "There's [s:some]one at the door.", 'За дверима хтось є.'),
+      S('a', '?', null, 'Is there [a:any]one at the door?', 'За дверима хтось є?'),
+      S('a', '–', null, "There isn't [a:any]one at the door.", 'За дверима нікого немає.'),
+      S('n', '–', null, "There's [n:no] one at the door.", 'За дверима нікого немає.'),
+    ] }),
+    R({ pic: '🎒', head: 'Compare', rows: [
+      S('s', '+', null, "There's [s:some]thing in my bag.", 'У моїй сумці щось є.'),
+      S('a', '?', null, 'Is there [a:any]thing in your bag?', 'У твоїй сумці щось є?'),
+      S('a', '–', null, "There isn't [a:any]thing in my bag.", 'У моїй сумці нічого немає.'),
+      S('n', '–', null, "There's [n:no]thing in my bag.", 'У моїй сумці нічого немає.'),
+    ] }),
+    R({ pic: '💺', head: 'Compare', rows: [
+      S('s', '+', null, "There's [s:some]where to sit.", 'Тут є де сісти.'),
+      S('a', '?', null, 'Is there [a:any]where to sit?', 'Тут є де сісти?'),
+      S('a', '–', null, "There isn't [a:any]where to sit.", 'Тут нема де сісти.'),
+      S('n', '–', null, "There's [n:no]where to sit.", 'Тут нема де сісти.'),
+    ] }),
+  ]],
+  ['some', [
+    T('Would you like<br>[s:some]thing to drink?', 'Хочеш щось попити? Коли щось пропонуєш — some, навіть у питанні.', 'm', '🥤'),
+  ]],
+  ['mix', [
+    { t: 'fix', head: 'Common mistakes', uk: 'Типові помилки', rows: [
+      ["I don't know nobody.", "I don't know [a:any]body.", 'Я нікого не знаю. В англійській — тільки одне «не».'],
+      ["I don't have nothing.", "I don't have [a:any]thing.", 'У мене нічого немає.'],
+      ['I have any money.', 'I have [s:some] money.', 'У мене є гроші. (+) → some'],
+      ['noone', '[n:no] one', 'no one — два слова'],
+    ] },
+    P('Listen! ___ is singing.', cap(ONE), 'Someone', '🎤'),
+    P('Is ___ at home? Hello?', ONE, 'anyone', '🏠'),
+    P("I don't know ___ at this party.", ONE, 'anyone', '🎉'),
+    P("I'm hungry. I want ___ to eat.", THING, 'something', '🍔'),
+    P("The fridge is empty. There's ___ in it.", THING, 'nothing', '🍽️'),
+    P("I don't have ___ money.", ['some', 'any', 'no'], 'any', '💸'),
+    P('Did you go ___ on Sunday?', WHERE, 'anywhere', '🗓️'),
+    P("There's ___ to sit. Let's stand.", WHERE, 'nowhere', '💺'),
+    F('___ is calling you.', ['someone', 'somebody'], 'хтось', '📱'),
+    F('Do you need ___?', 'anything', 'щось', '🛒'),
+    F("I don't need ___.", 'anything', 'нічого', '🙅'),
+    F('___ knows.', ['nobody', 'no one'], 'ніхто', '🤷'),
+    F("I can't find my keys ___.", 'anywhere', 'ніде', '🔑'),
+    { t: 'match', pairs: [
+      ['someone', 'хтось'],
+      ['something', 'щось'],
+      ['somewhere', 'десь'],
+      ['nobody', 'ніхто'],
+      ['nothing', 'нічого'],
+      ['nowhere', 'ніде'],
+    ] },
+    R({ head: 'Learn by heart', uk: "Вивчи напам'ять", rows: [
+      E('🚪', null, '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
+      E('🍕', null, 'I want [s:some]thing to eat.', 'Я хочу щось поїсти.'),
+      E('👋', null, 'Is [a:any]one here?', 'Тут хтось є?'),
+      E('🛒', null, 'Do you need [a:any]thing?', 'Тобі щось потрібно?'),
+      E('🔑', null, "I can't find it [a:any]where.", 'Я ніде не можу це знайти.'),
+      E('🤷', null, '[n:No]body knows.', 'Ніхто не знає.'),
+    ] }),
+    T('Great job!', 'Молодець!', 'xl'),
+  ]],
+];
+const slides = parts.flatMap(([mode, list]) => list.map(s => ({ ...s, mode })));
+
+const $ = s => document.querySelector(s);
+const stage = $('#stage'), bar = $('#bar'), act = $('#act'), prev = $('#prev'), next = $('#next');
+const hl = (k, w) => `<span class="hl k-${k}">${w}</span>`;
+const fmt = h => h.replace(/\[([a-z]):([^\]]+)\]/g, (_, k, w) => hl(k, w));
+const norm = s => s.toLowerCase().replace(/[’‘`]/g, "'").replace(/-/g, ' ').replace(/[.?!,]+$/g, '').replace(/\s+/g, ' ').trim();
+const shuffle = a => { for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
+const ukLine = s => s.uk ? `<p class="uk" lang="uk"><span class="tag">UA</span>${s.uk}</p>` : '';
+const ukSm = t => t ? `<span class="uk sm" lang="uk">${t}</span>` : '';
+const picEl = s => s.pic ? `<p class="pic" aria-hidden="true">${s.pic}</p>` : '';
+const headEl = s => (s.head ? `<p class="head">${fmt(s.head)}</p>` : '') + (s.sub ? `<p class="formula">${fmt(s.sub)}</p>` : '');
+
+let i = 0;
+let onAct = null;
+
+function setAct(label, fn, pressed) {
+  act.hidden = !fn;
+  act.textContent = label || '';
+  act.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+  onAct = fn;
+}
+
+function toggleUk() {
+  const els = stage.querySelectorAll('.uk');
+  if (!els.length) return;
+  const on = !els[0].classList.contains('on');
+  els.forEach(el => el.classList.toggle('on', on));
+  setAct(on ? 'Hide' : 'Translate', toggleUk, on);
+}
+
+// Shrink a line only when one long word is wider than the screen.
+function fit() {
+  stage.querySelectorAll('.xl, .l, .m, .head').forEach(el => {
+    el.style.fontSize = '';
+    if (el.scrollWidth > el.clientWidth + 1) {
+      const fs = parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize = Math.max(14, fs * el.clientWidth / el.scrollWidth * 0.97) + 'px';
+    }
+  });
+}
+
+function renderRows(s) {
+  const c3 = s.rows.some(r => r.word);
+  const rows = s.rows.map(r => {
+    const lead = r.sign ? `<span class="sign k-${r.k}">${r.sign}</span>` : `<span class="ic" aria-hidden="true">${r.pic}</span>`;
+    const word = c3 ? `<div class="cell w"><span>${fmt(r.word || '')}</span></div>` : '';
+    return `<div class="row"><div class="cell lead">${lead}</div>${word}<div class="cell sen"><span>${fmt(r.sen)}</span>${ukSm(r.uk)}</div></div>`;
+  }).join('');
+  const note = s.note ? `<p class="note">${fmt(s.note)}</p>` : '';
+  stage.innerHTML = `<div class="slide wide">${picEl(s)}${headEl(s)}<div class="rows ${c3 ? 'c3' : 'c2'}">${rows}</div>${note}${ukLine(s)}</div>`;
+}
+
+function renderMap(s) {
+  const cols = [['s', 'some', '+'], ['a', 'any', '? · not'], ['n', 'no', '–']];
+  const head = '<div></div>' + cols.map(([k, w, sign]) => `<div class="ch k-${k}">${w}<small>${sign}</small></div>`).join('');
+  const rows = s.rows.map(([e, label, ua, cells]) =>
+    `<div class="rh"><span class="ic" aria-hidden="true">${e}</span>${label}${ukSm(ua)}</div>` +
+    cells.map(([en, u], n) => `<div class="cell-m k-${cols[n][0]}"><span>${fmt(en)}</span>${ukSm(u)}</div>`).join('')).join('');
+  stage.innerHTML = `<div class="slide wide">${headEl(s)}<div class="map">${head}${rows}</div>${ukLine(s)}</div>`;
+}
+
+function renderFix(s) {
+  const rows = s.rows.map(([bad, good, ua]) => `<div class="wrong">${bad}</div><div>${fmt(good)} <span class="ok-mark">✓</span>${ukSm(ua)}</div>`).join('');
+  stage.innerHTML = `<div class="slide wide">${headEl(s)}<div class="fix"><div class="fh bad-h">✗ WRONG</div><div class="fh ok-h">✓ RIGHT</div>${rows}</div>${ukLine(s)}</div>`;
+}
+
+function render() {
+  const s = slides[i];
+  document.body.dataset.mode = s.mode;
+  bar.style.width = ((i + 1) / slides.length * 100) + '%';
+  prev.disabled = i === 0;
+  next.disabled = i === slides.length - 1;
+  setAct(null, null);
+  stage.scrollTop = 0;
+
+  if (s.t === 'text') {
+    stage.innerHTML = `<div class="slide">${picEl(s)}<p class="${s.size}">${fmt(s.h)}</p>${ukLine(s)}</div>`;
+  } else if (s.t === 'rows') {
+    renderRows(s);
+  } else if (s.t === 'map') {
+    renderMap(s);
+  } else if (s.t === 'fix') {
+    renderFix(s);
+  } else if (s.t === 'fill') {
+    renderFill(s);
+  } else if (s.t === 'pick') {
+    renderPick(s);
+  } else if (s.t === 'match') {
+    renderMatch(s);
+  }
+  if (s.t !== 'fill' && stage.querySelector('.uk')) setAct('Translate', toggleUk, false);
+  fit();
+}
+
+function renderPick(s) {
+  const q = fmt(s.q).replace('___', '<span class="blank" id="blank"></span>');
+  const opts = s.o.map(o => `<button type="button" class="tile opt">${o}</button>`).join('');
+  stage.innerHTML = `<div class="slide wide">${picEl(s)}<p class="m">${q}</p><div class="opts n${s.o.length}" style="--n:${s.o.length}">${opts}</div></div>`;
+  const blank = $('#blank'), btns = [...stage.querySelectorAll('.opt')];
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (b.disabled) return;
+    if (b.textContent === s.a) {
+      blank.textContent = s.a;
+      blank.classList.add('ok');
+      b.classList.add('done');
+      btns.forEach(x => { x.disabled = true; });
+      setAct('Next →', () => go(1));
+      setTimeout(() => { if (b.isConnected) go(1); }, 1100);
+    } else {
+      b.classList.add('bad');
+      b.disabled = true;
+    }
+  }));
+}
+
+function renderFill(s) {
+  const whole = s.q === '___';
+  const len = Math.max(...s.a.map(x => x.length)) + 1;
+  const width = whole ? 'min(22ch, 100%)' : len + 'ch';
+  const input = `<input id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Your answer" style="width:${width}">`;
+  const hint = s.hint ? `<p class="hint">(${s.hint})</p>` : '';
+  stage.innerHTML = `<div class="slide${whole ? ' wide' : ''}">${picEl(s)}<p class="m">${s.q.replace('___', input)}</p>${hint}<p class="answer" id="ans"></p></div>`;
+
+  const el = $('#in');
+  let tries = 0, done = false;
+  const check = () => {
+    if (done) return go(1);
+    if (!el.value.trim()) return el.focus();
+    if (s.a.some(a => norm(a) === norm(el.value))) {
+      done = true;
+      el.className = 'ok';
+      el.readOnly = true;
+      setAct('Next →', check);
+      setTimeout(() => { if (el.isConnected) go(1); }, 1000);
+    } else {
+      tries++;
+      el.className = '';
+      void el.offsetWidth;
+      el.className = 'bad';
+      if (tries >= 2) $('#ans').textContent = s.a[0];
+      el.focus();
+    }
+  };
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+  el.addEventListener('input', () => { if (!done) el.className = ''; });
+  setAct('Check', check);
+  setTimeout(() => el.focus({ preventScroll: true }), 60);
+}
+
+function renderMatch(s) {
+  const tiles = (side, k) => shuffle(s.pairs.map((p, n) => ({ n, w: p[k] })))
+    .map(o => `<button type="button" class="tile" data-side="${side}" data-n="${o.n}">${o.w}</button>`).join('');
+  stage.innerHTML = `<div class="slide wide"><div class="match"><div class="col">${tiles('en', 0)}</div><div class="col" lang="uk">${tiles('ua', 1)}</div></div></div>`;
+
+  let sel = null, matched = 0;
+  stage.querySelectorAll('.tile').forEach(t => t.addEventListener('click', () => {
+    if (t.classList.contains('done')) return;
+    t.classList.remove('bad');
+    if (!sel || sel.dataset.side === t.dataset.side) {
+      if (sel) sel.classList.remove('sel');
+      sel = sel === t ? null : t;
+      if (sel) sel.classList.add('sel');
+      return;
+    }
+    const a = sel, b = t;
+    sel = null;
+    a.classList.remove('sel');
+    if (a.dataset.n === b.dataset.n) {
+      [a, b].forEach(x => { x.classList.remove('bad'); x.classList.add('done'); x.disabled = true; });
+      if (++matched === s.pairs.length) setTimeout(() => { if (a.isConnected) go(1); }, 900);
+    } else {
+      [a, b].forEach(x => { x.classList.remove('bad'); void x.offsetWidth; x.classList.add('bad'); });
+    }
+  }));
+}
+
+function go(d) {
+  const n = i + d;
+  if (n < 0 || n >= slides.length) return;
+  i = n;
+  render();
+}
+
+prev.onclick = () => go(-1);
+next.onclick = () => go(1);
+act.onclick = () => onAct && onAct();
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) return;
+  if (slides[i].t === 'pick' && /^[1-9]$/.test(e.key)) {
+    const b = stage.querySelectorAll('.opt')[+e.key - 1];
+    if (b) b.click();
+    return;
+  }
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); go(1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(-1);
+  else if (e.key === 't' || e.key === 'T') toggleUk();
+});
+
+stage.addEventListener('click', e => {
+  if (e.target.closest('button, input')) return;
+  if (slides[i].t === 'match' || slides[i].t === 'pick') return;
+  const inp = $('#in');
+  if (inp && !inp.readOnly) return inp.focus();
+  go(e.clientX < innerWidth / 3 ? -1 : 1);
+});
+
+let x0 = null, y0 = null;
+document.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+  x0 = null;
+});
+
+addEventListener('resize', fit);
+document.fonts?.ready.then(fit);
+
+function start(data) {
+  i = Math.min(Math.max(0, data.i | 0), slides.length - 1);
+  render();
+}
+window.claude?.hot?.snapshot?.(() => ({ i }));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
