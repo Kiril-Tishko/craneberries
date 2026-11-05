@@ -89,8 +89,13 @@ const body = {
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`;
   },
 
+  // Pairs with an emoji render as full-width rows: big emoji beside the word.
+  // In the word, [DE]sert highlights the stressed syllable.
   pron: (c) => `
-    <div class="pairs">${c.pairs.map((p) => `
+    ${c.label ? `<div class="flabel" style="margin-top:18px">${esc(c.label)}</div>` : ''}
+    <div class="${c.pairs.some((p) => p.emoji) ? 'prows' : 'pairs'}">${c.pairs.map((p) => p.emoji ? `
+      <div class="prow"><span class="pemo">${esc(p.emoji)}</span>
+        <div><div class="pw${p.word.includes('[') ? ' stress' : ''}">${mark(p.word)}</div><div class="ptip">${esc(p.tip)}</div></div></div>` : `
       <div class="pair"><div class="pw">${mark(p.word)}</div>${p.ipa ? `<div class="ipa">${esc(p.ipa)}</div>` : ''}
         <div class="ptip">${esc(p.tip)}</div></div>`).join('')}</div>
     ${c.family ? `<p class="family">${esc(c.family)}</p>` : ''}
@@ -162,6 +167,12 @@ const html = `<!doctype html>
   .pw .hl, .pair:first-child .pw .hl{color:var(--ink)}
   .ipa{font-family:"DejaVu Sans",sans-serif;font-size:18px;color:var(--muted);margin-top:6px}
   .ptip{font-size:16px;line-height:1.35;margin-top:10px}
+  .prows{margin-top:10px;display:grid;gap:10px}
+  .prow{background:var(--tile);border-radius:16px;padding:16px;display:flex;gap:16px;align-items:center}
+  .pemo{font-size:56px;line-height:1;font-family:"Noto Color Emoji",sans-serif;flex:none}
+  .pw.stress{font-weight:500;color:var(--ink)}
+  .pw.stress .hl{font-weight:800}
+  .prow .ptip{font-size:18px;margin-top:6px}
   .family{margin-top:14px;font-size:16.5px;line-height:1.45}
   .practice{margin-top:16px;border-top:1.5px solid var(--line);padding-top:14px}
   .say{font-size:22px;font-weight:700;padding:7px 0}

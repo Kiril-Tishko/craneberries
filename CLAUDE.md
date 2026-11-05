@@ -38,7 +38,7 @@ in the teacher report.
 - **"Say it like this"**: plain, everyday sentences from the lesson. Skip idioms, slang and jokes
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
-  Highlight the two words in yellow (`[word]`), in the tiles and in the practice sentences.
+  Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time).
@@ -64,7 +64,9 @@ studentCards[] one of:
                     irregular verbs: all 3 forms, highlight the column the lesson needs, emojis, no subtitle
   {type: "forms",   kicker, title, sub, items[{base, pp}], examples[]}   (older two-form version)
   {type: "fixes",   kicker, title, sub, items[{wrong, right, why}]}
-  {type: "pron",    kicker, title, sub, pairs[{word, ipa, tip}], family, also{label, lines[]}, practice[]}
+  {type: "pron",    kicker, title, label, pairs[{emoji, word, tip}], practice[]}
+                    with emoji: full-width rows, big emoji beside the word. Mark the stressed syllable
+                    ([DE]sert, des[SERT]) in the word and in the practice sentences. No IPA on cards.
 ```
 In `grammar` and `forms` text, `[used to]` marks a highlighted span. When a lesson covers two grammar
 points, give each its own grammar card.
