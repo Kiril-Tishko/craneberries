@@ -45,7 +45,7 @@ const body = {
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</li>`).join('')}</ol>`,
 
   phrases: (c) => `<ol class="phrases">${c.items.map((p) => `
-    <li><span class="ph">${esc(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</li>`).join('')}</ol>`,
+    <li><span class="ph">${mark(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</li>`).join('')}</ol>`,
 
   grammar: (c) => `
     <div class="rule"><span class="hl">${esc(c.rule)}</span><span class="rule-ua">= ${esc(c.ruleUa)}</span></div>

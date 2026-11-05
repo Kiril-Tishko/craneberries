@@ -68,7 +68,9 @@ studentCards[] one of:
                     with emoji: full-width rows, big emoji beside the word. Mark the stressed syllable
                     ([DE]sert, des[SERT]) in the word and in the practice sentences. No IPA on cards.
 ```
-In `grammar` and `forms` text, `[used to]` marks a highlighted span. When a lesson covers two grammar
+In `grammar`, `forms` and `phrases` text, `[used to]` marks a highlighted span (e.g. the articles in
+"Our designer sent us [a] new project"). When the teacher already had a good presentation on the topic,
+skip the cheat sheet and use the student's own corrected sentences instead. When a lesson covers two grammar
 points, give each its own grammar card.
 
 ## Site
