@@ -51,7 +51,7 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.01em;text-wrap:balance;marg
 h1{font-size:clamp(28px, 5vw, 38px);line-height:1.1}
 h2{font-size:22px;line-height:1.2}
 h3{font-size:18px}
-.lede{color:var(--muted);max-width:62ch;margin:8px 0 0}
+.lede{color:var(--muted);max-width:62ch;margin:6px 0 0}
 .stack{display:flex;flex-direction:column;gap:28px}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
 .muted{color:var(--muted)}
@@ -146,6 +146,23 @@ td.en{font-weight:600}
 .check input{accent-color:var(--green)}
 .callout{background:var(--sunk);border-radius:10px;padding:10px 14px;font-size:14.5px;color:var(--muted)}
 
+.shead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.scard-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.when{font-weight:600;color:var(--accent);font-size:14.5px}
+.cnt{font-size:12.5px;font-weight:600;color:var(--muted)}
+.tab .cnt{font-weight:500}
+h2.sec{margin-bottom:12px}
+.flist{list-style:none;margin:0;padding:0}
+.flist li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+.flist li:first-child{border-top:0;padding-top:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:4px}
+.meta .note{margin:0}
+.sum{margin:0 0 12px;max-width:70ch}
+.mlist.plain > li{grid-template-columns:minmax(0,1fr)}
+.mlist .done .said,.mlist .done .better{opacity:.5}
+.tcell{width:1%;white-space:nowrap;text-align:right}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width: 760px){ .cols3{grid-template-columns:minmax(0,1fr)} }
 .empty{text-align:left;max-width:560px;padding:32px 0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);
   padding:10px 16px;border-radius:10px;font-size:14.5px;z-index:20;max-width:calc(100% - 32px)}
@@ -171,8 +188,7 @@ td.en{font-weight:600}
 </header>
 <main class="wrap" id="main">
   <div class="empty">
-    <h1>Loading reports…</h1>
-    <p class="lede">Your students, their lesson reports, and notes on your own teaching appear here.</p>
+    <h1>Loading…</h1>
   </div>
 </main>
 <div class="toast" id="toast" hidden></div>
@@ -220,169 +236,121 @@ td.en{font-weight:600}
   }
 
   // ---------- views ----------
+  const list = (xs) => `<ul class="bullets">${arr(xs).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  const fix = (said, better) => `<span class="said">${esc(said)}</span><span class="better">${esc(better)}</span>`;
+  const tick = (lid, key, id, done) => `<input type="checkbox" id="${key}-${esc(lid)}-${esc(id)}" data-lid="${esc(lid)}" data-key="${key}" data-id="${esc(id)}" ${done ? 'checked' : ''} aria-label="${key === 'sent' ? 'Sent' : 'Discussed'}">`;
+  const ts = (xs) => arr(xs).map((t) => `<span class="ts">${esc(t)}</span>`).join('');
+
   function viewHome() {
-    const list = Object.values(S.students).sort((a, b) => String(a.name).localeCompare(String(b.name)));
-    const tp = S.teacher;
-    if (!list.length) {
-      return `<div class="empty"><div class="eyebrow">Students</div><h1>No students yet</h1>
-        <p class="lede">Send Claude a lesson transcript in chat. It adds the student, the lesson report, the student cards and notes on your teaching here.</p></div>`;
-    }
-    const cards = list.map((s) => {
-      const ls = lessonsOf(s.id);
-      const last = ls[0];
+    const students = Object.values(S.students).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    if (!students.length) return `<div class="empty"><h1>No students yet</h1><p class="lede">Send Claude a lesson transcript to add one.</p></div>`;
+    return `<h1>Students</h1><div class="students">${students.map((s) => {
+      const last = lessonsOf(s.id)[0];
       const focus = arr(s.focus).filter((f) => f.status !== 'fixed').slice(0, 3);
       return `<a class="scard" href="#s-${esc(s.id)}">
-        <div class="chips"><span class="chip">${esc(s.level || 'Level not set')}</span></div>
-        <div class="name">${esc(s.name)}</div>
-        <div class="muted small">${ls.length} lesson${ls.length === 1 ? '' : 's'}${last ? ` · last on ${esc(fmtDate(last.date))}` : ''}</div>
-        ${focus.length ? `<div><div class="eyebrow" style="margin-bottom:4px">Working on</div><ul>${focus.map((f) => `<li>${esc(f.issue)}</li>`).join('')}</ul></div>` : ''}
-        <span class="open">Open report →</span></a>`;
-    }).join('');
-    return `<div class="eyebrow">Students</div><h1>Your students</h1>
-      <p class="lede">One report per lesson, built from the transcript. Open a student to see what to cover next time.</p>
-      <div class="students">${cards}</div>
-      ${tp ? `<div class="panel" style="margin-top:28px"><div class="panel-h"><h2>Your current focus</h2><a href="#teaching" class="small">All teaching notes →</a></div>
-        <div class="cols"><div><div class="group-h">Your English</div><ul class="bullets">${arr(tp.englishFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
-        <div><div class="group-h">Your teaching</div><ul class="bullets">${arr(tp.teachingFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div></div>` : ''}`;
+        <div class="scard-h"><span class="name">${esc(s.name)}</span>${s.level ? `<span class="chip">${esc(s.level)}</span>` : ''}</div>
+        <div class="muted small">${last ? `Last: ${esc(fmtDate(last.date))}` : 'No lessons yet'}${last && last.nextWhen ? ` · Next: ${esc(last.nextWhen)}` : ''}</div>
+        ${focus.length ? `<ul>${focus.map((f) => `<li>${esc(f.issue)}</li>`).join('')}</ul>` : ''}</a>`;
+    }).join('')}</div>`;
   }
 
   function viewStudent(sid) {
     const s = S.students[sid];
-    if (!s) {
-      return `<a class="back" href="#students">← All students</a><div class="empty"><h1>Student not found</h1>
-        <p class="lede">This link points to a student who isn’t in the notebook.</p></div>`;
-    }
+    if (!s) return `<a class="back" href="#students">← Students</a><div class="empty"><h1>Student not found</h1></div>`;
     const ls = lessonsOf(sid);
     const latest = ls[0];
     if (latest && UI.open.size === 0 && !UI.touched) UI.open.add(latest.id);
 
-    const profile = `<div class="profile">
-      <div><div class="eyebrow">Student</div><h1>${esc(s.name)}</h1>
-        ${s.about ? `<p class="lede">${esc(s.about)}</p>` : ''}
-        ${arr(s.interests).length ? `<div class="chips" style="margin-top:12px">${arr(s.interests).map((i) => `<span class="chip">${esc(i)}</span>`).join('')}</div>` : ''}</div>
-      <dl class="facts panel">
-        <dt>Level</dt><dd>${esc(s.level || '—')}</dd>
-        <dt>First language</dt><dd>${esc(s.l1 || '—')}</dd>
-        <dt>Lessons</dt><dd>${ls.length}</dd>
-        <dt>Last lesson</dt><dd>${latest ? esc(fmtDate(latest.date, true)) : '—'}</dd>
-      </dl></div>`;
+    const head = `<div><div class="shead"><h1>${esc(s.name)}</h1>${s.level ? `<span class="chip">${esc(s.level)}</span>` : ''}</div>
+      ${s.about ? `<p class="lede">${esc(s.about)}</p>` : ''}</div>`;
 
     let next = '';
     if (latest) {
       const st = stateOf(latest.id);
-      const talk = arr(latest.mistakes).filter((m) => m.priority === 'high');
-      const pron = arr(latest.pronunciation).filter((p) => p.confidence === 'clear');
-      const rest = arr(latest.mistakes).length - talk.length;
       const items = [
-        ...pron.map((p) => ({ id: p.id, said: p.issue, better: p.tip, area: 'Pronunciation', plain: true })),
-        ...talk.map((m) => ({ id: m.id, said: m.said, better: m.better, area: m.cat, count: m.count })),
+        ...arr(latest.pronunciation).filter((p) => p.confidence === 'clear')
+          .map((p) => ({ id: p.id, html: `<span class="issue">${esc(p.issue)}</span><span class="small muted">${esc(p.tip)}</span>` })),
+        ...arr(latest.mistakes).filter((m) => m.priority === 'high')
+          .map((m) => ({ id: m.id, count: m.count, html: fix(m.said, m.better) })),
       ];
       const total = arr(latest.nextLesson).reduce((a, b) => a + (Number(b.min) || 0), 0);
-      next = `<section class="panel"><div class="panel-h"><h2>Next lesson</h2>
-          <span class="muted small">From the ${esc(fmtDate(latest.date))} lesson</span></div>
-        ${latest.nextWhen ? `<p class="callout" style="margin:0 0 16px"><b>${esc(latest.nextWhen)}</b></p>` : ''}
+      next = `<section class="panel"><div class="panel-h"><h2>Next lesson</h2>${latest.nextWhen ? `<span class="when">${esc(latest.nextWhen)}</span>` : ''}</div>
         <div class="next">
-          <div><div class="group-h">Talk about</div><ul class="todo">${items.map((it) => {
+          <div><div class="group-h">Go over</div><ul class="todo">${items.map((it) => {
             const done = st.discussed && st.discussed[it.id];
-            return `<li class="${done ? 'done' : ''}"><input type="checkbox" id="d-${esc(latest.id)}-${esc(it.id)}" data-lid="${esc(latest.id)}" data-key="discussed" data-id="${esc(it.id)}" ${done ? 'checked' : ''} aria-label="Discussed">
-              <label class="pair" for="d-${esc(latest.id)}-${esc(it.id)}"><span class="chips"><span class="chip">${esc(it.area)}</span>${it.count > 1 ? `<span class="chip">×${esc(it.count)}</span>` : ''}</span>
-              <span class="${it.plain ? 'issue' : 'said'}">${esc(it.said)}</span><span class="${it.plain ? 'small' : 'better'}">${esc(it.better)}</span></label></li>`;
-          }).join('')}</ul>
-          ${rest > 0 ? `<p class="note">${rest} more mistakes are in the lesson report below.</p>` : ''}</div>
+            return `<li class="${done ? 'done' : ''}">${tick(latest.id, 'discussed', it.id, done)}
+              <label class="pair" for="discussed-${esc(latest.id)}-${esc(it.id)}">${it.html}${it.count > 1 ? `<span class="cnt">×${esc(it.count)}</span>` : ''}</label></li>`;
+          }).join('')}</ul></div>
           <div><div class="group-h">Plan${total ? ` · ${total} min` : ''}</div><ol class="plan">${arr(latest.nextLesson).map((p) => `
             <li><span class="min">${esc(p.min)}′</span><div><b>${esc(p.title)}</b><span>${esc(p.detail)}</span></div></li>`).join('')}</ol></div>
         </div></section>`;
     }
 
     const focus = arr(s.focus);
-    const tracker = focus.length ? `<section class="panel"><div class="panel-h"><h2>Focus tracker</h2>
-        <span class="muted small">Patterns across lessons</span></div>
-      <div class="table-wrap"><table><thead><tr><th>Issue</th><th>Area</th><th>Status</th><th>Seen</th><th>Note</th></tr></thead><tbody>
-      ${focus.map((f) => `<tr><td class="en">${esc(f.issue)}</td><td>${esc(f.area)}</td><td><span class="chip ${esc(f.status)}">${esc(f.status)}</span></td>
-        <td class="small">${arr(f.seen).map((d) => esc(fmtDate(d))).join(', ')}</td><td class="muted small">${esc(f.note)}</td></tr>`).join('')}
-      </tbody></table></div></section>` : '';
+    const tracker = focus.length ? `<section class="panel"><h2 class="sec">Working on</h2><ul class="flist">${focus.map((f) => `
+      <li><span>${esc(f.issue)}</span>${f.status && f.status !== 'new' ? `<span class="chip ${esc(f.status)}">${esc(f.status)}</span>` : ''}</li>`).join('')}</ul></section>` : '';
 
-    const lessons = `<section><div class="panel-h"><h2>Lesson reports</h2><span class="muted small">Newest first</span></div>
-      ${ls.length ? ls.map(lessonBlock).join('') : '<p class="muted">No lessons yet.</p>'}</section>`;
-
-    return `<a class="back" href="#students">← All students</a><div class="stack">${profile}${next}${tracker}${lessons}</div>`;
+    const lessons = `<section><h2 class="sec">Lessons</h2>${ls.length ? ls.map(lessonBlock).join('') : '<p class="muted">No lessons yet.</p>'}</section>`;
+    return `<a class="back" href="#students">← Students</a><div class="stack">${head}${next}${tracker}${lessons}</div>`;
   }
 
-  const TABS = [
-    ['overview', 'Overview'], ['mistakes', 'Mistakes'], ['words', 'Words'],
-    ['pron', 'Pronunciation'], ['cards', 'Student cards'], ['teacher', 'My teaching'],
-  ];
+  const TABS = [['overview', 'Overview'], ['mistakes', 'Mistakes'], ['words', 'Words'], ['pron', 'Sounds'], ['cards', 'Cards'], ['teacher', 'My teaching']];
 
   function lessonBlock(l) {
     const tab = UI.tab[l.id] || 'overview';
     const counts = { mistakes: arr(l.mistakes).length, words: arr(l.words).length, pron: arr(l.pronunciation).length, cards: arr(l.cards).length };
     return `<details class="lesson" data-lid="${esc(l.id)}" ${UI.open.has(l.id) ? 'open' : ''}>
-      <summary><span class="ldate">${esc(fmtDate(l.date, true))}</span>
-        <span class="lmeta">${l.durationMin ? `${esc(l.durationMin)} min · ` : ''}${esc(arr(l.topics).slice(0, 3).join(' · '))}</span></summary>
+      <summary><span class="ldate">${esc(fmtDate(l.date, true))}</span><span class="lmeta">${esc(arr(l.topics).slice(0, 3).join(' · '))}</span></summary>
       <div class="tabs" role="tablist">${TABS.map(([k, label]) => `<button class="tab" role="tab" type="button" id="tab-${esc(l.id)}-${k}"
-        aria-selected="${tab === k}" data-lid="${esc(l.id)}" data-tab="${k}">${label}${counts[k] != null ? ` (${counts[k]})` : ''}</button>`).join('')}</div>
+        aria-selected="${tab === k}" data-lid="${esc(l.id)}" data-tab="${k}">${label}${counts[k] ? ` <span class="cnt">${counts[k]}</span>` : ''}</button>`).join('')}</div>
       <div class="tabpanel" role="tabpanel">${panel(l, tab)}</div></details>`;
   }
 
   function panel(l, tab) {
     const st = stateOf(l.id);
     if (tab === 'overview') {
-      return `<div class="cols"><div>
-          <div class="group-h">Summary</div><p style="margin:0">${esc(l.summary)}</p>
-          ${l.talk ? `<p class="note">${esc(l.talk)}</p>` : ''}
-          <div class="group-h">Topics</div><div class="chips">${arr(l.topics).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
-          ${l.grammar ? `<div class="group-h">Grammar</div><p style="margin:0">${esc(l.grammar)}</p>` : ''}
-        </div><div>
-          <div class="group-h">What went well</div><ul class="bullets">${arr(l.strengths).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-          <div class="group-h">Phrases given</div><ul class="bullets">${arr(l.phrases).map((p) => `<li><b>${esc(p.en)}</b>${p.note ? ` <span class="muted small">${esc(p.note)}</span>` : ''}</li>`).join('')}</ul>
-        </div></div>`;
+      return `<p class="sum">${esc(l.summary)}</p>
+        <div class="chips">${arr(l.topics).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+        ${arr(l.strengths).length ? `<div class="group-h">Went well</div>${list(l.strengths)}` : ''}`;
     }
     if (tab === 'mistakes') {
       const ms = arr(l.mistakes).slice().sort((a, b) => (prioRank[a.priority] ?? 3) - (prioRank[b.priority] ?? 3));
-      const groups = ['high', 'medium', 'low'].map((p) => [p, ms.filter((m) => m.priority === p)]).filter(([, g]) => g.length);
       const label = { high: 'Discuss first', medium: 'If there’s time', low: 'Minor' };
-      return `<p class="callout" style="margin-top:0">Tick a mistake once you’ve gone over it with the student. Timestamps point to the transcript.</p>` +
-        groups.map(([p, g]) => `<div class="group-h">${label[p]}</div><ul class="mlist">${g.map((m) => {
+      return ['high', 'medium', 'low'].map((p) => [p, ms.filter((m) => m.priority === p)]).filter(([, g]) => g.length)
+        .map(([p, g]) => `<div class="group-h">${label[p]}</div><ul class="mlist">${g.map((m) => {
           const done = st.discussed && st.discussed[m.id];
-          return `<li><input type="checkbox" id="m-${esc(l.id)}-${esc(m.id)}" data-lid="${esc(l.id)}" data-key="discussed" data-id="${esc(m.id)}" ${done ? 'checked' : ''} aria-label="Discussed">
-            <div><div class="mhead"><span class="chip ${esc(m.priority)}">${esc(m.priority)}</span><span class="chip">${esc(m.cat)}</span>
-              ${m.count > 1 ? `<span class="chip">×${esc(m.count)}</span>` : ''}${arr(m.t).map((t) => `<span class="ts">${esc(t)}</span>`).join('')}</div>
-              <label class="pair" for="m-${esc(l.id)}-${esc(m.id)}"><span class="said">${esc(m.said)}</span><span class="better">${esc(m.better)}</span></label>
-              ${m.note ? `<div class="note">${esc(m.note)}</div>` : ''}</div></li>`;
+          return `<li class="${done ? 'done' : ''}">${tick(l.id, 'discussed', m.id, done)}
+            <div><label class="pair" for="discussed-${esc(l.id)}-${esc(m.id)}">${fix(m.said, m.better)}</label>
+            <div class="meta">${m.count > 1 ? `<span class="cnt">×${esc(m.count)}</span>` : ''}${ts(m.t)}${m.note ? `<span class="note">${esc(m.note)}</span>` : ''}</div></div></li>`;
         }).join('')}</ul>`).join('');
     }
     if (tab === 'words') {
-      return `<p class="callout" style="margin-top:0">Moments the student switched to Ukrainian to find a word.</p>
-        <div class="table-wrap"><table><thead><tr><th>Ukrainian</th><th>English</th><th>Example</th><th>Time</th></tr></thead><tbody>
-        ${arr(l.words).map((w) => `<tr><td>${esc(w.ua)}</td><td class="en"><span class="mark">${esc(w.en)}</span></td><td class="muted">${esc(w.ex)}</td><td><span class="ts">${esc(w.t)}</span></td></tr>`).join('')}
-        </tbody></table></div>`;
+      return `<div class="table-wrap"><table><tbody>${arr(l.words).map((w) => `<tr><td class="muted">${esc(w.ua)}</td>
+        <td><span class="mark en">${esc(w.en)}</span>${w.ex ? `<div class="note">${esc(w.ex)}</div>` : ''}</td><td class="tcell">${ts([w.t])}</td></tr>`).join('')}</tbody></table></div>`;
     }
     if (tab === 'pron') {
-      return `<ul class="mlist">${arr(l.pronunciation).map((p) => `<li><span></span><div>
-        <div class="mhead"><span class="chip ${p.confidence === 'clear' ? 'clear' : 'check'}">${p.confidence === 'clear' ? 'Clear in transcript' : 'Check the recording'}</span></div>
-        <h3>${esc(p.issue)}</h3><div class="note">${esc(p.evidence)}</div><p style="margin:6px 0 0">${esc(p.tip)}</p></div></li>`).join('')}</ul>`;
+      return `<ul class="mlist plain">${arr(l.pronunciation).map((p) => `<li><div>
+        <div class="meta"><span class="issue">${esc(p.issue)}</span>${p.confidence === 'clear' ? '' : '<span class="chip check">check</span>'}<span class="ts">${esc(p.evidence)}</span></div>
+        <div class="note">${esc(p.tip)}</div></div></li>`).join('')}</ul>`;
     }
     if (tab === 'cards') {
       const cs = arr(l.cards);
-      if (!cs.length) return '<p class="muted">No student cards for this lesson.</p>';
-      return `<p class="callout" style="margin-top:0">Phone-sized images for the student. “Save image” downloads it on a computer and opens the share sheet on a phone.</p>
-        <div class="cards">${cs.map((c) => {
-          const sent = st.sent && st.sent[c.n];
-          return `<div class="cardimg"><img src="/_blob/${esc(c.asset)}" alt="${esc(c.title)}" loading="lazy">
-            <span class="t">${esc(c.n)}. ${esc(c.title)}</span>
-            ${dl ? `<button class="btn" type="button" data-save="${esc(c.asset)}" data-name="${esc(l.id)}-card-${esc(c.n)}.png">Save image</button>` : ''}
-            <label class="check"><input type="checkbox" data-lid="${esc(l.id)}" data-key="sent" data-id="${esc(c.n)}" ${sent ? 'checked' : ''}> Sent to student</label></div>`;
-        }).join('')}</div>`;
+      if (!cs.length) return '<p class="muted">No cards.</p>';
+      return `<div class="cards">${cs.map((c) => {
+        const sent = st.sent && st.sent[c.n];
+        return `<div class="cardimg"><img src="/_blob/${esc(c.asset)}" alt="${esc(c.title)}" loading="lazy">
+          <span class="t">${esc(c.title)}</span>
+          ${dl ? `<button class="btn" type="button" data-save="${esc(c.asset)}" data-name="${esc(l.id)}-card-${esc(c.n)}.png">Save image</button>` : ''}
+          <label class="check">${tick(l.id, 'sent', c.n, sent)} Sent</label></div>`;
+      }).join('')}</div>`;
     }
     if (tab === 'teacher') {
       const t = l.teacher || {};
-      return `${t.note ? `<p class="callout" style="margin-top:0">${esc(t.note)}</p>` : ''}
-        <div class="group-h">Your English</div>
-        <ul class="mlist">${arr(t.english).map((e) => `<li><span></span><div><div class="mhead"><span class="ts">${esc(e.t)}</span></div>
-          <div class="pair"><span class="said">${esc(e.said)}</span><span class="better">${esc(e.better)}</span></div><div class="note">${esc(e.why)}</div></div></li>`).join('')}</ul>
-        ${arr(t.habits).length ? `<div class="group-h">Habits</div><ul class="bullets">${arr(t.habits).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
-        <div class="cols" style="margin-top:8px"><div><div class="group-h">What worked</div><ul class="bullets">${arr(t.strengths).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
-        <div><div class="group-h">Try next time</div><ul class="bullets">${arr(t.improve).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
+      return `<div class="group-h">Your English</div>
+        <ul class="mlist plain">${arr(t.english).map((e) => `<li><div><div class="pair">${fix(e.said, e.better)}</div>
+          <div class="meta">${ts([e.t])}${e.why ? `<span class="note">${esc(e.why)}</span>` : ''}</div></div></li>`).join('')}</ul>
+        <div class="cols"><div><div class="group-h">Worked</div>${list(t.strengths)}</div>
+        <div><div class="group-h">Try next time</div>${list([...arr(t.improve), ...arr(t.habits)])}</div></div>`;
     }
     return '';
   }
@@ -390,20 +358,21 @@ td.en{font-weight:600}
   function viewTeaching() {
     const tp = S.teacher;
     const all = Object.values(S.lessons).filter((l) => l.teacher).sort((a, b) => (a.date < b.date ? 1 : -1));
-    const head = `<div class="eyebrow">My teaching</div><h1>Your English and your lessons</h1>
-      <p class="lede">Built from the same transcripts. The focus list updates as more lessons come in.</p>`;
-    if (!tp && !all.length) return head + '<p class="muted" style="margin-top:20px">No teaching notes yet. They appear with the first lesson report.</p>';
-    const focus = tp ? `<section class="panel"><div class="panel-h"><h2>Current focus</h2><span class="muted small">${esc(tp.lessonsReviewed || all.length)} lesson${(tp.lessonsReviewed || all.length) === 1 ? '' : 's'} reviewed${tp.updated ? ` · updated ${esc(fmtDate(tp.updated))}` : ''}</span></div>
-      <div class="cols"><div><div class="group-h">Your English</div><ul class="bullets">${arr(tp.englishFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div><div class="group-h">Your teaching</div><ul class="bullets">${arr(tp.teachingFocus).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div>${arr(tp.strengths).length ? `<div class="group-h">What you do well</div><ul class="bullets">${arr(tp.strengths).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</section>` : '';
+    if (!tp && !all.length) return `<h1>My teaching</h1><p class="lede">Notes appear with the first lesson report.</p>`;
+    const n = (tp && tp.lessonsReviewed) || all.length;
+    const focus = tp ? `<section class="panel"><div class="panel-h"><h2>Focus now</h2><span class="muted small">${esc(n)} lessons</span></div>
+      <div class="cols3"><div><div class="group-h">Your English</div>${list(tp.englishFocus)}</div>
+      <div><div class="group-h">Your teaching</div>${list(tp.teachingFocus)}</div>
+      <div><div class="group-h">Doing well</div>${list(tp.strengths)}</div></div></section>` : '';
     const per = all.map((l) => {
       const s = S.students[l.student];
       const id = `t-${l.id}`;
-      return `<details class="lesson" data-lid="${esc(id)}" ${UI.open.has(id) || all.length === 1 ? 'open' : ''}>
-        <summary><span class="ldate">${esc(s ? s.name : l.student)} · ${esc(fmtDate(l.date))}</span><span class="lmeta">${esc(arr(l.topics).slice(0, 2).join(' · '))}</span></summary>
+      return `<details class="lesson" data-lid="${esc(id)}" ${UI.open.has(id) ? 'open' : ''}>
+        <summary><span class="ldate">${esc(s ? s.name : l.student)}</span><span class="lmeta">${esc(fmtDate(l.date))}</span></summary>
         <div class="tabpanel">${panel(l, 'teacher')}</div></details>`;
     }).join('');
-    return `${head}<div class="stack" style="margin-top:24px">${focus}<section><div class="panel-h"><h2>By lesson</h2><span class="muted small">Newest first</span></div>${per}</section></div>`;
+    return `<h1>My teaching</h1><p class="lede small">Quotes are matched to you by context; skip any that weren't yours.</p>
+      <div class="stack" style="margin-top:20px">${focus}<section><h2 class="sec">By lesson</h2>${per}</section></div>`;
   }
 
   // ---------- render ----------
@@ -421,15 +390,15 @@ td.en{font-weight:600}
     document.getElementById(off).removeAttribute('aria-current');
 
     if (S.status === 'nodb') {
-      main.innerHTML = `<div class="empty"><h1>Open this notebook in Claude</h1><p class="lede">The reports are stored with the page and load only when you open it on claude.ai or in the Claude app, signed in.</p></div>`;
+      main.innerHTML = `<div class="empty"><h1>Open this in Claude</h1><p class="lede">Reports load only on claude.ai or in the Claude app.</p></div>`;
       return;
     }
     if (S.status === 'loading') {
-      main.innerHTML = `<div class="empty"><h1>Loading reports…</h1><p class="lede">Your students, their lesson reports, and notes on your own teaching appear here.</p></div>`;
+      main.innerHTML = `<div class="empty"><h1>Loading…</h1></div>`;
       return;
     }
     if (S.status === 'slow' && !Object.keys(S.students).length) {
-      main.innerHTML = `<div class="empty"><h1>Can’t reach the reports yet</h1><p class="lede">They’ll appear as soon as the connection comes back. You don’t need to reload.</p></div>`;
+      main.innerHTML = `<div class="empty"><h1>Can’t reach the reports</h1><p class="lede">They’ll appear when the connection is back.</p></div>`;
       return;
     }
     main.innerHTML = r.name === 'student' ? viewStudent(r.id) : r.name === 'teaching' ? viewTeaching() : viewHome();

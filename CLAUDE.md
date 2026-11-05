@@ -42,6 +42,10 @@ in the teacher report.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time).
+- **Site text is short and practical**: summary 1–2 short sentences; max 3 "went well" bullets; mistake
+  notes a few words or empty; plan details one short line; teacher "worked" 3 bullets, "try next time"
+  3–4 bullets, `why` a few words; no `talk`, `note` or `habits` text. Student `about` one line, `focus`
+  max 5 short issues. `nextWhen` short ("Tue, Nov 10"). Teacher profile: max 4–5 items per list.
 - Keep sensitive details (health, conflicts at work, opinions about named people) off the cards.
 
 ## Lesson JSON shape
