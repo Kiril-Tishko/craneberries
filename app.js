@@ -4,6 +4,7 @@
   const counter = document.getElementById('counter');
   const index = document.getElementById('index');
   const indexList = index.querySelector('ol');
+  const baseTitle = document.title;
   let current = 0;
 
   /* ---------- storage (optional; the page works without it) ---------- */
@@ -28,7 +29,7 @@
     bar.style.width = ((n + 1) / slides.length) * 100 + '%';
     counter.textContent = `${n + 1} / ${slides.length}`;
     try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
-    document.title = (slides[n].dataset.title || 'Slide ' + (n + 1)) + ' · Passive + Modals';
+    document.title = (slides[n].dataset.title || 'Slide ' + (n + 1)) + ' · ' + baseTitle;
   }
 
   const next = () => go(current + 1);
@@ -258,6 +259,76 @@
       ta.setSelectionRange(caret, caret);
       ta.dispatchEvent(new Event('input'));
     });
+  });
+
+  /* ---------- irregular verb table: hide forms, tap to reveal ---------- */
+
+  document.querySelectorAll('[data-verbs]').forEach((verbs) => {
+    const slide = verbs.closest('.slide');
+    const toggle = slide.querySelector('[data-quiz]');
+    const cells = [...verbs.querySelectorAll('td.f')];
+    cells.forEach((td) => {
+      td.addEventListener('click', () => {
+        if (verbs.classList.contains('quiz')) td.classList.toggle('shown');
+      });
+    });
+    toggle?.addEventListener('click', () => {
+      const on = verbs.classList.toggle('quiz');
+      cells.forEach((td) => td.classList.remove('shown'));
+      toggle.textContent = on ? 'Show all forms' : 'Hide past forms';
+    });
+  });
+
+  /* ---------- flashcards: verbs come from the table on the page ---------- */
+
+  document.querySelectorAll('[data-card]').forEach((card) => {
+    const rows = [...document.querySelectorAll('[data-verbs] tbody tr')]
+      .map((tr) => [...tr.cells].map((td) => td.textContent.trim()));
+    if (!rows.length) return;
+    const slide = card.closest('.slide');
+    const base = card.querySelector('.card-base');
+    const forms = card.querySelector('.card-forms');
+    const count = slide.querySelector('.card-count');
+    const showBtn = slide.querySelector('[data-card-show]');
+
+    // shuffled order, starting with the verb named in data-card (if any)
+    const order = rows.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    const first = rows.findIndex((r) => r[0] === card.dataset.card);
+    if (first > -1) order.unshift(...order.splice(order.indexOf(first), 1));
+    let k = 0;
+
+    function render() {
+      const [b, past, pp] = rows[order[k]];
+      base.textContent = b;
+      forms.innerHTML = '';
+      forms.append(past + ' · ');
+      const m = document.createElement('mark');
+      m.textContent = pp;
+      forms.appendChild(m);
+      card.classList.remove('open');
+      showBtn.textContent = 'Show';
+      count.textContent = `${k + 1} / ${rows.length}`;
+    }
+
+    function flip() {
+      const open = card.classList.toggle('open');
+      showBtn.textContent = open ? 'Hide' : 'Show';
+    }
+
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); flip(); }
+    });
+    showBtn.addEventListener('click', flip);
+    slide.querySelector('[data-card-next]').addEventListener('click', () => {
+      k = (k + 1) % rows.length;
+      render();
+    });
+    render();
   });
 
   /* ---------- start ---------- */

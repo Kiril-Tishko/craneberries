@@ -557,10 +557,88 @@ input:focus-visible, textarea:focus-visible { outline: none; }
 .dense details.fix { padding: .5rem 0; }
 .dense .actions { margin-top: 1.2rem; }
 
+/* irregular verb table */
+
+.verbs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2.5rem;
+  margin-top: 1rem;
+}
+
+.verbs table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .92em;
+}
+
+.verbs caption {
+  text-align: left;
+  font-size: .8em;
+  color: var(--muted);
+  padding-bottom: .4rem;
+}
+
+.verbs th {
+  text-align: left;
+  font-weight: 400;
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: .3rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.verbs td {
+  padding: .08rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.verbs td.pp { color: var(--accent); font-weight: 500; }
+
+.verbs.quiz td.f {
+  color: transparent;
+  cursor: pointer;
+  background: linear-gradient(var(--line), var(--line)) no-repeat left 70% / 4.5em 1.5px;
+}
+
+.verbs.quiz td.f.shown { color: var(--fg); background: none; }
+.verbs.quiz td.pp.shown { color: var(--accent); }
+
+/* flashcard */
+
+.card {
+  margin: 1.2rem 0 .4rem;
+  cursor: pointer;
+  user-select: none;
+  outline-offset: 8px;
+}
+
+.card-base {
+  margin: 0;
+  font-size: clamp(3rem, 2rem + 6vw, 6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.card-forms {
+  margin: .4rem 0 0;
+  font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem);
+  color: var(--muted);
+  visibility: hidden;
+}
+
+.card.open .card-forms { visibility: visible; }
+
+.card-count { margin-left: auto; font-size: .85em; color: var(--muted); font-variant-numeric: tabular-nums; }
+
 /* ---------- small screens ---------- */
 
 @media (max-width: 640px) {
-  .cols { grid-template-columns: 1fr; gap: 1rem; }
+  .cols,
+  .verbs { grid-template-columns: 1fr; gap: 1rem; }
   .rows > div,
   .rows.wide > div,
   .rows.summary > div,
