@@ -35,7 +35,8 @@ in the teacher report.
 - The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
   comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
   Put those first; keep subtitles short or leave them out.
-- **"Say it like this"**: plain, everyday sentences from the lesson. Skip idioms, slang and jokes
+- **Words card**: only words the student actually searched for, not words you prompted in a drill.
+- **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
