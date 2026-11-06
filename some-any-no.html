@@ -4,9 +4,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;700&display=swap">
 <style>
-  /* Endings → rule → "n't + any = no" → word map (some | any | no side by side) → one family per screen
-     → -one = -body → real dialogues → offers → mistakes → practice with drawn scenes → learn by heart.
-     some = amber, any = indigo, no = rose on every screen. Scenes are line drawings in the same tokens. */
+  /* Four rounds, one rule each: rule → same situation side by side → phrases to remember → practice on
+     that rule only. Then a short mixed review. some = amber, any = indigo, no = rose on every screen.
+     Scenes are line drawings in the same tokens. */
   :root {
     --bg: #f3f4f7;
     --surface: #ffffff;
@@ -101,7 +101,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding-block: 56px 104px;
+    padding-block: 52px 104px;
     overflow-y: auto;
     text-align: center;
   }
@@ -109,14 +109,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(14px, 2.4vh, 26px);
+    gap: clamp(12px, 2.2vh, 24px);
     width: 100%;
     max-width: 1100px;
     min-width: 0;
     margin: auto;
     animation: rise .3s cubic-bezier(.2, .7, .3, 1);
   }
-  .slide.wide { max-width: 720px; }
+  .slide.wide { max-width: 760px; }
+  .slide.xwide { max-width: 1000px; }
   .slide > * { max-width: 100%; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   p { margin: 0; }
@@ -132,7 +133,8 @@
     color: var(--muted);
     letter-spacing: .03em;
   }
-  .note { font-size: clamp(1rem, 2.6vw, 1.4rem); font-weight: 700; color: var(--muted); }
+  .eyebrow { font-size: clamp(.72rem, 1.8vw, .85rem); font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--c); }
+  .note { font-size: clamp(1rem, 2.6vw, 1.4rem); font-weight: 700; color: var(--muted); text-wrap: balance; }
   .pic { font-family: var(--f-emoji); font-size: clamp(2.8rem, 10vw, 5rem); line-height: 1.1; }
 
   .k-s { --k: var(--some); --ks: var(--some-soft); }
@@ -171,8 +173,23 @@
   }
   .hint { font-size: clamp(1rem, 2.6vw, 1.6rem); font-weight: 600; color: var(--muted); }
 
+  /* The four rules on the first screen. */
+  .plan { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: min(640px, 100%); }
+  .plan > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .55em;
+    padding: .45em 1em .45em .5em;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    font-weight: 800;
+    font-size: clamp(1rem, 2.6vw, 1.3rem);
+  }
+  .plan b { display: grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--ink); color: var(--surface); font-size: .8em; }
+
   /* Drawn scenes: ink outlines, soft fills from the lesson colours. */
-  .scene { display: block; width: min(250px, 64vw); height: auto; overflow: visible; }
+  .scene { display: block; width: min(240px, 60vw); height: auto; overflow: visible; }
   .scene .o { fill: var(--surface); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
   .scene .l { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
   .scene .d { fill: none; stroke: var(--muted); stroke-width: 3; stroke-dasharray: 5 6; stroke-linecap: round; }
@@ -187,9 +204,35 @@
   .scene .tx { font: 800 13px var(--f-body); letter-spacing: .06em; fill: var(--ink); }
   .scene .tx.lg { font-size: 24px; letter-spacing: 0; }
   .scene .tx.q { font-size: 30px; fill: var(--muted); letter-spacing: 0; }
+  .scene .tx.big { font-size: 44px; letter-spacing: 0; }
   .scene .tx.wt { fill: var(--surface); }
 
-  /* Rows: picture or sign | word | sentence, one line per word so they compare at a glance. */
+  /* Side by side: the same situation in two columns, each tinted with its word's colour. */
+  .vs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px clamp(8px, 2vw, 16px);
+    width: 100%;
+    text-align: left;
+    font-size: clamp(1rem, 2.6vw, 1.4rem);
+  }
+  .vh { display: flex; align-items: center; gap: .45em; min-width: 0; padding-inline: .2em; font-family: var(--f-disp); font-weight: 700; font-size: .85em; color: var(--k); }
+  .vh .sign { flex: none; width: 1.8em; height: 1.8em; font-family: var(--f-emoji), var(--f-body); }
+  .vc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .2em;
+    min-width: 0;
+    padding: .65em .8em;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ks) 40%, var(--surface));
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  @media (max-width: 560px) { .vc { padding: .55em .6em; } }
+
+  /* Rows: picture | word | meaning, or picture | phrase. */
   .rows {
     display: grid;
     width: 100%;
@@ -224,7 +267,6 @@
   }
   .w { font-family: var(--f-disp); font-weight: 700; white-space: nowrap; }
   .sen { font-weight: 700; line-height: 1.3; }
-  .slide.xwide { max-width: 1000px; }
   @media (min-width: 761px) {
     .rows.c2.two { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); }
     .rows.two .row:nth-child(2) > .cell { border-top: none; }
@@ -265,21 +307,6 @@
   .map .rh { padding-inline: 0 .2em; color: var(--muted); font-size: .8em; }
   .map .rh .ic { font-size: 1.8em; }
 
-  /* Dialogue: question bubble left, answer bubble right. */
-  .chat {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: min(560px, 100%);
-    text-align: left;
-    font-size: clamp(1.15rem, 3.3vw, 1.7rem);
-    font-weight: 700;
-    line-height: 1.3;
-  }
-  .bub { display: flex; flex-direction: column; gap: .2em; max-width: 88%; padding: .6em .9em; border-radius: 20px; }
-  .bub.q { align-self: flex-start; background: var(--surface); border: 1.5px solid var(--line); border-bottom-left-radius: 6px; }
-  .bub.r { align-self: flex-end; background: color-mix(in srgb, var(--line) 60%, var(--surface)); border-bottom-right-radius: 6px; }
-
   /* "n't + any = no": the two parts light up, then the short form appears, then the mistake. */
   .neg { color: var(--no); }
   .neg, .mark { border-radius: .15em; box-shadow: 0 0 0 .08em var(--no); animation: flag .45s .7s backwards; }
@@ -290,20 +317,6 @@
   @keyframes flag { from { box-shadow: 0 0 0 0 transparent; } }
   @keyframes pop { from { opacity: 0; transform: scale(.5); } }
   @keyframes up { from { opacity: 0; transform: translateY(12px); } }
-
-  /* Mistakes: wrong | right side by side. */
-  .fix {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: clamp(14px, 3vw, 32px);
-    width: 100%;
-    text-align: left;
-    font-size: clamp(1rem, 2.6vw, 1.45rem);
-  }
-  .fix > div { min-width: 0; padding-block: .75rem; border-top: 1px solid var(--line); font-weight: 700; line-height: 1.3; }
-  .fix > .fh { border-top: none; padding-block: 0 .3rem; font-size: .75em; font-weight: 800; letter-spacing: .1em; }
-  .fh.bad-h { color: var(--bad); }
-  .fh.ok-h { color: var(--ok); }
 
   input {
     font: inherit;
@@ -329,7 +342,7 @@
 
   .match { display: grid; grid-template-columns: 1fr 1fr; gap: 12px clamp(14px, 4vw, 40px); width: 100%; }
   .col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-  .opts { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 12px; width: 100%; }
+  .opts { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 12px; width: min(600px, 100%); }
   @media (max-width: 560px) { .opts.n3 { grid-template-columns: minmax(0, 1fr); width: min(300px, 100%); gap: 10px; } }
   .tile {
     font: 700 clamp(1rem, 2.6vw, 1.35rem)/1.2 var(--f-body);
@@ -435,6 +448,17 @@ const SCN = {
     <rect class="o a" x="50" y="10" width="100" height="44" rx="4"/><path class="l" d="M64 26h28M64 38h46"/>
     ${[20, 82, 144].map(x => `<rect class="o g" x="${x + 9}" y="66" width="18" height="26" rx="4"/>
       <rect class="o s" x="${x}" y="88" width="36" height="8" rx="2"/><path class="l" d="M${x + 5} 96v32M${x + 31} 96v32"/>`).join('')}`),
+  teacher: svg(`<path class="l" d="M10 128H190"/>
+    <rect class="o a" x="18" y="12" width="108" height="70" rx="4"/><text class="tx big" x="72" y="64" text-anchor="middle">?</text>
+    <path class="l" d="M146 100v28M158 100v28"/><rect class="o s" x="140" y="54" width="24" height="48" rx="10"/>
+    <path class="l" d="M141 66L124 52"/>
+    <circle class="o sk" cx="152" cy="40" r="12"/><path class="o hr" d="M140 38Q141 26 152 26Q163 26 164 38Q158 33 152 33Q146 33 140 38Z"/>`),
+  glass: svg(`<path class="l" d="M24 128H150"/>
+    <path class="a" d="M75 56H125L119 126H81Z"/><path class="l" d="M75 56H125"/>
+    <path class="l" d="M72 28H128L120 128H80Z"/>
+    <circle class="l" cx="96" cy="96" r="3"/><circle class="l" cx="106" cy="76" r="2.5"/><circle class="l" cx="92" cy="70" r="2"/>
+    <rect class="o" x="132" y="10" width="62" height="30" rx="9"/><path class="o" d="M142 39L136 50L152 39"/>
+    <text class="tx" x="163" y="30" text-anchor="middle">please?</text>`),
   shh: svg(`<circle class="o sk" cx="94" cy="72" r="40"/>
     <path class="o hr" d="M54 68Q56 28 94 28Q132 28 134 68Q118 50 94 50Q70 50 54 68Z"/>
     <circle class="ink" cx="80" cy="72" r="4"/><circle class="ink" cx="108" cy="72" r="4"/>
@@ -464,121 +488,135 @@ const SCN = {
     ${[48, 152].map(x => `<circle class="d" cx="${x}" cy="58" r="13"/><rect class="d" x="${x - 13}" y="76" width="26" height="40" rx="10"/>`).join('')}
     <path class="l" d="M93 104v24M107 104v24"/><rect class="o a" x="86" y="62" width="28" height="44" rx="11"/>
     <circle class="o sk" cx="100" cy="46" r="15"/><path class="o hr" d="M85 44Q86 30 100 30Q114 30 115 44Q108 38 100 38Q92 38 85 44Z"/>`),
-  phone: svg(`<rect class="o" x="60" y="8" width="80" height="124" rx="12"/><rect class="o a" x="68" y="20" width="64" height="100" rx="5"/>
-    <text class="tx" x="100" y="66" text-anchor="middle">MISSED</text><text class="tx" x="100" y="82" text-anchor="middle">CALL</text>
-    <circle class="nn" cx="140" cy="12" r="11"/><text class="tx wt" x="140" y="17" text-anchor="middle">1</text>`),
   cart: svg(`<rect class="o s" x="78" y="30" width="20" height="28" rx="3"/><rect class="o n" x="104" y="22" width="13" height="36" rx="5"/>
     <circle class="o s" cx="135" cy="46" r="11"/>
     <path class="o a" d="M56 52H166L154 98H68Z"/><path class="l" d="M24 38H44L68 98L62 108H152"/>
     <circle class="o" cx="76" cy="118" r="8"/><circle class="o" cx="142" cy="118" r="8"/>`),
-  home: svg(`<path class="l" d="M16 62L100 16L184 62"/><path class="l" d="M30 54V128H170V54"/>
-    <rect class="o a" x="86" y="34" width="28" height="26" rx="2"/><path class="l" d="M100 34v26M86 47h28"/>
-    <rect class="o n" x="54" y="76" width="92" height="28" rx="9"/><rect class="o n" x="50" y="96" width="100" height="22" rx="8"/>
-    <rect class="o n" x="42" y="88" width="18" height="32" rx="8"/><rect class="o n" x="140" y="88" width="18" height="32" rx="8"/>
-    <path class="l" d="M56 120v8M144 120v8"/>`),
 };
 
 // ---------- Lesson ----------
-// Slide kinds: text, html, rows (picture or sign | word | sentence), map (some | any | no table),
-// chat (question + answer), fix (wrong | right), pick (tap the right word), fill (type), match.
+// Each round: rule (side by side) → Remember (phrases to learn) → Practice on that rule only.
 // [s:…] some, [a:…] any, [n:…] no: each keeps its colour everywhere.
 const T = (h, uk, size = 'l', pic) => ({ t: 'text', h, uk, size, pic });
 const R = o => ({ t: 'rows', ...o });
+const V = o => ({ t: 'vs', ...o });
 const E = (pic, word, sen, uk) => ({ pic, word, sen, uk });
-const S = (k, sign, word, sen, uk) => ({ k, sign, word, sen, uk });
-const C = (scene, q, qUk, r, rUk) => ({ t: 'chat', scene, q, qUk, r, rUk });
 const P = (scene, q, o, a) => ({ t: 'pick', scene, q, o, a });
-const F = (q, a, hint, pic) => ({ t: 'fill', q, a: [].concat(a), hint, pic });
+const F = (q, a, hint, pic) => ({ t: 'fill', step: 'Review', q, a: [].concat(a), hint, pic });
+const KEEP = rows => R({ step: 'Key phrases', head: 'Remember', uk: "Запам'ятай ці фрази", rows });
+const SOME3 = ['someone', 'something', 'somewhere'];
 const ONE = ['someone', 'anyone', 'no one'], THING = ['something', 'anything', 'nothing'], WHERE = ['somewhere', 'anywhere', 'nowhere'];
 const cap = a => a.map(w => w[0].toUpperCase() + w.slice(1));
 
+// [mode, practice label, slides]
 const parts = [
-  ['mix', [
-    T('[s:some] · [a:any] · [n:no]', 'хтось, щось, кудись, ніхто, нічого… Як не плутати?', 'xl'),
-    R({ head: 'The endings', uk: 'Закінчення кажуть: хто, що чи де', rows: [
-      E('👤', '-one', 'person', 'людина — хто?'),
-      E('📦', '-thing', 'thing', 'річ — що?'),
-      E('📍', '-where', 'place', 'місце — де? куди?'),
+  ['mix', '', [
+    { t: 'html', uk: 'Чотири правила, по одному: правило → фрази → тренування.', html:
+      `<p class="xl">[s:some] · [a:any] · [n:no]</p>
+       <div class="plan"><span><b>1</b>+ → [s:some]</span><span><b>2</b>not → [a:any]</span><span><b>3</b>? → [a:any]</span><span><b>4</b>[n:no] = not any</span></div>` },
+  ]],
+  ['some', 'Practice · Rule 1', [
+    R({ step: 'Rule 1', head: '[s:some]', sub: 'in + sentences', note: 'The endings work the same with any and no.', uk: 'some — у стверджувальних реченнях (+)', rows: [
+      E('👤', '[s:some]one', 'a person', 'хтось'),
+      E('📦', '[s:some]thing', 'a thing', 'щось'),
+      E('📍', '[s:some]where', 'a place', 'десь, кудись'),
+      E('💧', '[s:some]', 'some water, some friends', 'трохи, кілька'),
     ] }),
-    R({ scene: 'walletMoney', head: 'The rule', uk: '+ → some · ? → any · not → any', rows: [
-      S('s', '+', '[s:some]', 'I have [s:some] money.', 'У мене є трохи грошей.'),
-      S('a', '?', '[a:any]', 'Do you have [a:any] money?', 'У тебе є гроші?'),
-      S('a', '–', 'not … [a:any]', "I don't have [a:any] money.", 'У мене немає грошей.'),
+    KEEP([
+      E('🚪', null, '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
+      E('🍕', null, 'I want [s:some]thing to eat.', 'Я хочу щось поїсти.'),
+      E('🗺️', null, "Let's go [s:some]where!", 'Ходімо кудись!'),
+      E('🙋', null, 'I need [s:some] help.', 'Мені потрібна допомога.'),
+    ]),
+    P('door', 'Knock, knock! ___ is at the door.', cap(SOME3), 'Someone'),
+    P('fridgePizza', "There's ___ in the fridge. Let's eat it!", SOME3, 'something'),
+    P('bag', 'My phone is ___ in my bag. I can hear it!', SOME3, 'somewhere'),
+  ]],
+  ['any', 'Practice · Rule 2', [
+    V({ step: 'Rule 2', head: 'not → [a:any]', sub: "don't · can't · didn't", uk: 'Є not (don’t, can’t, didn’t…) → any',
+      cols: [['s', '+', 'some'], ['a', '–', 'not … any']], rows: [
+      ['I have [s:some] money.', 'У мене є гроші.', "I <b>don't</b> have [a:any] money.", 'У мене немає грошей.'],
+      ['I know [s:some]one here.', 'Я тут когось знаю.', "I <b>don't</b> know [a:any]one here.", 'Я тут нікого не знаю.'],
+      ['I want [s:some]thing to eat.', 'Я хочу щось поїсти.', "I <b>don't</b> want [a:any]thing to eat.", 'Я не хочу нічого їсти.'],
+      ["Let's go [s:some]where.", 'Ходімо кудись.', "I <b>don't</b> want to go [a:any]where.", 'Я нікуди не хочу йти.'],
     ] }),
-    { t: 'html', uk: 'Обидва речення означають одне: «У мене немає грошей». В англійській — тільки одне заперечення!', html:
+    KEEP([
+      E('🎉', null, "I <b>don't</b> know [a:any]one here.", 'Я тут нікого не знаю.'),
+      E('🛒', null, "I <b>don't</b> need [a:any]thing, thanks.", 'Мені нічого не потрібно, дякую.'),
+      E('🔑', null, "I <b>can't</b> find my keys [a:any]where.", 'Я ніде не можу знайти ключі.'),
+      E('🤫', null, "<b>Don't</b> tell [a:any]one!", 'Нікому не кажи!'),
+    ]),
+    P('shh', "It's a secret. Don't tell ___!", ['someone', 'anyone'], 'anyone'),
+    P('walletMoney', "I have ___ money. Let's buy pizza!", ['some', 'any'], 'some'),
+    P('keys', "Where are my keys? I can't find them ___.", ['somewhere', 'anywhere'], 'anywhere'),
+    P('cart', "No, thanks. I don't need ___.", ['something', 'anything'], 'anything'),
+  ]],
+  ['any', 'Practice · Rule 3', [
+    V({ step: 'Rule 3', head: '? → [a:any]', sub: 'questions', uk: 'У питаннях → any',
+      cols: [['s', '+', 'some'], ['a', '?', 'any']], rows: [
+      ['I have [s:some] questions.', 'У мене є питання.', 'Do you have [a:any] questions?', 'У вас є питання?'],
+      ['[s:Some]one is home.', 'Хтось є вдома.', 'Is [a:any]one home?', 'Є хтось удома?'],
+      ['I need [s:some]thing from the store.', 'Мені треба дещо з магазину.', 'Do you need [a:any]thing from the store?', 'Тобі щось треба з магазину?'],
+      ['We went [s:some]where nice.', 'Ми їздили в гарне місце.', 'Did you go [a:any]where?', 'Ви кудись їздили?'],
+    ] }),
+  ]],
+  ['some', 'Practice · Rule 3', [
+    V({ step: 'Rule 3 · but', head: 'Asking for it → [s:some]', sub: 'please · Would you like…?', uk: 'Питаєш, чи є, — any. Просиш або пропонуєш — some.',
+      cols: [['a', '?', 'is there…?'], ['s', '🙏', 'please · offer']], rows: [
+      ['Do you have [a:any] water?', 'У вас є вода?', 'Can I have [s:some] water, please?', 'Можна мені води, будь ласка?'],
+      ['Do you have [a:any]thing to drink?', 'У вас є щось попити?', 'Would you like [s:some]thing to drink?', 'Хочеш щось попити?'],
+    ] }),
+  ]],
+  ['any', 'Practice · Rule 3', [
+    KEEP([
+      E('❓', null, 'Do you have [a:any] questions?', 'У вас є питання?'),
+      E('🏠', null, 'Is [a:any]one home?', 'Є хтось удома?'),
+      E('💧', null, 'Can I have [s:some] water, please?', 'Можна мені води, будь ласка?'),
+      E('🥤', null, 'Would you like [s:some]thing to drink?', 'Хочеш щось попити?'),
+    ]),
+    P('teacher', 'The lesson is over. Do you have ___ questions?', ['some', 'any'], 'any'),
+    P('glass', "I'm thirsty. Can I have ___ water, please?", ['some', 'any'], 'some'),
+    P('onlyChild', 'Do you have ___ brothers or sisters?', ['some', 'any'], 'any'),
+  ]],
+  ['no', 'Practice · Rule 4', [
+    { t: 'html', step: 'Rule 4', uk: 'Обидва речення означають одне: «У мене немає грошей». В англійській — тільки одне заперечення!', html:
       `<p class="m">I do<span class="neg">n't</span> have <span class="hl k-a mark">any</span> money.</p>
        <p class="eq">=</p>
        <p class="m step2">I have [n:no] money.</p>
        <p class="note step3"><span class="neg">n't</span> + [a:any] = [n:no]</p>
        <p class="note step4"><span class="x">I don't have no money.</span> <span class="bad-mark">✗</span></p>` },
-    { t: 'map', head: 'Word map', uk: 'Усі слова разом: some — any — no', rows: [
-      ['🍎', '+ noun', '+ іменник', [['[s:some]', 'трохи, кілька'], ['[a:any]', 'якісь? · жодних'], ['[n:no]', 'жодних, немає']]],
+    V({ step: 'Rule 4', head: '[n:no] = not + [a:any]', sub: 'no already means not', note: '[n:no] one = 2 words', uk: 'no вже означає «не», тому not не потрібен',
+      cols: [['s', '+', 'some'], ['n', '–', 'no']], rows: [
+      ['[s:Some]one called.', 'Хтось дзвонив.', '[n:No] one called.', 'Ніхто не дзвонив.'],
+      ["There's [s:some]thing in the fridge.", 'У холодильнику щось є.', "There's [n:no]thing in the fridge.", 'У холодильнику нічого немає.'],
+      ['I have [s:some] time.', 'У мене є трохи часу.', 'I have [n:no] time.', 'У мене немає часу.'],
+    ] }),
+    KEEP([
+      E('🤷', null, '[n:No] one knows.', 'Ніхто не знає. (без doesn’t!)'),
+      E('🤔', null, 'I have [n:no] idea.', 'Гадки не маю.'),
+      E('🍽️', null, "There's [n:no]thing to eat.", 'Нема чого їсти.'),
+      E('💺', null, "There's [n:no]where to sit.", 'Нема де сісти.'),
+    ]),
+    P('classroom', 'The classroom is empty. ___ is here.', cap(ONE), 'No one'),
+    P('fridgeEmpty', "The fridge is empty. There's ___ to eat.", THING, 'nothing'),
+    P('seats', "All the seats are taken. There's ___ to sit.", WHERE, 'nowhere'),
+    P('walletEmpty', 'My wallet is empty. I have ___ money.', ['some', 'any', 'no'], 'no'),
+  ]],
+  ['mix', 'Review', [
+    { t: 'html', uk: 'Однакове значення. Можна казати і так, і так.', html:
+      `<p class="l">[s:some]one = [s:some]body<br>[a:any]one = [a:any]body<br>[n:no] one = [n:no]body</p>
+       <p class="note">Same meaning. Both are very common.</p>` },
+    { t: 'map', head: 'All together', uk: 'Усе разом: some — any — no', rows: [
+      ['💧', '+ noun', '+ іменник', [['[s:some]', 'трохи, кілька'], ['[a:any]', 'якісь? · жодних'], ['[n:no]', 'жодних, немає']]],
       ['👤', 'person', 'людина', [['[s:some]one', 'хтось'], ['[a:any]one', 'хтось? · нікого'], ['[n:no] one', 'ніхто']]],
       ['📦', 'thing', 'річ', [['[s:some]thing', 'щось'], ['[a:any]thing', 'щось? · нічого'], ['[n:no]thing', 'нічого']]],
       ['📍', 'place', 'місце', [['[s:some]where', 'десь, кудись'], ['[a:any]where', 'десь? · ніде'], ['[n:no]where', 'ніде, нікуди']]],
     ] },
-  ]],
-  ['some', [
-    R({ head: '[s:some] family', sub: '+ positive sentences', uk: 'some… — у стверджувальних реченнях', rows: [
-      E('🙋', '[s:some]', 'I need [s:some] help.', 'Мені потрібна допомога.'),
-      E('🚪', '[s:some]one', '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
-      E('🎁', '[s:some]thing', 'I have [s:some]thing for you.', 'У мене є щось для тебе.'),
-      E('🗺️', '[s:some]where', "Let's go [s:some]where!", 'Ходімо кудись!'),
-    ] }),
-  ]],
-  ['any', [
-    R({ head: '[a:any] family', sub: '? questions · – with not', uk: 'any… — у питаннях і з not', rows: [
-      E('❓', '[a:any]', 'Do you have [a:any] questions?', 'У вас є питання?'),
-      E('🏠', '[a:any]one', 'Is [a:any]one home?', 'Є хтось удома?'),
-      E('🛒', '[a:any]thing', "I don't need [a:any]thing.", 'Мені нічого не потрібно.'),
-      E('📱', '[a:any]where', "I can't find my phone [a:any]where.", 'Я ніде не можу знайти телефон.'),
-    ] }),
-  ]],
-  ['no', [
-    R({ head: '[n:no] family', sub: '– without not', note: '[n:no] one = 2 words', uk: 'no вже означає «не», тому not не потрібен!', rows: [
-      E('🤔', '[n:no]', 'I have [n:no] idea.', 'Гадки не маю.'),
-      E('🤷', '[n:no] one', '[n:No] one knows.', 'Ніхто не знає.'),
-      E('😴', '[n:no]thing', 'I have [n:no]thing to do.', 'Мені нема чого робити.'),
-      E('🚗', '[n:no]where', "There's [n:no]where to park.", 'Нема де припаркуватися.'),
-    ] }),
-  ]],
-  ['mix', [
-    { t: 'html', uk: 'Однакове значення. Можна казати і так, і так.', html:
-      `<p class="l">[s:some]one = [s:some]body<br>[a:any]one = [a:any]body<br>[n:no] one = [n:no]body</p>
-       <p class="note">Same meaning. Both are very common.</p>` },
-    C('phone', 'Did [a:any]one call me?', 'Мені хтось дзвонив?', 'Yes, [s:some]one called an hour ago.', 'Так, хтось дзвонив годину тому.'),
-    C('fridgePizza', 'Is there [a:any]thing to eat?', 'Є щось поїсти?', "Yes, there's [s:some] pizza in the fridge.", 'Так, у холодильнику є піца.'),
-    C('cart', 'Do you need [a:any]thing else?', 'Вам ще щось потрібно?', 'No, [n:no]thing. Thanks!', 'Ні, нічого. Дякую!'),
-    C('home', 'Did you go [a:any]where on the weekend?', 'Ви кудись їздили на вихідних?', 'No, [n:no]where. We stayed home.', 'Ні, нікуди. Ми були вдома.'),
-  ]],
-  ['some', [
-    R({ head: 'Offers & requests', sub: '→ [s:some], even in questions', uk: 'Коли пропонуєш або просиш — some, навіть у питанні', rows: [
-      E('🥤', null, 'Would you like [s:some]thing to drink?', 'Хочеш щось попити?'),
-      E('💧', null, 'Can I have [s:some] water, please?', 'Можна мені води, будь ласка?'),
-    ] }),
-  ]],
-  ['mix', [
-    { t: 'fix', head: 'Common mistakes', uk: 'Типові помилки', rows: [
-      ["I don't need nothing.", "I don't need [a:any]thing.", 'Мені нічого не потрібно. Тільки одне «не»!'],
-      ["No one don't know.", '[n:No] one knows.', 'Ніхто не знає. Після no one — без don’t.'],
-      ["We didn't go nowhere.", "We didn't go [a:any]where.", 'Ми нікуди не ходили.'],
-      ['noone', '[n:no] one', 'no one — два слова'],
-    ] },
-    P('door', 'Knock, knock! ___ is at the door.', cap(ONE), 'Someone'),
-    P('classroom', 'The classroom is empty. ___ is here.', cap(ONE), 'No one'),
-    P('shh', "It's a secret. Don't tell ___!", ONE, 'anyone'),
-    P('fridgeEmpty', "The fridge is empty. There's ___ to eat.", THING, 'nothing'),
-    P('bag', 'My phone is ___ in my bag. I can hear it!', WHERE, 'somewhere'),
-    P('seats', "All the seats are taken. There's ___ to sit.", WHERE, 'nowhere'),
-    P('keys', "Where are my keys? I can't find them ___.", WHERE, 'anywhere'),
-    P('walletEmpty', 'My wallet is empty. I have ___ money.', ['some', 'any', 'no'], 'no'),
-    P('onlyChild', "I'm an only child. I don't have ___ brothers or sisters.", ['some', 'any', 'no'], 'any'),
-    F("I'm hungry. I want ___ to eat.", 'something', 'щось', '🍔'),
     F("I don't need ___, thanks.", 'anything', 'нічого', '🛒'),
     F('___ knows the answer.', ['no one', 'nobody'], 'ніхто', '🤷'),
     F('___ called you.', ['someone', 'somebody'], 'хтось', '📱'),
     F("Let's go ___!", 'somewhere', 'кудись', '🗺️'),
-    { t: 'match', pairs: [
+    { t: 'match', step: 'Review', pairs: [
       ['someone', 'хтось'],
       ['something', 'щось'],
       ['somewhere', 'десь'],
@@ -586,20 +624,21 @@ const parts = [
       ['nothing', 'нічого'],
       ['nowhere', 'ніде'],
     ] },
-    R({ head: 'Learn by heart', uk: "Вивчи напам'ять", two: true, rows: [
+    R({ step: 'Key phrases', head: 'Learn by heart', uk: "Вивчи напам'ять", two: true, rows: [
       E('🚪', null, '[s:Some]one is at the door.', 'Хтось стоїть за дверима.'),
       E('🗺️', null, "Let's go [s:some]where!", 'Ходімо кудись!'),
-      E('🏠', null, 'Is [a:any]one home?', 'Є хтось удома?'),
-      E('🤫', null, "Don't tell [a:any]one!", 'Нікому не кажи!'),
+      E('🎉', null, "I don't know [a:any]one here.", 'Я тут нікого не знаю.'),
       E('🔑', null, "I can't find my keys [a:any]where.", 'Я ніде не можу знайти ключі.'),
+      E('❓', null, 'Do you have [a:any] questions?', 'У вас є питання?'),
+      E('💧', null, 'Can I have [s:some] water, please?', 'Можна мені води, будь ласка?'),
       E('🤷', null, '[n:No] one knows.', 'Ніхто не знає.'),
       E('🤔', null, 'I have [n:no] idea.', 'Гадки не маю.'),
-      E('🍽️', null, "There's [n:no]thing to eat.", 'Нема чого їсти.'),
     ] }),
     T('Great job!', 'Молодець!', 'xl'),
   ]],
 ];
-const slides = parts.flatMap(([mode, list]) => list.map(s => ({ ...s, mode })));
+const slides = parts.flatMap(([mode, label, list]) =>
+  list.map(s => ({ ...s, mode, step: s.step || (s.t === 'pick' ? label : '') })));
 
 const $ = s => document.querySelector(s);
 const stage = $('#stage'), bar = $('#bar'), act = $('#act'), prev = $('#prev'), next = $('#next');
@@ -610,7 +649,9 @@ const shuffle = a => { for (let k = a.length - 1; k > 0; k--) { const j = Math.f
 const ukLine = s => s.uk ? `<p class="uk" lang="uk"><span class="tag">UA</span>${s.uk}</p>` : '';
 const ukSm = t => t ? `<span class="uk sm" lang="uk">${t}</span>` : '';
 const picEl = s => s.scene ? SCN[s.scene] : s.pic ? `<p class="pic" aria-hidden="true">${s.pic}</p>` : '';
+const brow = s => s.step ? `<p class="eyebrow">${s.step}</p>` : '';
 const headEl = s => (s.head ? `<p class="head">${fmt(s.head)}</p>` : '') + (s.sub ? `<p class="formula">${fmt(s.sub)}</p>` : '');
+const noteEl = s => s.note ? `<p class="note">${fmt(s.note)}</p>` : '';
 
 let i = 0;
 let onAct = null;
@@ -644,12 +685,17 @@ function fit() {
 function renderRows(s) {
   const c3 = s.rows.some(r => r.word);
   const rows = s.rows.map(r => {
-    const lead = r.sign ? `<span class="sign k-${r.k}">${r.sign}</span>` : `<span class="ic" aria-hidden="true">${r.pic}</span>`;
     const word = c3 ? `<div class="cell w"><span>${fmt(r.word || '')}</span></div>` : '';
-    return `<div class="row"><div class="cell lead">${lead}</div>${word}<div class="cell sen"><span>${fmt(r.sen)}</span>${ukSm(r.uk)}</div></div>`;
+    return `<div class="row"><div class="cell lead"><span class="ic" aria-hidden="true">${r.pic}</span></div>${word}<div class="cell sen"><span>${fmt(r.sen)}</span>${ukSm(r.uk)}</div></div>`;
   }).join('');
-  const note = s.note ? `<p class="note">${fmt(s.note)}</p>` : '';
-  stage.innerHTML = `<div class="slide ${s.two ? 'xwide' : 'wide'}">${picEl(s)}${headEl(s)}<div class="rows ${c3 ? 'c3' : 'c2'}${s.two ? ' two' : ''}">${rows}</div>${note}${ukLine(s)}</div>`;
+  stage.innerHTML = `<div class="slide ${s.two ? 'xwide' : 'wide'}">${brow(s)}${picEl(s)}${headEl(s)}<div class="rows ${c3 ? 'c3' : 'c2'}${s.two ? ' two' : ''}">${rows}</div>${noteEl(s)}${ukLine(s)}</div>`;
+}
+
+function renderVs(s) {
+  const head = s.cols.map(([k, sign, label]) => `<div class="vh k-${k}"><span class="sign k-${k}">${sign}</span><span>${label}</span></div>`).join('');
+  const rows = s.rows.map(([a, aUk, b, bUk]) =>
+    `<div class="vc k-${s.cols[0][0]}"><span>${fmt(a)}</span>${ukSm(aUk)}</div><div class="vc k-${s.cols[1][0]}"><span>${fmt(b)}</span>${ukSm(bUk)}</div>`).join('');
+  stage.innerHTML = `<div class="slide wide">${brow(s)}${headEl(s)}<div class="vs">${head}${rows}</div>${noteEl(s)}${ukLine(s)}</div>`;
 }
 
 function renderMap(s) {
@@ -658,18 +704,7 @@ function renderMap(s) {
   const rows = s.rows.map(([e, label, ua, cells]) =>
     `<div class="rh"><span class="ic" aria-hidden="true">${e}</span>${label}${ukSm(ua)}</div>` +
     cells.map(([en, u], n) => `<div class="cell-m k-${cols[n][0]}"><span>${fmt(en)}</span>${ukSm(u)}</div>`).join('')).join('');
-  stage.innerHTML = `<div class="slide wide">${headEl(s)}<div class="map">${head}${rows}</div>${ukLine(s)}</div>`;
-}
-
-function renderChat(s) {
-  stage.innerHTML = `<div class="slide wide">${SCN[s.scene]}<p class="formula">In real life</p>
-    <div class="chat"><div class="bub q"><span>${fmt(s.q)}</span>${ukSm(s.qUk)}</div>
-    <div class="bub r"><span>${fmt(s.r)}</span>${ukSm(s.rUk)}</div></div></div>`;
-}
-
-function renderFix(s) {
-  const rows = s.rows.map(([bad, good, ua]) => `<div class="x">${bad}</div><div>${fmt(good)} <span class="ok-mark">✓</span>${ukSm(ua)}</div>`).join('');
-  stage.innerHTML = `<div class="slide wide">${headEl(s)}<div class="fix"><div class="fh bad-h">✗ WRONG</div><div class="fh ok-h">✓ RIGHT</div>${rows}</div>${ukLine(s)}</div>`;
+  stage.innerHTML = `<div class="slide wide">${brow(s)}${headEl(s)}<div class="map">${head}${rows}</div>${ukLine(s)}</div>`;
 }
 
 function render() {
@@ -684,15 +719,13 @@ function render() {
   if (s.t === 'text') {
     stage.innerHTML = `<div class="slide">${picEl(s)}<p class="${s.size}">${fmt(s.h)}</p>${ukLine(s)}</div>`;
   } else if (s.t === 'html') {
-    stage.innerHTML = `<div class="slide">${fmt(s.html)}${ukLine(s)}</div>`;
+    stage.innerHTML = `<div class="slide">${brow(s)}${fmt(s.html)}${ukLine(s)}</div>`;
   } else if (s.t === 'rows') {
     renderRows(s);
+  } else if (s.t === 'vs') {
+    renderVs(s);
   } else if (s.t === 'map') {
     renderMap(s);
-  } else if (s.t === 'chat') {
-    renderChat(s);
-  } else if (s.t === 'fix') {
-    renderFix(s);
   } else if (s.t === 'fill') {
     renderFill(s);
   } else if (s.t === 'pick') {
@@ -707,7 +740,7 @@ function render() {
 function renderPick(s) {
   const q = fmt(s.q).replace('___', '<span class="blank" id="blank"></span>');
   const opts = s.o.map(o => `<button type="button" class="tile opt">${o}</button>`).join('');
-  stage.innerHTML = `<div class="slide wide">${picEl(s)}<p class="m">${q}</p><div class="opts n${s.o.length}" style="--n:${s.o.length}">${opts}</div></div>`;
+  stage.innerHTML = `<div class="slide wide">${brow(s)}${picEl(s)}<p class="m">${q}</p><div class="opts n${s.o.length}" style="--n:${s.o.length}">${opts}</div></div>`;
   const blank = $('#blank'), btns = [...stage.querySelectorAll('.opt')];
   btns.forEach(b => b.addEventListener('click', () => {
     if (b.disabled) return;
@@ -731,7 +764,7 @@ function renderFill(s) {
   const width = whole ? 'min(22ch, 100%)' : len + 'ch';
   const input = `<input id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Your answer" style="width:${width}">`;
   const hint = s.hint ? `<p class="hint" lang="uk">(${s.hint})</p>` : '';
-  stage.innerHTML = `<div class="slide${whole ? ' wide' : ''}">${picEl(s)}<p class="m">${s.q.replace('___', input)}</p>${hint}<p class="answer" id="ans"></p></div>`;
+  stage.innerHTML = `<div class="slide${whole ? ' wide' : ''}">${brow(s)}${picEl(s)}<p class="m">${s.q.replace('___', input)}</p>${hint}<p class="answer" id="ans"></p></div>`;
 
   const el = $('#in');
   let tries = 0, done = false;
@@ -762,7 +795,7 @@ function renderFill(s) {
 function renderMatch(s) {
   const tiles = (side, k) => shuffle(s.pairs.map((p, n) => ({ n, w: p[k] })))
     .map(o => `<button type="button" class="tile" data-side="${side}" data-n="${o.n}">${o.w}</button>`).join('');
-  stage.innerHTML = `<div class="slide wide"><div class="match"><div class="col">${tiles('en', 0)}</div><div class="col" lang="uk">${tiles('ua', 1)}</div></div></div>`;
+  stage.innerHTML = `<div class="slide wide">${brow(s)}<div class="match"><div class="col">${tiles('en', 0)}</div><div class="col" lang="uk">${tiles('ua', 1)}</div></div></div>`;
 
   let sel = null, matched = 0;
   stage.querySelectorAll('.tile').forEach(t => t.addEventListener('click', () => {
