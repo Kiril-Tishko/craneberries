@@ -17,6 +17,8 @@ mistakes list short. The teacher sometimes sends the lesson materials (slides) t
 
 Students (all learn American English):
 - Sergii: B1, Tuesdays. Pays weekly for himself and his daughter Vaselina (also a student).
+- Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
+  she mixes in a lot of Russian. Her ledger is `billing/vaselina` (paid by Sergii).
 - Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
 - Julia: A2+, pays after each lesson.
 - Mariya: A2, 2 lessons a week, pays weekly.
