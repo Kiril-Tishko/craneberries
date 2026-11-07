@@ -343,7 +343,7 @@ h2.sec{margin-bottom:12px}
   // ---------- word bank: imported list (bank/<sid>) + every lesson's words ----------
   const THEMES = { work: 'Work', money: 'Money & finance', numbers: 'Numbers & spreadsheets', law: 'Law', people: 'People',
     less: '-less words', everyday: 'Everyday', phrases: 'Phrases', city: 'City & places', weather: 'Weather', food: 'Food',
-    home: 'Home', event: 'The event', grammar: 'Grammar', sounds: 'Sounds', lesson: 'From lessons' };
+    home: 'Home', event: 'The event', grammar: 'Grammar', sounds: 'Sounds', health: 'Health', lesson: 'From lessons' };
   function wordBank(sid) {
     const seen = new Map();
     arr((S.bank[sid] || {}).words).slice().sort((a, b) => (b.n || 0) - (a.n || 0)).forEach((w) => {

@@ -24,6 +24,8 @@ Students (all learn American English):
   big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
   with an emoji each, no "not X" notes and no wrong forms.
 - Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
+- Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week, payment not decided.
+  Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
 - Julia: A2+, pays after each lesson.
 - Mariya: A2, 2 lessons a week, pays weekly.
 - Other students are on a break.
@@ -43,6 +45,11 @@ Students (all learn American English):
    - `progress/<slug>`: the teacher moves units with the buttons. Read it; only if the lesson clearly
      finished the current unit and she hasn't moved it, mention it in the reply (don't move it yourself).
 5. Send the cards to the user with SendUserFile and give them the site link.
+
+**Text the teacher might forward to a student** (answers to a student's question, a message, a reading text)
+goes in its own fenced block that starts with `For <name>:` and contains only what the student should read:
+no comments to the teacher, no "your student", no feedback. Everything outside the block is for the teacher.
+She once forwarded a whole reply to a student by mistake.
 
 ## What the teacher asked for
 
@@ -118,7 +125,7 @@ Capabilities: `db`, `assets`, `downloads`. Collections: `students`, `lessons`, `
 `billing` (both write: `{plan, perPayment, log[{date, kind, n}]}`, balance = sum of `n`, in lessons).
 The word bank on each student page merges `bank/<slug>` (words the teacher sent in chat before these
 reports: `{words[{en, theme, n, sent}]}`, n = position, 1 = newest; themes: work, money, numbers, law,
-people, less, everyday, phrases, city, weather, food, home, event, grammar, sounds) with every lesson's
+people, less, everyday, phrases, city, weather, food, home, event, grammar, sounds, health) with every lesson's
 `words`, so keep `words` accurate. The teacher's "reviewed" taps live in `state/bank-<slug>`.
 `materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
 with a short quality note (British usage, errors, overload). Her "reviewed again" ticks live in
