@@ -47,8 +47,9 @@ Students (all learn American English):
 5. Send the cards to the user with SendUserFile and give them the site link.
 
 **Text the teacher might forward to a student** (answers to a student's question, a message, a reading text)
-goes in its own fenced block that starts with `For <name>:` and contains only what the student should read:
-no comments to the teacher, no "your student", no feedback. Everything outside the block is for the teacher.
+goes in its own fenced block that contains only what the student should read: no name or label inside it
+(put "Text for <name>" as a line above the block), no comments to the teacher, no "your student", no feedback.
+Everything outside the block is for the teacher.
 She once forwarded a whole reply to a student by mistake.
 
 ## What the teacher asked for
@@ -74,7 +75,8 @@ She once forwarded a whole reply to a student by mistake.
   (what worked, what to try next time). **Be as blunt as possible**: only the teacher reads it. Keep
   tracking the teacher's pronunciation (e.g. pan sounding like pen).
 - **Reading texts**: only when she asks. Give plain text in chat, not pictures, no questions at the end.
-  Stories must not describe the student's own life; use the student's target words and mostly the
+  Stories must not describe the student's own life or retell what she told the teacher (her appointment,
+  her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
   structure from their last lesson. ~120–170 words for A2, ~60 for Sergii (he dislikes long texts).
 - **Site text is short and practical**: summary 1–2 short sentences; max 3 "went well" bullets; mistake
   notes a few words or empty; plan details one short line; teacher "worked" 3 bullets, "try next time"
