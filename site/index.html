@@ -146,6 +146,13 @@ td.en{font-weight:600}
 .check input{accent-color:var(--green)}
 .callout{background:var(--sunk);border-radius:10px;padding:10px 14px;font-size:14.5px;color:var(--muted)}
 
+.bill{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip.big{font-size:14.5px;padding:5px 12px}
+.btn.ghost{border-color:transparent;color:var(--muted)}
+.blog{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.blog li{display:flex;gap:12px}
+.bank > summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14.5px;margin-top:12px}
+.bank table{margin-top:8px}
 .shead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .scard-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .when{font-weight:600;color:var(--accent);font-size:14.5px}
@@ -195,9 +202,9 @@ h2.sec{margin-bottom:12px}
 
 <script>
 (() => {
-  const S = { students: {}, lessons: {}, states: {}, teacher: null, got: new Set(), status: 'loading' };
+  const S = { students: {}, lessons: {}, states: {}, billing: {}, teacher: null, got: new Set(), status: 'loading' };
   const UI = { open: new Set(), tab: {} };
-  const NEED = ['students', 'lessons', 'state', 'teacher'];
+  const NEED = ['students', 'lessons', 'state', 'teacher', 'billing'];
   let db = null, dl = null;
   const main = document.getElementById('main');
 
@@ -241,6 +248,62 @@ h2.sec{margin-bottom:12px}
   const tick = (lid, key, id, done) => `<input type="checkbox" id="${key}-${esc(lid)}-${esc(id)}" data-lid="${esc(lid)}" data-key="${key}" data-id="${esc(id)}" ${done ? 'checked' : ''} aria-label="${key === 'sent' ? 'Sent' : 'Discussed'}">`;
   const ts = (xs) => arr(xs).map((t) => `<span class="ts">${esc(t)}</span>`).join('');
 
+  // ---------- lessons & payments (balance in lessons: + paid, − taught) ----------
+  const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  function billStatus(sid) {
+    const b = S.billing[sid];
+    if (!b) return null;
+    const log = arr(b.log);
+    const bal = log.reduce((a, e) => a + (Number(e.n) || 0), 0);
+    if (!log.length) return { text: 'No payments logged', cls: '', bal };
+    if (bal > 0) return { text: `${bal} lesson${bal === 1 ? '' : 's'} left`, cls: 'fixed', bal };
+    if (bal < 0) return { text: `${-bal} unpaid`, cls: 'recurring', bal };
+    return { text: b.perPayment > 1 ? 'Package used up' : 'Paid up', cls: b.perPayment > 1 ? 'recurring' : '', bal };
+  }
+  function billPanel(sid) {
+    const b = S.billing[sid];
+    if (!b) return '';
+    const st = billStatus(sid);
+    const log = arr(b.log);
+    const per = Number(b.perPayment) || 0;
+    return `<section class="panel"><div class="panel-h"><h2>Lessons & payments</h2><span class="muted small">${esc(b.plan || '')}</span></div>
+      <div class="bill"><span class="chip big ${st.cls}">${esc(st.text)}</span>
+        ${per > 0 ? `<button class="btn" type="button" data-bill="${esc(sid)}" data-kind="paid" data-n="${per}">+ Paid (${per})</button>` : ''}
+        <button class="btn" type="button" data-bill="${esc(sid)}" data-kind="lesson" data-n="-1">− Lesson</button>
+        ${log.length ? `<button class="btn ghost" type="button" data-undo="${esc(sid)}">Undo last</button>` : ''}</div>
+      ${log.length ? `<ul class="blog">${log.slice(-5).reverse().map((e) => `<li><span class="muted">${esc(fmtDate(e.date))}</span><span>${e.kind === 'paid' ? `Paid +${esc(e.n)}` : 'Lesson −1'}</span></li>`).join('')}</ul>` : ''}</section>`;
+  }
+  let billChain = Promise.resolve();
+  function writeBill(sid, mutate) {
+    const next = JSON.parse(JSON.stringify(S.billing[sid] || { log: [] }));
+    next.log = arr(next.log);
+    mutate(next);
+    S.billing[sid] = next;
+    render();
+    if (!db) return;
+    billChain = billChain.then(() => db.collection('billing').doc(sid).set(next)).catch(() => toast('Couldn’t save that. Try again in a moment.'));
+  }
+
+  // ---------- word bank: every word from every lesson, oldest first ----------
+  function wordBank(sid) {
+    const seen = new Map();
+    lessonsOf(sid).slice().reverse().forEach((l) => arr(l.words).forEach((w) => {
+      const k = String(w.en || '').toLowerCase();
+      if (k && !seen.has(k)) seen.set(k, { ...w, date: l.date });
+    }));
+    return [...seen.values()];
+  }
+  function bankPanel(sid) {
+    const all = wordBank(sid);
+    if (!all.length) return '';
+    const latest = lessonsOf(sid)[0];
+    const review = all.filter((w) => !latest || w.date !== latest.date).slice(0, 6);
+    return `<section class="panel"><div class="panel-h"><h2>Word bank</h2><span class="muted small">${all.length} words</span></div>
+      ${review.length ? `<div class="group-h">Review next lesson</div><div class="chips">${review.map((w) => `<span class="mark en">${esc(w.en)}</span>`).join('')}</div>` : ''}
+      <details class="bank"><summary>All words</summary><div class="table-wrap"><table><tbody>${all.slice().reverse().map((w) => `
+        <tr><td class="en">${esc(w.en)}</td><td class="muted">${esc(w.ua)}</td><td class="tcell muted small">${esc(fmtDate(w.date))}</td></tr>`).join('')}</tbody></table></div></details></section>`;
+  }
+
   function viewHome() {
     const students = Object.values(S.students).sort((a, b) => String(a.name).localeCompare(String(b.name)));
     if (!students.length) return `<div class="empty"><h1>No students yet</h1><p class="lede">Send Claude a lesson transcript to add one.</p></div>`;
@@ -249,6 +312,7 @@ h2.sec{margin-bottom:12px}
       const focus = arr(s.focus).filter((f) => f.status !== 'fixed').slice(0, 3);
       return `<a class="scard" href="#s-${esc(s.id)}">
         <div class="scard-h"><span class="name">${esc(s.name)}</span>${s.level ? `<span class="chip">${esc(s.level)}</span>` : ''}</div>
+        ${(() => { const b = billStatus(s.id); return b ? `<div><span class="chip ${b.cls}">${esc(b.text)}</span></div>` : ''; })()}
         <div class="muted small">${last ? `Last: ${esc(fmtDate(last.date))}` : 'No lessons yet'}${last && last.nextWhen ? ` · Next: ${esc(last.nextWhen)}` : ''}</div>
         ${focus.length ? `<ul>${focus.map((f) => `<li>${esc(f.issue)}</li>`).join('')}</ul>` : ''}</a>`;
     }).join('')}</div>`;
@@ -291,7 +355,7 @@ h2.sec{margin-bottom:12px}
       <li><span>${esc(f.issue)}</span>${f.status && f.status !== 'new' ? `<span class="chip ${esc(f.status)}">${esc(f.status)}</span>` : ''}</li>`).join('')}</ul></section>` : '';
 
     const lessons = `<section><h2 class="sec">Lessons</h2>${ls.length ? ls.map(lessonBlock).join('') : '<p class="muted">No lessons yet.</p>'}</section>`;
-    return `<a class="back" href="#students">← Students</a><div class="stack">${head}${next}${tracker}${lessons}</div>`;
+    return `<a class="back" href="#students">← Students</a><div class="stack">${head}${billPanel(sid)}${next}${tracker}${bankPanel(sid)}${lessons}</div>`;
   }
 
   const TABS = [['overview', 'Overview'], ['mistakes', 'Mistakes'], ['words', 'Words'], ['pron', 'Sounds'], ['cards', 'Cards'], ['teacher', 'My teaching']];
@@ -415,6 +479,15 @@ h2.sec{margin-bottom:12px}
       det.querySelector('.tabpanel').innerHTML = panel(l, tabBtn.dataset.tab);
       return;
     }
+    const bill = e.target.closest('[data-bill]');
+    if (bill) {
+      const n = Number(bill.dataset.n);
+      writeBill(bill.dataset.bill, (b) => { b.log.push({ date: todayISO(), kind: bill.dataset.kind, n }); });
+      toast(bill.dataset.kind === 'paid' ? `Payment logged (+${n})` : 'Lesson logged (−1)');
+      return;
+    }
+    const undo = e.target.closest('[data-undo]');
+    if (undo) { writeBill(undo.dataset.undo, (b) => { b.log.pop(); }); toast('Last entry removed'); return; }
     const save = e.target.closest('[data-save]');
     if (save && dl) {
       save.disabled = true;
@@ -460,6 +533,7 @@ h2.sec{margin-bottom:12px}
     sub('students', (docs) => { S.students = {}; docs.forEach((d) => { S.students[d.id] = { ...d.data(), id: d.id }; }); });
     sub('lessons', (docs) => { S.lessons = {}; docs.forEach((d) => { S.lessons[d.id] = { ...d.data(), id: d.id }; }); });
     sub('state', (docs) => { S.states = {}; docs.forEach((d) => { S.states[d.id] = d.data() || {}; }); });
+    sub('billing', (docs) => { S.billing = {}; docs.forEach((d) => { S.billing[d.id] = d.data() || {}; }); });
     sub('teacher', (docs) => { const p = docs.find((d) => d.id === 'profile'); S.teacher = p ? p.data() : null; });
   }
   start();
