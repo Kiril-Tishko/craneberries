@@ -11,14 +11,15 @@ artifact's database and asset store.
 
 The transcript is auto-generated and has no speaker labels. The teacher is a Ukrainian speaker who
 teaches in English; students are mostly Ukrainian speakers. Infer who said what from context, and say so
-in the teacher report. Polish-looking fragments are transcription errors, never Polish. Some lessons are
+in the teacher report. The teacher and all students speak only Ukrainian besides English: Russian- or
+Polish-looking fragments are transcription errors of Ukrainian, never Russian or Polish. Some lessons are
 recorded on the teacher's phone and catch mostly the teacher's voice: say so and keep the student's
 mistakes list short. The teacher sometimes sends the lesson materials (slides) too.
 
 Students (all learn American English):
 - Sergii: B1, Tuesdays. Pays weekly for himself and his daughter Vaselina (also a student).
 - Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
-  she mixes in a lot of Russian. Her ledger is `billing/vaselina` (paid by Sergii).
+  she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
 - Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
 - Julia: A2+, pays after each lesson.
 - Mariya: A2, 2 lessons a week, pays weekly.
