@@ -133,3 +133,13 @@ title, detail}]`, `steps[]`, `pace[{who, time, how}]`, `review[{when, what}]`, `
 pace, note, prev}`. Base each lesson's `nextLesson` plan on the student's current unit. When the teacher sends a new
 material, add it to the matching unit's `materials` (and `fix` if it needs changes). Site tabs: Students, Course
 (Units · every student / How to teach · you), My teaching.
+
+## Say It Nicely (the teacher's own practice)
+
+`diplomacy/index.html` → https://claude.ai/artifact/VpUhhf1xAKk4MinhcwBVTL. For the teacher herself, not
+students: a situation card, she types a reply, the page shows a diplomatic reply with reusable `[phrases]`
+marked, and Claude (`sample`, quick tier) polishes her own reply. Keep it bare: no titles, captions or
+instructions on the page. Situations live in `BANK` in the page (`{k, s, a}`, kinds in `KINDS`): short, clear
+(who, what happened, what you want), plain American English, 2–3 bracketed phrases per reply.
+`db` docs: `me/progress {done[]}`, `me/saved {phrases[]}` (phrase keys), `me/extra {items[]}` (situations
+Claude wrote from the page). Capabilities: `db`, `sample`.

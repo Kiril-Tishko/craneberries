@@ -1,0 +1,770 @@
+<title>Say It Nicely</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Onest:wght@400;500;600&display=swap">
+<style>
+/* One quiet column: the situation card, the reply field, then the diplomatic answer with its phrases marked. */
+:root {
+  --bg: #E7ECEF;
+  --card: #FFFFFF;
+  --ink: #17222D;
+  --muted: #5C6B78;
+  --line: #D2DBE1;
+  --accent: #22405C;
+  --on-accent: #FFFFFF;
+  --mark: #FFE27A;
+  --star: #C98E00;
+  --ok: #2E7A4E;
+  --ins: #CDEBD8;
+  --shadow: rgba(24, 44, 64, .28);
+  --f-scene: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-ui: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161B; --card: #1A222A; --ink: #E4EAEE; --muted: #93A1AD; --line: #2A3641;
+    --accent: #9DC2E4; --on-accent: #0D1925; --mark: rgba(255, 210, 84, .34); --star: #F2C14E;
+    --ok: #7FCB9C; --ins: rgba(127, 203, 156, .24); --shadow: rgba(0, 0, 0, .55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161B; --card: #1A222A; --ink: #E4EAEE; --muted: #93A1AD; --line: #2A3641;
+  --accent: #9DC2E4; --on-accent: #0D1925; --mark: rgba(255, 210, 84, .34); --star: #F2C14E;
+  --ok: #7FCB9C; --ins: rgba(127, 203, 156, .24); --shadow: rgba(0, 0, 0, .55);
+  color-scheme: dark;
+}
+
+html, body { min-height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main {
+  max-width: 600px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 8px 56px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.bar { display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+.icon-btn {
+  position: relative; width: 42px; height: 42px; border: 0; border-radius: 12px;
+  background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer;
+}
+.icon-btn:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); }
+.icon-btn svg { width: 22px; height: 22px; }
+.badge {
+  position: absolute; top: 1px; right: -3px; min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 9px; background: var(--accent); color: var(--on-accent);
+  font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; font-variant-numeric: tabular-nums;
+}
+
+.view { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+  position: relative; background: var(--card); border-radius: 22px;
+  padding: 30px 26px 28px;
+  box-shadow: 0 1px 0 var(--line), 0 18px 40px -26px var(--shadow);
+}
+#situation {
+  margin: 0; padding-right: 26px;
+  font-family: var(--f-scene); font-weight: 400;
+  font-size: clamp(1.35rem, 1.1rem + 1.1vw, 1.7rem); line-height: 1.34;
+  text-wrap: pretty;
+}
+#skip { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; }
+#skip svg { width: 18px; height: 18px; }
+
+.finish { display: flex; flex-direction: column; gap: 18px; }
+.finish p { margin: 0; font-family: var(--f-scene); font-size: 1.5rem; line-height: 1.3; }
+.finish .row-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.finish .status { font-family: var(--f-ui); font-size: .95rem; color: var(--muted); }
+
+.reply {
+  display: flex; align-items: flex-end; gap: 8px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+  padding: 6px 6px 6px 18px;
+}
+.reply:focus-within { border-color: var(--accent); }
+#reply {
+  flex: 1; min-width: 0; border: 0; background: transparent; resize: none; outline: none;
+  font: inherit; font-size: 1.06rem; line-height: 1.45; color: var(--ink);
+  padding: 10px 0; max-height: 40vh;
+}
+#reply::placeholder { color: var(--muted); opacity: .7; }
+.send {
+  flex: none; width: 44px; height: 44px; border: 0; border-radius: 13px;
+  background: var(--accent); color: var(--on-accent); display: grid; place-items: center; cursor: pointer;
+}
+.send svg { width: 20px; height: 20px; }
+
+.result { display: flex; flex-direction: column; gap: 18px; padding: 6px 4px 0; }
+#answer { margin: 0; font-size: 1.28rem; line-height: 1.55; text-wrap: pretty; }
+mark, .mk {
+  color: inherit; padding: 0 .08em; border-radius: .15em;
+  background: linear-gradient(transparent 30%, var(--mark) 30%, var(--mark) 94%, transparent 94%);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; max-width: 100%;
+  padding: 7px 13px 7px 10px; border-radius: 999px; cursor: pointer;
+  background: var(--card); border: 1px solid var(--line); font-size: .95rem; line-height: 1.3; text-align: left;
+}
+.chip span { min-width: 0; }
+.chip svg, .star svg { width: 17px; height: 17px; flex: none; color: var(--muted); fill: none; }
+.chip[aria-pressed="true"] { border-color: var(--star); }
+.chip[aria-pressed="true"] svg, .star[aria-pressed="true"] svg { color: var(--star); fill: currentColor; }
+
+.mine { display: flex; flex-direction: column; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+#mineText { margin: 0; color: var(--muted); font-size: 1rem; }
+#mineText::before { content: "\201C"; }
+#mineText::after { content: "\201D"; }
+.polish { display: flex; flex-direction: column; gap: 8px; }
+.better { display: flex; gap: 10px; align-items: flex-start; margin: 0; font-size: 1.08rem; line-height: 1.5; }
+.better > svg { flex: none; width: 18px; height: 18px; margin-top: .25em; color: var(--accent); }
+.better.ok > svg { color: var(--ok); }
+.better > span { min-width: 0; }
+.ins { background: var(--ins); border-radius: .2em; padding: 0 .1em; }
+.fixes { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0 0 0 28px; padding: 0; list-style: none; font-size: .92rem; }
+.fixes s { color: var(--muted); }
+.tip { margin: 0 0 0 28px; color: var(--muted); font-size: .92rem; }
+.dots { display: inline-flex; gap: 5px; padding: 6px 0 6px 28px; }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: .35; animation: pulse 1.2s infinite ease-in-out; }
+.dots i:nth-child(2) { animation-delay: .15s; }
+.dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes pulse { 0%, 80%, 100% { opacity: .25; } 40% { opacity: .9; } }
+.quiet-btn { align-self: flex-start; margin-left: 28px; border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: .92rem; text-decoration: underline; text-underline-offset: 3px; }
+
+.next-row { display: flex; justify-content: flex-end; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer;
+  padding: 11px 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent);
+  font-weight: 500; font-size: 1rem;
+}
+.pill svg { width: 18px; height: 18px; }
+.pill.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.pill:disabled { opacity: .55; cursor: default; }
+
+/* Phrasebook */
+.seg { display: inline-flex; align-self: flex-start; padding: 3px; border-radius: 12px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.seg button { border: 0; background: transparent; padding: 7px 16px; border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 500; font-size: .95rem; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px var(--shadow); }
+.book { display: flex; flex-direction: column; gap: 26px; }
+.group { display: flex; flex-direction: column; }
+.group h2 { margin: 0 0 6px; font-size: .74rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.entry { border-bottom: 1px solid var(--line); }
+.entry:last-child { border-bottom: 0; }
+.entry-row { display: flex; align-items: center; gap: 4px; }
+.star { flex: none; width: 38px; height: 38px; border: 0; background: none; border-radius: 10px; display: grid; place-items: center; cursor: pointer; margin-left: -10px; }
+.ph { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 10px 0; cursor: pointer; font-size: 1.05rem; line-height: 1.35; }
+.ex { margin: 0 0 12px 28px; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+.empty { margin: 8px 0 0; color: var(--muted); font-size: 1rem; }
+.empty button { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; }
+
+@media (max-width: 420px) {
+  .card { padding: 26px 20px 24px; border-radius: 20px; }
+  #answer { font-size: 1.2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dots i { animation: none; opacity: .6; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.7L12 16.6l-5.1 2.7 1-5.7-4.1-4 5.7-.8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.5H7.5A2.5 2.5 0 0 1 5 17zM5 17a2.5 2.5 0 0 1 2.5-2.5H18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5.5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h13.5M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95M19 4.5V8h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M5 19l1-4L15.5 5.5a2.1 2.1 0 0 1 3 3L9 18z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<main>
+  <header class="bar">
+    <button class="icon-btn" id="back" type="button" aria-label="Back to practice" hidden><svg><use href="#i-back"/></svg></button>
+    <span></span>
+    <button class="icon-btn" id="toBook" type="button" aria-label="Phrasebook"><svg><use href="#i-book"/></svg><span class="badge" id="savedCount" hidden></span></button>
+  </header>
+
+  <section class="view" id="practice">
+    <article class="card" id="card">
+      <p id="situation">A friend invites you to a party on Saturday. You don't want to go.</p>
+      <button class="icon-btn" id="skip" type="button" aria-label="Another situation"><svg><use href="#i-skip"/></svg></button>
+      <div class="finish" id="finish" hidden>
+        <p id="finishText"></p>
+        <div class="row-btns">
+          <button class="pill" id="more" type="button">New situations</button>
+          <button class="pill ghost" id="restart" type="button">Start over</button>
+        </div>
+        <div class="status" id="moreStatus" hidden></div>
+      </div>
+    </article>
+
+    <form class="reply" id="replyForm" autocomplete="off">
+      <textarea id="reply" rows="2" placeholder="Your reply" aria-label="Your reply"></textarea>
+      <button class="send" id="send" type="submit" aria-label="Show a diplomatic reply"><svg><use href="#i-up"/></svg></button>
+    </form>
+
+    <div class="result" id="result" hidden>
+      <p id="answer"></p>
+      <div class="chips" id="chips"></div>
+      <div class="mine" id="mine" hidden>
+        <p id="mineText"></p>
+        <div class="polish" id="polish"></div>
+      </div>
+      <div class="next-row"><button class="pill" id="next" type="button">Next <svg><use href="#i-next"/></svg></button></div>
+    </div>
+  </section>
+
+  <section class="view" id="bookView" hidden>
+    <div class="seg" role="group" aria-label="Show">
+      <button type="button" id="fSaved" aria-pressed="true">Saved</button>
+      <button type="button" id="fAll" aria-pressed="false">All</button>
+    </div>
+    <div class="book" id="book"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  // Situations: s = the situation, a = a diplomatic reply with [reusable phrases], k = kind.
+  const BANK = [
+    { k: "no", s: "A friend invites you to a party on Saturday. You don't want to go.", a: "Thanks so much for inviting me! [I can't make it] this Saturday, but [I hope you have a great time]. [Let's catch up soon]." },
+    { k: "no", s: "A colleague asks you to cover their lessons next week. You can't.", a: "[I wish I could help, but] I'm fully booked next week. [Maybe someone else is free]?" },
+    { k: "ask", s: "You need to move tomorrow's lesson with a student to Thursday.", a: "Hi! [Would it be possible to] move tomorrow's lesson to Thursday? [Sorry for the short notice]." },
+    { k: "remind", s: "A student hasn't paid for last week's lessons. Remind them.", a: "Hi! [Just a friendly reminder] about the payment for last week's lessons. [Could you send it by] Friday? Thanks!" },
+    { k: "no", s: "A student's parent asks for a discount. You don't want to lower your price.", a: "[I appreciate you asking.] [Unfortunately, I can't] lower my price, but I can offer a package of ten lessons." },
+    { k: "feedback", s: "A student has come without homework three times in a row. Bring it up kindly.", a: "[I've noticed that] the homework hasn't been done the last few times. [Is everything okay]? [It would really help if] you could do at least part of it." },
+    { k: "disagree", s: "A colleague says grammar should always come first. You think speaking matters more.", a: "[I see your point], but [I see it a bit differently]. For me, speaking comes first, and grammar supports it." },
+    { k: "feedback", s: "A friend shows you a new haircut and asks what you think. You don't love it.", a: "[It's a big change!] [I think I need a day to get used to it], but you look happy, and that's what matters." },
+    { k: "complain", s: "Your soup at a restaurant is cold. Tell the server.", a: "[Excuse me], sorry to bother you, but my soup is a little cold. [Could you warm it up], please?" },
+    { k: "limit", s: "Your neighbor plays loud music late at night. Ask them to turn it down.", a: "Hi! [Sorry to bother you.] The music gets pretty loud at night, and I get up early. [Would you mind] turning it down after ten?" },
+    { k: "time", s: "A school offers you a new teaching job. You need time to think.", a: "Thank you, [that sounds really interesting]. [Let me think it over], and [I'll get back to you] by Monday." },
+    { k: "sorry", s: "You forgot a close friend's birthday. Apologize.", a: "[I'm so sorry] I missed your birthday. [No excuses.] [Let me make it up to you]: dinner's on me this week!" },
+    { k: "sorry", s: "You're ten minutes late for an online lesson. Apologize to the student.", a: "[I'm so sorry for the delay.] [Thank you for waiting.] I'll add the ten minutes at the end." },
+    { k: "news", s: "You're raising your prices next month. Tell your students.", a: "[I wanted to let you know] that my rate will go up slightly starting next month. [I really enjoy working with you], and I hope we can continue." },
+    { k: "limit", s: "A new acquaintance asks how much money you make. You don't want to say.", a: "[I'd rather not say], [if you don't mind]. But I'm happy with it!" },
+    { k: "exit", s: "Someone at a party has been talking to you for half an hour. You want to move on.", a: "[It was really nice talking to you.] I'm going to go say hi to a friend. [Catch you later]!" },
+    { k: "limit", s: "A relative criticizes your career choice again. Respond calmly.", a: "[I know you mean well], but I'm really happy with my choice. [Let's agree to disagree]." },
+    { k: "ask", s: "You need a busy colleague to send you a file today.", a: "[I know you're busy], but [could you send me] the file today? [It would really help me out]." },
+    { k: "feedback", s: "A student asks how their speaking is. It's good, but they often get the past tense wrong.", a: "[You're doing really well] with speaking. [One thing to work on] is the past tense. [Let's focus on that] next time." },
+    { k: "complain", s: "Your internet bill is much higher than usual. Call the company.", a: "Hi, [I think there might be a mistake] on my bill. It's much higher than usual. [Could you take a look]?" },
+    { k: "no", s: "A salesperson calls about a new phone plan. You're not interested.", a: "[Thanks, but I'm not interested.] [I'm happy with] my current plan. Have a good day." },
+    { k: "time", s: "A student asks a grammar question. You're not sure of the answer.", a: "[That's a great question.] [I want to give you the right answer], so [let me check] and tell you next lesson." },
+    { k: "limit", s: "A student's parent texts you questions at 11 p.m. You want this to stop.", a: "Happy to help! [Just so you know], I answer messages between 9 a.m. and 7 p.m. [I'll get back to you] in the morning." },
+    { k: "disagree", s: "Your friends want to go to an expensive restaurant. You'd prefer something cheaper.", a: "[How about] somewhere a little more casual? [I'm trying to] save money this month." },
+    { k: "ask", s: "A friend borrowed money two months ago and hasn't paid it back.", a: "Hey, [I hate to bring this up], but [do you think you could] pay me back soon? [I could really use it] right now." },
+    { k: "remind", s: "You emailed a school a week ago and got no answer.", a: "Hi, [I'm just following up on] my email from last week. [Have you had a chance to] look at it?" },
+    { k: "news", s: "You have to cancel dinner with a friend at the last minute.", a: "[I'm really sorry to do this], but [I have to cancel] tonight. Something came up. [Can we reschedule]?" },
+    { k: "feedback", s: "A colleague asks for feedback on their slides. There's too much text.", a: "[It looks great overall.] [One thing I'd change]: maybe use less text on each slide, so people focus on you." },
+    { k: "complain", s: "Your hotel room wasn't cleaned today. Call the front desk.", a: "Hi, [I'm afraid] my room wasn't cleaned today. [Would it be possible to] have someone come up?" },
+    { k: "sorry", s: "You sent a student the wrong homework file. Apologize.", a: "[My mistake!] I sent you the wrong file. Here's the right one. [Sorry for the confusion]." },
+    { k: "disagree", s: "A student says the homework is too much. You think it's fine.", a: "[I hear you.] [Let's give it two weeks], and [if it's still too much], we'll change it." },
+    { k: "limit", s: "A relative keeps giving you advice you didn't ask for.", a: "[Thanks, I'll keep that in mind.] [We're doing what works for us] for now." },
+    { k: "no", s: "Someone asks you to organize the school party. You don't have time.", a: "[Thanks for thinking of me!] [I can't take that on right now], but [I'm happy to help] on the day." },
+    { k: "ask", s: "Someone on the bus is playing videos loudly without headphones.", a: "Excuse me, [would you mind] using headphones? [Thanks so much]." },
+    { k: "complain", s: "Your online order arrived broken. Write to the store.", a: "Hi, my order arrived damaged. [I've attached] a photo. [Could you send me a replacement] or a refund?" },
+    { k: "news", s: "A student did badly on a practice test. Tell them.", a: "[This one didn't go as well as we hoped], but [that's what practice is for]. Now we know exactly what to work on." },
+    { k: "disagree", s: "Your manager suggests a plan you think won't work.", a: "[I see where you're coming from.] [My only concern is] the time. [What if we] start with a smaller group?" },
+    { k: "exit", s: "At dinner, someone starts talking about politics. You want to change the subject.", a: "[Let's not get into] politics tonight! [Anyway], how was your trip?" },
+    { k: "ask", s: "A client's message is confusing. Check what they want.", a: "[Just to make sure I understand]: you'd like two lessons a week, [is that right]?" },
+    { k: "time", s: "A salesperson pushes you to sign a contract today.", a: "[I don't make decisions on the spot.] [Let me think about it], and I'll let you know." },
+    { k: "feedback", s: "A friend is always late when you meet. You want this to change.", a: "[I love spending time with you], but [it's hard for me when] I wait for half an hour. [Could you text me] if you're running late?" },
+    { k: "complain", s: "Your landlord still hasn't fixed the heater after two weeks.", a: "Hi, [I wanted to check in about] the heater. [It's been two weeks], and it's getting cold. [When can someone come by]?" },
+    { k: "no", s: "A friend asks to borrow money. You don't want to lend it.", a: "[I'm sorry, I'm not in a position to] lend money right now. [I hope you understand]." },
+    { k: "limit", s: "A friend posted a photo of you online. You don't like it.", a: "Hey, [would you mind taking down] that photo of me? [I'm not a fan of] how I look in it." },
+    { k: "feedback", s: "A student tells you your lessons are too fast.", a: "[Thank you for telling me.] [That's really helpful.] Let's slow down, and [let me know anytime] it's too much." },
+    { k: "disagree", s: "In a meeting, a colleague gets the deadline wrong. Correct them politely.", a: "[I might be wrong], but I think the deadline is Friday, not Monday. [Could we double-check]?" },
+    { k: "ask", s: "You'd like a happy student to write a review for you.", a: "[Would you be willing to] write a short review? [It would mean a lot to me]. [Only if you have time], of course." },
+    { k: "no", s: "A student asks you to check their long essay for free.", a: "[I'd be glad to look at it!] [For longer texts, I usually] charge for one lesson. [Would that work for you]?" },
+    { k: "news", s: "You want to stop teaching a student who cancels all the time.", a: "[I've enjoyed working with you.] With so many cancellations, [it's hard for me to keep] your time slot, so [I'll need to end our lessons] after this month." },
+    { k: "exit", s: "A friend calls while you're busy. You want to end the call.", a: "[I'm so sorry, I have to run.] [Can I call you back] tonight?" },
+    { k: "ask", s: "You need a neighbor to take a package for you tomorrow.", a: "Hi! [I was wondering if you could] take a package for me tomorrow? [I'd really appreciate it]." },
+    { k: "exit", s: "Your guests are still at your place at midnight. You want them to go.", a: "[This was so much fun!] I'm getting pretty tired, though, so [I think I'll call it a night]." },
+    { k: "sorry", s: "You forgot to answer a friend's message for a week.", a: "[Sorry for the late reply]! [It slipped my mind]. To answer your question, yes, Saturday works." },
+    { k: "no", s: "Someone you went on one date with asks you out again. You're not interested.", a: "[That's really sweet of you], but [I don't think we're a good match]. [I wish you all the best]." },
+    { k: "complain", s: "A colleague presented your idea as their own.", a: "[I was a little surprised] to hear my idea in your presentation. [Next time, I'd appreciate it if] you mentioned my name." },
+    { k: "news", s: "From now on, you want all students to pay in advance. Tell them.", a: "[Going forward], I'm asking all students to pay in advance. [Thanks for understanding]!" },
+    { k: "time", s: "A friend asks to stay at your place for a week. You're not sure.", a: "[Let me check with] my family, and [I'll let you know] tomorrow." },
+    { k: "news", s: "You promised to send materials today, but they aren't ready.", a: "[I'm running a bit behind] with the materials. [I'll have them to you] by tomorrow morning. [Thanks for your patience]." },
+    { k: "limit", s: "Your manager asks you to work on Sunday. You don't work Sundays.", a: "[I'm not available] on Sundays. That's my family time. [I could do] Saturday morning, [if that helps]." },
+    { k: "feedback", s: "A parent asks how their son is doing. He's smart but often distracted.", a: "[He's very bright.] He gets distracted sometimes, so short, fun activities [work best for him]. [It would help if] he practiced a few words at home." },
+    { k: "disagree", s: "A parent wants more grammar for their young child. You think games work better.", a: "[I understand why you'd want that.] At this age, kids [learn best through] games. [I'll add a little grammar], but let's keep it fun." },
+    { k: "ask", s: "In an online meeting, someone keeps talking. You need to add something.", a: "[Sorry to interrupt], but [can I add something quickly]?" },
+    { k: "feedback", s: "A friend gives you a gift you don't like and asks if you like it.", a: "[That's so thoughtful of you]! [Thank you for thinking of me]." },
+    { k: "sorry", s: "You broke a glass at a friend's house.", a: "[Oh no, I'm so sorry!] [Let me replace it]." },
+    { k: "feedback", s: "A friend tells you about a business idea. You think it's risky.", a: "[It's an interesting idea!] [Have you thought about] how you'll find clients? [I'd start small] and test it first." },
+    { k: "limit", s: "A student forgot about the lesson for the second time.", a: "[No worries this time], but [this is the second time]. [From now on], I'll have to charge for missed lessons." },
+    { k: "complain", s: "The barista gave you the wrong drink.", a: "[Sorry, I think this might be] the wrong drink. I ordered a latte with oat milk." },
+    { k: "no", s: "A student asks for an extra lesson tonight. You need to rest.", a: "[I'm afraid tonight doesn't work for me]. [How about] tomorrow at six?" },
+    { k: "ask", s: "You want next Friday off. Ask your manager.", a: "[I was hoping to] take next Friday off. [Would that be okay]? I'll make sure everything is covered." },
+    { k: "disagree", s: "A friend says your favorite movie is boring.", a: "[Fair enough], [it's not for everyone]! I just love the story." },
+    { k: "exit", s: "A coworker starts gossiping about another colleague. You don't want to join in.", a: "[I'd rather not get involved.] [By the way], did you see the new schedule?" },
+    { k: "remind", s: "A friend promised to return your book a month ago.", a: "Hey, [no rush], but [could I get] my book back sometime this week?" }
+  ].map((x, i) => ({ ...x, id: "s" + (i + 1) }));
+
+  const KIND_ORDER = ["no", "ask", "remind", "disagree", "feedback", "complain", "sorry", "time", "limit", "news", "exit"];
+  const KINDS = {
+    no: "Saying no", ask: "Asking for things", remind: "Reminders", disagree: "Disagreeing",
+    feedback: "Feedback", complain: "Complaints", sorry: "Apologies", time: "Buying time",
+    limit: "Boundaries", news: "Bad news", exit: "Wrapping up"
+  };
+  const CONT = new Set(["but", "to", "if", "about", "on", "for", "with", "of", "when", "and", "so", "be", "is", "like", "as", "in", "at", "by", "the", "a", "through", "do", "could", "keep", "me", "get", "into", "mind", "usually", "we", "down"]);
+
+  const $ = s => document.querySelector(s);
+  const S = { done: new Set(), saved: new Set(), extra: [], cur: null, filter: "saved" };
+  const sessionDone = new Set();
+
+  // ---------- text helpers ----------
+  function parseAnswer(a) {
+    const parts = []; const re = /\[([^\]]+)\]/g; let i = 0, m;
+    while ((m = re.exec(a))) {
+      if (m.index > i) parts.push({ t: a.slice(i, m.index) });
+      parts.push({ t: m[1], p: true });
+      i = re.lastIndex;
+    }
+    if (i < a.length) parts.push({ t: a.slice(i) });
+    return parts;
+  }
+  // `after` is the answer text right after the phrase: an ellipsis is added only when
+  // the sentence goes on and the phrase ends on a word that needs more ("Could you send it by…").
+  function chipText(raw, after) {
+    let t = raw.trim().replace(/[.,:;]+$/, "");
+    if (!t) return "";
+    t = t[0].toUpperCase() + t.slice(1);
+    const goesOn = /^\s+[A-Za-z0-9$]/.test(after || "") && !/[!?]$/.test(t);
+    const last = (t.split(/\s+/).pop() || "").toLowerCase().replace(/[^a-z']/g, "");
+    if (goesOn && CONT.has(last)) t += "…";
+    return t;
+  }
+  const keyOf = t => t.toLowerCase().replace(/…$/, "").replace(/[^\p{L}\p{N}' ]/gu, "").replace(/\s+/g, " ").trim();
+  function phrasesOf(a) {
+    const seen = new Set(), out = [];
+    const parts = parseAnswer(a);
+    parts.forEach((p, i) => {
+      if (!p.p) return;
+      const nx = parts[i + 1];
+      const t = chipText(p.t, nx && !nx.p ? nx.t : ""); const k = keyOf(t);
+      if (t && !seen.has(k)) { seen.add(k); out.push(t); }
+    });
+    return out;
+  }
+  function plain(a) { return a.replace(/\[([^\]]+)\]/g, "$1"); }
+  function fillMarked(el, a) {
+    el.textContent = "";
+    for (const p of parseAnswer(a)) {
+      if (p.p) { const m = document.createElement("mark"); m.textContent = p.t; el.append(m); }
+      else el.append(document.createTextNode(p.t));
+    }
+  }
+  function svg(id) {
+    const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const u = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    u.setAttribute("href", "#" + id); s.append(u); s.setAttribute("aria-hidden", "true");
+    return s;
+  }
+
+  // ---------- storage ----------
+  const LS = "say-it-nicely";
+  function readLocal() { try { return JSON.parse(localStorage.getItem(LS) || "null") || {}; } catch { return {}; } }
+  function writeLocal() {
+    try { localStorage.setItem(LS, JSON.stringify({ done: [...S.done], saved: [...S.saved], extra: S.extra })); } catch {}
+  }
+  let db = null;
+  const queues = {};
+  function bodyFor(name) {
+    if (name === "progress") return { done: [...S.done] };
+    if (name === "saved") return { phrases: [...S.saved] };
+    return { items: S.extra };
+  }
+  function persist(name) {
+    writeLocal();
+    if (!db) return;
+    const body = bodyFor(name);
+    queues[name] = (queues[name] || Promise.resolve())
+      .then(() => db.doc("me/" + name).set(body))
+      .catch(e => console.warn("Could not save " + name, e && e.code));
+  }
+  function validItem(x) {
+    return x && typeof x.s === "string" && typeof x.a === "string" && x.s.trim() && x.a.includes("[") && typeof x.id === "string";
+  }
+  async function connect() {
+    if (!window.claude || !window.claude.use) return;
+    let d = null;
+    try { d = await window.claude.use("db"); } catch { d = null; }
+    if (!d) return;
+    let snaps;
+    try {
+      snaps = await Promise.race([
+        Promise.all(["progress", "saved", "extra"].map(n => d.doc("me/" + n).get())),
+        new Promise((_, rej) => setTimeout(() => rej({ code: "timeout" }), 10000))
+      ]);
+    } catch (e) { console.warn("Saved progress not reachable yet", e && e.code); db = d; return; }
+    db = d;
+    const [p, s, x] = snaps.map(sn => (sn && sn.exists ? sn.data() : null));
+    if (p && Array.isArray(p.done)) S.done = new Set([...p.done, ...sessionDone]); else persist("progress");
+    if (s && Array.isArray(s.phrases)) S.saved = new Set(s.phrases); else if (S.saved.size) persist("saved");
+    if (x && Array.isArray(x.items)) S.extra = x.items.filter(validItem); else if (S.extra.length) persist("extra");
+    writeLocal();
+    refreshChips(); updateCount();
+    if (!$("#bookView").hidden) renderBook();
+  }
+
+  // ---------- practice ----------
+  const pool = () => BANK.concat(S.extra);
+  function pickNext() {
+    const curId = S.cur && S.cur.id;
+    let left = pool().filter(x => !S.done.has(x.id) && x.id !== curId);
+    if (!left.length) left = pool().filter(x => !S.done.has(x.id));
+    return left.length ? left[Math.floor(Math.random() * left.length)] : null;
+  }
+  function showSituation() {
+    $("#finish").hidden = true;
+    $("#situation").hidden = false;
+    $("#skip").hidden = false;
+    $("#situation").textContent = S.cur.s;
+    $("#replyForm").hidden = false;
+    $("#result").hidden = true;
+    stopPolish();
+  }
+  function next(focus) {
+    S.cur = pickNext();
+    if (!S.cur) { showFinish(); return; }
+    showSituation();
+    const r = $("#reply"); r.value = ""; autosize();
+    if (focus && matchMedia("(pointer: fine)").matches) r.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function showFinish() {
+    stopPolish();
+    $("#situation").hidden = true;
+    $("#skip").hidden = true;
+    $("#replyForm").hidden = true;
+    $("#result").hidden = true;
+    $("#finish").hidden = false;
+    $("#finishText").textContent = "That's all " + pool().length + " situations.";
+    $("#moreStatus").hidden = true;
+    $("#more").disabled = false;
+    sampleReady.then(fn => { $("#more").hidden = !fn || sampleOff; });
+  }
+  function reveal() {
+    if (!S.cur) return;
+    const text = $("#reply").value.trim();
+    S.done.add(S.cur.id); sessionDone.add(S.cur.id); persist("progress");
+    fillMarked($("#answer"), S.cur.a);
+    refreshChips();
+    $("#replyForm").hidden = true;
+    $("#result").hidden = false;
+    if (text) {
+      $("#mine").hidden = false;
+      $("#mineText").textContent = text;
+      polish(S.cur, text);
+    } else {
+      $("#mine").hidden = true;
+      stopPolish();
+    }
+    $("#next").focus({ preventScroll: true });
+    $("#card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function refreshChips() {
+    const box = $("#chips");
+    box.textContent = "";
+    if (!S.cur) return;
+    for (const t of phrasesOf(S.cur.a)) {
+      const k = keyOf(t);
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip";
+      b.setAttribute("aria-pressed", S.saved.has(k) ? "true" : "false");
+      b.setAttribute("aria-label", (S.saved.has(k) ? "Remove from phrasebook: " : "Save to phrasebook: ") + t);
+      const sp = document.createElement("span"); sp.textContent = t;
+      b.append(svg("i-star"), sp);
+      b.addEventListener("click", () => { toggleSave(k); refreshChips(); });
+      box.append(b);
+    }
+  }
+  function toggleSave(k) {
+    if (S.saved.has(k)) S.saved.delete(k); else S.saved.add(k);
+    persist("saved"); updateCount();
+  }
+  function updateCount() {
+    const n = [...S.saved].filter(k => bookMap().has(k)).length;
+    const b = $("#savedCount"); b.hidden = !n; b.textContent = n;
+  }
+
+  // ---------- Claude: polish her reply ----------
+  const sampleReady = (window.claude && window.claude.use)
+    ? window.claude.use("sample").catch(() => null)
+    : Promise.resolve(null);
+  let sampleOff = false;
+  let polishCtl = null;
+  const OFF_CODES = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "invalid_request", "transform_error"];
+  function stopPolish() { if (polishCtl) { polishCtl.abort(); polishCtl = null; } }
+
+  function polishPrompt(item, text) {
+    return [
+      "You coach an advanced English learner (a Ukrainian English teacher who uses American English) on diplomatic replies: polite, warm, clear and honest, in simple everyday words. Never fancy.",
+      "",
+      "Situation: " + item.s,
+      "Her reply: \"\"\"" + text + "\"\"\"",
+      "A good model reply, for reference only: " + plain(item.a),
+      "",
+      "Reply with only a JSON object with these keys:",
+      "\"ok\": true if her reply already works: diplomatic, natural and clear; otherwise false.",
+      "\"better\": her reply improved. Keep her idea and as many of her own words as you can. Make it diplomatic, natural American English, 1-3 short sentences. If it already works, make only tiny changes or none.",
+      "\"tip\": one short, concrete tip about tone or wording, at most 12 words, no praise. Empty string if there is nothing useful to add.",
+      "\"fix\": a list of her grammar or word-choice mistakes, each as {\"wrong\": \"...\", \"right\": \"...\"} with just the few words involved. Empty list if there are none.",
+      "Example: {\"ok\": false, \"better\": \"Thanks for asking! I'm afraid I can't this week.\", \"tip\": \"Start with thanks before you say no.\", \"fix\": [{\"wrong\": \"in this week\", \"right\": \"this week\"}]}"
+    ].join("\n");
+  }
+
+  function dots() {
+    const d = document.createElement("div"); d.className = "dots"; d.setAttribute("aria-label", "Checking your reply");
+    d.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
+    return d;
+  }
+
+  async function polish(item, text) {
+    stopPolish();
+    const box = $("#polish");
+    box.textContent = "";
+    const fn = await sampleReady;
+    if (!fn || sampleOff) return;
+    if (S.cur !== item) return;
+    const ctl = new AbortController(); polishCtl = ctl;
+    box.append(dots());
+    try {
+      const r = await fn.json(polishPrompt(item, text), { modelTier: "quick", signal: ctl.signal });
+      if (ctl.signal.aborted || S.cur !== item) return;
+      renderPolish(r, text);
+    } catch (e) {
+      if (ctl.signal.aborted || (e && e.code === "cancelled")) return;
+      box.textContent = "";
+      if (e && OFF_CODES.includes(e.code)) { sampleOff = true; return; }
+      const msg = document.createElement("p"); msg.className = "tip";
+      msg.textContent = e && e.code === "rate_limited"
+        ? "Too many checks at once. Try again in a minute."
+        : "Couldn't check your reply this time.";
+      const again = document.createElement("button");
+      again.type = "button"; again.className = "quiet-btn"; again.textContent = "Try again";
+      again.addEventListener("click", () => polish(item, text));
+      box.append(msg, again);
+    } finally {
+      if (polishCtl === ctl) polishCtl = null;
+    }
+  }
+
+  function diffWords(a, b) {
+    const A = a.split(/\s+/).filter(Boolean), B = b.split(/\s+/).filter(Boolean);
+    const norm = w => w.toLowerCase().replace(/[^\p{L}\p{N}']/gu, "").replace(/’/g, "'");
+    const n = A.length, m = B.length;
+    const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+      dp[i][j] = norm(A[i]) === norm(B[j]) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    const out = []; let i = 0, j = 0;
+    while (j < m) {
+      if (i < n && norm(A[i]) === norm(B[j])) { out.push({ w: B[j], same: true }); i++; j++; }
+      else if (i < n && dp[i + 1][j] >= dp[i][j + 1]) i++;
+      else { out.push({ w: B[j], same: false }); j++; }
+    }
+    return out;
+  }
+
+  function renderPolish(r, text) {
+    const box = $("#polish"); box.textContent = "";
+    if (!r || typeof r !== "object") return;
+    const better = typeof r.better === "string" ? r.better.trim() : "";
+    const ok = r.ok === true;
+    const tokens = better ? diffWords(text, better) : [];
+    const changed = tokens.some(t => !t.same);
+
+    const p = document.createElement("p");
+    p.className = "better" + (ok ? " ok" : "");
+    p.append(svg(ok ? "i-check" : "i-pen"));
+    const span = document.createElement("span");
+    if (better && (changed || !ok)) {
+      tokens.forEach((t, idx) => {
+        if (idx) span.append(document.createTextNode(" "));
+        if (t.same) span.append(document.createTextNode(t.w));
+        else { const s = document.createElement("span"); s.className = "ins"; s.textContent = t.w; span.append(s); }
+      });
+    } else {
+      span.textContent = "Good to go.";
+    }
+    p.append(span);
+    box.append(p);
+
+    const fixes = Array.isArray(r.fix) ? r.fix.filter(f => f && typeof f.wrong === "string" && typeof f.right === "string" && f.wrong.trim()) : [];
+    if (fixes.length) {
+      const ul = document.createElement("ul"); ul.className = "fixes";
+      for (const f of fixes.slice(0, 4)) {
+        const li = document.createElement("li");
+        const s = document.createElement("s"); s.textContent = f.wrong.trim();
+        li.append(s, document.createTextNode(" → " + f.right.trim()));
+        ul.append(li);
+      }
+      box.append(ul);
+    }
+    const tip = typeof r.tip === "string" ? r.tip.trim() : "";
+    if (tip) { const t = document.createElement("p"); t.className = "tip"; t.textContent = tip; box.append(t); }
+  }
+
+  // ---------- Claude: more situations ----------
+  async function generateMore() {
+    const fn = await sampleReady;
+    const status = $("#moreStatus");
+    if (!fn || sampleOff) { $("#more").hidden = true; return; }
+    $("#more").disabled = true; $("#restart").disabled = true;
+    status.hidden = false; status.textContent = "Writing new situations…";
+    const existing = pool().map(x => "- " + x.s).join("\n");
+    const prompt = [
+      "Write 12 new situations for practicing diplomatic replies in English.",
+      "The learner is a Ukrainian English teacher who tutors adults and kids online. Mix her work (students, parents, schools, colleagues) with everyday life (friends, family, neighbors, stores, services).",
+      "Each item is an object:",
+      "\"s\": the situation in 1-2 short sentences, in the second person (\"A friend asks you to...\"). It must be clear: who, what happened, and what you want. No questions.",
+      "\"a\": a natural, warm, diplomatic reply in simple American English, 1-3 short sentences, not fancy. Wrap 2-3 reusable phrases in square brackets, like: \"[I'd love to, but] I'm busy that day.\"",
+      "\"k\": one of: " + KIND_ORDER.join(", "),
+      "No health, politics or religion. Do not repeat or closely copy these existing situations:",
+      existing,
+      "",
+      "Reply with only a JSON array of 12 {\"s\", \"a\", \"k\"} objects."
+    ].join("\n");
+    try {
+      const arr = await fn.json(prompt, { cache: false });
+      const stamp = Date.now().toString(36);
+      const items = (Array.isArray(arr) ? arr : [])
+        .filter(x => x && typeof x.s === "string" && typeof x.a === "string" && x.s.trim() && /\[[^\]]+\]/.test(x.a))
+        .slice(0, 15)
+        .map((x, i) => ({ id: "x" + stamp + i, k: KINDS[x.k] ? x.k : "ask", s: x.s.trim(), a: x.a.trim() }));
+      if (!items.length) throw { code: "empty" };
+      S.extra = S.extra.concat(items);
+      persist("extra");
+      updateCount();
+      next(true);
+    } catch (e) {
+      if (e && OFF_CODES.includes(e.code)) { sampleOff = true; $("#more").hidden = true; status.textContent = ""; status.hidden = true; }
+      else status.textContent = e && e.code === "rate_limited" ? "Too many requests. Try again in a minute." : "That didn't work. Try again.";
+    } finally {
+      $("#more").disabled = false; $("#restart").disabled = false;
+    }
+  }
+
+  // ---------- phrasebook ----------
+  let bookCache = null, bookSize = -1;
+  function bookMap() {
+    const p = pool();
+    if (bookCache && bookSize === p.length) return bookCache;
+    const map = new Map();
+    for (const it of p) for (const t of phrasesOf(it.a)) {
+      const k = keyOf(t);
+      if (!map.has(k)) map.set(k, { t, k, kind: it.k, ex: it.a });
+    }
+    bookCache = map; bookSize = p.length;
+    return map;
+  }
+  function renderBook() {
+    $("#fSaved").setAttribute("aria-pressed", S.filter === "saved" ? "true" : "false");
+    $("#fAll").setAttribute("aria-pressed", S.filter === "all" ? "true" : "false");
+    const root = $("#book"); root.textContent = "";
+    const entries = [...bookMap().values()].filter(e => S.filter === "all" || S.saved.has(e.k));
+    if (!entries.length) {
+      const p = document.createElement("p"); p.className = "empty";
+      p.append(document.createTextNode("Tap the star on a phrase to keep it here. "));
+      const b = document.createElement("button"); b.type = "button"; b.textContent = "See all phrases";
+      b.addEventListener("click", () => { S.filter = "all"; renderBook(); });
+      p.append(b); root.append(p);
+      return;
+    }
+    for (const kind of KIND_ORDER) {
+      const list = entries.filter(e => e.kind === kind);
+      if (!list.length) continue;
+      const g = document.createElement("section"); g.className = "group";
+      const h = document.createElement("h2"); h.textContent = KINDS[kind]; g.append(h);
+      for (const e of list) {
+        const wrap = document.createElement("div"); wrap.className = "entry";
+        const row = document.createElement("div"); row.className = "entry-row";
+        const star = document.createElement("button");
+        star.type = "button"; star.className = "star";
+        const on = S.saved.has(e.k);
+        star.setAttribute("aria-pressed", on ? "true" : "false");
+        star.setAttribute("aria-label", (on ? "Remove " : "Save ") + e.t);
+        star.append(svg("i-star"));
+        const ph = document.createElement("button");
+        ph.type = "button"; ph.className = "ph"; ph.textContent = e.t;
+        ph.setAttribute("aria-expanded", "false");
+        const ex = document.createElement("p"); ex.className = "ex"; ex.hidden = true; fillMarked(ex, e.ex);
+        ph.addEventListener("click", () => { ex.hidden = !ex.hidden; ph.setAttribute("aria-expanded", ex.hidden ? "false" : "true"); });
+        star.addEventListener("click", () => {
+          toggleSave(e.k);
+          const now = S.saved.has(e.k);
+          star.setAttribute("aria-pressed", now ? "true" : "false");
+          star.setAttribute("aria-label", (now ? "Remove " : "Save ") + e.t);
+        });
+        row.append(star, ph); wrap.append(row, ex); g.append(wrap);
+      }
+      root.append(g);
+    }
+  }
+
+  // ---------- views ----------
+  function route() {
+    const book = location.hash === "#phrases";
+    $("#practice").hidden = book;
+    $("#bookView").hidden = !book;
+    $("#back").hidden = !book;
+    $("#toBook").hidden = book;
+    if (book) { renderBook(); window.scrollTo(0, 0); }
+    else refreshChips();
+  }
+
+  function autosize() {
+    const r = $("#reply"); r.style.height = "auto"; r.style.height = Math.min(r.scrollHeight, window.innerHeight * 0.4) + "px";
+  }
+
+  // ---------- wiring ----------
+  $("#replyForm").addEventListener("submit", e => { e.preventDefault(); reveal(); });
+  $("#reply").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); reveal(); }
+  });
+  $("#reply").addEventListener("input", autosize);
+  $("#next").addEventListener("click", () => next(true));
+  $("#skip").addEventListener("click", () => next(true));
+  $("#restart").addEventListener("click", () => { S.done.clear(); sessionDone.clear(); persist("progress"); next(true); });
+  $("#more").addEventListener("click", generateMore);
+  $("#toBook").addEventListener("click", () => { location.hash = "phrases"; });
+  $("#back").addEventListener("click", () => { location.hash = ""; });
+  $("#fSaved").addEventListener("click", () => { S.filter = "saved"; renderBook(); });
+  $("#fAll").addEventListener("click", () => { S.filter = "all"; renderBook(); });
+  window.addEventListener("hashchange", route);
+
+  function start(data) {
+    const local = readLocal();
+    if (Array.isArray(local.done)) S.done = new Set(local.done);
+    if (Array.isArray(local.saved)) S.saved = new Set(local.saved);
+    if (Array.isArray(local.extra)) S.extra = local.extra.filter(validItem);
+    const keep = data && data.cur ? pool().find(x => x.id === data.cur) : null;
+    if (keep) { S.cur = keep; showSituation(); $("#reply").value = data.draft || ""; autosize(); }
+    else next(false);
+    updateCount();
+    route();
+    try {
+      if (window.claude && window.claude.hot && window.claude.hot.snapshot) {
+        window.claude.hot.snapshot(() => ({ cur: S.cur && S.cur.id, draft: $("#reply").value }));
+      }
+    } catch {}
+    connect();
+  }
+  const hot = window.claude && window.claude.hot;
+  if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
+})();
+</script>
