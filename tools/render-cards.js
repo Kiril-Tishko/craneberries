@@ -5,7 +5,7 @@
 //
 // Reads `date` and `studentCards` from the lesson file, writes <out-dir>/cards.html
 // and <out-dir>/card-1.png … card-N.png (420 CSS px wide at 3x = 1260 px).
-// Card types: words, phrases, grammar, compare, verbs, forms, fixes, pron. See CLAUDE.md for the shape.
+// Card types: words, phrases, grammar, compare, verbs, forms, fixes, pron, reading. See CLAUDE.md for the shape.
 
 const fs = require('fs');
 const path = require('path');
@@ -75,6 +75,10 @@ const body = {
     ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}
     ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}`,
+
+  reading: (c) => `<div class="read">${c.paras.map((p) => `<p>${mark(p)}</p>`).join('')}</div>
+    ${c.questions && c.questions.length ? `<div class="qbox"><div class="flabel">${esc(c.qlabel || 'Think about it')}</div>
+      <ol class="qs">${c.questions.map((q) => `<li>${esc(q)}</li>`).join('')}</ol></div>` : ''}`,
 
   verbs: (c) => {
     const f = c.focus ?? 2;
@@ -199,6 +203,12 @@ const html = `<!doctype html>
   .chip2{font-size:16.5px;font-weight:600;background:var(--paper);border-radius:99px;padding:4px 11px}
   .also .hl{font-weight:800}
   .also{margin-top:14px;background:var(--tile);border-radius:14px;padding:12px 14px;font-size:19px;line-height:1.5}
+  .read{margin-top:14px}
+  .read p{font-size:18.5px;line-height:1.55;margin:0 0 12px}
+  .read .hl{font-weight:650}
+  .qbox{margin-top:16px;background:var(--tile);border-radius:16px;padding:14px 16px}
+  ol.qs{list-style:decimal;padding-left:22px;font-size:17px;line-height:1.45}
+  .qs li{margin:5px 0}
   .pp-grid{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .pp{background:var(--tile);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
   .pp .base{font-size:15.5px;color:var(--muted)}

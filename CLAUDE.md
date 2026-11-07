@@ -36,6 +36,7 @@ in the teacher report.
   comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
   Put those first; keep subtitles short or leave them out.
 - **Words card**: only words the student actually searched for, not words you prompted in a drill.
+  For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
@@ -69,6 +70,9 @@ studentCards[] one of:
                     irregular verbs: all 3 forms, highlight the column the lesson needs, emojis, no subtitle
   {type: "forms",   kicker, title, sub, items[{base, pp}], examples[]}   (older two-form version)
   {type: "fixes",   kicker, title, sub, items[{wrong, right, why}]}
+  {type: "reading", kicker, title, paras[], questions[]}   home reading text; [word] highlights target words.
+                    ~120–170 words for A2 students, ~60 for Sergii (he dislikes long texts); reuse the
+                    student's own words and grammar; fictional people, no sensitive details
   {type: "pron",    kicker, title, label, pairs[{emoji, word, tip}], practice[]}
                     with emoji: full-width rows, big emoji beside the word. Mark the stressed syllable
                     ([DE]sert, des[SERT]) in the word and in the practice sentences. No IPA on cards.
