@@ -181,6 +181,51 @@ h2.sec{margin-bottom:12px}
 .cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 @media (max-width: 760px){ .cols3{grid-template-columns:minmax(0,1fr)} }
 .empty{text-align:left;max-width:560px;padding:32px 0}
+/* course */
+.seg{display:inline-flex;flex-wrap:wrap;background:var(--sunk);border-radius:99px;padding:3px;gap:2px;margin-top:16px}
+.seg a{text-decoration:none;color:var(--muted);font-weight:600;font-size:14.5px;padding:6px 14px;border-radius:99px}
+.seg a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .1)}
+.ulist{list-style:none;margin:0;padding:0}
+.ulist > li{border-top:1px solid var(--line)}
+.ulist > li:first-child{border-top:0}
+.unit > summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:12px 0;align-items:start}
+.unit > summary::-webkit-details-marker{display:none}
+.unum{font-family:var(--mono);font-size:13px;background:var(--sunk);color:var(--muted);border-radius:8px;height:28px;display:flex;align-items:center;justify-content:center}
+.unit[open] .unum{background:var(--accent-soft);color:var(--accent)}
+.ut{font-weight:600}
+.ucando{color:var(--muted);font-size:14.5px}
+.unit .chips{margin-top:6px}
+.ubody{padding:0 0 16px 46px}
+.ufacts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:14.5px;margin:0}
+.ufacts dt{color:var(--muted)} .ufacts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.ufix{color:var(--amber)}
+.urev{padding:10px 0 10px 46px;color:var(--muted);font-size:14px;font-weight:600}
+.unow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.ubig{font-family:var(--display);font-weight:700;font-size:28px;width:54px;height:54px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.unow b{display:block;font-size:17px;line-height:1.3}
+.ustrip{display:flex;flex-wrap:wrap;gap:8px 12px;margin:16px 0 6px}
+.ugrp{display:flex;gap:3px}
+.ub{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:12.5px;cursor:pointer;color:var(--muted);padding:0}
+.ub.done{background:var(--green-soft);border-color:transparent;color:var(--green)}
+.ub.cur{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:500}
+.ub[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:1px}
+.uview{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.uview .ut{margin-bottom:8px}
+.uactions{margin-top:14px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+.steps li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;counter-increment:s}
+.steps li::before{content:counter(s);font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);border-radius:8px;height:26px;display:flex;align-items:center;justify-content:center}
+.steps b{display:block} .steps span{color:var(--muted);font-size:14.5px}
+.why > summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px}
+.why > summary::-webkit-details-marker{display:none}
+.why > summary::after{content:"Show";color:var(--accent);font-weight:600;font-size:14.5px}
+.why[open] > summary::after{content:"Hide"}
+.why[open] > summary{margin-bottom:14px}
+.plist{list-style:none;margin:0;padding:0}
+.plist li{padding:10px 0;border-top:1px solid var(--line)}
+.plist li:first-child{border-top:0;padding-top:0}
+.plist b{display:block}
+@media (max-width: 760px){ .ubody, .urev{padding-left:0} }
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);
   padding:10px 16px;border-radius:10px;font-size:14.5px;z-index:20;max-width:calc(100% - 32px)}
 
@@ -199,6 +244,7 @@ h2.sec{margin-bottom:12px}
     <a class="brand" href="#students"><span>Lesson</span> Notebook</a>
     <nav class="nav" aria-label="Sections">
       <a href="#students" id="nav-students">Students</a>
+      <a href="#course" id="nav-course">Course</a>
       <a href="#teaching" id="nav-teaching">My teaching</a>
     </nav>
   </div>
@@ -212,9 +258,9 @@ h2.sec{margin-bottom:12px}
 
 <script>
 (() => {
-  const S = { students: {}, lessons: {}, states: {}, billing: {}, bank: {}, materials: {}, teacher: null, got: new Set(), status: 'loading' };
-  const UI = { open: new Set(), tab: {} };
-  const NEED = ['students', 'lessons', 'state', 'teacher', 'billing', 'bank', 'materials'];
+  const S = { students: {}, lessons: {}, states: {}, billing: {}, bank: {}, materials: {}, progress: {}, course: null, teacher: null, got: new Set(), status: 'loading' };
+  const UI = { open: new Set(), tab: {}, uview: {} };
+  const NEED = ['students', 'lessons', 'state', 'teacher', 'billing', 'bank', 'materials', 'course', 'progress'];
   let db = null, dl = null;
   const main = document.getElementById('main');
 
@@ -344,6 +390,132 @@ h2.sec{margin-bottom:12px}
           ${m.issue ? `<div class="note">${esc(m.issue)}</div>` : ''}</div></li>`).join('')}</ul></details></section>`;
   }
 
+  // ---------- course: one unit order for everyone (course/plan), each student's place in it (progress/<sid>) ----------
+  const units = () => arr((S.course || {}).units);
+  const unitOf = (n) => units().find((u) => u.n === n);
+  const isReview = (n) => arr((S.course || {}).reviewAfter).includes(n);
+  const progOf = (sid) => S.progress[sid] || { current: 0, done: [] };
+  const daysSince = (iso) => Math.round((parseD(todayISO()) - parseD(iso)) / 864e5);
+  const link = (m) => (m.url ? `<a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.title)}</a>` : esc(m.title));
+
+  function unitFacts(u) {
+    const mats = arr(u.materials);
+    const rows = [
+      ['Can do', esc(u.cando)],
+      ['Words', esc(u.words)],
+      ['Sound', esc(u.sound)],
+      ['Pages', mats.length ? mats.map(link).join(' · ') : '<span class="muted">None yet</span>'],
+      u.fix ? ['Fix pages', `<span class="ufix">${esc(u.fix)}</span>`] : null,
+      u.extra ? ['Extra', esc(u.extra)] : null,
+    ].filter(Boolean);
+    return `<dl class="ufacts">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+  }
+  function nextUnit(p) {
+    const total = units().length;
+    const done = new Set(arr(p.done));
+    for (let n = (p.current || 0) + 1; n <= total; n++) if (!done.has(n)) return n;
+    for (let n = 1; n <= total; n++) if (!done.has(n) && n !== p.current) return n;
+    return 0;
+  }
+  let progChain = Promise.resolve();
+  function saveProgress(sid, next) {
+    S.progress[sid] = next;
+    delete UI.uview[sid];
+    render();
+    if (!db) return;
+    progChain = progChain.then(() => db.collection('progress').doc(sid).set(next)).catch(() => toast('Couldn’t save that. Try again in a moment.'));
+  }
+  function moveTo(sid, n, finish) {
+    const { prev, ...snap } = JSON.parse(JSON.stringify(progOf(sid)));
+    const done = arr(snap.done).filter((x) => x !== n);
+    if (finish && snap.current && !done.includes(snap.current)) done.push(snap.current);
+    const started = { ...(snap.started || {}) };
+    if (n) started[n] = started[n] || todayISO();
+    saveProgress(sid, { ...snap, current: n, done: done.sort((a, b) => a - b), started, prev: JSON.parse(JSON.stringify(snap)) });
+  }
+
+  function coursePanel(sid) {
+    const c = S.course;
+    if (!c || !units().length) return '';
+    const p = progOf(sid);
+    const total = units().length;
+    const done = new Set(arr(p.done));
+    const view = UI.uview[sid] || p.current || 1;
+    const u = unitOf(view) || units()[0];
+    const cur = unitOf(p.current);
+    const since = cur && p.started && p.started[p.current];
+    const groups = [];
+    units().forEach((x, i) => { if (i % 4 === 0) groups.push([]); groups[groups.length - 1].push(x.n); });
+    const strip = `<div class="ustrip" role="group" aria-label="Units">${groups.map((g) => `<div class="ugrp">${g.map((n) => `
+      <button type="button" class="ub ${n === p.current ? 'cur' : done.has(n) ? 'done' : ''}" data-uview="${esc(sid)}" data-n="${n}"
+        aria-pressed="${n === view}" title="${esc(unitOf(n).grammar)}">${n}</button>`).join('')}</div>`).join('')}</div>`;
+    const prevN = p.current - 1;
+    const rev = cur && isReview(prevN) && done.has(prevN) && p.prev && p.prev.current === prevN && since && daysSince(since) < 7
+      ? `<div class="callout" style="margin-top:12px">Review week first: units ${prevN - 3}–${prevN}, no new grammar${(c.checks || {})[prevN] ? ` · ${esc(c.checks[prevN])}` : ''}.</div>` : '';
+    const nxt = cur ? nextUnit({ ...p, done: [...done, p.current] }) : 0;
+    const isCur = cur && view === p.current;
+    return `<section class="panel"><div class="panel-h"><h2>Course</h2><a class="small" href="#course">All units</a></div>
+      ${cur ? `<div class="unow"><span class="ubig">${p.current}</span><div><div class="eyebrow">Unit ${p.current} of ${total}${since ? ` · since ${esc(fmtDate(since))}` : ''}</div>
+        <b>${esc(cur.grammar)}</b></div></div>` : '<p class="muted" style="margin:0">Not placed yet. Tap a unit, then start it.</p>'}
+      ${rev}${strip}<div class="muted small">Green: done · Blue: now · Tap a number to see that unit</div>
+      <div class="uview"><div class="group-h">${isCur ? 'This unit' : `Unit ${view}${done.has(view) ? ' · done' : ''}`}</div>
+        ${isCur ? '' : `<div class="ut">${esc(u.grammar)}</div>`}${unitFacts(u)}
+        <div class="bill uactions">${isCur
+          ? `<button class="btn" type="button" data-uadv="${esc(sid)}">Unit ${p.current} done${nxt ? ` → ${nxt}` : ''}</button>`
+          : `<button class="btn" type="button" data-ustart="${esc(sid)}" data-n="${view}">Start unit ${view}</button>`}
+          ${p.prev ? `<button class="btn ghost" type="button" data-uundo="${esc(sid)}">Undo</button>` : ''}</div></div>
+      ${p.pace || p.note ? `<p class="note" style="margin:14px 0 0">${esc([p.pace, p.note].filter(Boolean).join(' · '))}</p>` : ''}</section>`;
+  }
+
+  function viewCourse(sub) {
+    const c = S.course;
+    const teach = sub === 'teach';
+    const seg = `<nav class="seg" aria-label="Course parts"><a href="#course" ${teach ? '' : 'aria-current="page"'}>Units · every student</a>
+      <a href="#course-teach" ${teach ? 'aria-current="page"' : ''}>How to teach · you</a></nav>`;
+    if (!c || !units().length) return `<h1>Course</h1><p class="lede">The course plan isn’t loaded yet.</p>`;
+    const head = `<h1>Course</h1><p class="lede">${teach
+      ? 'Only for you: how a lesson, a unit and reviews work.'
+      : `${units().length} units, A2 to B1+. Same order for every student, each at their own pace. Where each one is: their page.`}</p>${seg}`;
+    if (!teach) {
+      const at = {};
+      Object.entries(S.progress).forEach(([sid, p]) => { if (p.current && S.students[sid]) (at[p.current] = at[p.current] || []).push(S.students[sid].name); });
+      const phases = arr(c.phases).length ? c.phases : [{ name: 'Units', from: 1, to: units().length }];
+      return `${head}<div class="stack" style="margin-top:20px">${phases.map((ph) => `
+        <section class="panel"><div class="panel-h"><h2>${esc(ph.name)}</h2><span class="muted small">Units ${ph.from}–${ph.to}${ph.sum ? ` · ${esc(ph.sum)}` : ''}</span></div>
+        <ul class="ulist">${units().filter((u) => u.n >= ph.from && u.n <= ph.to).map((u) => {
+          const id = 'u-' + u.n;
+          const who = at[u.n] || [];
+          const check = (c.checks || {})[u.n];
+          return `<li><details class="unit" data-uid="${id}" ${UI.open.has(id) ? 'open' : ''}><summary><span class="unum">${u.n}</span>
+            <div><div class="ut">${esc(u.grammar)}</div><div class="ucando">${esc(u.cando)}</div>
+            ${who.length ? `<div class="chips">${who.map((nm) => `<span class="chip new">${esc(nm)}</span>`).join('')}</div>` : ''}</div></summary>
+            <div class="ubody">${unitFacts(u)}</div></details></li>
+            ${isReview(u.n) ? `<li class="urev">↻ Review week: units ${u.n - 3}–${u.n}${check ? ` · ${esc(check)}` : ''}</li>` : ''}`;
+        }).join('')}</ul></section>`).join('')}</div>`;
+    }
+    const table = (heads, rows) => `<div class="table-wrap"><table><thead><tr>${heads.map((h) => `<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map((r) => `<tr>${r.map((x, i) => `<td${i === 0 ? ' class="en"' : ''}>${esc(x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const total = arr(c.lesson).reduce((a, b) => a + (Number(b.min) || 0), 0);
+    return `${head}<div class="stack" style="margin-top:20px">
+      <section class="panel"><div class="panel-h"><h2>A lesson</h2>${total ? `<span class="muted small">${total} min</span>` : ''}</div>
+        <ol class="plan">${arr(c.lesson).map((p) => `<li><span class="min">${esc(p.min)}′</span><div><b>${esc(p.title)}</b><span>${esc(p.detail)}</span></div></li>`).join('')}</ol></section>
+      <section class="panel"><h2 class="sec">A unit in 5 steps</h2>
+        <ol class="steps">${arr(c.steps).map((s) => `<li><div><b>${esc(s.title)}</b><span>${esc(s.detail)}</span></div></li>`).join('')}</ol></section>
+      <section class="panel"><h2 class="sec">Pace</h2>${table(['Lessons', 'A unit', 'How'], arr(c.pace).map((r) => [r.who, r.time, r.how]))}</section>
+      <section class="panel"><h2 class="sec">Review</h2>${table(['When', 'What'], arr(c.review).map((r) => [r.when, r.what]))}</section>
+      <div class="cols">
+        <section class="panel"><h2 class="sec">Correcting mistakes</h2>${list(c.feedback)}</section>
+        <section class="panel"><h2 class="sec">Words</h2>${list(c.words)}
+          ${arr(c.wordMaterials).length ? `<div class="group-h" style="margin-top:16px">Word pages you have</div><p class="small" style="margin:0">${c.wordMaterials.map(link).join(' · ')}</p>
+          ${c.wordMaterialsFix ? `<p class="note ufix">${esc(c.wordMaterialsFix)}</p>` : ''}` : ''}</section>
+      </div>
+      <section class="panel"><h2 class="sec">Sounds to watch</h2>${table(['Sound', 'Pair', 'Who'], arr(c.sounds).map((r) => [r.sound, r.pair, r.who || '—']))}</section>
+      <details class="panel why" data-uid="why" ${UI.open.has('why') ? 'open' : ''}><summary><h2>Why it works</h2></summary>
+        <ul class="plist">${arr(c.principles).map((p) => `<li><b>${esc(p.idea)}</b><span class="muted small">${esc(p.you)}</span>
+          ${p.src ? `<div class="small">${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.src)}</a>` : `<span class="muted">${esc(p.src)}</span>`}</div>` : ''}</li>`).join('')}</ul></details>
+    </div>`;
+  }
+
   function viewHome() {
     const students = Object.values(S.students).sort((a, b) => String(a.name).localeCompare(String(b.name)));
     if (!students.length) return `<div class="empty"><h1>No students yet</h1><p class="lede">Send Claude a lesson transcript to add one.</p></div>`;
@@ -352,7 +524,12 @@ h2.sec{margin-bottom:12px}
       const focus = arr(s.focus).filter((f) => f.status !== 'fixed').slice(0, 3);
       return `<a class="scard" href="#s-${esc(s.id)}">
         <div class="scard-h"><span class="name">${esc(s.name)}</span>${s.level ? `<span class="chip">${esc(s.level)}</span>` : ''}</div>
-        ${(() => { const b = billStatus(s.id); return b ? `<div><span class="chip ${b.cls}">${esc(b.text)}</span></div>` : ''; })()}
+        ${(() => {
+          const b = billStatus(s.id), p = S.progress[s.id];
+          const chips = [b ? `<span class="chip ${b.cls}">${esc(b.text)}</span>` : '',
+            p && p.current && units().length ? `<span class="chip new">Unit ${esc(p.current)}/${units().length}</span>` : ''].join('');
+          return chips ? `<div class="chips">${chips}</div>` : '';
+        })()}
         <div class="muted small">${last ? `Last: ${esc(fmtDate(last.date))}` : 'No lessons yet'}${last && last.nextWhen ? ` · Next: ${esc(last.nextWhen)}` : ''}</div>
         ${focus.length ? `<ul>${focus.map((f) => `<li>${esc(f.issue)}</li>`).join('')}</ul>` : ''}</a>`;
     }).join('')}</div>`;
@@ -395,7 +572,7 @@ h2.sec{margin-bottom:12px}
       <li><span>${esc(f.issue)}</span>${f.status && f.status !== 'new' ? `<span class="chip ${esc(f.status)}">${esc(f.status)}</span>` : ''}</li>`).join('')}</ul></section>` : '';
 
     const lessons = `<section><h2 class="sec">Lessons</h2>${ls.length ? ls.map(lessonBlock).join('') : '<p class="muted">No lessons yet.</p>'}</section>`;
-    return `<a class="back" href="#students">← Students</a><div class="stack">${head}${billPanel(sid)}${next}${tracker}${bankPanel(sid)}${matPanel(sid)}${lessons}</div>`;
+    return `<a class="back" href="#students">← Students</a><div class="stack">${head}${billPanel(sid)}${coursePanel(sid)}${next}${tracker}${bankPanel(sid)}${matPanel(sid)}${lessons}</div>`;
   }
 
   const TABS = [['overview', 'Overview'], ['mistakes', 'Mistakes'], ['words', 'Words'], ['pron', 'Sounds'], ['cards', 'Cards'], ['teacher', 'My teaching']];
@@ -484,14 +661,17 @@ h2.sec{margin-bottom:12px}
     const h = location.hash.replace(/^#/, '');
     if (h.startsWith('s-')) return { name: 'student', id: h.slice(2) };
     if (h === 'teaching') return { name: 'teaching' };
+    if (h === 'course' || h === 'course-teach') return { name: 'course', sub: h === 'course-teach' ? 'teach' : '' };
     return { name: 'home' };
   }
 
   function render() {
     const r = route();
-    const [on, off] = r.name === 'teaching' ? ['nav-teaching', 'nav-students'] : ['nav-students', 'nav-teaching'];
-    document.getElementById(on).setAttribute('aria-current', 'page');
-    document.getElementById(off).removeAttribute('aria-current');
+    const navOn = r.name === 'teaching' ? 'nav-teaching' : r.name === 'course' ? 'nav-course' : 'nav-students';
+    ['nav-students', 'nav-course', 'nav-teaching'].forEach((id) => {
+      const a = document.getElementById(id);
+      if (id === navOn) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
 
     if (S.status === 'nodb') {
       main.innerHTML = `<div class="empty"><h1>Open this in Claude</h1><p class="lede">Reports load only on claude.ai or in the Claude app.</p></div>`;
@@ -505,7 +685,8 @@ h2.sec{margin-bottom:12px}
       main.innerHTML = `<div class="empty"><h1>Can’t reach the reports</h1><p class="lede">They’ll appear when the connection is back.</p></div>`;
       return;
     }
-    main.innerHTML = r.name === 'student' ? viewStudent(r.id) : r.name === 'teaching' ? viewTeaching() : viewHome();
+    main.innerHTML = r.name === 'student' ? viewStudent(r.id) : r.name === 'teaching' ? viewTeaching()
+      : r.name === 'course' ? viewCourse(r.sub) : viewHome();
   }
 
   // ---------- events ----------
@@ -526,6 +707,21 @@ h2.sec{margin-bottom:12px}
       toast(bill.dataset.kind === 'paid' ? `Payment logged (+${n})` : 'Lesson logged (−1)');
       return;
     }
+    const uv = e.target.closest('[data-uview]');
+    if (uv) { UI.uview[uv.dataset.uview] = Number(uv.dataset.n); render(); return; }
+    const ua = e.target.closest('[data-uadv]');
+    if (ua) {
+      const sid = ua.dataset.uadv, p = progOf(sid), was = p.current;
+      const n = nextUnit({ ...p, done: [...arr(p.done), was] });
+      moveTo(sid, n, true);
+      toast(isReview(was) ? `Unit ${was} done. Review week next (units ${was - 3}–${was}), then unit ${n}.`
+        : n ? `Unit ${was} done. Now unit ${n}.` : 'Course finished!');
+      return;
+    }
+    const us = e.target.closest('[data-ustart]');
+    if (us) { const n = Number(us.dataset.n); moveTo(us.dataset.ustart, n, false); toast(`Now on unit ${n}`); return; }
+    const uu = e.target.closest('[data-uundo]');
+    if (uu) { const p = progOf(uu.dataset.uundo); if (p.prev) { saveProgress(uu.dataset.uundo, p.prev); toast('Undone'); } return; }
     const rv = e.target.closest('[data-review]');
     if (rv) { patchState('bank-' + rv.dataset.review, ['reviewed', rv.dataset.id], true); return; }
     const undo = e.target.closest('[data-undo]');
@@ -548,9 +744,11 @@ h2.sec{margin-bottom:12px}
   });
   main.addEventListener('toggle', (e) => {
     const d = e.target;
-    if (!(d instanceof HTMLDetailsElement) || !d.dataset.lid) return;
-    UI.touched = true;
-    if (d.open) UI.open.add(d.dataset.lid); else UI.open.delete(d.dataset.lid);
+    if (!(d instanceof HTMLDetailsElement)) return;
+    const key = d.dataset.lid || d.dataset.uid;
+    if (!key) return;
+    if (d.dataset.lid) UI.touched = true;
+    if (d.open) UI.open.add(key); else UI.open.delete(key);
   }, true);
   window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
 
@@ -579,6 +777,8 @@ h2.sec{margin-bottom:12px}
     sub('bank', (docs) => { S.bank = {}; docs.forEach((d) => { S.bank[d.id] = d.data() || {}; }); });
     sub('billing', (docs) => { S.billing = {}; docs.forEach((d) => { S.billing[d.id] = d.data() || {}; }); });
     sub('teacher', (docs) => { const p = docs.find((d) => d.id === 'profile'); S.teacher = p ? p.data() : null; });
+    sub('course', (docs) => { const p = docs.find((d) => d.id === 'plan'); S.course = p ? p.data() : null; });
+    sub('progress', (docs) => { S.progress = {}; docs.forEach((d) => { S.progress[d.id] = d.data() || {}; }); });
   }
   start();
 })();

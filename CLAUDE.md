@@ -34,6 +34,8 @@ Students (all learn American English):
      improving or fixed).
    - `lessons/<slug>-<YYYY-MM-DD>`: the lesson JSON without `studentCards`, plus `cards`.
    - `teacher/profile`: refresh `englishFocus`, `teachingFocus`, `lessonsReviewed`, `updated`.
+   - `progress/<slug>`: the teacher moves units with the buttons. Read it; only if the lesson clearly
+     finished the current unit and she hasn't moved it, mention it in the reply (don't move it yourself).
 5. Send the cards to the user with SendUserFile and give them the site link.
 
 ## What the teacher asked for
@@ -109,3 +111,13 @@ people, less, everyday, phrases, city, weather, food, home, event, grammar, soun
 `materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
 with a short quality note (British usage, errors, overload). Her "reviewed again" ticks live in
 `state/mat-<slug>`. Materials must be American English; flag British forms when you see them.
+
+**Course.** `course/plan` (Claude writes) = the 30-unit backbone, same order for every student:
+`units[{n, grammar, cando, words, sound, materials[{title, url}], fix, extra}]`, `phases[{name, from, to, sum}]`,
+`reviewAfter[]` (review week after units 4, 8, …), `checks{12, 24}`, and the "How to teach" parts: `lesson[{min,
+title, detail}]`, `steps[]`, `pace[{who, time, how}]`, `review[{when, what}]`, `feedback[]`, `words[]`,
+`sounds[{sound, pair, who}]`, `principles[{idea, you, src, url}]`, `wordMaterials[]`, `wordMaterialsFix`.
+`progress/<slug>` (the page writes; Claude only creates it for a new student) = `{current, done[], started{n: date},
+pace, note, prev}`. Base each lesson's `nextLesson` plan on the student's current unit. When the teacher sends a new
+material, add it to the matching unit's `materials` (and `fix` if it needs changes). Site tabs: Students, Course
+(Units · every student / How to teach · you), My teaching.
