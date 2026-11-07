@@ -144,5 +144,7 @@ marked and the move in a few words, and Claude (`sample`, quick tier) makes her 
 Keep it bare: no titles, captions or instructions on the page. Questions live in `BANK` in the page
 (`{k, c, q, a, m}`, kinds in `KINDS`): honest but tactful (soften, own taste, positive first, no sides,
 correct gently, dodge lightly), never outright lies, plain American English, 2–3 bracketed phrases each.
-`db` docs: `me/progress {done[]}`, `me/saved {phrases[]}` (phrase keys), `me/extra {items[]}` (situations
-Claude wrote from the page). Capabilities: `db`, `sample`.
+"Another answer" asks Claude (quick tier) for a different diplomatic answer to the same question; its phrases
+can be starred too. `db` docs: `me/progress {done[]}`, `me/saved {phrases[]}` (phrase keys), `me/extra {items[]}`
+(questions Claude wrote from the page), `me/more {items[{t, k, kind, ex, q}]}` (starred phrases from Claude's
+other answers, so the phrasebook can show them). Capabilities: `db`, `sample`.

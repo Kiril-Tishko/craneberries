@@ -137,6 +137,20 @@ mark, .mk {
 .fixes s { color: var(--muted); }
 .tip { margin: 0 0 0 28px; color: var(--muted); font-size: .92rem; }
 .dots { display: inline-flex; gap: 5px; padding: 6px 0 6px 28px; }
+.alts { display: flex; flex-direction: column; gap: 18px; }
+.alts:empty { display: none; }
+.alts .dots { padding-left: 0; }
+.alt { display: flex; flex-direction: column; gap: 12px; padding-top: 18px; border-top: 1px dashed var(--line); }
+.alt-a { margin: 0; font-size: 1.18rem; line-height: 1.55; text-wrap: pretty; }
+.alt .move { margin: -4px 0 0; }
+.alt-btn {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 8px 15px 8px 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; color: var(--accent); font-size: .95rem; font-weight: 500;
+}
+.alt-btn svg { width: 17px; height: 17px; }
+.alt-btn:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.alt-btn:disabled { opacity: .55; cursor: default; }
 .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: .35; animation: pulse 1.2s infinite ease-in-out; }
 .dots i:nth-child(2) { animation-delay: .15s; }
 .dots i:nth-child(3) { animation-delay: .3s; }
@@ -226,6 +240,8 @@ mark, .mk {
       <p id="answer"></p>
       <p class="move" id="move" hidden></p>
       <div class="chips" id="chips"></div>
+      <div class="alts" id="alts" aria-live="polite"></div>
+      <button class="alt-btn" id="another" type="button" hidden><svg aria-hidden="true"><use href="#i-skip"/></svg>Another answer</button>
       <div class="mine" id="mine" hidden>
         <p id="mineText"></p>
         <div class="polish" id="polish"></div>
@@ -330,7 +346,7 @@ mark, .mk {
   const CONT = new Set(["but", "to", "if", "about", "on", "for", "with", "of", "when", "and", "so", "be", "is", "like", "as", "in", "at", "by", "the", "a", "through", "do", "could", "keep", "me", "get", "into", "mind", "usually", "we", "down", "add", "more"]);
 
   const $ = s => document.querySelector(s);
-  const S = { done: new Set(), saved: new Set(), extra: [], cur: null, filter: "saved" };
+  const S = { done: new Set(), saved: new Set(), extra: [], more: [], alts: [], cur: null, filter: "saved" };
   const sessionDone = new Set();
 
   // ---------- text helpers ----------
@@ -386,13 +402,14 @@ mark, .mk {
   const LS = "say-it-nicely";
   function readLocal() { try { return JSON.parse(localStorage.getItem(LS) || "null") || {}; } catch { return {}; } }
   function writeLocal() {
-    try { localStorage.setItem(LS, JSON.stringify({ done: [...S.done], saved: [...S.saved], extra: S.extra })); } catch {}
+    try { localStorage.setItem(LS, JSON.stringify({ done: [...S.done], saved: [...S.saved], extra: S.extra, more: S.more })); } catch {}
   }
   let db = null;
   const queues = {};
   function bodyFor(name) {
     if (name === "progress") return { done: [...S.done] };
     if (name === "saved") return { phrases: [...S.saved] };
+    if (name === "more") return { items: S.more };
     return { items: S.extra };
   }
   function persist(name) {
@@ -402,6 +419,9 @@ mark, .mk {
     queues[name] = (queues[name] || Promise.resolve())
       .then(() => db.doc("me/" + name).set(body))
       .catch(e => console.warn("Could not save " + name, e && e.code));
+  }
+  function validMore(e) {
+    return e && typeof e.t === "string" && typeof e.k === "string" && typeof e.ex === "string" && KINDS[e.kind];
   }
   function validItem(x) {
     return x && typeof x.c === "string" && typeof x.q === "string" && typeof x.a === "string" && x.q.trim() && x.a.includes("[") && typeof x.id === "string";
@@ -414,15 +434,16 @@ mark, .mk {
     let snaps;
     try {
       snaps = await Promise.race([
-        Promise.all(["progress", "saved", "extra"].map(n => d.doc("me/" + n).get())),
+        Promise.all(["progress", "saved", "extra", "more"].map(n => d.doc("me/" + n).get())),
         new Promise((_, rej) => setTimeout(() => rej({ code: "timeout" }), 10000))
       ]);
     } catch (e) { console.warn("Saved progress not reachable yet", e && e.code); db = d; return; }
     db = d;
-    const [p, s, x] = snaps.map(sn => (sn && sn.exists ? sn.data() : null));
+    const [p, s, x, mo] = snaps.map(sn => (sn && sn.exists ? sn.data() : null));
     if (p && Array.isArray(p.done)) S.done = new Set([...p.done, ...sessionDone]); else persist("progress");
     if (s && Array.isArray(s.phrases)) S.saved = new Set(s.phrases); else if (S.saved.size) persist("saved");
     if (x && Array.isArray(x.items)) S.extra = x.items.filter(validItem); else if (S.extra.length) persist("extra");
+    if (mo && Array.isArray(mo.items)) S.more = mo.items.filter(validMore); else if (S.more.length) persist("more");
     writeLocal();
     refreshChips(); updateCount();
     if (!$("#bookView").hidden) renderBook();
@@ -444,7 +465,7 @@ mark, .mk {
     $("#quote").textContent = S.cur.q;
     $("#replyForm").hidden = false;
     $("#result").hidden = true;
-    stopPolish();
+    stopPolish(); stopAlt();
   }
   function next(focus) {
     S.cur = pickNext();
@@ -455,7 +476,7 @@ mark, .mk {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function showFinish() {
-    stopPolish();
+    stopPolish(); stopAlt();
     $("#situation").hidden = true;
     $("#skip").hidden = true;
     $("#replyForm").hidden = true;
@@ -473,6 +494,9 @@ mark, .mk {
     fillMarked($("#answer"), S.cur.a);
     $("#move").textContent = S.cur.m || ""; $("#move").hidden = !S.cur.m;
     refreshChips();
+    $("#alts").textContent = ""; S.alts = [];
+    $("#another").hidden = true; $("#another").disabled = false;
+    sampleReady.then(fn => { if (S.cur && !$("#result").hidden) $("#another").hidden = !fn || sampleOff; });
     $("#replyForm").hidden = true;
     $("#result").hidden = false;
     if (text) {
@@ -486,24 +510,43 @@ mark, .mk {
     $("#next").focus({ preventScroll: true });
     $("#card").scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  function refreshChips() {
-    const box = $("#chips");
+  function fillChips(box, item, answer) {
     box.textContent = "";
-    if (!S.cur) return;
-    for (const t of phrasesOf(S.cur.a)) {
+    for (const t of phrasesOf(answer)) {
       const k = keyOf(t);
       const b = document.createElement("button");
-      b.type = "button"; b.className = "chip";
-      b.setAttribute("aria-pressed", S.saved.has(k) ? "true" : "false");
-      b.setAttribute("aria-label", (S.saved.has(k) ? "Remove from phrasebook: " : "Save to phrasebook: ") + t);
+      b.type = "button"; b.className = "chip"; b.dataset.k = k;
       const sp = document.createElement("span"); sp.textContent = t;
       b.append(svg("i-star"), sp);
-      b.addEventListener("click", () => { toggleSave(k); refreshChips(); });
+      setChip(b, t);
+      b.addEventListener("click", () => {
+        toggleSave(k, { t, k, kind: item.k, ex: answer, q: item.q });
+        document.querySelectorAll(".chip").forEach(c => { if (c.dataset.k === k) setChip(c, c.textContent); });
+      });
       box.append(b);
     }
   }
-  function toggleSave(k) {
-    if (S.saved.has(k)) S.saved.delete(k); else S.saved.add(k);
+  function setChip(b, t) {
+    const on = S.saved.has(b.dataset.k);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.setAttribute("aria-label", (on ? "Remove from phrasebook: " : "Save to phrasebook: ") + t);
+  }
+  function refreshChips() {
+    if (!S.cur) { $("#chips").textContent = ""; return; }
+    fillChips($("#chips"), S.cur, S.cur.a);
+    document.querySelectorAll("#alts .chip").forEach(c => setChip(c, c.textContent));
+  }
+  // A phrase from one of Claude's answers is kept in me/more so the phrasebook can show it.
+  function toggleSave(k, entry) {
+    if (S.saved.has(k)) {
+      S.saved.delete(k);
+      const before = S.more.length;
+      S.more = S.more.filter(e => e.k !== k);
+      if (S.more.length !== before) persist("more");
+    } else {
+      S.saved.add(k);
+      if (entry && !bookMap().has(k)) { S.more.push(entry); persist("more"); }
+    }
     persist("saved"); updateCount();
   }
   function updateCount() {
@@ -519,6 +562,72 @@ mark, .mk {
   let polishCtl = null;
   const OFF_CODES = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "invalid_request", "transform_error"];
   function stopPolish() { if (polishCtl) { polishCtl.abort(); polishCtl = null; } }
+  let altCtl = null;
+  function stopAlt() { if (altCtl) { altCtl.abort(); altCtl = null; } }
+
+  function altPrompt(item, seen) {
+    return [
+      "You write diplomatic answers in simple, natural American English for an advanced learner (a Ukrainian English teacher).",
+      "Diplomatic means honest but tactful, not just polite: soften negatives (\"It was hard for me to get used to...\" instead of \"I don't like...\"), make it about your own taste or experience, start with something true and positive, don't take sides, correct gently, or dodge lightly. No outright lies. Never fancy.",
+      "",
+      "What is true for her: " + item.c,
+      "Someone says to her: \"" + item.q + "\"",
+      "",
+      "Answers she has already seen:",
+      seen.map(a => "- " + a).join("\n"),
+      "",
+      "Write ONE clearly different diplomatic answer: a different move or angle, not the same idea in other words.",
+      "Reply with only a JSON object: {\"a\": the answer, 1-3 short sentences, with 2-3 reusable diplomatic phrases wrapped in [square brackets], \"m\": the diplomatic move in at most 8 words}",
+      "Example: {\"a\": \"[To be honest], [I'm still getting used to] the winters. [The summers make up for it], though!\", \"m\": \"Admit it, then balance it.\"}"
+    ].join("\n");
+  }
+
+  async function anotherAnswer() {
+    const item = S.cur;
+    const btn = $("#another"), box = $("#alts");
+    const fn = await sampleReady;
+    if (!fn || sampleOff || !item) { btn.hidden = true; return; }
+    stopAlt();
+    const ctl = new AbortController(); altCtl = ctl;
+    box.querySelectorAll(".alt-err").forEach(n => n.remove());
+    btn.disabled = true;
+    const wait = dots(); wait.setAttribute("aria-label", "Writing another answer");
+    box.append(wait);
+    const seen = [plain(item.a)].concat(S.alts.map(x => plain(x.a)));
+    try {
+      const r = await fn.json(altPrompt(item, seen), { modelTier: "quick", signal: ctl.signal, cache: false });
+      if (ctl.signal.aborted || S.cur !== item) return;
+      wait.remove();
+      const a = r && typeof r.a === "string" ? r.a.trim() : "";
+      if (!a) throw { code: "empty_completion" };
+      const alt = { a, m: typeof r.m === "string" ? r.m.trim() : "" };
+      S.alts.push(alt);
+      renderAlt(item, alt);
+    } catch (e) {
+      wait.remove();
+      if (ctl.signal.aborted || (e && e.code === "cancelled")) return;
+      if (e && OFF_CODES.includes(e.code)) { sampleOff = true; btn.hidden = true; return; }
+      const msg = document.createElement("p"); msg.className = "tip alt-err"; msg.style.marginLeft = "0";
+      msg.textContent = e && e.code === "rate_limited"
+        ? "Too many requests. Try again in a minute."
+        : "Couldn't get another answer. Try again.";
+      box.append(msg);
+    } finally {
+      if (altCtl === ctl) altCtl = null;
+      btn.disabled = false;
+    }
+  }
+
+  function renderAlt(item, alt) {
+    const wrap = document.createElement("div"); wrap.className = "alt";
+    const p = document.createElement("p"); p.className = "alt-a"; fillMarked(p, alt.a);
+    wrap.append(p);
+    if (alt.m) { const m = document.createElement("p"); m.className = "move"; m.textContent = alt.m; wrap.append(m); }
+    const chips = document.createElement("div"); chips.className = "chips";
+    fillChips(chips, item, alt.a);
+    if (chips.childElementCount) wrap.append(chips);
+    $("#alts").append(wrap);
+  }
 
   function polishPrompt(item, text) {
     return [
@@ -604,10 +713,16 @@ mark, .mk {
     p.append(svg(ok ? "i-check" : "i-pen"));
     const span = document.createElement("span");
     if (better && (changed || !ok)) {
-      tokens.forEach((t, idx) => {
+      // Group neighboring changed words into one highlight.
+      const runs = [];
+      for (const t of tokens) {
+        const last = runs[runs.length - 1];
+        if (last && last.same === t.same) last.w.push(t.w); else runs.push({ same: t.same, w: [t.w] });
+      }
+      runs.forEach((r, idx) => {
         if (idx) span.append(document.createTextNode(" "));
-        if (t.same) span.append(document.createTextNode(t.w));
-        else { const s = document.createElement("span"); s.className = "ins"; s.textContent = t.w; span.append(s); }
+        if (r.same) span.append(document.createTextNode(r.w.join(" ")));
+        else { const s = document.createElement("span"); s.className = "ins"; s.textContent = r.w.join(" "); span.append(s); }
       });
     } else {
       span.textContent = "Good to go.";
@@ -678,16 +793,18 @@ mark, .mk {
   }
 
   // ---------- phrasebook ----------
-  let bookCache = null, bookSize = -1;
+  let bookCache = null, bookSize = "";
   function bookMap() {
     const p = pool();
-    if (bookCache && bookSize === p.length) return bookCache;
+    const size = p.length + ":" + S.more.length;
+    if (bookCache && bookSize === size) return bookCache;
     const map = new Map();
     for (const it of p) for (const t of phrasesOf(it.a)) {
       const k = keyOf(t);
       if (!map.has(k)) map.set(k, { t, k, kind: it.k, ex: it.a, q: it.q });
     }
-    bookCache = map; bookSize = p.length;
+    for (const e of S.more) if (!map.has(e.k)) map.set(e.k, e);
+    bookCache = map; bookSize = size;
     return map;
   }
   function renderBook() {
@@ -762,6 +879,7 @@ mark, .mk {
   $("#skip").addEventListener("click", () => next(true));
   $("#restart").addEventListener("click", () => { S.done.clear(); sessionDone.clear(); persist("progress"); next(true); });
   $("#more").addEventListener("click", generateMore);
+  $("#another").addEventListener("click", anotherAnswer);
   $("#toBook").addEventListener("click", () => { location.hash = "phrases"; });
   $("#back").addEventListener("click", () => { location.hash = ""; });
   $("#fSaved").addEventListener("click", () => { S.filter = "saved"; renderBook(); });
@@ -773,6 +891,7 @@ mark, .mk {
     if (Array.isArray(local.done)) S.done = new Set(local.done);
     if (Array.isArray(local.saved)) S.saved = new Set(local.saved);
     if (Array.isArray(local.extra)) S.extra = local.extra.filter(validItem);
+    if (Array.isArray(local.more)) S.more = local.more.filter(validMore);
     const keep = data && data.cur ? pool().find(x => x.id === data.cur) : null;
     if (keep) { S.cur = keep; showSituation(); $("#reply").value = data.draft || ""; autosize(); }
     else next(false);
