@@ -102,4 +102,7 @@ points, give each its own grammar card.
 Capabilities: `db`, `assets`, `downloads`. Collections: `students`, `lessons`, `teacher` (Claude writes),
 `state` (the page writes the teacher's "discussed" and "sent" ticks; Claude doesn't overwrite it),
 `billing` (both write: `{plan, perPayment, log[{date, kind, n}]}`, balance = sum of `n`, in lessons).
-The word bank on each student page is built from every lesson's `words`, so keep `words` accurate.
+The word bank on each student page merges `bank/<slug>` (words the teacher sent in chat before these
+reports: `{words[{en, theme, n, sent}]}`, n = position, 1 = newest; themes: work, money, numbers, law,
+people, less, everyday, phrases, city, weather, food, home, event, grammar, sounds) with every lesson's
+`words`, so keep `words` accurate. The teacher's "reviewed" taps live in `state/bank-<slug>`.
