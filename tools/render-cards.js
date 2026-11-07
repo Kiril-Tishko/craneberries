@@ -55,6 +55,8 @@ const body = {
 
   phrases: (c) => kid ? `<div class="kph">${c.items.map((p, i) => `
     <div class="kprow t${(i + 2) % 6}"><span class="kemo md">${esc(p.emoji || '')}</span><span class="kphr">${mark(p.en)}</span></div>`).join('')}</div>`
+    : c.items.some((p) => p.emoji) ? `<ol class="phrases">${c.items.map((p) => `
+    <li class="pe"><span class="pemo2">${esc(p.emoji || '')}</span><div class="pet"><span class="ph">${mark(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</div></li>`).join('')}</ol>`
     : `<ol class="phrases">${c.items.map((p) => `
     <li><span class="ph">${mark(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</li>`).join('')}</ol>`,
 
@@ -156,6 +158,9 @@ const html = `<!doctype html>
   .phrases{margin-top:16px;border-top:1.5px solid var(--line)}
   .phrases li{padding:12px 0;border-bottom:1.5px solid var(--line);display:flex;flex-direction:column;gap:3px}
   .ph{font-size:19.5px;font-weight:650;line-height:1.3}
+  .phrases li.pe{flex-direction:row;align-items:center;gap:14px}
+  .pemo2{font-size:36px;line-height:1;font-family:"Noto Color Emoji",sans-serif;flex:none;width:44px;text-align:center}
+  .pet{display:flex;flex-direction:column;gap:3px;min-width:0}
   .note{font-size:15px;color:var(--muted);font-weight:400;line-height:1.35}
 
   .rule{margin-top:18px;background:var(--tile);border-radius:16px;padding:16px 16px;display:flex;flex-direction:column;gap:4px}

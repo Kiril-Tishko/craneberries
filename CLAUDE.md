@@ -61,6 +61,7 @@ Students (all learn American English):
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
+  For A2 and below, write the mouth tips in Ukrainian ("Опустіть щелепу", not "Drop your jaw").
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time). **Be as blunt as possible**: only the teacher reads it. Keep
@@ -88,7 +89,8 @@ teacher        {note, english[{t, said, better, why}], habits[], strengths[], im
 studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex, emoji?}]}
                     items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles
-  {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   (with `kid`: colored bubbles, big emoji)
+  {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   emoji shows in front of each phrase
+                    (with `kid`: colored bubbles, big emoji)
   {type: "qa",      kicker, title, q, pics[{emoji, en}], answers[{emoji, text, tone: yes|no}]}
                     children's cheat sheet: a question bubble with pictures, then big answer tiles
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
