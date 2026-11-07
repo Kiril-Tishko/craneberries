@@ -106,3 +106,6 @@ The word bank on each student page merges `bank/<slug>` (words the teacher sent 
 reports: `{words[{en, theme, n, sent}]}`, n = position, 1 = newest; themes: work, money, numbers, law,
 people, less, everyday, phrases, city, weather, food, home, event, grammar, sounds) with every lesson's
 `words`, so keep `words` accurate. The teacher's "reviewed" taps live in `state/bank-<slug>`.
+`materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
+with a short quality note (British usage, errors, overload). Her "reviewed again" ticks live in
+`state/mat-<slug>`. Materials must be American English; flag British forms when you see them.
