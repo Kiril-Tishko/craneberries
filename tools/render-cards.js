@@ -5,7 +5,8 @@
 //
 // Reads `date` and `studentCards` from the lesson file, writes <out-dir>/cards.html
 // and <out-dir>/card-1.png … card-N.png (420 CSS px wide at 3x = 1260 px).
-// Card types: words, phrases, grammar, compare, verbs, forms, fixes, pron, reading. See CLAUDE.md for the shape.
+// Card types: words, phrases, grammar, compare, verbs, forms, fixes, pron, reading, qa. See CLAUDE.md for the shape.
+// `kid: true` in the lesson file switches to the children's look: bright tiles, a round font, big pictures.
 
 const fs = require('fs');
 const path = require('path');
@@ -28,6 +29,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const [y, m, d] = lesson.date.split('-').map(Number);
 const dateLabel = `${MONTHS[m - 1]} ${d}`;
 
+const kid = !!lesson.kid;
 const cards = lesson.studentCards || [];
 const total = cards.length;
 
@@ -40,7 +42,10 @@ function header(c) {
 
 const body = {
   // Items with an emoji get big picture rows (for children): emoji, the English word, the Ukrainian below.
-  words: (c) => c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
+  words: (c) => kid ? `<div class="kgrid">${c.items.map((w, i) => `
+    <div class="ktile t${i % 6}"><span class="kemo">${esc(w.emoji || '')}</span>
+      <span class="kword"><span class="hl">${esc(w.en)}</span></span><span class="ua">${esc(w.ua)}</span></div>`).join('')}</div>`
+    : c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
     <div class="prow"><span class="pemo">${esc(w.emoji || '')}</span>
       <div class="wk"><span class="en big"><span class="hl">${esc(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</div></div>`).join('')}</div>` : `<ol class="words">${c.items.map((w) => `
@@ -48,7 +53,9 @@ const body = {
       <span class="en"><span class="hl">${esc(w.en)}</span></span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</li>`).join('')}</ol>`,
 
-  phrases: (c) => `<ol class="phrases">${c.items.map((p) => `
+  phrases: (c) => kid ? `<div class="kph">${c.items.map((p, i) => `
+    <div class="kprow t${(i + 2) % 6}"><span class="kemo md">${esc(p.emoji || '')}</span><span class="kphr">${mark(p.en)}</span></div>`).join('')}</div>`
+    : `<ol class="phrases">${c.items.map((p) => `
     <li><span class="ph">${mark(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</li>`).join('')}</ol>`,
 
   grammar: (c) => `
@@ -79,6 +86,12 @@ const body = {
     ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}
     ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}`,
+
+  // A question in a speech bubble with pictures, then big answer tiles (for children).
+  qa: (c) => `<div class="qbub"><div class="qtext">${mark(c.q)}</div>
+      <div class="qpics">${(c.pics || []).map((p) => `<div class="qpic"><span class="kemo sm">${esc(p.emoji)}</span><span>${esc(p.en)}</span></div>`).join('')}</div></div>
+    <div class="ans">${c.answers.map((a) => `<div class="atile ${esc(a.tone || '')}"><span class="kemo">${esc(a.emoji)}</span>
+      <span class="atext">${mark(a.text)}</span></div>`).join('')}</div>`,
 
   reading: (c) => `<div class="read">${c.paras.map((p) => `<p>${mark(p)}</p>`).join('')}</div>
     ${c.questions && c.questions.length ? `<div class="qbox"><div class="flabel">${esc(c.qlabel || 'Think about it')}</div>
@@ -115,7 +128,7 @@ const body = {
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <title>Lesson Cards</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=Baloo+2:wght@600;700;800&family=Nunito:wght@700;800&display=swap">
 <style>
   :root{
     --paper:#F4F6FB; --ink:#141E36; --muted:#56607A; --line:#DCE2EE;
@@ -219,7 +232,39 @@ const html = `<!doctype html>
   .pp{background:var(--tile);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
   .pp .base{font-size:15.5px;color:var(--muted)}
   .pp .ppf{font-size:23px;font-weight:750;line-height:1.2}
-</style></head><body>
+
+  /* children's look */
+  .kid{--paper:#FFF8EC;--blue:#E8457A;--sans:"Baloo 2","Nunito","Noto Color Emoji","DejaVu Sans",sans-serif}
+  .kid .card{padding:26px 22px 32px}
+  .kid h1{font-size:40px;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+  .kid .kicker{font-size:14px;letter-spacing:.06em}
+  .kid .ua{font-family:"Nunito",sans-serif;font-weight:700;font-size:16px;color:#5b5470}
+  .t0{background:#FFE1EA}.t1{background:#D9F0FF}.t2{background:#DDF6D8}.t3{background:#FFF0B8}.t4{background:#ECE0FF}.t5{background:#FFE2CC}
+  .kemo{font-family:"Noto Color Emoji",sans-serif;font-size:76px;line-height:1}
+  .kemo.md{font-size:50px;flex:none}
+  .kemo.sm{font-size:46px}
+  .kgrid{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ktile{border-radius:28px;padding:18px 10px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+  .ktile:nth-child(4n+1),.ktile:nth-child(4n+4){transform:rotate(-1.6deg)}
+  .ktile:nth-child(4n+2),.ktile:nth-child(4n+3){transform:rotate(1.6deg)}
+  .kword{font-size:28px;font-weight:800;line-height:1.1;margin-top:6px}
+  .kph{margin-top:18px;display:grid;gap:12px}
+  .kprow{border-radius:26px;padding:14px 16px;display:flex;gap:14px;align-items:center}
+  .kprow:nth-child(odd){transform:rotate(-1deg)} .kprow:nth-child(even){transform:rotate(1deg)}
+  .kphr{font-size:25px;font-weight:700;line-height:1.2}
+  .kphr .hl{font-weight:800}
+  .qbub{position:relative;margin:20px 0 26px;background:#fff;border:3px solid var(--ink);border-radius:28px;padding:16px 14px 14px;text-align:center}
+  .qbub::after{content:"";position:absolute;left:50%;bottom:-17px;width:26px;height:26px;background:#fff;
+    border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
+  .qtext{font-size:32px;font-weight:800;line-height:1.1}
+  .qpics{display:flex;justify-content:center;gap:14px;margin-top:10px}
+  .qpic{display:flex;flex-direction:column;align-items:center;font-size:16px;font-weight:700;color:#5b5470}
+  .ans{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .atile{border-radius:28px;padding:18px 10px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+  .atile.yes{background:#DDF6D8;transform:rotate(-1.6deg)}
+  .atile.no{background:#FFE1EA;transform:rotate(1.6deg)}
+  .atext{font-size:27px;font-weight:800;line-height:1.1}
+</style></head><body${kid ? ' class="kid"' : ''}>
 ${cards.map((c, i) => `<section class="card" id="card-${i + 1}">${header(c)}${body[c.type](c)}</section>`).join('\n')}
 </body></html>`;
 
@@ -231,8 +276,9 @@ fs.writeFileSync(htmlPath, html);
   const page = await browser.newPage({ viewport: { width: 460, height: 1000 }, deviceScaleFactor: 3 });
   await page.goto('file://' + htmlPath, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
-  const golos = await page.evaluate(() => document.fonts.check('700 20px "Golos Text"'));
-  if (!golos) console.warn('warning: Golos Text did not load; cards use the fallback font');
+  const font = kid ? 'Baloo 2' : 'Golos Text';
+  const ok = await page.evaluate((f) => document.fonts.check(`700 20px "${f}"`), font);
+  if (!ok) console.warn(`warning: ${font} did not load; cards use the fallback font`);
   for (let i = 1; i <= total; i++) {
     const el = await page.$(`#card-${i}`);
     const box = await el.boundingBox();

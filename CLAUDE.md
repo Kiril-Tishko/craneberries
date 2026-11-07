@@ -20,8 +20,9 @@ Students (all learn American English):
 - Sergii: B1, Tuesdays. Pays weekly for himself and his daughter Vaselina (also a student).
 - Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
   she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
-  Her cards must be super simple: about 6 words with emojis and no examples, 2–3 very short phrases,
-  no "not X" notes and no wrong forms.
+  Her cards must be super simple and playful: set `kid: true` in her lesson JSON (bright tiles, round font,
+  big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
+  with an emoji each, no "not X" notes and no wrong forms.
 - Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
 - Julia: A2+, pays after each lesson.
 - Mariya: A2, 2 lessons a week, pays weekly.
@@ -76,7 +77,8 @@ Students (all learn American English):
 ## Lesson JSON shape
 
 ```
-student, date (YYYY-MM-DD), durationMin, topics[], grammar, summary, talk, strengths[], nextWhen (optional)
+student, date (YYYY-MM-DD), durationMin, topics[], grammar, summary, talk, strengths[], nextWhen (optional),
+kid (optional: true = children's look for every card)
 words[]        {t, ua, en, ex}
 mistakes[]     {id, priority: high|medium|low, cat, count, t[], said, better, note}
 pronunciation[]{id, confidence: clear|check, issue, evidence, tip}
@@ -85,8 +87,10 @@ nextLesson[]   {min, title, detail}
 teacher        {note, english[{t, said, better, why}], habits[], strengths[], improve[]}
 studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex, emoji?}]}
-                    items with `emoji` render as big picture rows (use for children)
-  {type: "phrases", kicker, title, sub, items[{en, note}]}
+                    items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles
+  {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   (with `kid`: colored bubbles, big emoji)
+  {type: "qa",      kicker, title, q, pics[{emoji, en}], answers[{emoji, text, tone: yes|no}]}
+                    children's cheat sheet: a question bubble with pictures, then big answer tiles
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
   {type: "compare", kicker, title, cols[{emoji, head, rule, items[]}], examples[], tip}
                     visual cheat sheet for "A vs B vs C" topics (drive / ride / go), emojis in items
