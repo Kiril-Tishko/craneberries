@@ -39,7 +39,11 @@ function header(c) {
 }
 
 const body = {
-  words: (c) => `<ol class="words">${c.items.map((w) => `
+  // Items with an emoji get big picture rows (for children): emoji, the English word, the Ukrainian below.
+  words: (c) => c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
+    <div class="prow"><span class="pemo">${esc(w.emoji || '')}</span>
+      <div class="wk"><span class="en big"><span class="hl">${esc(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
+      ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</div></div>`).join('')}</div>` : `<ol class="words">${c.items.map((w) => `
     <li><span class="ua">${esc(w.ua)}</span>
       <span class="en"><span class="hl">${esc(w.en)}</span></span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</li>`).join('')}</ol>`,
@@ -116,7 +120,7 @@ const html = `<!doctype html>
   :root{
     --paper:#F4F6FB; --ink:#141E36; --muted:#56607A; --line:#DCE2EE;
     --hl:#FFE14D; --red:#B8322A; --green:#11764A; --blue:#2742C4; --tile:#FFFFFF;
-    --sans:"Golos Text","Inter","DejaVu Sans","Noto Color Emoji",sans-serif;
+    --sans:"Golos Text","Inter","Noto Color Emoji","DejaVu Sans",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--paper);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
@@ -172,6 +176,8 @@ const html = `<!doctype html>
   .ipa{font-family:"DejaVu Sans",sans-serif;font-size:18px;color:var(--muted);margin-top:6px}
   .ptip{font-size:16px;line-height:1.35;margin-top:10px}
   .prows{margin-top:10px;display:grid;gap:10px}
+  .wk{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .en.big{font-size:30px;line-height:1.15}
   .prow{background:var(--tile);border-radius:16px;padding:16px;display:flex;gap:16px;align-items:center}
   .pemo{font-size:56px;line-height:1;font-family:"Noto Color Emoji",sans-serif;flex:none}
   .pw.stress{font-weight:500;color:var(--ink)}

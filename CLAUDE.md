@@ -20,6 +20,8 @@ Students (all learn American English):
 - Sergii: B1, Tuesdays. Pays weekly for himself and his daughter Vaselina (also a student).
 - Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
   she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
+  Her cards must be super simple: about 6 words with emojis and no examples, 2–3 very short phrases,
+  no "not X" notes and no wrong forms.
 - Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
 - Julia: A2+, pays after each lesson.
 - Mariya: A2, 2 lessons a week, pays weekly.
@@ -82,7 +84,8 @@ phrases[]      {en, note}
 nextLesson[]   {min, title, detail}
 teacher        {note, english[{t, said, better, why}], habits[], strengths[], improve[]}
 studentCards[] one of:
-  {type: "words",   kicker, title, sub, items[{ua, en, ex}]}
+  {type: "words",   kicker, title, sub, items[{ua, en, ex, emoji?}]}
+                    items with `emoji` render as big picture rows (use for children)
   {type: "phrases", kicker, title, sub, items[{en, note}]}
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
   {type: "compare", kicker, title, cols[{emoji, head, rule, items[]}], examples[], tip}
