@@ -137,9 +137,12 @@ material, add it to the matching unit's `materials` (and `fix` if it needs chang
 ## Say It Nicely (the teacher's own practice)
 
 `diplomacy/index.html` → https://claude.ai/artifact/VpUhhf1xAKk4MinhcwBVTL. For the teacher herself, not
-students: a situation card, she types a reply, the page shows a diplomatic reply with reusable `[phrases]`
-marked, and Claude (`sample`, quick tier) polishes her own reply. Keep it bare: no titles, captions or
-instructions on the page. Situations live in `BANK` in the page (`{k, s, a}`, kinds in `KINDS`): short, clear
-(who, what happened, what you want), plain American English, 2–3 bracketed phrases per reply.
+students. It trains **diplomacy, not politeness**: awkward questions where an honest answer could offend
+("What don't you like about living here?" → "It was hard for me to get used to…"). The card shows what's true
+for her and the question; she types an answer; the page shows a diplomatic answer with reusable `[phrases]`
+marked and the move in a few words, and Claude (`sample`, quick tier) makes her own answer diplomatic.
+Keep it bare: no titles, captions or instructions on the page. Questions live in `BANK` in the page
+(`{k, c, q, a, m}`, kinds in `KINDS`): honest but tactful (soften, own taste, positive first, no sides,
+correct gently, dodge lightly), never outright lies, plain American English, 2–3 bracketed phrases each.
 `db` docs: `me/progress {done[]}`, `me/saved {phrases[]}` (phrase keys), `me/extra {items[]}` (situations
 Claude wrote from the page). Capabilities: `db`, `sample`.

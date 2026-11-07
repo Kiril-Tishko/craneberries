@@ -69,12 +69,15 @@ main {
   padding: 30px 26px 28px;
   box-shadow: 0 1px 0 var(--line), 0 18px 40px -26px var(--shadow);
 }
-#situation {
-  margin: 0; padding-right: 26px;
-  font-family: var(--f-scene); font-weight: 400;
-  font-size: clamp(1.35rem, 1.1rem + 1.1vw, 1.7rem); line-height: 1.34;
-  text-wrap: pretty;
+#situation { display: flex; flex-direction: column; gap: 12px; padding-right: 26px; }
+.ctx { margin: 0; font-size: .98rem; line-height: 1.45; color: var(--muted); }
+.quote {
+  margin: 0; font-family: var(--f-scene); font-weight: 400;
+  font-size: clamp(1.4rem, 1.15rem + 1.1vw, 1.75rem); line-height: 1.3; text-wrap: pretty;
 }
+.quote::before { content: "\201C"; }
+.quote::after { content: "\201D"; }
+.move { margin: -8px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.45; }
 #skip { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; }
 #skip svg { width: 18px; height: 18px; }
 
@@ -162,7 +165,9 @@ mark, .mk {
 .entry-row { display: flex; align-items: center; gap: 4px; }
 .star { flex: none; width: 38px; height: 38px; border: 0; background: none; border-radius: 10px; display: grid; place-items: center; cursor: pointer; margin-left: -10px; }
 .ph { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 10px 0; cursor: pointer; font-size: 1.05rem; line-height: 1.35; }
-.ex { margin: 0 0 12px 28px; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+.ex { display: flex; flex-direction: column; gap: 4px; margin: 0 0 12px 28px; font-size: .95rem; line-height: 1.5; }
+.ex p { margin: 0; }
+.exq { color: var(--muted); font-family: var(--f-scene); font-size: 1.02rem; }
 .empty { margin: 8px 0 0; color: var(--muted); font-size: 1rem; }
 .empty button { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; }
 
@@ -197,7 +202,10 @@ mark, .mk {
 
   <section class="view" id="practice">
     <article class="card" id="card">
-      <p id="situation">A friend invites you to a party on Saturday. You don't want to go.</p>
+      <div id="situation">
+        <p class="ctx" id="ctx">You moved to the US a year ago. Some things still bother you.</p>
+        <p class="quote" id="quote">So, what don't you like about living here?</p>
+      </div>
       <button class="icon-btn" id="skip" type="button" aria-label="Another situation"><svg><use href="#i-skip"/></svg></button>
       <div class="finish" id="finish" hidden>
         <p id="finishText"></p>
@@ -210,12 +218,13 @@ mark, .mk {
     </article>
 
     <form class="reply" id="replyForm" autocomplete="off">
-      <textarea id="reply" rows="2" placeholder="Your reply" aria-label="Your reply"></textarea>
-      <button class="send" id="send" type="submit" aria-label="Show a diplomatic reply"><svg><use href="#i-up"/></svg></button>
+      <textarea id="reply" rows="2" placeholder="Your answer" aria-label="Your answer"></textarea>
+      <button class="send" id="send" type="submit" aria-label="Show a diplomatic answer"><svg><use href="#i-up"/></svg></button>
     </form>
 
     <div class="result" id="result" hidden>
       <p id="answer"></p>
+      <p class="move" id="move" hidden></p>
       <div class="chips" id="chips"></div>
       <div class="mine" id="mine" hidden>
         <p id="mineText"></p>
@@ -238,89 +247,87 @@ mark, .mk {
 (() => {
   "use strict";
 
-  // Situations: s = the situation, a = a diplomatic reply with [reusable phrases], k = kind.
+  // Awkward questions. c = what's true for you, q = what they say, a = a diplomatic answer with [phrases],
+  // m = the move in a few words, k = kind of move (KINDS).
   const BANK = [
-    { k: "no", s: "A friend invites you to a party on Saturday. You don't want to go.", a: "Thanks so much for inviting me! [I can't make it] this Saturday, but [I hope you have a great time]. [Let's catch up soon]." },
-    { k: "no", s: "A colleague asks you to cover their lessons next week. You can't.", a: "[I wish I could help, but] I'm fully booked next week. [Maybe someone else is free]?" },
-    { k: "ask", s: "You need to move tomorrow's lesson with a student to Thursday.", a: "Hi! [Would it be possible to] move tomorrow's lesson to Thursday? [Sorry for the short notice]." },
-    { k: "remind", s: "A student hasn't paid for last week's lessons. Remind them.", a: "Hi! [Just a friendly reminder] about the payment for last week's lessons. [Could you send it by] Friday? Thanks!" },
-    { k: "no", s: "A student's parent asks for a discount. You don't want to lower your price.", a: "[I appreciate you asking.] [Unfortunately, I can't] lower my price, but I can offer a package of ten lessons." },
-    { k: "feedback", s: "A student has come without homework three times in a row. Bring it up kindly.", a: "[I've noticed that] the homework hasn't been done the last few times. [Is everything okay]? [It would really help if] you could do at least part of it." },
-    { k: "disagree", s: "A colleague says grammar should always come first. You think speaking matters more.", a: "[I see your point], but [I see it a bit differently]. For me, speaking comes first, and grammar supports it." },
-    { k: "feedback", s: "A friend shows you a new haircut and asks what you think. You don't love it.", a: "[It's a big change!] [I think I need a day to get used to it], but you look happy, and that's what matters." },
-    { k: "complain", s: "Your soup at a restaurant is cold. Tell the server.", a: "[Excuse me], sorry to bother you, but my soup is a little cold. [Could you warm it up], please?" },
-    { k: "limit", s: "Your neighbor plays loud music late at night. Ask them to turn it down.", a: "Hi! [Sorry to bother you.] The music gets pretty loud at night, and I get up early. [Would you mind] turning it down after ten?" },
-    { k: "time", s: "A school offers you a new teaching job. You need time to think.", a: "Thank you, [that sounds really interesting]. [Let me think it over], and [I'll get back to you] by Monday." },
-    { k: "sorry", s: "You forgot a close friend's birthday. Apologize.", a: "[I'm so sorry] I missed your birthday. [No excuses.] [Let me make it up to you]: dinner's on me this week!" },
-    { k: "sorry", s: "You're ten minutes late for an online lesson. Apologize to the student.", a: "[I'm so sorry for the delay.] [Thank you for waiting.] I'll add the ten minutes at the end." },
-    { k: "news", s: "You're raising your prices next month. Tell your students.", a: "[I wanted to let you know] that my rate will go up slightly starting next month. [I really enjoy working with you], and I hope we can continue." },
-    { k: "limit", s: "A new acquaintance asks how much money you make. You don't want to say.", a: "[I'd rather not say], [if you don't mind]. But I'm happy with it!" },
-    { k: "exit", s: "Someone at a party has been talking to you for half an hour. You want to move on.", a: "[It was really nice talking to you.] I'm going to go say hi to a friend. [Catch you later]!" },
-    { k: "limit", s: "A relative criticizes your career choice again. Respond calmly.", a: "[I know you mean well], but I'm really happy with my choice. [Let's agree to disagree]." },
-    { k: "ask", s: "You need a busy colleague to send you a file today.", a: "[I know you're busy], but [could you send me] the file today? [It would really help me out]." },
-    { k: "feedback", s: "A student asks how their speaking is. It's good, but they often get the past tense wrong.", a: "[You're doing really well] with speaking. [One thing to work on] is the past tense. [Let's focus on that] next time." },
-    { k: "complain", s: "Your internet bill is much higher than usual. Call the company.", a: "Hi, [I think there might be a mistake] on my bill. It's much higher than usual. [Could you take a look]?" },
-    { k: "no", s: "A salesperson calls about a new phone plan. You're not interested.", a: "[Thanks, but I'm not interested.] [I'm happy with] my current plan. Have a good day." },
-    { k: "time", s: "A student asks a grammar question. You're not sure of the answer.", a: "[That's a great question.] [I want to give you the right answer], so [let me check] and tell you next lesson." },
-    { k: "limit", s: "A student's parent texts you questions at 11 p.m. You want this to stop.", a: "Happy to help! [Just so you know], I answer messages between 9 a.m. and 7 p.m. [I'll get back to you] in the morning." },
-    { k: "disagree", s: "Your friends want to go to an expensive restaurant. You'd prefer something cheaper.", a: "[How about] somewhere a little more casual? [I'm trying to] save money this month." },
-    { k: "ask", s: "A friend borrowed money two months ago and hasn't paid it back.", a: "Hey, [I hate to bring this up], but [do you think you could] pay me back soon? [I could really use it] right now." },
-    { k: "remind", s: "You emailed a school a week ago and got no answer.", a: "Hi, [I'm just following up on] my email from last week. [Have you had a chance to] look at it?" },
-    { k: "news", s: "You have to cancel dinner with a friend at the last minute.", a: "[I'm really sorry to do this], but [I have to cancel] tonight. Something came up. [Can we reschedule]?" },
-    { k: "feedback", s: "A colleague asks for feedback on their slides. There's too much text.", a: "[It looks great overall.] [One thing I'd change]: maybe use less text on each slide, so people focus on you." },
-    { k: "complain", s: "Your hotel room wasn't cleaned today. Call the front desk.", a: "Hi, [I'm afraid] my room wasn't cleaned today. [Would it be possible to] have someone come up?" },
-    { k: "sorry", s: "You sent a student the wrong homework file. Apologize.", a: "[My mistake!] I sent you the wrong file. Here's the right one. [Sorry for the confusion]." },
-    { k: "disagree", s: "A student says the homework is too much. You think it's fine.", a: "[I hear you.] [Let's give it two weeks], and [if it's still too much], we'll change it." },
-    { k: "limit", s: "A relative keeps giving you advice you didn't ask for.", a: "[Thanks, I'll keep that in mind.] [We're doing what works for us] for now." },
-    { k: "no", s: "Someone asks you to organize the school party. You don't have time.", a: "[Thanks for thinking of me!] [I can't take that on right now], but [I'm happy to help] on the day." },
-    { k: "ask", s: "Someone on the bus is playing videos loudly without headphones.", a: "Excuse me, [would you mind] using headphones? [Thanks so much]." },
-    { k: "complain", s: "Your online order arrived broken. Write to the store.", a: "Hi, my order arrived damaged. [I've attached] a photo. [Could you send me a replacement] or a refund?" },
-    { k: "news", s: "A student did badly on a practice test. Tell them.", a: "[This one didn't go as well as we hoped], but [that's what practice is for]. Now we know exactly what to work on." },
-    { k: "disagree", s: "Your manager suggests a plan you think won't work.", a: "[I see where you're coming from.] [My only concern is] the time. [What if we] start with a smaller group?" },
-    { k: "exit", s: "At dinner, someone starts talking about politics. You want to change the subject.", a: "[Let's not get into] politics tonight! [Anyway], how was your trip?" },
-    { k: "ask", s: "A client's message is confusing. Check what they want.", a: "[Just to make sure I understand]: you'd like two lessons a week, [is that right]?" },
-    { k: "time", s: "A salesperson pushes you to sign a contract today.", a: "[I don't make decisions on the spot.] [Let me think about it], and I'll let you know." },
-    { k: "feedback", s: "A friend is always late when you meet. You want this to change.", a: "[I love spending time with you], but [it's hard for me when] I wait for half an hour. [Could you text me] if you're running late?" },
-    { k: "complain", s: "Your landlord still hasn't fixed the heater after two weeks.", a: "Hi, [I wanted to check in about] the heater. [It's been two weeks], and it's getting cold. [When can someone come by]?" },
-    { k: "no", s: "A friend asks to borrow money. You don't want to lend it.", a: "[I'm sorry, I'm not in a position to] lend money right now. [I hope you understand]." },
-    { k: "limit", s: "A friend posted a photo of you online. You don't like it.", a: "Hey, [would you mind taking down] that photo of me? [I'm not a fan of] how I look in it." },
-    { k: "feedback", s: "A student tells you your lessons are too fast.", a: "[Thank you for telling me.] [That's really helpful.] Let's slow down, and [let me know anytime] it's too much." },
-    { k: "disagree", s: "In a meeting, a colleague gets the deadline wrong. Correct them politely.", a: "[I might be wrong], but I think the deadline is Friday, not Monday. [Could we double-check]?" },
-    { k: "ask", s: "You'd like a happy student to write a review for you.", a: "[Would you be willing to] write a short review? [It would mean a lot to me]. [Only if you have time], of course." },
-    { k: "no", s: "A student asks you to check their long essay for free.", a: "[I'd be glad to look at it!] [For longer texts, I usually] charge for one lesson. [Would that work for you]?" },
-    { k: "news", s: "You want to stop teaching a student who cancels all the time.", a: "[I've enjoyed working with you.] With so many cancellations, [it's hard for me to keep] your time slot, so [I'll need to end our lessons] after this month." },
-    { k: "exit", s: "A friend calls while you're busy. You want to end the call.", a: "[I'm so sorry, I have to run.] [Can I call you back] tonight?" },
-    { k: "ask", s: "You need a neighbor to take a package for you tomorrow.", a: "Hi! [I was wondering if you could] take a package for me tomorrow? [I'd really appreciate it]." },
-    { k: "exit", s: "Your guests are still at your place at midnight. You want them to go.", a: "[This was so much fun!] I'm getting pretty tired, though, so [I think I'll call it a night]." },
-    { k: "sorry", s: "You forgot to answer a friend's message for a week.", a: "[Sorry for the late reply]! [It slipped my mind]. To answer your question, yes, Saturday works." },
-    { k: "no", s: "Someone you went on one date with asks you out again. You're not interested.", a: "[That's really sweet of you], but [I don't think we're a good match]. [I wish you all the best]." },
-    { k: "complain", s: "A colleague presented your idea as their own.", a: "[I was a little surprised] to hear my idea in your presentation. [Next time, I'd appreciate it if] you mentioned my name." },
-    { k: "news", s: "From now on, you want all students to pay in advance. Tell them.", a: "[Going forward], I'm asking all students to pay in advance. [Thanks for understanding]!" },
-    { k: "time", s: "A friend asks to stay at your place for a week. You're not sure.", a: "[Let me check with] my family, and [I'll let you know] tomorrow." },
-    { k: "news", s: "You promised to send materials today, but they aren't ready.", a: "[I'm running a bit behind] with the materials. [I'll have them to you] by tomorrow morning. [Thanks for your patience]." },
-    { k: "limit", s: "Your manager asks you to work on Sunday. You don't work Sundays.", a: "[I'm not available] on Sundays. That's my family time. [I could do] Saturday morning, [if that helps]." },
-    { k: "feedback", s: "A parent asks how their son is doing. He's smart but often distracted.", a: "[He's very bright.] He gets distracted sometimes, so short, fun activities [work best for him]. [It would help if] he practiced a few words at home." },
-    { k: "disagree", s: "A parent wants more grammar for their young child. You think games work better.", a: "[I understand why you'd want that.] At this age, kids [learn best through] games. [I'll add a little grammar], but let's keep it fun." },
-    { k: "ask", s: "In an online meeting, someone keeps talking. You need to add something.", a: "[Sorry to interrupt], but [can I add something quickly]?" },
-    { k: "feedback", s: "A friend gives you a gift you don't like and asks if you like it.", a: "[That's so thoughtful of you]! [Thank you for thinking of me]." },
-    { k: "sorry", s: "You broke a glass at a friend's house.", a: "[Oh no, I'm so sorry!] [Let me replace it]." },
-    { k: "feedback", s: "A friend tells you about a business idea. You think it's risky.", a: "[It's an interesting idea!] [Have you thought about] how you'll find clients? [I'd start small] and test it first." },
-    { k: "limit", s: "A student forgot about the lesson for the second time.", a: "[No worries this time], but [this is the second time]. [From now on], I'll have to charge for missed lessons." },
-    { k: "complain", s: "The barista gave you the wrong drink.", a: "[Sorry, I think this might be] the wrong drink. I ordered a latte with oat milk." },
-    { k: "no", s: "A student asks for an extra lesson tonight. You need to rest.", a: "[I'm afraid tonight doesn't work for me]. [How about] tomorrow at six?" },
-    { k: "ask", s: "You want next Friday off. Ask your manager.", a: "[I was hoping to] take next Friday off. [Would that be okay]? I'll make sure everything is covered." },
-    { k: "disagree", s: "A friend says your favorite movie is boring.", a: "[Fair enough], [it's not for everyone]! I just love the story." },
-    { k: "exit", s: "A coworker starts gossiping about another colleague. You don't want to join in.", a: "[I'd rather not get involved.] [By the way], did you see the new schedule?" },
-    { k: "remind", s: "A friend promised to return your book a month ago.", a: "Hey, [no rush], but [could I get] my book back sometime this week?" }
-  ].map((x, i) => ({ ...x, id: "s" + (i + 1) }));
+    { k: "used", c: "You moved to the US a year ago. Some things still bother you.", q: "So, what don't you like about living here?", a: "Hmm, [it was hard for me to get used to] driving everywhere. Back home I walked a lot. But [it's getting easier].", m: "Talk about your adjustment, not their country's faults." },
+    { k: "used", c: "You're visiting a friend's family abroad. The food is too heavy for you.", q: "How do you like our food?", a: "[It's very different from what I'm used to]! [Some dishes took me a while], but I really love the bread.", m: "Different, not bad. Then one real compliment." },
+    { k: "used", c: "You're new in town. People seem cold to you.", q: "Do you find people here friendly?", a: "People seem [a bit more reserved] than back home, so [it took me a while to make friends]. But [once you get to know them], they're great.", m: "‘Reserved’ sounds kinder than ‘cold’." },
+    { k: "used", c: "You live in the US. You think a 20% tip is too much.", q: "What do you think about tipping here?", a: "[Honestly, it took some getting used to]. [Back home, we don't tip as much], so I'm still learning the rules.", m: "Compare with home instead of judging." },
+    { k: "used", c: "You moved to the US. Everything feels very expensive.", q: "What surprised you most here?", a: "[The prices, to be honest]! [It took me a while to adjust]. But I love how friendly people are in stores.", m: "One honest surprise, one real plus." },
+    { k: "used", c: "An American friend made you coffee. It's very weak.", q: "Good coffee, right?", a: "[It's lighter than I'm used to]! Back home we drink it really strong. [Thanks for making it]!", m: "Describe it, don't rate it." },
+    { k: "used", c: "You moved here in the fall. You hate the winters.", q: "What's the worst thing about living here?", a: "[I wouldn't say ‘worst’], but [the winters were hard for me]. [I'm learning to] enjoy them, though.", m: "Reject the strong word, then answer softly." },
+    { k: "used", c: "Your host is proud of the city. You find it noisy and dirty.", q: "Isn't our city amazing?", a: "[It has so much energy]! [It's a bit louder than I'm used to], but there's always something to do.", m: "Find a true, kind word for the same thing." },
+    { k: "used", c: "You live abroad. You often don't understand your friends' jokes.", q: "Do you get our jokes?", a: "[Not always, to be honest]! [Humor is the last thing you learn] in a new language. [I'm getting there].", m: "Admit it with a smile; it's not their fault." },
+    { k: "used", c: "Your American friends eat dinner at 5:30. It feels strange to you.", q: "Is dinner at 5:30 weird for you?", a: "[A little, at first]! Back home we eat later, but [I'm starting to like it].", m: "‘At first’ puts the problem in the past." },
+    { k: "used", c: "You're at a friend's home abroad. Wearing shoes inside feels wrong to you.", q: "Oh, you can keep your shoes on!", a: "Thanks! [I'm just used to taking them off]. [It's a habit from home].", m: "Your habit, not their rule." },
+    { k: "used", c: "You live in the US. Small talk with strangers annoyed you at first.", q: "What was hardest to get used to here?", a: "[Probably the small talk]! Back home we don't chat with strangers much. [Now I kind of like it], though.", m: "Hard then, okay now." },
 
-  const KIND_ORDER = ["no", "ask", "remind", "disagree", "feedback", "complain", "sorry", "time", "limit", "news", "exit"];
+    { k: "taste", c: "A friend loves a movie. You found it boring.", q: "Wasn't it a great movie?", a: "[It wasn't really my thing], but [I can see why people love it]. The music was beautiful.", m: "Make it about your taste, not the movie." },
+    { k: "taste", c: "A friend cooked dinner. It's too spicy for you.", q: "How is it?", a: "[It's really tasty]! [It's just a bit spicy for me]. I'm not used to spicy food.", m: "Compliment first, then ‘a bit … for me’." },
+    { k: "taste", c: "A colleague plays you a new song. You don't like it.", q: "Don't you love this song?", a: "[It's not really my style], but [it's catchy]! Who is it?", m: "‘Not my style’ plus a question moves on." },
+    { k: "taste", c: "A friend tries on a jacket. You don't think the color suits them.", q: "Be honest. Does it look good?", a: "[The fit is great]. [I'm not sure about the color on you], though. Maybe try the dark blue?", m: "Praise one thing, doubt one thing, suggest." },
+    { k: "taste", c: "A friend recommended a restaurant. You didn't like it.", q: "So, how was the restaurant?", a: "[It had a really nice atmosphere]! [The food wasn't quite what I expected], but I'm glad we tried it.", m: "‘Not what I expected’ is softer than ‘bad’." },
+    { k: "taste", c: "Your host family has a big dog. You're scared of dogs.", q: "Isn't he adorable?", a: "[He's very cute]! [I'm just a little nervous around dogs], so I'll admire him from here.", m: "Name your feeling, not the dog's problem." },
+    { k: "taste", c: "A colleague invites you to karaoke again. You hate karaoke.", q: "You're coming, right? It'll be so fun!", a: "[Karaoke isn't really my thing], but have fun! [Let's do lunch] next week instead.", m: "No to the activity, yes to the person." },
+    { k: "taste", c: "Friends abroad ask if you'd live in their country. You wouldn't.", q: "Would you ever live here?", a: "[It's a beautiful place to visit]! [I'm not sure I could live here], but [never say never].", m: "Praise it as a visit; keep it open." },
+
+    { k: "kind", c: "A friend's new apartment is small and dark.", q: "What do you think of my new place?", a: "[It's really cozy]! And [the location is great]. [It might be nice to add] a lamp or two.", m: "‘Cozy’ is the diplomatic word for small." },
+    { k: "kind", c: "You visited your host's country. It rained, and the hotels were overpriced.", q: "How was your trip?", a: "[It was quite an adventure]! [The weather wasn't on our side], but we saw some beautiful places.", m: "Blame the weather, not the country." },
+    { k: "kind", c: "A friend is dating someone you don't really like.", q: "So, what do you think of him?", a: "[I don't know him that well yet]. [What matters most is that] he makes you happy.", m: "Don't judge; talk about what matters to them." },
+    { k: "kind", c: "Your manager asks about your job. You're not fully happy.", q: "Are you happy here?", a: "[Mostly, yes]. [There are a few things I'd love to talk about], like my schedule.", m: "‘Mostly’ plus one specific topic." },
+    { k: "kind", c: "The host asks about last night's party. It was boring.", q: "Did you have fun last night?", a: "[It was nice to see everyone]! [It was a quiet night], but I'm glad I came.", m: "Talk about the people, not the fun." },
+    { k: "kind", c: "A friend's mom cooked dinner. You didn't like it.", q: "Would you like some more?", a: "[Thank you, but I couldn't eat another bite]! [It was so kind of you] to cook for us.", m: "Being full is always a polite reason." },
+    { k: "kind", c: "At a dinner abroad, they serve a dish you find strange.", q: "Do you eat this in Ukraine?", a: "[Not really, it's new for me]! [I'm glad I got to try it].", m: "‘New for me’ is honest and kind." },
+    { k: "kind", c: "A friend gave you a gift you don't like.", q: "Do you like it?", a: "[That's so thoughtful of you]! [I love that you thought of me].", m: "Thank them for the thought, not the thing." },
+    { k: "kind", c: "A friend got a haircut. You don't love it.", q: "Do you like my new hair?", a: "[It's a big change]! [I think I need a day to get used to it], but you look happy, and that's what matters.", m: "Your adjustment, then their happiness." },
+    { k: "kind", c: "Your neighbor built a new fence. You think it's ugly.", q: "What do you think of the new fence?", a: "[It's definitely eye-catching]! [It must have been a lot of work].", m: "‘Eye-catching’, and praise the effort." },
+    { k: "kind", c: "A friend sang at a party. It wasn't good.", q: "How was my singing?", a: "[You looked like you were having so much fun]! [That's what it's all about].", m: "Praise the joy, skip the quality." },
+    { k: "kind", c: "Your host family asks about home. You miss it a lot.", q: "Do you miss Ukraine?", a: "Of course, I miss my family. [But I feel more at home here every day].", m: "Honest first, then warm about them." },
+
+    { k: "sides", c: "A friend abroad asks you to compare your country with theirs.", q: "So, which country is better?", a: "[I wouldn't compare them]. [Each has its own strengths]. I miss some things from home, and I love some things here.", m: "Refuse to rank, then give both sides." },
+    { k: "sides", c: "Two friends had a fight. One of them asks you.", q: "I was right, wasn't I?", a: "[I can see both sides]. [Maybe you both had a point]. Have you talked since?", m: "Don't be the judge." },
+    { k: "sides", c: "A colleague complains about your boss and wants you to agree.", q: "Don't you think she's terrible?", a: "[She has her own style]. [I try to focus on my work] and not get too involved.", m: "Describe neutrally, then step back." },
+    { k: "sides", c: "A student asks which English is better.", q: "Which is better, American or British English?", a: "[Neither is better], [they're just different]. I teach American English, but I like both.", m: "Different, not better." },
+    { k: "sides", c: "A student asks you a teasing question in class.", q: "Who's your favorite student?", a: "[I don't have favorites]! [Everyone brings something different] to class.", m: "Answer about everyone." },
+    { k: "sides", c: "You started at a new school. Your old school was better.", q: "Is it better here than at your old school?", a: "[Every school has its strengths]. [What I really like here is] the team.", m: "Don't rank; praise one real thing here." },
+    { k: "sides", c: "A parent asks about their son. He's average in the group.", q: "Is he the best in the class?", a: "[He's doing really well]. [Every kid is strong in different areas], and his is speaking.", m: "His strength, not his ranking." },
+
+    { k: "dodge", c: "Someone you just met asks a very personal question.", q: "Why did you leave your country?", a: "[It's a long story]. [Let's just say] it was the right decision for my family.", m: "‘It's a long story’ closes the topic kindly." },
+    { k: "dodge", c: "At dinner abroad, someone asks about their politics.", q: "What do you think of our president?", a: "[I don't think I know enough to have an opinion]. [What do you think]?", m: "Turn the question back to them." },
+    { k: "dodge", c: "A new acquaintance asks your age. You don't want to say.", q: "How old are you, if you don't mind me asking?", a: "[Let's just say] I'm old enough to know better!", m: "A small joke closes it without offense." },
+    { k: "dodge", c: "A relative asks how much you earn.", q: "So, how much do you make?", a: "[Enough to be happy]! [I'd rather not get into numbers], if you don't mind.", m: "Answer the feeling, not the number." },
+    { k: "dodge", c: "Someone asks about your plans. You don't know yet.", q: "Are you going back to Ukraine someday?", a: "[Who knows]! [For now, I'm happy where I am]. But home is always home.", m: "Keep it open." },
+    { k: "dodge", c: "A colleague asks about the new teacher. You think she's weak, but you've seen little.", q: "What do you think of the new teacher?", a: "[I haven't seen her teach much yet]. She seems really friendly with the students.", m: "Say only what you really know." },
+    { k: "dodge", c: "A job interview. You left your last job because of a bad boss.", q: "Why did you leave your last job?", a: "[I was looking for a place where I could grow]. [This role is a better fit for] my goals.", m: "Talk about the future, never the old boss." },
+    { k: "dodge", c: "Someone you barely know asks for a recommendation letter.", q: "Could you write me a recommendation?", a: "[I'd like to help], but [I don't know your work well enough] to write a strong one. Maybe someone who's worked with you longer?", m: "Your limit, not their weakness." },
+
+    { k: "honest", c: "A student with weak English asks you directly.", q: "Is my English good?", a: "[You've made real progress]. [There's still room to grow], especially with tenses.", m: "Progress first, then one clear next step." },
+    { k: "honest", c: "A student thinks they're B2. You think they're B1.", q: "My last teacher said I was B2. That's right, isn't it?", a: "[Levels can depend on the test]. You're strong in reading. [Let's bring your speaking up to] the same level.", m: "Don't argue with the number; point to the goal." },
+    { k: "honest", c: "A student shows you an essay. It's not ready.", q: "Can I send it now?", a: "[It's getting there]! [I'd work a bit more on] the ending before you send it.", m: "‘Getting there’ means ‘not yet’, kindly." },
+    { k: "honest", c: "A colleague asks about their lesson. It was weak.", q: "What did you think of my lesson?", a: "[The warm-up was great]. [I'd maybe give students more time] to speak in the middle.", m: "One real plus, then ‘I'd maybe…’." },
+    { k: "honest", c: "A parent asks about their daughter. She finds English hard.", q: "Does she have a talent for English?", a: "[Every child learns at their own pace]. [She's really good at] remembering words, and [with regular practice], she'll get there.", m: "Pace, one real strength, a path." },
+    { k: "honest", c: "A student asks why they aren't improving. They never practice.", q: "Why is my English not getting better?", a: "[It is getting better], [maybe slower than you'd like]. More practice between lessons [would make a big difference].", m: "Correct the belief, then name the real reason." },
+    { k: "honest", c: "A friend wants a tutor. You wouldn't recommend your colleague.", q: "Would you recommend her?", a: "[She's very friendly]. [I'm not sure her style would fit] what you're looking for, though.", m: "‘Not the right fit’ instead of ‘not good’." },
+    { k: "honest", c: "A friend asks about their business idea. You think it will fail.", q: "Honestly, what do you think?", a: "[It's an interesting idea]. [My only worry is] finding clients. [Have you thought about] testing it small first?", m: "One worry, then a question." },
+    { k: "honest", c: "The school asks about the new course book. You don't like it.", q: "How do you like the new book?", a: "[It has some good parts]. [I'm not sure it's the best fit for] my students, though. I'd add more speaking.", m: "‘Not the best fit’ plus a fix." },
+    { k: "honest", c: "A friend cooked soup. It has no taste.", q: "Does it need anything?", a: "[Maybe just a little more] salt? [Otherwise, it's perfect].", m: "Small, specific, and only one thing." },
+
+    { k: "correct", c: "Someone abroad thinks Ukrainian and Russian are the same.", q: "It's basically the same language, right?", a: "[Actually, they're quite different]. [A lot of people think that], though. [I'd be happy to show you] some differences.", m: "Correct the fact, not the person." },
+    { k: "correct", c: "Someone repeats a stereotype about Ukrainians.", q: "Is it true that Ukrainians are always serious?", a: "[We can seem serious at first], but [once you get to know us], we're very warm!", m: "Agree a little, then show the full picture." },
+    { k: "correct", c: "Someone laughs at your accent.", q: "Your accent is so funny!", a: "[I'll take that as a compliment]! It's my Ukrainian accent, and [I'm proud of it].", m: "Light humor shows it didn't hurt." },
+    { k: "correct", c: "A new friend thinks Ukraine is always cold.", q: "It's always freezing in Ukraine, isn't it?", a: "[Not really]! Winters can be cold, but our summers are hot. [You should visit in] July.", m: "‘Not really’, a fact, an invitation." },
+    { k: "correct", c: "A student doubts your grammar answer. You're sure it's right.", q: "My friend says that's wrong.", a: "[I see why it looks strange]. In American English, we usually say it this way. [Let me show you] a few examples.", m: "Explain, don't defend." },
+    { k: "correct", c: "Someone says you look tired. You're fine, just busy.", q: "You look tired today.", a: "[It's been a busy week]! [Nothing a good weekend won't fix].", m: "Agree lightly and move on." },
+    { k: "correct", c: "An acquaintance asks a rude question about your weight.", q: "Did you gain weight?", a: "[Maybe a little]! [Life's been good].", m: "A smile and a short answer end it." }
+  ].map((x, i) => ({ ...x, id: "d" + (i + 1) }));
+
+  const KIND_ORDER = ["used", "taste", "kind", "sides", "dodge", "honest", "correct"];
   const KINDS = {
-    no: "Saying no", ask: "Asking for things", remind: "Reminders", disagree: "Disagreeing",
-    feedback: "Feedback", complain: "Complaints", sorry: "Apologies", time: "Buying time",
-    limit: "Boundaries", news: "Bad news", exit: "Wrapping up"
+    used: "Not used to it yet", taste: "Just not for me", kind: "Kind but true", sides: "Not taking sides",
+    dodge: "Not going there", honest: "Honest feedback", correct: "Correcting gently"
   };
-  const CONT = new Set(["but", "to", "if", "about", "on", "for", "with", "of", "when", "and", "so", "be", "is", "like", "as", "in", "at", "by", "the", "a", "through", "do", "could", "keep", "me", "get", "into", "mind", "usually", "we", "down"]);
+  const CONT = new Set(["but", "to", "if", "about", "on", "for", "with", "of", "when", "and", "so", "be", "is", "like", "as", "in", "at", "by", "the", "a", "through", "do", "could", "keep", "me", "get", "into", "mind", "usually", "we", "down", "add", "more"]);
 
   const $ = s => document.querySelector(s);
   const S = { done: new Set(), saved: new Set(), extra: [], cur: null, filter: "saved" };
@@ -397,7 +404,7 @@ mark, .mk {
       .catch(e => console.warn("Could not save " + name, e && e.code));
   }
   function validItem(x) {
-    return x && typeof x.s === "string" && typeof x.a === "string" && x.s.trim() && x.a.includes("[") && typeof x.id === "string";
+    return x && typeof x.c === "string" && typeof x.q === "string" && typeof x.a === "string" && x.q.trim() && x.a.includes("[") && typeof x.id === "string";
   }
   async function connect() {
     if (!window.claude || !window.claude.use) return;
@@ -433,7 +440,8 @@ mark, .mk {
     $("#finish").hidden = true;
     $("#situation").hidden = false;
     $("#skip").hidden = false;
-    $("#situation").textContent = S.cur.s;
+    $("#ctx").textContent = S.cur.c;
+    $("#quote").textContent = S.cur.q;
     $("#replyForm").hidden = false;
     $("#result").hidden = true;
     stopPolish();
@@ -453,7 +461,7 @@ mark, .mk {
     $("#replyForm").hidden = true;
     $("#result").hidden = true;
     $("#finish").hidden = false;
-    $("#finishText").textContent = "That's all " + pool().length + " situations.";
+    $("#finishText").textContent = "That's all " + pool().length + " questions.";
     $("#moreStatus").hidden = true;
     $("#more").disabled = false;
     sampleReady.then(fn => { $("#more").hidden = !fn || sampleOff; });
@@ -463,6 +471,7 @@ mark, .mk {
     const text = $("#reply").value.trim();
     S.done.add(S.cur.id); sessionDone.add(S.cur.id); persist("progress");
     fillMarked($("#answer"), S.cur.a);
+    $("#move").textContent = S.cur.m || ""; $("#move").hidden = !S.cur.m;
     refreshChips();
     $("#replyForm").hidden = true;
     $("#result").hidden = false;
@@ -513,18 +522,20 @@ mark, .mk {
 
   function polishPrompt(item, text) {
     return [
-      "You coach an advanced English learner (a Ukrainian English teacher who uses American English) on diplomatic replies: polite, warm, clear and honest, in simple everyday words. Never fancy.",
+      "You coach an advanced English learner (a Ukrainian English teacher who uses American English) on DIPLOMATIC answers: answering an awkward or tricky question honestly, without offending anyone.",
+      "Diplomatic is more than polite. It means: soften a negative opinion (\"It was hard for me to get used to...\" instead of \"I don't like...\"), make it about your own taste or experience instead of judging, start with something true and positive, don't take sides, correct gently, and dodge too-personal questions lightly. No outright lies. Simple everyday words, never fancy.",
       "",
-      "Situation: " + item.s,
-      "Her reply: \"\"\"" + text + "\"\"\"",
-      "A good model reply, for reference only: " + plain(item.a),
+      "What is true for her: " + item.c,
+      "Someone says to her: \"" + item.q + "\"",
+      "Her answer: \"\"\"" + text + "\"\"\"",
+      "A good model answer, for reference only: " + plain(item.a),
       "",
       "Reply with only a JSON object with these keys:",
-      "\"ok\": true if her reply already works: diplomatic, natural and clear; otherwise false.",
-      "\"better\": her reply improved. Keep her idea and as many of her own words as you can. Make it diplomatic, natural American English, 1-3 short sentences. If it already works, make only tiny changes or none.",
-      "\"tip\": one short, concrete tip about tone or wording, at most 12 words, no praise. Empty string if there is nothing useful to add.",
+      "\"ok\": true if her answer is already diplomatic (honest but tactful) and natural; false if it is too blunt, too negative, takes sides, sounds fake, or just avoids the question.",
+      "\"better\": her answer made diplomatic. Keep her idea and as many of her own words as you can. Natural American English, 1-3 short sentences. If it already works, make only tiny changes or none.",
+      "\"tip\": the diplomatic move she missed or could use, at most 12 words, no praise. Empty string if there is nothing useful to add.",
       "\"fix\": a list of her grammar or word-choice mistakes, each as {\"wrong\": \"...\", \"right\": \"...\"} with just the few words involved. Empty list if there are none.",
-      "Example: {\"ok\": false, \"better\": \"Thanks for asking! I'm afraid I can't this week.\", \"tip\": \"Start with thanks before you say no.\", \"fix\": [{\"wrong\": \"in this week\", \"right\": \"this week\"}]}"
+      "Example: {\"ok\": false, \"better\": \"Honestly, the winters were hard for me to get used to.\", \"tip\": \"Say what was hard for you, not what's bad here.\", \"fix\": [{\"wrong\": \"I don't like your winter\", \"right\": \"the winters were hard for me\"}]}"
     ].join("\n");
   }
 
@@ -626,26 +637,33 @@ mark, .mk {
     if (!fn || sampleOff) { $("#more").hidden = true; return; }
     $("#more").disabled = true; $("#restart").disabled = true;
     status.hidden = false; status.textContent = "Writing new situations…";
-    const existing = pool().map(x => "- " + x.s).join("\n");
+    const existing = pool().map(x => "- " + x.q).join("\n");
     const prompt = [
-      "Write 12 new situations for practicing diplomatic replies in English.",
-      "The learner is a Ukrainian English teacher who tutors adults and kids online. Mix her work (students, parents, schools, colleagues) with everyday life (friends, family, neighbors, stores, services).",
+      "Write 12 new awkward questions for practicing DIPLOMATIC answers in English: questions where an honest answer could offend, so you answer honestly but tactfully.",
+      "Example: abroad, someone asks \"What don't you like about living here?\" and the diplomatic answer is \"It was hard for me to get used to driving everywhere.\"",
+      "The learner is a Ukrainian English teacher living her life in English: living or traveling abroad, students and their parents, colleagues and bosses, friends, hosts, neighbors.",
       "Each item is an object:",
-      "\"s\": the situation in 1-2 short sentences, in the second person (\"A friend asks you to...\"). It must be clear: who, what happened, and what you want. No questions.",
-      "\"a\": a natural, warm, diplomatic reply in simple American English, 1-3 short sentences, not fancy. Wrap 2-3 reusable phrases in square brackets, like: \"[I'd love to, but] I'm busy that day.\"",
-      "\"k\": one of: " + KIND_ORDER.join(", "),
-      "No health, politics or religion. Do not repeat or closely copy these existing situations:",
+      "\"c\": what is true for you, one short sentence in the second person (\"You find people here a bit cold.\"), so the tricky part is clear.",
+      "\"q\": exactly what the other person says, one short line.",
+      "\"a\": a diplomatic answer in simple, natural American English, 1-3 short sentences, not fancy. Honest, no outright lies: soften negatives, talk about your own taste or experience, start with a true positive, don't take sides, correct gently, or dodge lightly. Wrap 2-3 reusable diplomatic phrases in square brackets, like: \"[It was hard for me to get used to] the cold.\"",
+      "\"m\": the diplomatic move in at most 8 words, like \"Your adjustment, not their country's faults.\"",
+      "\"k\": one of: " + KIND_ORDER.map(k => k + " (" + KINDS[k] + ")").join(", "),
+      "No health or religion. Do not repeat or closely copy these existing questions:",
       existing,
       "",
-      "Reply with only a JSON array of 12 {\"s\", \"a\", \"k\"} objects."
+      "Reply with only a JSON array of 12 {\"c\", \"q\", \"a\", \"m\", \"k\"} objects."
     ].join("\n");
     try {
       const arr = await fn.json(prompt, { cache: false });
       const stamp = Date.now().toString(36);
       const items = (Array.isArray(arr) ? arr : [])
-        .filter(x => x && typeof x.s === "string" && typeof x.a === "string" && x.s.trim() && /\[[^\]]+\]/.test(x.a))
+        .filter(x => x && typeof x.q === "string" && typeof x.a === "string" && x.q.trim() && /\[[^\]]+\]/.test(x.a))
         .slice(0, 15)
-        .map((x, i) => ({ id: "x" + stamp + i, k: KINDS[x.k] ? x.k : "ask", s: x.s.trim(), a: x.a.trim() }));
+        .map((x, i) => ({
+          id: "x" + stamp + i, k: KINDS[x.k] ? x.k : "kind",
+          c: typeof x.c === "string" ? x.c.trim() : "", q: x.q.trim().replace(/^["\u201c]|["\u201d]$/g, ""),
+          a: x.a.trim(), m: typeof x.m === "string" ? x.m.trim() : ""
+        }));
       if (!items.length) throw { code: "empty" };
       S.extra = S.extra.concat(items);
       persist("extra");
@@ -667,7 +685,7 @@ mark, .mk {
     const map = new Map();
     for (const it of p) for (const t of phrasesOf(it.a)) {
       const k = keyOf(t);
-      if (!map.has(k)) map.set(k, { t, k, kind: it.k, ex: it.a });
+      if (!map.has(k)) map.set(k, { t, k, kind: it.k, ex: it.a, q: it.q });
     }
     bookCache = map; bookSize = p.length;
     return map;
@@ -702,7 +720,10 @@ mark, .mk {
         const ph = document.createElement("button");
         ph.type = "button"; ph.className = "ph"; ph.textContent = e.t;
         ph.setAttribute("aria-expanded", "false");
-        const ex = document.createElement("p"); ex.className = "ex"; ex.hidden = true; fillMarked(ex, e.ex);
+        const ex = document.createElement("div"); ex.className = "ex"; ex.hidden = true;
+        const exq = document.createElement("p"); exq.className = "exq"; exq.textContent = "\u201c" + e.q + "\u201d";
+        const exa = document.createElement("p"); fillMarked(exa, e.ex);
+        ex.append(exq, exa);
         ph.addEventListener("click", () => { ex.hidden = !ex.hidden; ph.setAttribute("aria-expanded", ex.hidden ? "false" : "true"); });
         star.addEventListener("click", () => {
           toggleSave(e.k);
