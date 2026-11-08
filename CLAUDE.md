@@ -26,6 +26,7 @@ Students (all learn American English):
 - Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
 - Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week, payment not decided.
   Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
+  Keep the short forms that already work for her ("Sorry?" to ask for a repeat); don't teach longer versions.
 - Julia: A2+, pays after each lesson.
 - Mariya: A2, 2 lessons a week, pays weekly.
 - Other students are on a break.
