@@ -137,7 +137,8 @@ with a short quality note (British usage, errors, overload). Her "reviewed again
 `units[{n, grammar, cando, words, sound, materials[{title, url}], fix, extra}]`, `phases[{name, from, to, sum}]`,
 `reviewAfter[]` (review week after units 4, 8, …), `checks{12, 24}`, and the "How to teach" parts: `lesson[{min,
 title, detail}]`, `steps[]`, `pace[{who, time, how}]`, `review[{when, what}]`, `feedback[]`, `words[]`,
-`sounds[{sound, pair, who}]`, `principles[{idea, you, src, url}]`, `wordMaterials[]`, `wordMaterialsFix`.
+`sounds[{sound, pair, who}]`, `soundLinks[{title, url, note}]` (see-the-mouth videos, e.g. Seeing Speech),
+`principles[{idea, you, src, url}]`, `wordMaterials[]`, `wordMaterialsFix`.
 `progress/<slug>` (the page writes; Claude only creates it for a new student) = `{current, done[], started{n: date},
 pace, note, prev}`. Base each lesson's `nextLesson` plan on the student's current unit. When the teacher sends a new
 material, add it to the matching unit's `materials` (and `fix` if it needs changes). Site tabs: Students, Course

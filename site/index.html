@@ -509,7 +509,8 @@ h2.sec{margin-bottom:12px}
           ${arr(c.wordMaterials).length ? `<div class="group-h" style="margin-top:16px">Word pages you have</div><p class="small" style="margin:0">${c.wordMaterials.map(link).join(' · ')}</p>
           ${c.wordMaterialsFix ? `<p class="note ufix">${esc(c.wordMaterialsFix)}</p>` : ''}` : ''}</section>
       </div>
-      <section class="panel"><h2 class="sec">Sounds to watch</h2>${table(['Sound', 'Pair', 'Who'], arr(c.sounds).map((r) => [r.sound, r.pair, r.who || '—']))}</section>
+      <section class="panel"><h2 class="sec">Sounds to watch</h2>${table(['Sound', 'Pair', 'Who'], arr(c.sounds).map((r) => [r.sound, r.pair, r.who || '—']))}
+        ${arr(c.soundLinks).length ? `<div class="group-h" style="margin-top:16px">See the mouth</div>${arr(c.soundLinks).map((l) => `<p class="small" style="margin:4px 0 0">${link(l)}${l.note ? ` <span class="muted">· ${esc(l.note)}</span>` : ''}</p>`).join('')}` : ''}</section>
       <details class="panel why" data-uid="why" ${UI.open.has('why') ? 'open' : ''}><summary><h2>Why it works</h2></summary>
         <ul class="plist">${arr(c.principles).map((p) => `<li><b>${esc(p.idea)}</b><span class="muted small">${esc(p.you)}</span>
           ${p.src ? `<div class="small">${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.src)}</a>` : `<span class="muted">${esc(p.src)}</span>`}</div>` : ''}</li>`).join('')}</ul></details>
