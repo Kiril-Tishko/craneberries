@@ -78,6 +78,18 @@ She once forwarded a whole reply to a student by mistake.
   Stories must not describe the student's own life or retell what she told the teacher (her appointment,
   her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
   structure from their last lesson. ~120–170 words for A2, ~60 for Sergii (he dislikes long texts).
+- **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
+  content file like `example-content.js`, record it with `extract.js` + `voice.py`, then `build.py`, test every
+  screen at phone and laptop size, publish as a new artifact with the mp3s in `files`):
+  - **One topic per lesson** (e.g. "At the dentist"); every section belongs to it. Start with recall of the last
+    lesson: the Ukrainian prompt first, she says the English, then taps Answer.
+  - One thing per screen, an "All together" screen at the end of each part, no scrolling.
+  - "Change one word" drills only where the swap is something she'd really say.
+  - Role-play one line per screen: what they say (with audio), a Ukrainian cue, a Hint, then the Answer;
+    the whole conversation on one screen at the end.
+  - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
+  - **Never draw faces, mouths or body diagrams**: she found the drawn mouth creepy.
+  - "Go ahead" and "After you" both mean «Проходьте»; accept either.
 - **Site text is short and practical**: summary 1–2 short sentences; max 3 "went well" bullets; mistake
   notes a few words or empty; plan details one short line; teacher "worked" 3 bullets, "try next time"
   3–4 bullets, `why` a few words; no `talk`, `note` or `habits` text. Student `about` one line, `focus`

@@ -1,0 +1,346 @@
+<title>/*TITLE*/</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;800&display=swap">
+<style>
+/* One thing per screen. Big phrase in the middle, buttons at the bottom, no page scrolling. */
+:root{
+  --bg:#EDF2F0; --surface:#FFFFFF; --ink:#10241F; --muted:#4F635D; --line:#D2DDD9;
+  --accent:#1E6B58; --accent-ink:#FFFFFF; --accent-soft:#DCEFE8;
+  --swap:#C42A6B; --swap-bg:#FBE1EC; --hear:#2F5FB3; --hear-bg:#E2EBFB; --ua:#6B5A12; --ua-bg:#FFF4C9;
+  --font:"Lexend","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1916; --surface:#16241F; --ink:#E6F1ED; --muted:#9DB3AB; --line:#2A3B35;
+    --accent:#6FD1B4; --accent-ink:#0E1916; --accent-soft:#163A31;
+    --swap:#FF8DBB; --swap-bg:#3B1B2A; --hear:#9DBBFF; --hear-bg:#1B2A47; --ua:#F3DC85; --ua-bg:#3A3212;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1916; --surface:#16241F; --ink:#E6F1ED; --muted:#9DB3AB; --line:#2A3B35;
+  --accent:#6FD1B4; --accent-ink:#0E1916; --accent-soft:#163A31;
+  --swap:#FF8DBB; --swap-bg:#3B1B2A; --hear:#9DBBFF; --hear-bg:#1B2A47; --ua:#F3DC85; --ua-bg:#3A3212;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.app{height:100%;display:flex;flex-direction:column;max-width:760px;margin:0 auto;
+  padding:max(10px, env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-right,0px)) max(12px, env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-left,0px))}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:none;padding-bottom:6px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;padding:7px 11px;border-radius:99px;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.dots{display:flex;gap:5px;justify-content:center;flex:none;padding:4px 0 2px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent);width:22px;border-radius:99px}
+
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:10px 0}
+.card{width:100%;max-height:100%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:26px;
+  padding:clamp(18px,4vh,34px) clamp(16px,4vw,32px);display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.2vh,18px);text-align:center}
+.card.in{animation:in .25s ease-out}
+@keyframes in{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.who{font-size:14px;font-weight:600;letter-spacing:.04em;padding:5px 12px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.who.hear{background:var(--hear-bg);color:var(--hear)}
+.who.swapw{background:var(--swap-bg);color:var(--swap)}
+.big{font-size:clamp(30px,7.4vw,54px);font-weight:800;line-height:1.12;text-wrap:balance}
+.when{font-size:clamp(16px,2.6vh,20px);color:var(--muted);max-width:30ch;line-height:1.35}
+.ua{font-size:clamp(18px,3vh,24px);font-weight:600;color:var(--ua);background:var(--ua-bg);border-radius:14px;padding:6px 14px}
+.sw{color:var(--swap);background:var(--swap-bg);border-radius:12px;padding:0 .18em;display:inline-block}
+.sw.pop{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.7);opacity:.2}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{border:2px solid var(--line);background:var(--surface);border-radius:16px;padding:10px 18px;font-size:17px;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.main{background:var(--swap);border-color:var(--swap);color:#fff;font-size:20px;padding:12px 26px}
+.sp{border:0;background:var(--accent-soft);color:var(--accent);border-radius:99px;width:46px;height:46px;font-size:21px;display:grid;place-items:center;flex:none}
+
+.scene{font-size:15px;font-weight:600;color:var(--muted)}
+.them{width:100%;max-width:520px;background:var(--hear-bg);border-radius:20px 20px 20px 6px;padding:12px 16px;text-align:left;display:flex;gap:12px;align-items:center}
+.them .t{flex:1;font-size:clamp(20px,3.6vh,28px);font-weight:600;color:var(--ink)}
+.lbl{display:block;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--hear);margin-bottom:2px}
+.you{width:100%;max-width:520px;border:2px dashed var(--line);border-radius:20px 20px 6px 20px;padding:12px 16px;text-align:left}
+.you .lbl{color:var(--accent)}
+.cue{font-size:clamp(18px,3vh,23px);font-weight:600;line-height:1.3}
+.hint{margin-top:8px;font-size:clamp(20px,3.4vh,26px);font-weight:600;color:var(--muted)}
+.ans{margin-top:8px;font-size:clamp(24px,4.4vh,34px);font-weight:800;color:var(--accent)}
+.after{font-size:17px;color:var(--muted)}
+
+.all{list-style:none;margin:0;padding:0;width:100%;max-width:560px;text-align:left}
+.all li{display:flex;gap:10px;align-items:center;padding:clamp(4px,1vh,10px) 0;border-top:1px solid var(--line)}
+.all li:first-child{border-top:0}
+.all .tx{flex:1;min-width:0}
+.all .en{display:block;font-size:clamp(16px,2.8vh,23px);font-weight:700;line-height:1.25}
+.all .u{display:block;font-size:clamp(13px,2vh,15px);color:var(--muted)}
+.all .s{font-size:12.5px;font-weight:600;color:var(--hear)}
+.all .sp{width:34px;height:34px;font-size:15px}
+.chat{display:flex;flex-direction:column;gap:clamp(2px,.6vh,7px);width:100%;max-width:560px}
+.bub{max-width:94%;padding:clamp(3px,.6vh,7px) 11px;border-radius:16px 16px 16px 4px;background:var(--hear-bg);text-align:left;
+  font-size:clamp(13px,1.9vh,19px);font-weight:500;line-height:1.2;align-self:flex-start}
+.playall{padding:6px 14px;font-size:15px}
+.ans .sp,.after .sp{width:34px;height:34px;font-size:15px}
+@media (min-width:760px){.chat{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(7,auto);column-gap:18px;max-width:none}.bub{justify-self:start}.bub.me{justify-self:end}}
+.bub.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:var(--accent-soft);color:var(--accent);font-weight:700}
+
+.mine{width:100%;max-width:520px;display:flex;flex-direction:column;gap:12px}
+.mine input{width:100%;font:inherit;font-size:20px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.mine input:focus{outline:none;border-color:var(--accent)}
+
+.nav{flex:none;display:flex;gap:12px;justify-content:space-between;align-items:center}
+.nav button{border:0;border-radius:18px;font-weight:600;font-size:18px;padding:14px 22px}
+.back{background:var(--surface);border:2px solid var(--line)!important}
+.next{background:var(--accent);color:var(--accent-ink);flex:1;max-width:260px}
+.nav button:disabled{opacity:.35;cursor:default}
+
+.recall-ua{font-size:clamp(26px,6vw,44px);font-weight:700;line-height:1.2}
+.ans.big2{font-size:clamp(26px,5.4vw,42px)}
+.mouth{width:min(320px,70vw);height:auto;max-height:34vh}
+.word{border:3px solid var(--line);background:var(--surface);border-radius:20px;padding:10px 22px;font-size:clamp(24px,4.6vh,36px);font-weight:800;display:inline-flex;align-items:center;gap:10px}
+.word.on{border-color:var(--swap);background:var(--swap-bg)}
+.word.right{border-color:#1E8E4E;background:#DDF4E6;color:#0F5A30}
+.word.wrong{border-color:#C0392B;background:#FBE3E0;color:#8E2219}
+.score{font-size:18px;font-weight:600;color:var(--muted)}
+.chipsay{border:2px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-size:clamp(17px,2.8vh,21px);font-weight:600}
+.chipsay:hover{border-color:var(--accent)}
+.hlw{color:var(--swap);background:var(--swap-bg);border-radius:10px;padding:0 .1em}
+@media (max-height:700px){
+  .card{padding:14px 14px;gap:9px}
+  .big{font-size:clamp(26px,6.6vw,44px)}
+  .them{padding:8px 12px} .you{padding:8px 12px}
+  .hint,.ans{margin-top:4px}
+  .nav button{padding:11px 18px}
+  .sp{width:40px;height:40px;font-size:18px}
+  .btn{padding:8px 14px}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<div class="app">
+  <div class="tabs" id="tabs" role="tablist" aria-label="Parts of the lesson"></div>
+  <div class="dots" id="dots" aria-hidden="true"></div>
+  <main class="stage"><article class="card" id="card" aria-live="polite"></article></main>
+  <nav class="nav"><button class="back" id="back">← Back</button><button class="next" id="next">Next →</button></nav>
+</div>
+
+<script>
+/* ---------- content ---------- */
+/*CONTENT*/
+const MOUTH = '';
+let jawDeg = 0;
+function setJaw(to){
+  const from = jawDeg, t0 = performance.now(), dur = 450;
+  const step = (now) => {
+    const g = document.getElementById('jaw'); if (!g) return;
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    jawDeg = from + (to - from) * e;
+    g.setAttribute('transform', `rotate(${jawDeg.toFixed(2)} 78 118)`);
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+/* ---------- listening game ---------- */
+let G = { cur: null, right: 0, total: 0 };
+/* ---------- state ---------- */
+let sec = 0, idx = 0;
+const pick = {};            // which option each change-one-thing screen shows
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const card = document.getElementById('card');
+
+/* ---------- voice: recorded clips (Kokoro neural voice), browser voice only as a fallback ---------- */
+const AUDIO = /*AUDIO*/{};
+let clip = null, queue = [];
+let voice = null;
+function pickVoice(){ try { const v = speechSynthesis.getVoices().filter((x) => /^en[-_]US$/i.test(x.lang)); voice = v.find((x) => /Samantha|Google US|Aria|Jenny|Ava|Allison/i.test(x.name)) || v[0] || null; } catch (e) {} }
+if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.addEventListener('voiceschanged', pickVoice); }
+function stopAll(){ queue = []; try { if (clip){ clip.pause(); clip = null; } } catch (e) {} try { speechSynthesis.cancel(); } catch (e) {} }
+function play(text, done){
+  if (AUDIO[text]){
+    try { clip = new Audio(AUDIO[text]); clip.onended = () => { clip = null; if (done) done(); }; clip.play().catch(() => {}); return; } catch (e) {}
+  }
+  fallback(text);
+  if (done) setTimeout(done, 1800);
+}
+function say(text){ stopAll(); play(text); }
+function playAll(lines){
+  stopAll(); queue = lines.slice();
+  const next = () => { const t = queue.shift(); if (t) setTimeout(() => play(t, next), 350); };
+  next();
+}
+function fallback(text){
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/\(your name\)/, ''));
+    u.lang = 'en-US'; u.rate = .85; if (voice) u.voice = voice;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in window)) ? `<button class="sp" data-say="${esc(text)}" aria-label="Listen">🔊</button>` : '';
+
+/* ---------- screens ---------- */
+function view(s){
+  if (s.t === 'phrase') return `
+    <div class="who ${s.who === 'hear' ? 'hear' : ''}">${s.who === 'hear' ? '👂 You hear' : '💬 You say'}</div>
+    <div class="big">${esc(s.en)}</div>
+    <div class="when">${esc(s.when)}</div>
+    <div class="row">${spk(s.en)}<button class="btn" data-show="ua">Переклад</button></div>
+    <div class="ua" data-part="ua" hidden>${esc(s.ua)}</div>`;
+  if (s.t === 'swap'){
+    const k = pick[sec + '-' + idx] || 0;
+    return `
+    <div class="who swapw">🔁 Change one word</div>
+    <div class="big">${esc(s.pre)}<span class="sw" id="sw">${esc(s.opts[k])}</span>${esc(s.post)}</div>
+    <div class="ua" id="swua">${esc(s.ua[k])}</div>
+    <div class="row">${spk(s.pre + s.opts[k] + s.post)}<button class="btn main" data-change>Change ↻</button></div>`;
+  }
+  if (s.t === 'all') return `
+    <div class="who">✅ All together</div>
+    <ul class="all">${s.items.map(([en, ua, h]) => `<li><div class="tx"><span class="en">${esc(en)}</span>
+      <span class="u">${h ? '<span class="s">👂 you hear · </span>' : ''}${esc(ua)}</span></div>${spk(en)}</li>`).join('')}</ul>`;
+  if (s.t === 'turn'){
+    const n = SECTIONS[sec].slides.filter((x) => x.t === 'turn' && x.scene === s.scene);
+    const pos = n.indexOf(s) + 1;
+    return `
+    <div class="scene">${esc(s.scene)} · ${pos} / ${n.length}</div>
+    ${s.them ? `<div class="them"><div class="t"><span class="lbl">They say</span>${esc(s.them)}</div>${spk(s.them)}</div>` : ''}
+    <div class="you"><span class="lbl">You say</span>
+      <div class="cue">${esc(s.cue)}</div>
+      <div class="hint" data-part="hint" hidden>${esc(s.hint)}</div>
+      <div class="ans" data-part="ans" hidden><span class="row" style="justify-content:flex-start;align-items:center">${esc(s.ans)} ${spk(s.ans)}</span></div></div>
+    <div class="row"><button class="btn" data-show="hint">💡 Hint</button><button class="btn" data-show="ans">Answer</button></div>
+    ${s.after ? `<div class="after row" data-part="after" hidden style="align-items:center">They say: “${esc(s.after)}” ${spk(s.after)}</div>` : ''}`;
+  }
+  if (s.t === 'convo') return `
+    <button class="btn playall" data-playall>▶ Play the whole call</button>
+    <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
+  if (s.t === 'recall') return `
+    <div class="who">🧠 Say it in English</div>
+    <div class="recall-ua">${esc(s.ua)}</div>
+    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center">${esc(s.en)} ${spk(s.en)}</span></div>
+    <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
+  if (s.t === 'sound') return `
+    <div class="who swapw">🔊 The sound</div>
+    <div class="big">${esc(s.word).replace(/\[([^\]]+)\]/, '<span class="hlw">$1</span>')}</div>
+    <div class="ua">${esc(s.tip)}</div>
+    <div class="row">${s.words.map(([w, e]) => `<button class="chipsay" data-say="${esc(w)}">${e} ${esc(w)}</button>`).join('')}</div>`;
+  if (s.t === 'pair') return `
+    <div class="who swapw">👄 Look at the mouth</div>
+    ${MOUTH}
+    <div class="row">${[s.a, s.b].map((x, i) => `<button class="word" data-pair="${i}">${x.emoji} ${esc(x.w)}</button>`).join('')}</div>
+    <div class="ua" id="ptip">Натисніть на слово 👆</div>`;
+  if (s.t === 'game') return `
+    <div class="who hear">👂 Which word do you hear?</div>
+    <button class="btn main" data-gplay>▶ Listen</button>
+    <div class="row">${s.words.map(([w, e]) => `<button class="word" data-gans="${esc(w)}">${e} ${esc(w)}</button>`).join('')}</div>
+    <div class="score" id="gscore">Натисніть ▶, потім виберіть слово</div>`;
+  if (s.t === 'mine'){
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem('lesson-mine') || '[]'); } catch (e) {}
+    return `
+    <div class="who">✍️ This week</div>
+    <div class="big" style="font-size:clamp(24px,5vw,36px)">3 sentences I will use this week</div>
+    <div class="mine">${[0, 1, 2].map((n) => `<input type="text" data-mine="${n}" value="${esc(saved[n] || '')}"
+      placeholder="${['Are you in line?', 'I’m free on Monday.', 'Thanks for letting me know.'][n]}" aria-label="Sentence ${n + 1}">`).join('')}</div>`;
+  }
+  return '';
+}
+
+function render(){
+  const slides = SECTIONS[sec].slides;
+  document.getElementById('tabs').innerHTML = SECTIONS.map((s, n) =>
+    `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}</button>`).join('');
+  document.getElementById('dots').innerHTML = slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '';
+  jawDeg = 0; G = { cur: null, right: 0, total: 0 };
+  card.innerHTML = view(slides[idx]);
+  card.classList.remove('in'); void card.offsetWidth; card.classList.add('in');
+  document.getElementById('back').disabled = sec === 0 && idx === 0;
+  const last = sec === SECTIONS.length - 1 && idx === slides.length - 1;
+  document.getElementById('next').disabled = last;
+  document.getElementById('next').textContent = idx === slides.length - 1 && !last ? `${SECTIONS[sec + 1].label} →` : 'Next →';
+  stopAll();
+}
+function go(d){
+  const slides = SECTIONS[sec].slides;
+  if (d > 0){ if (idx < slides.length - 1) idx++; else if (sec < SECTIONS.length - 1){ sec++; idx = 0; } }
+  else { if (idx > 0) idx--; else if (sec > 0){ sec--; idx = SECTIONS[sec].slides.length - 1; } }
+  render();
+}
+
+/* ---------- events ---------- */
+document.getElementById('next').addEventListener('click', () => go(1));
+document.getElementById('back').addEventListener('click', () => go(-1));
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-sec]'); if (!b) return;
+  sec = Number(b.dataset.sec); idx = 0; render();
+});
+card.addEventListener('click', (e) => {
+  const sp = e.target.closest('[data-say]'); if (sp){ say(sp.dataset.say); return; }
+  const pb = e.target.closest('[data-pair]');
+  if (pb){
+    const s = SECTIONS[sec].slides[idx], x = pb.dataset.pair === '1' ? s.b : s.a;
+    card.querySelectorAll('[data-pair]').forEach((b) => b.classList.toggle('on', b === pb));
+    say(x.w); setJaw(x.deg); document.getElementById('ptip').textContent = x.tip; return;
+  }
+  if (e.target.closest('[data-gplay]')){
+    const s = SECTIONS[sec].slides[idx];
+    if (!G.cur) G.cur = s.words[Math.floor(Math.random() * s.words.length)][0];
+    card.querySelectorAll('[data-gans]').forEach((b) => b.classList.remove('right', 'wrong'));
+    say(G.cur); return;
+  }
+  const ga = e.target.closest('[data-gans]');
+  if (ga){
+    const s = SECTIONS[sec].slides[idx], sc = document.getElementById('gscore');
+    if (!G.cur){ sc.textContent = 'Спершу натисніть ▶'; return; }
+    const ok = ga.dataset.gans === G.cur;
+    G.total++; if (ok) G.right++;
+    ga.classList.add(ok ? 'right' : 'wrong');
+    if (!ok) card.querySelector(`[data-gans="${G.cur}"]`).classList.add('right');
+    G.cur = null;
+    sc.textContent = `${ok ? '✓' : '✗'}  ${G.right} / ${G.total}` + (G.total >= s.rounds ? (G.right >= s.rounds - 1 ? '  🎉' : '  · ще раз?') : '');
+    if (G.total >= s.rounds){ G.right = 0; G.total = 0; }
+    return;
+  }
+
+  if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map(([, t]) => t).filter((t) => AUDIO[t])); return; }
+  const sh = e.target.closest('[data-show]');
+  if (sh){
+    const part = sh.dataset.show;
+    card.querySelectorAll(`[data-part="${part}"]`).forEach((x) => { x.hidden = false; });
+    if (part === 'ans'){
+      card.querySelectorAll('[data-part="after"]').forEach((x) => { x.hidden = false; });
+      card.querySelectorAll('[data-part="hint"]').forEach((x) => { x.hidden = true; });
+      const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.hidden = true;
+    } else if (part === 'hint') sh.hidden = true;
+    return;
+  }
+  if (e.target.closest('[data-change]')){
+    const s = SECTIONS[sec].slides[idx], key = sec + '-' + idx;
+    pick[key] = ((pick[key] || 0) + 1) % s.opts.length;
+    const k = pick[key], sw = document.getElementById('sw');
+    sw.textContent = s.opts[k];
+    sw.classList.remove('pop'); void sw.offsetWidth; sw.classList.add('pop');
+    document.getElementById('swua').textContent = s.ua[k];
+    const b = card.querySelector('[data-say]'); if (b) b.dataset.say = s.pre + s.opts[k] + s.post;
+  }
+});
+card.addEventListener('input', (e) => {
+  const inp = e.target.closest('[data-mine]'); if (!inp) return;
+  try {
+    const all = [...card.querySelectorAll('[data-mine]')].map((x) => x.value);
+    localStorage.setItem('lesson-mine', JSON.stringify(all));
+  } catch (err) {}
+});
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('input')) return;
+  if (e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowLeft') go(-1);
+});
+render();
+</script>
