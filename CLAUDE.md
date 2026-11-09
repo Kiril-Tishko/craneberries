@@ -27,7 +27,8 @@ Students (all learn American English):
 - Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week, payment not decided.
   Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
   Keep the short forms that already work for her ("Sorry?" to ask for a repeat); don't teach longer versions.
-- Julia: A2+, pays after each lesson.
+- Julia: A2+, pays after each lesson. Has had present simple, present continuous, past simple and will; past
+  continuous only a glimpse (not for drills yet).
 - Mariya: A2, 2 lessons a week, pays weekly.
 - Other students are on a break.
 
@@ -82,17 +83,19 @@ She once forwarded a whole reply to a student by mistake.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js`, record it with `extract.js` + `voice.py`, then `build.py`, test every
   screen at phone and laptop size, publish as a new artifact with the mp3s in `files`):
-  - **One topic per lesson** (e.g. "At the dentist"); every section belongs to it. Start with recall of the last
-    lesson: the Ukrainian prompt first, she says the English, then taps Answer.
+  - **One topic per lesson** by default (e.g. "At the dentist"). When she lists the parts she wants, follow her
+    order (Julia: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
+    earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
   - One thing per screen, an "All together" screen at the end of each part, no scrolling.
-  - "Change one word" drills only where the swap is something she'd really say.
+  - No "change one word" drills that only swap numbers or days: she finds them pointless. Use **change the time**
+    instead (`flip`: every day → now / yesterday / tomorrow) with the tenses the student has had.
   - When the student knows a rule but forgets it in speech (Julia's he/she + s), don't explain it: use
     `flip` screens (`{t:'flip', from, subj, ans}` with the changed part in [brackets]) so she says it herself.
   - Keep each drill set short (about 4 items). A rule she asks for gets one `rule` screen
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
+    Say it directly (✅ where it goes, ❌ where it doesn't); don't build up from theory.
   - Recall at the start: short, easy sentences.
-  - Role-play one line per screen: what they say (with audio), a Ukrainian cue, a Hint, then the Answer;
-    the whole conversation on one screen at the end.
+  - **No role-play** for now: she didn't like how it worked. Leave it out unless she asks for it.
   - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
   - **Never draw faces, mouths or body diagrams**: she found the drawn mouth creepy.
   - "Go ahead" and "After you" both mean «Проходьте»; accept either.
