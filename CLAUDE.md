@@ -72,6 +72,8 @@ She once forwarded a whole reply to a student by mistake.
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
   For A2 and below, write the mouth tips in Ukrainian ("Опустіть щелепу", not "Drop your jaw").
+  Never repeat a pair the student already had (check her earlier lessons' cards first: Julia had desert/dessert
+  and of/off). Fast-speech forms from the lesson (let me → "lemme") are a good alternative.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time). **Be as blunt as possible**: only the teacher reads it. Keep
