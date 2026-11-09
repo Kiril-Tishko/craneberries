@@ -86,6 +86,8 @@ She once forwarded a whole reply to a student by mistake.
     lesson: the Ukrainian prompt first, she says the English, then taps Answer.
   - One thing per screen, an "All together" screen at the end of each part, no scrolling.
   - "Change one word" drills only where the swap is something she'd really say.
+  - When the student knows a rule but forgets it in speech (Julia's he/she + s), don't explain it: use
+    `flip` screens (`{t:'flip', from, subj, ans}` with the changed part in [brackets]) so she says it herself.
   - Role-play one line per screen: what they say (with audio), a Ukrainian cue, a Hint, then the Answer;
     the whole conversation on one screen at the end.
   - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
