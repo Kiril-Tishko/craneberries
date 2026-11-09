@@ -111,6 +111,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .chipsay{border:2px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-size:clamp(17px,2.8vh,21px);font-weight:600}
 .chipsay:hover{border-color:var(--accent)}
 .hlw{color:var(--swap);background:var(--swap-bg);border-radius:8px;padding:0 .04em}
+.rules{display:grid;gap:12px;width:100%;max-width:560px;text-align:left}
+.rulebox{background:var(--accent-soft);border-radius:18px;padding:12px 16px}
+.rh{font-weight:800;font-size:clamp(18px,3vh,22px)}
+.rt{font-size:clamp(15px,2.3vh,18px);color:var(--muted);margin-top:2px}
+.rx{font-size:clamp(17px,2.8vh,22px);font-weight:700;margin-top:6px;color:var(--accent)}
 @media (max-height:700px){
   .card{padding:14px 14px;gap:9px}
   .big{font-size:clamp(26px,6.6vw,44px)}
@@ -240,10 +245,14 @@ function view(s){
     <button class="btn main" data-gplay>▶ Listen</button>
     <div class="row">${s.words.map(([w, e]) => `<button class="word" data-gans="${esc(w)}">${e} ${esc(w)}</button>`).join('')}</div>
     <div class="score" id="gscore">Натисніть ▶, потім виберіть слово</div>`;
+  if (s.t === 'rule') return `
+    <div class="who">${esc(s.label || '📌 How it works')}</div>
+    <div class="rules">${s.rows.map(([icon, head, text, ex]) => `<div class="rulebox"><div class="rh">${icon} ${esc(head)}</div>
+      ${text ? `<div class="rt">${esc(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${esc(x)}</div>`).join('')}</div></div>`).join('')}</div>`;
   if (s.t === 'flip') return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
     <div class="when" style="font-size:clamp(18px,3vh,24px)">${esc(s.from)}</div>
-    <div class="big">${esc(s.subj)} …</div>
+    <div class="big">${esc(s.subj)}${s.dots === false ? '' : ' …'}</div>
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(s.ans.replace(/[\[\]]/g, ''))}</span></div>
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
   if (s.t === 'mine'){
