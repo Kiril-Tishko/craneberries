@@ -10,6 +10,7 @@
   --accent:#2742C4; --accent-soft:#E5EAFC;
   --hl:#FFE14D; --hl-text:#141E36;
   --red:#B3302A; --red-soft:#FBE8E6; --green:#11764A; --green-soft:#E1F3E9; --amber:#8F5600; --amber-soft:#FCEFD6;
+  --c0:#2742C4; --c1:#C2410C; --c2:#0F766E; --c3:#9D174D; --c4:#4D7C0F; --c5:#7C3AED; --c6:#B45309; --c7:#0369A1;
   --display:"Literata", Georgia, "Times New Roman", serif;
   --sans:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -20,6 +21,7 @@
     --paper:#0E1320; --surface:#161D2E; --sunk:#1D2539; --ink:#E7EBF5; --muted:#9CA5BB; --line:#2A3449;
     --accent:#93A6FF; --accent-soft:#222C4F; --hl:#4A4214; --hl-text:#FFE98A;
     --red:#FF8B80; --red-soft:#3A1F1E; --green:#63D6A0; --green-soft:#15302A; --amber:#F3B860; --amber-soft:#372A10;
+    --c0:#93A6FF; --c1:#FB923C; --c2:#2DD4BF; --c3:#F472B6; --c4:#A3E635; --c5:#C4B5FD; --c6:#FBBF24; --c7:#7DD3FC;
     color-scheme:dark;
   }
 }
@@ -27,6 +29,7 @@
   --paper:#0E1320; --surface:#161D2E; --sunk:#1D2539; --ink:#E7EBF5; --muted:#9CA5BB; --line:#2A3449;
   --accent:#93A6FF; --accent-soft:#222C4F; --hl:#4A4214; --hl-text:#FFE98A;
   --red:#FF8B80; --red-soft:#3A1F1E; --green:#63D6A0; --green-soft:#15302A; --amber:#F3B860; --amber-soft:#372A10;
+  --c0:#93A6FF; --c1:#FB923C; --c2:#2DD4BF; --c3:#F472B6; --c4:#A3E635; --c5:#C4B5FD; --c6:#FBBF24; --c7:#7DD3FC;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -229,6 +232,111 @@ h2.sec{margin-bottom:12px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);
   padding:10px 16px;border-radius:10px;font-size:14.5px;z-index:20;max-width:calc(100% - 32px)}
 
+.toast{display:flex;align-items:center;gap:14px}
+.toast-btn{background:none;border:0;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:2px 4px}
+
+/* schedule: a week of day columns (stacked rows on phones); a lesson opens a sheet */
+.sched-h{display:flex;align-items:flex-end;justify-content:space-between;gap:14px 16px;flex-wrap:wrap}
+.wknav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.primary:hover{color:var(--surface);filter:brightness(1.1)}
+.btn.lg{padding:9px 14px;font-size:14.5px}
+.btn.sq{width:38px;padding-inline:0}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.danger{color:var(--red)}
+.btn.danger:hover{border-color:var(--red);color:var(--red)}
+.btn.danger[data-armed]{background:var(--red);border-color:var(--red);color:var(--surface)}
+.savestate{font-size:13px;color:var(--muted);min-height:20px}
+.savestate.err{color:var(--red);font-weight:600}
+.tzbtn{border:0;background:none;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:18px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:168px;min-width:0}
+.day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.dh{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+.dh b{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+.dh span{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.day.today .dh b,.day.today .dh span{color:var(--accent)}
+.day.past .dh b{color:var(--muted)}
+.dbody{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.occ{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;background:var(--sunk);border:1px solid transparent;
+  border-radius:9px;padding:7px 8px;cursor:pointer;min-width:0}
+.occ:hover{border-color:var(--accent)}
+.occ .ot{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.occ .on{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}
+.occ .on > span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.occ .om{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.occ.done{background:var(--green-soft)} .occ.done .om{color:var(--green);font-weight:600}
+.occ.cancelled{background:transparent;border:1px dashed var(--line)}
+.occ.cancelled .on{text-decoration:line-through;color:var(--muted)}
+.occ.due{background:var(--amber-soft)} .occ.due .om{color:var(--amber);font-weight:600}
+.occ.clash{border-color:var(--red)} .occ .clash-t{color:var(--red);font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c0)}
+.dot.c1{background:var(--c1)} .dot.c2{background:var(--c2)} .dot.c3{background:var(--c3)} .dot.c4{background:var(--c4)}
+.dot.c5{background:var(--c5)} .dot.c6{background:var(--c6)} .dot.c7{background:var(--c7)}
+.dadd{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0}
+.dadd:hover{color:var(--accent)}
+.duelist{list-style:none;margin:0;padding:0}
+.duelist li{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line)}
+.duelist li:first-child{border-top:0;padding-top:0}
+.duelist .who{display:flex;align-items:center;gap:8px;min-width:0;font-weight:600}
+.duelist .when2{font-weight:400;color:var(--muted);font-size:14.5px}
+.panel.due{border-color:var(--amber)}
+.todaybar{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r);padding:12px 16px;margin-top:16px}
+.todaybar:hover{border-color:var(--accent)}
+.todaybar .eyebrow{margin-right:4px}
+.todaybar .slot{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14.5px}
+.todaybar .slot .ts{font-size:12px}
+.slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+
+dialog.sheet{border:0;border-radius:16px;padding:0;background:var(--surface);color:var(--ink);width:min(540px, calc(100% - 32px));
+  max-height:calc(100% - 32px);box-shadow:0 24px 64px rgb(0 0 0 / .35);overscroll-behavior:contain}
+dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
+.sheet-in{padding:20px max(20px, env(safe-area-inset-right,0px)) 20px max(20px, env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.sheet-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.sheet-h h2{font-size:24px}
+.sheet-h .when3{color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.xbtn{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:20px;line-height:1;color:var(--muted)}
+.xbtn:hover{color:var(--ink);border-color:var(--ink)}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.acts.split{padding-top:14px;border-top:1px solid var(--line)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.flabel{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.inp{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;min-width:0;min-height:42px}
+.inp:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.inp[aria-invalid="true"]{border-color:var(--red)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:12px}
+.wdays{display:flex;flex-wrap:wrap;gap:6px}
+.wday{min-width:44px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 10px;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted)}
+.wday[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.box{border-radius:10px;padding:10px 14px;font-size:14.5px}
+.box.err{background:var(--red-soft);color:var(--red)}
+.box.warn{background:var(--amber-soft);color:var(--amber)}
+.box ul{margin:4px 0 0;padding-left:18px}
+.hint{font-size:13px;color:var(--muted)}
+.copyout{font-family:var(--mono);font-size:13.5px}
+.tzrows{display:flex;flex-direction:column;gap:10px}
+.tzrow{display:grid;grid-template-columns:minmax(0,110px) minmax(0,1fr);gap:10px;align-items:center}
+@media (max-width: 900px){
+  .week{grid-template-columns:minmax(0,1fr);gap:6px}
+  .day{min-height:0;display:grid;grid-template-columns:62px minmax(0,1fr);gap:4px 12px;align-items:start;padding:10px 12px}
+  .dh{flex-direction:column;gap:0;padding-top:6px}
+  .dh span{font-size:14px;color:var(--ink)}
+  .dbody{flex-direction:row;flex-wrap:wrap}
+  .occ{width:auto;flex:1 1 200px}
+  .dadd{margin:0;align-self:center;padding:8px 0}
+  .dbody:has(.occ) .dadd{flex-basis:100%;padding:2px 0}
+}
+@media (max-width: 560px){
+  dialog.sheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:18px 18px 0 0;max-height:92%;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .grid3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .grid3 > :first-child{grid-column:1 / -1}
+  .sched-h .wknav{width:100%}
+  .sched-h .wknav .grow{margin-left:auto}
+}
+@media (max-width: 440px){ .nav a{padding:6px 9px;font-size:14.5px} .bar .wrap{gap:8px 16px} }
+
 @media (max-width: 760px){
   .profile, .next, .cols{grid-template-columns:minmax(0, 1fr)}
   .panel{padding:16px}
@@ -244,6 +352,7 @@ h2.sec{margin-bottom:12px}
     <a class="brand" href="#students"><span>Lesson</span> Notebook</a>
     <nav class="nav" aria-label="Sections">
       <a href="#students" id="nav-students">Students</a>
+      <a href="#schedule" id="nav-schedule">Schedule</a>
       <a href="#course" id="nav-course">Course</a>
       <a href="#teaching" id="nav-teaching">My teaching</a>
     </nav>
@@ -254,13 +363,15 @@ h2.sec{margin-bottom:12px}
     <h1>Loading…</h1>
   </div>
 </main>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<dialog class="sheet" id="sheet" aria-labelledby="sheet-title"></dialog>
 
+<script src="schedule-core.js"></script>
 <script>
 (() => {
-  const S = { students: {}, lessons: {}, states: {}, billing: {}, bank: {}, materials: {}, progress: {}, course: null, teacher: null, got: new Set(), status: 'loading' };
-  const UI = { open: new Set(), tab: {}, uview: {} };
-  const NEED = ['students', 'lessons', 'state', 'teacher', 'billing', 'bank', 'materials', 'course', 'progress'];
+  const S = { students: {}, lessons: {}, states: {}, billing: {}, bank: {}, materials: {}, progress: {}, sched: {}, schedSettings: null, course: null, teacher: null, got: new Set(), status: 'loading' };
+  const UI = { open: new Set(), tab: {}, uview: {}, week: 0, sheet: null };
+  const NEED = ['students', 'lessons', 'state', 'teacher', 'billing', 'bank', 'materials', 'course', 'progress', 'schedule'];
   let db = null, dl = null;
   const main = document.getElementById('main');
 
@@ -275,10 +386,18 @@ h2.sec{margin-bottom:12px}
   };
   const prioRank = { high: 0, medium: 1, low: 2 };
 
-  function toast(msg) {
+  // toast(msg) or toast(msg, {label: 'Undo', fn}) for an action button
+  function toast(msg, action) {
     const t = document.getElementById('toast');
-    t.textContent = msg; t.hidden = false;
-    clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 3200);
+    t.replaceChildren(document.createTextNode(msg));
+    if (action) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'toast-btn'; b.textContent = action.label;
+      b.addEventListener('click', () => { t.hidden = true; action.fn(); });
+      t.append(b);
+    }
+    t.hidden = false;
+    clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, action ? 7000 : 3200);
   }
 
   const lessonsOf = (sid) => Object.values(S.lessons).filter((l) => l.student === sid).sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -327,7 +446,17 @@ h2.sec{margin-bottom:12px}
         ${per > 0 ? `<button class="btn" type="button" data-bill="${esc(sid)}" data-kind="paid" data-n="${per}">+ Paid (${per})</button>` : ''}
         <button class="btn" type="button" data-bill="${esc(sid)}" data-kind="lesson" data-n="-1">− Lesson</button>
         ${log.length ? `<button class="btn ghost" type="button" data-undo="${esc(sid)}">Undo last</button>` : ''}</div>
+      ${coverText(sid, st.bal)}
       ${log.length ? `<ul class="blog">${log.slice(-5).reverse().map((e) => `<li><span class="muted">${esc(fmtDate(e.date))}</span><span>${e.kind === 'paid' ? `Paid +${esc(e.n)}` : 'Lesson −1'}</span></li>`).join('')}</ul>` : ''}</section>`;
+  }
+  // how far a positive balance reaches into the schedule
+  function coverText(sid, bal) {
+    if (!SC || !(bal > 0)) return '';
+    const t = todayTz(), now = Date.now();
+    const up = occsIn(t, SC.addDays(t, 180)).filter((o) => o.student === sid && o.status === 'planned' && o.start > now);
+    if (!up.length) return '';
+    return `<p class="note" style="margin:10px 0 0">${up.length >= bal ? `Paid lessons last until ${esc(dayShort(at(up[bal - 1].start).date))}.`
+      : `Covers all ${up.length} scheduled lesson${up.length === 1 ? '' : 's'} in the next 6 months.`}</p>`;
   }
   let billChain = Promise.resolve();
   function writeBill(sid, mutate) {
@@ -520,8 +649,17 @@ h2.sec{margin-bottom:12px}
   function viewHome() {
     const students = Object.values(S.students).sort((a, b) => String(a.name).localeCompare(String(b.name)));
     if (!students.length) return `<div class="empty"><h1>No students yet</h1><p class="lede">Send Claude a lesson transcript to add one.</p></div>`;
-    return `<h1>Students</h1><div class="students">${students.map((s) => {
+    let today = '';
+    if (SC) {
+      const t = todayTz(), list = occsIn(t, t).filter((o) => o.status !== 'cancelled'), due = dueOccs().length;
+      if (list.length || due) today = `<a class="todaybar" href="#schedule"><span class="eyebrow">Today</span>
+        ${list.length ? list.map((o) => `<span class="slot"><span class="ts">${esc(ft(at(o.start).time))}</span>${dot(o.student)}${esc(nameOf(o.student, S.sched[o.docId]))}</span>`).join('') : '<span class="muted small">No lessons</span>'}
+        ${due ? `<span class="chip medium">${due} to mark</span>` : ''}</a>`;
+    }
+    return `<h1>Students</h1>${today}<div class="students">${students.map((s) => {
       const last = lessonsOf(s.id)[0];
+      const nx = nextFor(s.id);
+      const nextTxt = nx ? nextLabel(nx) : last && last.nextWhen;
       const focus = arr(s.focus).filter((f) => f.status !== 'fixed').slice(0, 3);
       return `<a class="scard" href="#s-${esc(s.id)}">
         <div class="scard-h"><span class="name">${esc(s.name)}</span>${s.level ? `<span class="chip">${esc(s.level)}</span>` : ''}</div>
@@ -531,7 +669,7 @@ h2.sec{margin-bottom:12px}
             p && p.current && units().length ? `<span class="chip new">Unit ${esc(p.current)}/${units().length}</span>` : ''].join('');
           return chips ? `<div class="chips">${chips}</div>` : '';
         })()}
-        <div class="muted small">${last ? `Last: ${esc(fmtDate(last.date))}` : 'No lessons yet'}${last && last.nextWhen ? ` · Next: ${esc(last.nextWhen)}` : ''}</div>
+        <div class="muted small">${last ? `Last: ${esc(fmtDate(last.date))}` : 'No lessons yet'}${nextTxt ? ` · Next: ${esc(nextTxt)}` : ''}</div>
         ${focus.length ? `<ul>${focus.map((f) => `<li>${esc(f.issue)}</li>`).join('')}</ul>` : ''}</a>`;
     }).join('')}</div>`;
   }
@@ -543,8 +681,12 @@ h2.sec{margin-bottom:12px}
     const latest = ls[0];
     if (latest && UI.open.size === 0 && !UI.touched) UI.open.add(latest.id);
 
+    const slots = SC ? slotsOf(sid) : [];
     const head = `<div><div class="shead"><h1>${esc(s.name)}</h1>${s.level ? `<span class="chip">${esc(s.level)}</span>` : ''}</div>
-      ${s.about ? `<p class="lede">${esc(s.about)}</p>` : ''}</div>`;
+      ${s.about ? `<p class="lede">${esc(s.about)}</p>` : ''}
+      ${slots.length ? `<div class="slots">${slots.map((x) => `<a class="chip new" href="#schedule">${esc(x)}</a>`).join('')}</div>` : ''}</div>`;
+    const nx = nextFor(sid);
+    const nextWhen = nx ? nextLabel(nx) : latest && latest.nextWhen;
 
     let next = '';
     if (latest) {
@@ -556,7 +698,7 @@ h2.sec{margin-bottom:12px}
           .map((m) => ({ id: m.id, count: m.count, html: fix(m.said, m.better) })),
       ];
       const total = arr(latest.nextLesson).reduce((a, b) => a + (Number(b.min) || 0), 0);
-      next = `<section class="panel"><div class="panel-h"><h2>Next lesson</h2>${latest.nextWhen ? `<span class="when">${esc(latest.nextWhen)}</span>` : ''}</div>
+      next = `<section class="panel"><div class="panel-h"><h2>Next lesson</h2>${nextWhen ? `<span class="when">${esc(nextWhen)}</span>` : ''}</div>
         <div class="next">
           <div><div class="group-h">Go over</div><ul class="todo">${items.map((it) => {
             const done = st.discussed && st.discussed[it.id];
@@ -657,19 +799,540 @@ h2.sec{margin-bottom:12px}
       <div class="stack" style="margin-top:20px">${focus}<section><h2 class="sec">By lesson</h2>${per}</section></div>`;
   }
 
+  // ---------- schedule ----------
+  // schedule/<id>: a weekly series {kind:'series', student, start, time, durationMin, tz, every, until, ex{origDate:{status,date,time,durationMin,note}}, note}
+  // or a one-off {kind:'one', student, date, time, durationMin, tz, status, note}. schedule/settings: {tz, hour12, studentTz{sid: tz}}.
+  // Times are wall-clock in the lesson's own tz; SchedCore (schedule-core.js) turns them into instants, DST included.
+  const SC = window.SchedCore || null;
+  const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const DOW_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const LENGTHS = [30, 45, 50, 60, 75, 90, 120];
+  const browserTz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } })();
+  const setg = () => S.schedSettings || {};
+  const myTz = () => (SC && SC.validTz(setg().tz) ? setg().tz : browserTz);
+  const h12 = () => !!setg().hour12;
+  const stuTz = (sid) => { const z = (setg().studentTz || {})[sid]; return SC && z && SC.validTz(z) && z !== myTz() ? z : ''; };
+  const city = (tz) => String(tz || '').split('/').pop().replace(/_/g, ' ');
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const strip = (d) => { const { id, ...rest } = d; return clone(rest); };
+  const schedDocs = () => Object.values(S.sched);
+  const nameOf = (sid, doc) => (S.students[sid] && S.students[sid].name) || (doc && doc.name) || sid;
+  const todayTz = () => SC.fromInstant(Date.now(), myTz()).date;
+  const newId = () => 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const ft = (t) => SC.fmtTime(t, h12());
+  const dayShort = (iso) => `${DOW[SC.weekday(iso)]}, ${fmtDate(iso)}`;
+  const dayLong = (iso) => { const d = parseD(iso); return `${DOW_LONG[SC.weekday(iso)]}, ${d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`; };
+  const at = (ms, tz) => SC.fromInstant(ms, tz || myTz());
+  const range = (o, tz) => `${ft(at(o.start, tz).time)}–${ft(at(o.end, tz).time)}`;
+  const colorOf = (sid) => {
+    const ids = Object.keys(S.students).sort();
+    const i = ids.indexOf(sid);
+    return 'c' + ((i < 0 ? [...String(sid)].reduce((a, c) => a + c.charCodeAt(0), 0) : i) % 8);
+  };
+  const dot = (sid) => `<span class="dot ${colorOf(sid)}" aria-hidden="true"></span>`;
+  const repeatText = (d) => !d || d.kind !== 'series' ? 'One-off lesson'
+    : `${(d.every || 1) > 1 ? `Every ${d.every} weeks` : 'Every week'} on ${DOW_LONG[SC.weekday(d.start)]}${d.until ? ` until ${fmtDate(d.until)}` : ''}`;
+  const occsIn = (from, to, docs) => SC.expand(docs || schedDocs(), from, to, myTz());
+  const dueOccs = () => { const t = todayTz(), now = Date.now(); return occsIn(SC.addDays(t, -28), t).filter((o) => o.status === 'planned' && o.end <= now); };
+  const nextFor = (sid) => (SC ? SC.nextOccurrence(schedDocs(), sid, Date.now(), myTz()) : null);
+  const nextLabel = (o) => { const a = at(o.start); return `${dayShort(a.date)} · ${ft(a.time)}`; };
+  // active weekly slots of a student, for chips on their page
+  function slotsOf(sid) {
+    const t = todayTz();
+    return schedDocs().filter((d) => d.kind === 'series' && d.student === sid && (!d.until || d.until >= t))
+      .map((d) => { const o = SC.expand([d], SC.addDays(t, 0), SC.addDays(t, 7 * (d.every || 1) + 7), myTz()).find((x) => !x.moved); return { d, o }; })
+      .filter((x) => x.o).map((x) => ({ ...x, a: at(x.o.start) }))
+      .sort((x, y) => ((x.a.weekday + 6) % 7) - ((y.a.weekday + 6) % 7) || (x.a.time < y.a.time ? -1 : 1))
+      .map(({ d, a }) => { return `${DOW[a.weekday]} ${ft(a.time)}${(d.every || 1) > 1 ? ` · every ${d.every} wks` : ''}`; });
+  }
+
+  // ----- writes: one chain per document, optimistic, undo through the toast -----
+  const SQ = { chains: {}, pending: 0, failed: false };
+  function renderSave() {
+    const el = document.getElementById('savestate');
+    if (!el) return;
+    el.className = 'savestate' + (SQ.failed ? ' err' : '');
+    el.textContent = SQ.pending ? 'Saving…' : SQ.failed ? 'Last change wasn’t saved' : '';
+  }
+  function writeOne(id, data) {
+    if (!db) return;
+    SQ.pending++; renderSave();
+    const ref = db.collection('schedule').doc(id);
+    const go = () => (data ? ref.set(data) : ref.delete());
+    SQ.chains[id] = (SQ.chains[id] || Promise.resolve())
+      .then(() => go().catch((e) => {
+        if (e && e.code === 'unavailable') return new Promise((r) => setTimeout(r, 500 + Math.random() * 1000)).then(go);
+        throw e;
+      }))
+      .then(() => { SQ.failed = false; }, (e) => {
+        SQ.failed = true;
+        toast(e && e.code === 'invalid_argument' ? 'You can view this schedule but not change it.'
+          : e && e.code === 'quota_exceeded' ? 'The notebook is full. Delete old one-off lessons, then try again.'
+          : 'Couldn’t save that change. Check the connection and try again.');
+      })
+      .finally(() => { SQ.pending--; renderSave(); });
+  }
+  // changes: [{id, data | null}]; extra: optional {redo, undo} for side effects (billing)
+  function commit(changes, msg, extra) {
+    const before = changes.map(({ id }) => ({ id, data: S.sched[id] ? strip(S.sched[id]) : null }));
+    const apply = (list) => list.forEach(({ id, data }) => { if (data) S.sched[id] = { ...clone(data), id }; else delete S.sched[id]; });
+    apply(changes);
+    if (extra && extra.redo) extra.redo();
+    render();
+    changes.forEach(({ id, data }) => writeOne(id, data));
+    toast(msg, { label: 'Undo', fn: () => {
+      apply(before);
+      if (extra && extra.undo) extra.undo();
+      render();
+      before.forEach(({ id, data }) => writeOne(id, data));
+      toast('Undone');
+    } });
+  }
+
+  // billing: a done lesson logs −1 once per day (Claude's transcript step skips days already logged)
+  function billFor(sid, date, done) {
+    const b = S.billing[sid];
+    if (!b) return { msg: '' };
+    const log = arr(b.log);
+    if (done) {
+      if (log.some((e) => e.kind === 'lesson' && e.date === date)) return { msg: ' · already logged' };
+      return { msg: ' · −1 lesson', redo: () => writeBill(sid, (x) => { x.log.push({ date, kind: 'lesson', n: -1, src: 'schedule' }); }),
+        undo: () => writeBill(sid, (x) => { const i = x.log.findIndex((e) => e.kind === 'lesson' && e.date === date && e.src === 'schedule'); if (i >= 0) x.log.splice(i, 1); }) };
+    }
+    const i = log.findIndex((e) => e.kind === 'lesson' && e.date === date && e.src === 'schedule');
+    if (i < 0) return { msg: '' };
+    const entry = clone(log[i]);
+    return { msg: ' · lesson un-logged', redo: () => writeBill(sid, (x) => { const j = x.log.findIndex((e) => e.kind === 'lesson' && e.date === date && e.src === 'schedule'); if (j >= 0) x.log.splice(j, 1); }),
+      undo: () => writeBill(sid, (x) => { x.log.push(entry); }) };
+  }
+
+  function setStatus(o, status) {
+    const doc = S.sched[o.docId];
+    if (!doc) return;
+    const d = strip(doc);
+    if (d.kind === 'series') {
+      d.ex = d.ex || {};
+      const e = { ...(d.ex[o.origDate] || {}) };
+      if (status === 'planned') delete e.status; else e.status = status;
+      if (Object.keys(e).length) d.ex[o.origDate] = e; else delete d.ex[o.origDate];
+    } else if (status === 'planned') delete d.status; else d.status = status;
+    const lessonDate = at(o.start).date;
+    const bill = status === 'done' ? billFor(o.student, lessonDate, true) : o.status === 'done' ? billFor(o.student, lessonDate, false) : { msg: '' };
+    const label = status === 'done' ? 'Marked done' : status === 'cancelled' ? 'Lesson cancelled' : 'Back to planned';
+    commit([{ id: o.docId, data: d }], `${label}: ${nameOf(o.student, doc)}, ${dayShort(lessonDate)}${bill.msg}`, bill);
+  }
+
+  function removeFromHere(o) {
+    const doc = S.sched[o.docId];
+    if (!doc) return;
+    const who = nameOf(o.student, doc);
+    if (doc.kind !== 'series' || o.origDate <= doc.start) {
+      commit([{ id: o.docId, data: null }], doc.kind === 'series' ? `Removed all ${who}’s lessons in this series` : `Deleted ${who}’s lesson`);
+      return;
+    }
+    const d = strip(doc);
+    d.until = SC.addDays(o.origDate, -1);
+    Object.keys(d.ex || {}).forEach((k) => { if (k >= o.origDate) delete d.ex[k]; });
+    commit([{ id: o.docId, data: d }], `${who}: no more lessons from ${dayShort(o.origDate)}`);
+  }
+
+  // ----- views -----
+  function viewSchedule() {
+    if (!SC) return `<h1>Schedule</h1><p class="lede">The scheduler didn’t load. Reload the page to try again.</p>`;
+    const tz = myTz(), today = todayTz(), now = Date.now();
+    const ws = SC.addDays(SC.weekStart(today), 7 * UI.week), we = SC.addDays(ws, 6);
+    const occs = occsIn(ws, we);
+    const clash = SC.overlaps(occs);
+    const live = occs.filter((o) => o.status !== 'cancelled');
+    const mins = live.reduce((a, o) => a + (o.durationMin || 0), 0);
+    const hrs = `${Math.floor(mins / 60)} h${mins % 60 ? ` ${mins % 60} min` : ''}`;
+    const due = dueOccs();
+    const span = `${fmtDate(ws)} – ${parseD(ws).getMonth() === parseD(we).getMonth() ? parseD(we).getDate() : fmtDate(we)}`;
+    const rel = UI.week === 0 ? 'This week' : UI.week === 1 ? 'Next week' : UI.week === -1 ? 'Last week' : `Week of ${fmtDate(ws)}`;
+
+    const head = `<div class="sched-h"><div><h1>Schedule</h1>
+        <p class="lede">${esc(rel)} · ${esc(span)} · ${live.length ? `${live.length} lesson${live.length === 1 ? '' : 's'}, ${esc(hrs)}` : 'no lessons'}</p>
+        <p class="hint" style="margin:4px 0 0">Times in ${esc(city(tz))} time · <button class="tzbtn" type="button" data-tzopen>Time zones</button>
+          <span class="savestate" id="savestate" role="status"></span></p></div>
+      <div class="wknav"><button class="btn sq" type="button" data-week="-1" aria-label="Previous week">‹</button>
+        <button class="btn" type="button" data-week="0" ${UI.week === 0 ? 'disabled' : ''}>Today</button>
+        <button class="btn sq" type="button" data-week="1" aria-label="Next week">›</button>
+        <button class="btn primary lg grow" type="button" data-add="${esc(UI.week === 0 ? today : ws)}">+ Lesson</button></div></div>`;
+
+    const duePanel = due.length ? `<section class="panel due" style="margin-top:18px"><div class="panel-h"><h2>Did these happen?</h2><span class="muted small">${due.length} to mark · done ones log −1 lesson</span></div>
+      <ul class="duelist">${due.slice(0, 6).map((o) => { const a = at(o.start); return `<li>
+        <span class="who">${dot(o.student)}<span>${esc(nameOf(o.student, S.sched[o.docId]))} <span class="when2">${esc(dayShort(a.date))} · ${esc(ft(a.time))}</span></span></span>
+        <span class="acts"><button class="btn" type="button" data-status="done" data-key="${esc(o.key)}" data-near="${esc(a.date)}">Done</button>
+          <button class="btn ghost" type="button" data-status="cancelled" data-key="${esc(o.key)}" data-near="${esc(a.date)}">Didn’t happen</button></span></li>`; }).join('')}</ul>
+      ${due.length > 6 ? `<p class="hint" style="margin:10px 0 0">${due.length - 6} more in earlier weeks.</p>` : ''}</section>` : '';
+
+    const days = [];
+    for (let i = 0; i < 7; i++) days.push(SC.addDays(ws, i));
+    const byDay = {};
+    occs.forEach((o) => { const dte = at(o.start).date; (byDay[dte] = byDay[dte] || []).push(o); });
+    const week = `<div class="week">${days.map((dte) => {
+      const list = byDay[dte] || [];
+      const isToday = dte === today, past = dte < today;
+      return `<section class="day ${isToday ? 'today' : ''} ${past ? 'past' : ''}" aria-label="${esc(dayLong(dte))}">
+        <div class="dh"><b>${DOW[SC.weekday(dte)]}${isToday ? ' · today' : ''}</b><span>${esc(fmtDate(dte))}</span></div>
+        <div class="dbody">${list.map((o) => {
+          const doc = S.sched[o.docId];
+          const due1 = o.status === 'planned' && o.end <= now;
+          const st = stuTz(o.student);
+          const cl = o.status !== 'cancelled' && (clash.get(o.key) || []).length;
+          const meta = [
+            o.status === 'done' ? 'Done' : o.status === 'cancelled' ? 'Cancelled' : due1 ? 'Mark it' : '',
+            o.moved && o.status !== 'cancelled' ? 'Moved' : '',
+            st ? `${city(st)} ${range(o, st)}` : '',
+          ].filter(Boolean).join(' · ');
+          return `<button type="button" class="occ ${o.status} ${due1 ? 'due' : ''} ${cl ? 'clash' : ''}" data-open="${esc(o.key)}" data-near="${esc(dte)}">
+            <span class="ot">${esc(range(o))}</span>
+            <span class="on">${dot(o.student)}<span>${esc(nameOf(o.student, doc))}</span></span>
+            ${meta ? `<span class="om">${esc(meta)}</span>` : ''}${cl ? '<span class="om clash-t">Overlaps</span>' : ''}</button>`;
+        }).join('')}<button class="dadd" type="button" data-add="${esc(dte)}" aria-label="Add a lesson on ${esc(dayLong(dte))}">+ Add</button></div></section>`;
+    }).join('')}</div>`;
+
+    const empty = !schedDocs().length ? `<div class="callout" style="margin-top:18px">No lessons yet. Tap <b>+ Lesson</b> and pick “Every week” for a regular slot. Mark each lesson done afterwards and it comes off the student’s balance.</div>` : '';
+    return head + duePanel + empty + week;
+  }
+
+  // ----- the sheet (dialog): lesson details, or a form -----
+  const sheet = document.getElementById('sheet');
+  function findOcc(key, near) {
+    const docId = String(key).split('@')[0];
+    const doc = S.sched[docId];
+    if (!doc || !near) return null;
+    return SC.expand([doc], SC.addDays(near, -3), SC.addDays(near, 3), myTz()).find((o) => o.key === key) || null;
+  }
+  function openSheet(state) {
+    UI.sheet = state;
+    paintSheet();
+    if (!sheet.open) { try { sheet.showModal(); } catch (e) { sheet.setAttribute('open', ''); } }
+    const f = sheet.querySelector('[autofocus]') || sheet.querySelector('.xbtn');
+    if (f) f.focus();
+  }
+  function closeSheet() { UI.sheet = null; if (sheet.open) sheet.close(); }
+  sheet.addEventListener('close', () => { UI.sheet = null; });
+  sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });   // tap on the backdrop
+
+  // re-paint lesson details when data changes underneath (never a form: it would wipe what she typed)
+  function refreshSheet() {
+    if (!UI.sheet || UI.sheet.type !== 'info' || !sheet.open) return;
+    const sig = JSON.stringify(findOcc(UI.sheet.key, UI.sheet.near)) + (S.sched[String(UI.sheet.key).split('@')[0]] ? '' : 'gone');
+    if (sig !== UI.sheet.sig) paintSheet();
+  }
+  function paintSheet() {
+    const st = UI.sheet;
+    if (!st) return;
+    sheet.innerHTML = st.type === 'info' ? infoHTML(st) : st.type === 'tz' ? tzHTML() : formHTML(st);
+    if (st.type === 'form') syncForm();
+  }
+  const closeBtn = '<button class="xbtn" type="button" data-close aria-label="Close">×</button>';
+
+  function infoHTML(st) {
+    const o = findOcc(st.key, st.near);
+    st.sig = JSON.stringify(o) + (S.sched[String(st.key).split('@')[0]] ? '' : 'gone');
+    if (!o) return `<div class="sheet-in"><div class="sheet-h"><h2 id="sheet-title">Lesson removed</h2>${closeBtn}</div><p class="muted" style="margin:0">This lesson is no longer in the schedule.</p></div>`;
+    const doc = S.sched[o.docId];
+    const a = at(o.start), now = Date.now();
+    const stz = stuTz(o.student);
+    const clashes = SC.conflictsWith(occsIn(SC.addDays(a.date, -1), SC.addDays(a.date, 1)), o, o.key);
+    const report = S.lessons[`${o.student}-${a.date}`];
+    const started = o.start <= now;
+    const status = o.status === 'done' ? '<span class="chip fixed big">Done</span>' : o.status === 'cancelled' ? '<span class="chip big">Cancelled</span>'
+      : o.end <= now ? '<span class="chip medium big">Did it happen?</span>' : '';
+    const series = doc.kind === 'series';
+    return `<div class="sheet-in">
+      <div class="sheet-h"><div><div class="eyebrow">${esc(repeatText(doc))}</div>
+        <h2 id="sheet-title">${dot(o.student)} ${esc(nameOf(o.student, doc))}</h2>
+        <div class="when3">${esc(dayLong(a.date))} · ${esc(range(o))}${o.durationMin ? ` · ${o.durationMin} min` : ''}</div>
+        ${stz ? `<div class="when3">${esc(city(stz))}: ${esc(dayShort(at(o.start, stz).date))} · ${esc(range(o, stz))}</div>` : ''}</div>${closeBtn}</div>
+      ${status || o.moved ? `<div class="chips">${status}${o.moved ? `<span class="chip new big">Moved from ${esc(dayShort(o.origDate))}</span>` : ''}</div>` : ''}
+      ${clashes.length ? `<div class="box warn">Overlaps with ${clashes.map((c) => `${esc(nameOf(c.student, S.sched[c.docId]))} (${esc(range(c))})`).join(', ')}.</div>` : ''}
+      ${o.note ? `<p style="margin:0">${esc(o.note)}</p>` : ''}
+      ${report ? `<a class="small" href="#s-${esc(o.student)}" data-close>Open the lesson report →</a>` : ''}
+      <div class="acts">${o.status === 'planned'
+        ? `${started ? `<button class="btn primary lg" type="button" data-act="done" autofocus>Done</button>` : ''}
+           <button class="btn lg" type="button" data-act="cancelled">${started ? 'Didn’t happen' : 'Cancel this lesson'}</button>`
+        : `<button class="btn lg" type="button" data-act="planned">${o.status === 'done' ? 'Not done after all' : 'Restore this lesson'}</button>`}</div>
+      <div class="acts split">${series
+        ? `<button class="btn" type="button" data-act="move">Move this lesson</button><button class="btn" type="button" data-act="series">Change from here on</button>`
+        : `<button class="btn" type="button" data-act="edit">Edit</button>`}
+        <button class="btn" type="button" data-act="copy">Copy time</button></div>
+      <div class="copyslot" hidden><input class="inp copyout" id="copy-out" readonly aria-label="Lesson time to send"></div>
+      <div class="acts"><button class="btn danger" type="button" data-act="remove">${series ? (o.origDate <= doc.start ? 'Delete the whole series' : 'Stop repeating from here') : 'Delete this lesson'}</button></div>
+    </div>`;
+  }
+
+  function tzOptions(sel, extra) {
+    let all = [];
+    try { all = Intl.supportedValuesOf('timeZone'); } catch (e) { all = []; }
+    const common = [...new Set([myTz(), browserTz, 'Europe/Kyiv', 'America/Vancouver', 'America/Edmonton', 'America/Winnipeg', 'America/Toronto', 'Europe/Warsaw', 'Europe/London', ...(extra || [])])].filter((z) => SC.validTz(z));
+    const off = (z) => { const m = SC.tzOffsetMin(Date.now(), z); return `UTC${m < 0 ? '−' : '+'}${Math.floor(Math.abs(m) / 60)}${Math.abs(m) % 60 ? ':' + String(Math.abs(m) % 60).padStart(2, '0') : ''}`; };
+    const opt = (z) => `<option value="${esc(z)}" ${z === sel ? 'selected' : ''}>${esc(city(z))} (${esc(off(z))})</option>`;
+    return `<optgroup label="Common">${common.map(opt).join('')}</optgroup>${all.length ? `<optgroup label="All">${all.filter((z) => !common.includes(z)).map((z) => `<option value="${esc(z)}" ${z === sel ? 'selected' : ''}>${esc(z.replace(/_/g, ' '))}</option>`).join('')}</optgroup>` : ''}`;
+  }
+  function tzHTML() {
+    const ids = Object.keys(S.students).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+    const st = setg().studentTz || {};
+    return `<form class="sheet-in" id="tzform" novalidate>
+      <div class="sheet-h"><div><h2 id="sheet-title">Time zones</h2><p class="hint" style="margin:4px 0 0">Lessons stay at the time you set, in the zone you set them in. When clocks change in one country only, the other side’s time moves.</p></div>${closeBtn}</div>
+      <div class="field"><label class="flabel" for="tz-me">Your time zone</label><select class="inp" id="tz-me">${tzOptions(myTz())}</select>
+        ${browserTz !== myTz() ? `<span class="hint">This device is set to ${esc(city(browserTz))}.</span>` : ''}</div>
+      <div class="field"><label class="flabel" for="tz-12">Clock</label><select class="inp" id="tz-12"><option value="24" ${h12() ? '' : 'selected'}>24-hour (17:30)</option><option value="12" ${h12() ? 'selected' : ''}>12-hour (5:30 PM)</option></select></div>
+      ${ids.length ? `<div class="field"><span class="flabel">Students who live elsewhere</span><div class="tzrows">${ids.map((sid) => `
+        <div class="tzrow"><label for="tz-s-${esc(sid)}">${esc(nameOf(sid))}</label><select class="inp" id="tz-s-${esc(sid)}" data-sid="${esc(sid)}">
+          <option value="">Same as you</option>${tzOptions(st[sid] || '__none')}</select></div>`).join('')}</div>
+        <span class="hint">Their local time shows next to each lesson.</span></div>` : ''}
+      <div class="acts"><button class="btn primary lg" type="submit">Save</button><button class="btn lg" type="button" data-close>Cancel</button></div></form>`;
+  }
+
+  // form modes: new | move (one lesson of a series) | series (this and following) | edit (a one-off)
+  function formFor(mode, o, date) {
+    const doc = o ? S.sched[o.docId] : null;
+    const base = { type: 'form', mode, o, confirmed: false, errors: [], warn: [] };
+    if (mode === 'new') {
+      const sid = UI.lastStudent && S.students[UI.lastStudent] ? UI.lastStudent : '';
+      return { ...base, v: { student: sid, name: '', date, time: '17:00', len: 60, repeat: '1', days: [SC.weekday(date)], until: '', tz: myTz(), note: '' } };
+    }
+    if (mode === 'move') return { ...base, v: { student: o.student, date: o.date, time: o.time, len: o.durationMin, tz: o.tz, note: (doc.ex && doc.ex[o.origDate] && doc.ex[o.origDate].note) || '' } };
+    if (mode === 'series') return { ...base, v: { student: o.student, date: o.origDate, time: doc.time, len: doc.durationMin, repeat: String(doc.every || 1), until: doc.until || '', tz: doc.tz, note: doc.note || '' } };
+    return { ...base, v: { student: doc.student, name: doc.name || '', date: doc.date, time: doc.time, len: doc.durationMin, repeat: 'none', days: [SC.weekday(doc.date)], until: '', tz: doc.tz, note: doc.note || '' } };
+  }
+  function formHTML(F) {
+    const v = F.v, m = F.mode;
+    const title = m === 'new' ? 'New lesson' : m === 'move' ? 'Move this lesson' : m === 'series' ? 'Change from here on' : 'Edit lesson';
+    const sub = m === 'move' ? `Only the lesson of ${dayLong(F.o.origDate)} moves. Other weeks stay as they are.`
+      : m === 'series' ? `From ${dayLong(F.o.origDate)} on. Earlier lessons stay as they were.` : '';
+    const ids = Object.keys(S.students).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+    const pickStudent = m === 'new' || m === 'edit';
+    const other = pickStudent && v.student && !S.students[v.student];
+    const lens = [...new Set([...LENGTHS, Number(v.len) || 60])].sort((a, b) => a - b);
+    const tzs = [...new Set([v.tz, myTz(), stuTz(v.student)].filter(Boolean))];
+    const canRepeat = m !== 'move';
+    return `<form class="sheet-in" id="lform" novalidate>
+      <div class="sheet-h"><div><h2 id="sheet-title">${esc(title)}</h2>${sub ? `<p class="hint" style="margin:4px 0 0">${esc(sub)}</p>` : ''}</div>${closeBtn}</div>
+      ${pickStudent ? `<div class="field"><label class="flabel" for="f-student">Student</label>
+        <select class="inp" id="f-student" ${v.student ? '' : 'autofocus'}><option value="" ${v.student ? '' : 'selected'} disabled>Choose…</option>
+          ${ids.map((sid) => `<option value="${esc(sid)}" ${sid === v.student ? 'selected' : ''}>${esc(nameOf(sid))}</option>`).join('')}
+          <option value="__new" ${other ? 'selected' : ''}>Someone new…</option></select>
+        <input class="inp" id="f-name" placeholder="Their name" value="${esc(other ? (v.name || v.student) : '')}" ${other ? '' : 'hidden'} aria-label="New student’s name"></div>`
+        : `<div class="field"><span class="flabel">Student</span><b>${dot(v.student)} ${esc(nameOf(v.student, S.sched[F.o.docId]))}</b></div>`}
+      <div class="grid3">
+        <div class="field"><label class="flabel" for="f-date" id="f-date-l">${m === 'new' && v.repeat !== 'none' ? 'Starts' : 'Date'}</label><input class="inp" type="date" id="f-date" value="${esc(v.date)}" required></div>
+        <div class="field"><label class="flabel" for="f-time">Time</label><input class="inp" type="time" id="f-time" value="${esc(v.time)}" step="300" required></div>
+        <div class="field"><label class="flabel" for="f-len">Length</label><select class="inp" id="f-len">${lens.map((n) => `<option value="${n}" ${n === Number(v.len) ? 'selected' : ''}>${n} min</option>`).join('')}</select></div>
+      </div>
+      ${canRepeat ? `<div class="grid2">
+        <div class="field"><label class="flabel" for="f-repeat">Repeats</label><select class="inp" id="f-repeat">
+          ${m === 'series' ? '' : `<option value="none" ${v.repeat === 'none' ? 'selected' : ''}>Doesn’t repeat</option>`}
+          <option value="1" ${v.repeat === '1' ? 'selected' : ''}>Every week</option><option value="2" ${v.repeat === '2' ? 'selected' : ''}>Every 2 weeks</option></select></div>
+        <div class="field" id="f-until-w"><label class="flabel" for="f-until">Last lesson <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
+          <input class="inp" type="date" id="f-until" value="${esc(v.until)}"></div></div>
+        ${m === 'new' ? `<div class="field" id="f-days-w"><span class="flabel" id="f-days-l">On</span><div class="wdays" role="group" aria-labelledby="f-days-l">
+          ${[1, 2, 3, 4, 5, 6, 0].map((d) => `<button type="button" class="wday" data-wday="${d}" aria-pressed="${v.days.includes(d)}">${DOW[d]}</button>`).join('')}</div>
+          <span class="hint">Pick several days for a student with more than one lesson a week.</span></div>` : ''}` : ''}
+      ${tzs.length > 1 ? `<div class="field"><label class="flabel" for="f-tz">Time is in</label><select class="inp" id="f-tz">${tzs.map((z) => `<option value="${esc(z)}" ${z === v.tz ? 'selected' : ''}>${esc(city(z))} time${z === myTz() ? ' (yours)' : ''}</option>`).join('')}</select></div>` : ''}
+      <div class="field"><label class="flabel" for="f-note">Note <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
+        <input class="inp" id="f-note" value="${esc(v.note)}" maxlength="200" placeholder="${m === 'move' ? 'e.g. moved at her request' : 'e.g. trial lesson'}"></div>
+      ${F.errors.length ? `<div class="box err" role="alert">${F.errors.length === 1 ? esc(F.errors[0]) : `<ul>${F.errors.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`}</div>` : ''}
+      ${F.warn.length ? `<div class="box warn" role="alert">This overlaps with:<ul>${F.warn.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+      <div class="acts"><button class="btn primary lg" type="submit">${F.warn.length ? 'Save anyway' : 'Save'}</button><button class="btn lg" type="button" data-close>Cancel</button></div>
+    </form>`;
+  }
+  // show/hide the parts that depend on other fields (no re-render, so typing is never lost)
+  function syncForm() {
+    const q = (id) => sheet.querySelector('#' + id);
+    const rep = q('f-repeat'), stu = q('f-student'), nm = q('f-name');
+    const repeating = rep && rep.value !== 'none';
+    if (q('f-until-w')) q('f-until-w').hidden = !repeating;
+    if (q('f-days-w')) q('f-days-w').hidden = !repeating;
+    if (q('f-date-l') && UI.sheet.mode === 'new') q('f-date-l').textContent = repeating ? 'Starts' : 'Date';
+    if (stu && nm) nm.hidden = stu.value !== '__new';
+  }
+  function readForm() {
+    const F = UI.sheet, q = (id) => sheet.querySelector('#' + id);
+    const v = { ...F.v };
+    if (q('f-student')) v.student = q('f-student').value;
+    if (q('f-name')) v.name = q('f-name').value.trim();
+    v.date = q('f-date').value; v.time = (q('f-time').value || '').slice(0, 5); v.len = Number(q('f-len').value);
+    if (q('f-repeat')) v.repeat = q('f-repeat').value;
+    if (q('f-until')) v.until = q('f-until').value;
+    if (q('f-tz')) v.tz = q('f-tz').value;
+    v.note = q('f-note').value.trim();
+    if (F.mode === 'new') v.days = [...sheet.querySelectorAll('.wday[aria-pressed="true"]')].map((b) => Number(b.dataset.wday));
+    return v;
+  }
+  const slug = (s) => String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  // the documents a form produces: [{id, data|null}] plus the occurrence keys to check for overlaps (null = every occurrence of those docs)
+  function buildChanges(F, v) {
+    const errs = [];
+    let student = v.student, name = '';
+    if (student === '__new') {
+      if (!v.name) errs.push('Write the new student’s name.');
+      name = v.name; student = slug(v.name) || 'guest-' + Math.random().toString(36).slice(2, 7);
+      const known = Object.keys(S.students).find((sid) => nameOf(sid).toLowerCase() === v.name.toLowerCase());
+      if (known) { student = known; name = ''; }
+    } else if (!student) errs.push('Choose a student.');
+    if (!SC.isDate(v.date)) errs.push('Pick a date.');
+    if (!SC.isTime(v.time)) errs.push('Pick a start time.');
+    const every = v.repeat === '2' ? 2 : 1;
+    const repeating = F.mode !== 'move' && v.repeat !== 'none';
+    if (repeating && v.until && SC.isDate(v.until) && SC.isDate(v.date) && v.until < v.date) errs.push('The last lesson can’t be before the first one.');
+    if (F.mode === 'new' && repeating && !(v.days || []).length) errs.push('Pick at least one day.');
+    if (errs.length) return { errs };
+    const common = { student, ...(name ? { name } : {}), time: v.time, durationMin: v.len, tz: v.tz || myTz(), ...(v.note ? { note: v.note } : {}) };
+    const series = (start) => ({ kind: 'series', ...common, start, every, until: v.until || null, ex: {} });
+    const one = (extra) => ({ kind: 'one', ...common, date: v.date, ...extra });
+    const firstOn = (wd) => SC.addDays(v.date, (wd - SC.weekday(v.date) + 7) % 7);
+    let changes = [], keys = null;
+    if (F.mode === 'new') {
+      changes = repeating ? v.days.map((wd) => ({ id: newId(), data: series(firstOn(wd)) })) : [{ id: newId(), data: one({}) }];
+    } else if (F.mode === 'edit') {
+      const doc = S.sched[F.o.docId];
+      const keep = doc.status ? { status: doc.status } : {};
+      changes = repeating ? [{ id: F.o.docId, data: null }, { id: newId(), data: series(v.date) }] : [{ id: F.o.docId, data: one(keep) }];
+    } else if (F.mode === 'move') {
+      const d = strip(S.sched[F.o.docId]);
+      d.ex = d.ex || {};
+      const e = { ...(d.ex[F.o.origDate] || {}) };
+      delete e.date; delete e.time; delete e.durationMin; delete e.note;
+      if (v.date !== F.o.origDate || v.time !== d.time || v.len !== d.durationMin) Object.assign(e, { date: v.date, time: v.time, durationMin: v.len });
+      if (v.note) e.note = v.note;
+      if (Object.keys(e).length) d.ex[F.o.origDate] = e; else delete d.ex[F.o.origDate];
+      changes = [{ id: F.o.docId, data: d }];
+      keys = [F.o.key];
+    } else {   // series: this and following
+      const doc = strip(S.sched[F.o.docId]);
+      const at0 = F.o.origDate;
+      const split = SC.splitSeries(doc, at0, null);
+      const next = { ...split.next, kind: 'series', student: doc.student, time: v.time, durationMin: v.len, tz: v.tz || doc.tz, every, until: v.until || null, start: v.date };
+      if (v.note) next.note = v.note; else delete next.note;
+      if (doc.name) next.name = doc.name;
+      // a new day or rhythm makes old per-date changes meaningless
+      if (v.date !== at0 || every !== (doc.every || 1)) next.ex = {};
+      else next.ex = next.ex || {};
+      delete next.id;
+      changes = split.old ? [{ id: F.o.docId, data: split.old }, { id: newId(), data: next }] : [{ id: F.o.docId, data: next }];
+      if (split.old) keys = null;
+    }
+    changes.forEach(({ data }) => { if (data) SC.validate(data).forEach((x) => errs.push(x)); });
+    return { errs: [...new Set(errs)], changes, keys };
+  }
+  function overlapsAfter(changes, keys, from) {
+    const ids = new Set(changes.map((c) => c.id));
+    const after = { ...S.sched };
+    changes.forEach(({ id, data }) => { if (data) after[id] = { ...data, id }; else delete after[id]; });
+    const to = SC.addDays(from, 7 * 9);
+    const occs = SC.expand(Object.values(after), SC.addDays(from, -1), to, myTz());
+    const map = SC.overlaps(occs);
+    const byKey = new Map(occs.map((o) => [o.key, o]));
+    const mine = occs.filter((o) => o.status !== 'cancelled' && ids.has(o.docId) && (!keys || keys.includes(o.key)) && o.end > Date.now());
+    const out = [];
+    mine.forEach((o) => (map.get(o.key) || []).forEach((k) => {
+      const c = byKey.get(k);
+      if (!c || ids.has(c.docId) && c.student === o.student) return;
+      const a = at(c.start);
+      out.push(`${nameOf(c.student, after[c.docId])}, ${dayShort(a.date)} ${range(c)}`);
+    }));
+    return [...new Set(out)];
+  }
+  function submitForm() {
+    const F = UI.sheet;
+    const v = readForm();
+    F.v = v;
+    const { errs, changes, keys } = buildChanges(F, v);
+    if (errs.length) { F.errors = errs; F.warn = []; F.confirmed = false; paintSheet(); return; }
+    F.errors = [];
+    const sig = JSON.stringify(changes.map((c) => c.data));
+    if (!(F.confirmed && F.sig === sig)) {
+      const warn = overlapsAfter(changes, keys, v.date < todayTz() ? todayTz() : v.date);
+      if (warn.length) { F.warn = warn.slice(0, 4); F.confirmed = true; F.sig = sig; paintSheet(); return; }
+    }
+    const who = nameOf(changes.find((c) => c.data) ? changes.find((c) => c.data).data.student : '', changes.find((c) => c.data) && changes.find((c) => c.data).data);
+    if (F.mode === 'new' && v.student !== '__new') UI.lastStudent = v.student;
+    const msg = F.mode === 'new' ? `Added ${who}${changes.length > 1 ? ` · ${changes.length} weekly slots` : v.repeat !== 'none' ? ' · every ' + (v.repeat === '2' ? '2 weeks' : 'week') : ''}`
+      : F.mode === 'move' ? `Moved ${who}’s lesson to ${dayShort(v.date)}` : 'Saved';
+    closeSheet();
+    commit(changes, msg);
+    if (F.mode === 'new' || F.mode === 'move') {   // show the week the lesson landed in
+      const w = Math.round(SC.daysBetween(SC.weekStart(todayTz()), SC.weekStart(v.date)) / 7);
+      if (route().name === 'schedule' && w !== UI.week) { UI.week = w; render(); }
+    }
+  }
+  function saveTz() {
+    const next = clone(setg());
+    next.tz = sheet.querySelector('#tz-me').value;
+    next.hour12 = sheet.querySelector('#tz-12').value === '12';
+    next.studentTz = {};
+    sheet.querySelectorAll('select[data-sid]').forEach((s) => { if (s.value) next.studentTz[s.dataset.sid] = s.value; });
+    S.schedSettings = next;
+    closeSheet();
+    render();
+    writeOne('settings', next);
+    toast('Time zones saved');
+  }
+
+  async function copyTime(o) {
+    const stz = stuTz(o.student) || myTz();
+    const a = at(o.start, stz);
+    const text = `${dayLong(a.date)}, ${range(o, stz)}${stuTz(o.student) ? ' (your time)' : ''}`;
+    const out = sheet.querySelector('#copy-out');
+    try { await navigator.clipboard.writeText(text); toast('Copied: ' + text); }
+    catch (e) { if (out) { out.value = text; out.parentElement.hidden = false; out.focus(); out.select(); } }
+  }
+
+  sheet.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) { closeSheet(); return; }
+    const wd = e.target.closest('.wday');
+    if (wd) { wd.setAttribute('aria-pressed', String(wd.getAttribute('aria-pressed') !== 'true')); return; }
+    const act = e.target.closest('[data-act]');
+    if (!act || !UI.sheet || UI.sheet.type !== 'info') return;
+    const o = findOcc(UI.sheet.key, UI.sheet.near);
+    if (!o) return;
+    const k = act.dataset.act;
+    if (k === 'done' || k === 'cancelled' || k === 'planned') { setStatus(o, k); return; }
+    if (k === 'move' || k === 'series' || k === 'edit') { openSheet(formFor(k, o)); return; }
+    if (k === 'copy') { copyTime(o); return; }
+    if (k === 'remove') {
+      if (!act.dataset.armed) {   // two taps: the page can't show confirm()
+        act.dataset.armed = '1'; act.dataset.label = act.textContent; act.textContent = 'Tap again to confirm';
+        setTimeout(() => { if (act.isConnected) { delete act.dataset.armed; act.textContent = act.dataset.label; } }, 4000);
+        return;
+      }
+      closeSheet(); removeFromHere(o);
+    }
+  });
+  sheet.addEventListener('change', (e) => {
+    if (!UI.sheet || UI.sheet.type !== 'form') return;
+    const F = UI.sheet;
+    if (e.target.id === 'f-date' && F.mode === 'new' && SC.isDate(e.target.value)) {   // keep the day chips in step with a single chosen day
+      const pressed = [...sheet.querySelectorAll('.wday[aria-pressed="true"]')];
+      if (pressed.length <= 1) sheet.querySelectorAll('.wday').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.wday) === SC.weekday(e.target.value))));
+    }
+    if (e.target.id === 'f-student' && sheet.querySelector('#f-tz') === null && stuTz(e.target.value)) { F.v = readForm(); paintSheet(); return; }
+    if (F.warn.length) { F.warn = []; F.confirmed = false; const b = sheet.querySelector('button[type="submit"]'); if (b) b.textContent = 'Save'; sheet.querySelector('.box.warn')?.remove(); }
+    syncForm();
+  });
+  sheet.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (e.target.id === 'tzform') saveTz(); else if (UI.sheet && UI.sheet.type === 'form') submitForm();
+  });
+
   // ---------- render ----------
   function route() {
     const h = location.hash.replace(/^#/, '');
     if (h.startsWith('s-')) return { name: 'student', id: h.slice(2) };
     if (h === 'teaching') return { name: 'teaching' };
+    if (h === 'schedule') return { name: 'schedule' };
     if (h === 'course' || h === 'course-teach') return { name: 'course', sub: h === 'course-teach' ? 'teach' : '' };
     return { name: 'home' };
   }
 
   function render() {
     const r = route();
-    const navOn = r.name === 'teaching' ? 'nav-teaching' : r.name === 'course' ? 'nav-course' : 'nav-students';
-    ['nav-students', 'nav-course', 'nav-teaching'].forEach((id) => {
+    const navOn = r.name === 'teaching' ? 'nav-teaching' : r.name === 'course' ? 'nav-course' : r.name === 'schedule' ? 'nav-schedule' : 'nav-students';
+    ['nav-students', 'nav-schedule', 'nav-course', 'nav-teaching'].forEach((id) => {
       const a = document.getElementById(id);
       if (id === navOn) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
@@ -687,11 +1350,21 @@ h2.sec{margin-bottom:12px}
       return;
     }
     main.innerHTML = r.name === 'student' ? viewStudent(r.id) : r.name === 'teaching' ? viewTeaching()
-      : r.name === 'course' ? viewCourse(r.sub) : viewHome();
+      : r.name === 'course' ? viewCourse(r.sub) : r.name === 'schedule' ? viewSchedule() : viewHome();
+    refreshSheet();
   }
 
   // ---------- events ----------
   main.addEventListener('click', async (e) => {
+    const wk = e.target.closest('[data-week]');
+    if (wk) { const n = Number(wk.dataset.week); UI.week = n === 0 ? 0 : UI.week + n; render(); return; }
+    const add = e.target.closest('[data-add]');
+    if (add && SC) { openSheet(formFor('new', null, add.dataset.add)); return; }
+    const op = e.target.closest('[data-open]');
+    if (op && SC) { openSheet({ type: 'info', key: op.dataset.open, near: op.dataset.near }); return; }
+    const sst = e.target.closest('[data-status]');
+    if (sst && SC) { const o = findOcc(sst.dataset.key, sst.dataset.near); if (o) setStatus(o, sst.dataset.status); return; }
+    if (e.target.closest('[data-tzopen]') && SC) { openSheet({ type: 'tz' }); return; }
     const tabBtn = e.target.closest('.tab');
     if (tabBtn) {
       UI.tab[tabBtn.dataset.lid] = tabBtn.dataset.tab;
@@ -780,6 +1453,10 @@ h2.sec{margin-bottom:12px}
     sub('teacher', (docs) => { const p = docs.find((d) => d.id === 'profile'); S.teacher = p ? p.data() : null; });
     sub('course', (docs) => { const p = docs.find((d) => d.id === 'plan'); S.course = p ? p.data() : null; });
     sub('progress', (docs) => { S.progress = {}; docs.forEach((d) => { S.progress[d.id] = d.data() || {}; }); });
+    sub('schedule', (docs) => {
+      S.sched = {}; S.schedSettings = null;
+      docs.forEach((d) => { if (d.id === 'settings') S.schedSettings = d.data() || {}; else S.sched[d.id] = { ...d.data(), id: d.id }; });
+    });
   }
   start();
 })();

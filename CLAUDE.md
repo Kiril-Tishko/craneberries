@@ -46,6 +46,9 @@ Students (all learn American English):
    - `teacher/profile`: refresh `englishFocus`, `teachingFocus`, `lessonsReviewed`, `updated`.
    - `progress/<slug>`: the teacher moves units with the buttons. Read it; only if the lesson clearly
      finished the current unit and she hasn't moved it, mention it in the reply (don't move it yourself).
+   - `schedule/<id>`: if a planned lesson of that student is on that date, mark it done (series:
+     `ex[<origDate>].status = "done"`; one-off: `status: "done"`). Don't create lessons she didn't schedule.
+     Take `nextWhen` from the schedule when it has the student's next lesson.
 5. Send the cards to the user with SendUserFile and give them the site link.
 
 **Text the teacher might forward to a student** (answers to a student's question, a message, a reading text)
@@ -156,6 +159,19 @@ people, less, everyday, phrases, city, weather, food, home, event, grammar, soun
 with a short quality note (British usage, errors, overload). Her "reviewed again" ticks live in
 `state/mat-<slug>`. Materials must be American English; flag British forms when you see them.
 
+**Schedule** (tab "Schedule", the page writes it; Claude only marks lessons done or adds what she asks for).
+Logic lives in `site/schedule-core.js` (published beside the page as `schedule-core.js`; test:
+`node tools/schedule-core.test.js`). Republish with `files: {"schedule-core.js": "site/schedule-core.js"}`
+whenever it changes. Docs in `schedule`:
+- weekly series `{kind: "series", student, start, time "HH:MM", durationMin, tz, every (weeks), until|null,
+  ex{<origDate>: {status?: done|cancelled, date?, time?, durationMin?, note?}}, note?, name?}`: `start` is the first
+  lesson's date (its weekday is the lesson day); `ex` is keyed by the original date and holds marks and one-off moves.
+- one-off `{kind: "one", student, date, time, durationMin, tz, status?, note?, name?}` (`name` only for someone
+  not in `students`).
+- `schedule/settings` = `{tz, hour12, studentTz{<slug>: tz}}` (the teacher's zone; students who live elsewhere).
+Times are wall-clock in the doc's own `tz` (IANA), so DST is handled per zone. Marking a lesson done adds
+`{date, kind: "lesson", n: -1, src: "schedule"}` to `billing/<slug>` unless that day already has a lesson entry.
+
 **Course.** `course/plan` (Claude writes) = the 30-unit backbone, same order for every student:
 `units[{n, grammar, cando, words, sound, materials[{title, url}], fix, extra}]`, `phases[{name, from, to, sum}]`,
 `reviewAfter[]` (review week after units 4, 8, …), `checks{12, 24}`, and the "How to teach" parts: `lesson[{min,
@@ -164,5 +180,5 @@ title, detail}]`, `steps[]`, `pace[{who, time, how}]`, `review[{when, what}]`, `
 `principles[{idea, you, src, url}]`, `wordMaterials[]`, `wordMaterialsFix`.
 `progress/<slug>` (the page writes; Claude only creates it for a new student) = `{current, done[], started{n: date},
 pace, note, prev}`. Base each lesson's `nextLesson` plan on the student's current unit. When the teacher sends a new
-material, add it to the matching unit's `materials` (and `fix` if it needs changes). Site tabs: Students, Course
+material, add it to the matching unit's `materials` (and `fix` if it needs changes). Site tabs: Students, Schedule, Course
 (Units · every student / How to teach · you), My teaching.
