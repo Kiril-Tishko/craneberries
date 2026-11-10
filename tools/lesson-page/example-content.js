@@ -1,5 +1,5 @@
-const P = (who, en, ua, when) => ({t:'phrase', who, en, ua, when});  // who: say | hear | write | read (emails)
-const R = (ua, en) => ({t:'recall', ua, en});
+const P = (who, en, ua, when, pic) => ({t:'phrase', who, en, ua, when, pic});  // who: say | hear | write | read (emails); pic: an emoji for words that are easy to picture
+const R = (ua, en, pic) => ({t:'recall', ua, en, pic});
 const SECTIONS = [
   {label:'Remember', slides:[
     R('Можна записатися на прийом?', 'Can I make an appointment, please?'),

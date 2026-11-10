@@ -28,7 +28,7 @@ Students (all learn American English):
 - Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week, payment not decided.
   Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
   Keep the short forms that already work for her ("Sorry?" to ask for a repeat); don't teach longer versions.
-- Julia: A2+, pays after each lesson. Has had present simple, present continuous, past simple and will; past
+- Julia: A2+, pays after each lesson and is always paid: never log her lessons or payments in billing. Has had present simple, present continuous, past simple and will; past
   continuous only a glimpse (not for drills yet).
 - Mariya: A2, 2 lessons a week, pays weekly.
 - Other students are on a break.
@@ -56,6 +56,8 @@ Everything outside the block is for the teacher.
 She once forwarded a whole reply to a student by mistake.
 
 ## What the teacher asked for
+
+- **Replies in chat are short**: say briefly what you did and give the links; don't list the lesson content.
 
 - **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/). IPA goes on the
   teacher site only: **no phonetic transcription on student cards**.
@@ -101,6 +103,10 @@ She once forwarded a whole reply to a student by mistake.
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
+  - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
+    (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`).
+  - **Never put personal data on a page**: no student names (sign emails with a made-up name), no real
+    details of their work or life (company deals, customers, places, dates of birth). Use made-up, general examples.
   - **No role-play** for now: she didn't like how it worked. Leave it out unless she asks for it.
   - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
   - **Never draw faces, mouths or body diagrams**: she found the drawn mouth creepy.

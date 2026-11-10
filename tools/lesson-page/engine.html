@@ -52,6 +52,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .who.hear{background:var(--hear-bg);color:var(--hear)}
 .who.swapw{background:var(--swap-bg);color:var(--swap)}
 .big{font-size:clamp(30px,7.4vw,54px);font-weight:800;line-height:1.12;text-wrap:balance}
+.pic{font-size:clamp(52px,10vh,92px);line-height:1;font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif}
 .when{font-size:clamp(16px,2.6vh,20px);color:var(--muted);max-width:30ch;line-height:1.35}
 .ua{font-size:clamp(18px,3vh,24px);font-weight:600;color:var(--ua);background:var(--ua-bg);border-radius:14px;padding:6px 14px}
 .sw{color:var(--swap);background:var(--swap-bg);border-radius:12px;padding:0 .18em;display:inline-block}
@@ -197,6 +198,7 @@ const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in 
 function view(s){
   if (s.t === 'phrase') return `
     <div class="who ${s.who === 'hear' || s.who === 'read' ? 'hear' : ''}">${{hear:'👂 You hear', read:'📩 You read', write:'✍️ You write'}[s.who] || '💬 You say'}</div>
+    ${s.pic ? `<div class="pic" aria-hidden="true">${esc(s.pic)}</div>` : ''}
     <div class="big">${esc(s.en)}</div>
     <div class="when">${esc(s.when)}</div>
     <div class="row">${spk(s.en)}<button class="btn" data-show="ua">Переклад</button></div>
@@ -235,6 +237,7 @@ function view(s){
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
   if (s.t === 'recall') return `
     <div class="who">🧠 Say it in English</div>
+    ${s.pic ? `<div class="pic" aria-hidden="true">${esc(s.pic)}</div>` : ''}
     <div class="recall-ua">${esc(s.ua)}</div>
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center">${esc(s.en)} ${spk(s.en)}</span></div>
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
@@ -259,6 +262,7 @@ function view(s){
       ${text ? `<div class="rt">${esc(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${esc(x)}</div>`).join('')}</div></div>`).join('')}</div>`;
   if (s.t === 'flip') return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
+    ${s.pic ? `<div class="pic" aria-hidden="true">${esc(s.pic)}</div>` : ''}
     <div class="when" style="font-size:clamp(18px,3vh,24px)">${esc(s.from)}</div>
     <div class="big">${esc(s.subj)}${s.dots === false ? '' : ' …'}</div>
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(s.ans.replace(/[\[\]]/g, ''))}</span></div>
