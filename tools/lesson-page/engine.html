@@ -196,7 +196,7 @@ const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in 
 /* ---------- screens ---------- */
 function view(s){
   if (s.t === 'phrase') return `
-    <div class="who ${s.who === 'hear' ? 'hear' : ''}">${s.who === 'hear' ? '👂 You hear' : '💬 You say'}</div>
+    <div class="who ${s.who === 'hear' || s.who === 'read' ? 'hear' : ''}">${{hear:'👂 You hear', read:'📩 You read', write:'✍️ You write'}[s.who] || '💬 You say'}</div>
     <div class="big">${esc(s.en)}</div>
     <div class="when">${esc(s.when)}</div>
     <div class="row">${spk(s.en)}<button class="btn" data-show="ua">Переклад</button></div>
@@ -212,7 +212,7 @@ function view(s){
   if (s.t === 'all') return `
     <div class="who">✅ All together</div>
     <ul class="all">${s.items.map(([en, ua, h]) => `<li><div class="tx"><span class="en">${esc(en)}</span>
-      <span class="u">${h ? '<span class="s">👂 you hear · </span>' : ''}${esc(ua)}</span></div>${spk(en)}</li>`).join('')}</ul>`;
+      <span class="u">${h ? `<span class="s">${h === 'read' ? '📩 you read' : '👂 you hear'} · </span>` : ''}${esc(ua)}</span></div>${spk(en)}</li>`).join('')}</ul>`;
   if (s.t === 'turn'){
     const n = SECTIONS[sec].slides.filter((x) => x.t === 'turn' && x.scene === s.scene);
     const pos = n.indexOf(s) + 1;

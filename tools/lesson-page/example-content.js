@@ -1,4 +1,4 @@
-const P = (who, en, ua, when) => ({t:'phrase', who, en, ua, when});
+const P = (who, en, ua, when) => ({t:'phrase', who, en, ua, when});  // who: say | hear | write | read (emails)
 const R = (ua, en) => ({t:'recall', ua, en});
 const SECTIONS = [
   {label:'Remember', slides:[
