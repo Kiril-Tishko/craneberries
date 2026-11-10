@@ -86,6 +86,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .bub{max-width:94%;padding:clamp(3px,.6vh,7px) 11px;border-radius:16px 16px 16px 4px;background:var(--hear-bg);text-align:left;
   font-size:clamp(13px,1.9vh,19px);font-weight:500;line-height:1.2;align-self:flex-start}
 .playall{padding:6px 14px;font-size:15px}
+.mail{width:100%;max-width:560px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 16px;font-size:clamp(16px,2.5vh,21px);line-height:1.3}
+.mail .mh{font-size:13px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:6px}
+.mail p{margin:0 0 clamp(2px,.6vh,6px);cursor:pointer}
+.mail .gap{height:clamp(4px,1vh,10px)}
 .ans .sp,.after .sp{width:34px;height:34px;font-size:15px}
 @media (min-width:760px){.chat{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(7,auto);column-gap:18px;max-width:none}.bub{justify-self:start}.bub.me{justify-self:end}}
 .bub.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:var(--accent-soft);color:var(--accent);font-weight:700}
@@ -222,6 +226,10 @@ function view(s){
     <div class="row"><button class="btn" data-show="hint">💡 Hint</button><button class="btn" data-show="ans">Answer</button></div>
     ${s.after ? `<div class="after row" data-part="after" hidden style="align-items:center">They say: “${esc(s.after)}” ${spk(s.after)}</div>` : ''}`;
   }
+  if (s.t === 'email') return `
+    <div class="who">✉️ ${esc(s.label || 'The whole email')}</div>
+    <div class="mail">${s.subject ? `<div class="mh">Subject: ${esc(s.subject)}</div>` : ''}${s.lines.map((t) => t ? `<p${AUDIO[t] ? ` data-say="${esc(t)}"` : ''}>${esc(t)}</p>` : '<div class="gap"></div>').join('')}</div>
+    <button class="btn playall" data-playall>▶ Read it aloud</button>`;
   if (s.t === 'convo') return `
     <button class="btn playall" data-playall>▶ Play the whole call</button>
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
@@ -323,7 +331,7 @@ card.addEventListener('click', (e) => {
     return;
   }
 
-  if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map(([, t]) => t).filter((t) => AUDIO[t])); return; }
+  if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map((l) => Array.isArray(l) ? l[1] : l).filter((t) => AUDIO[t])); return; }
   const sh = e.target.closest('[data-show]');
   if (sh){
     const part = sh.dataset.show;

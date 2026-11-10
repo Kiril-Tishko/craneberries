@@ -10,6 +10,7 @@ for (const sec of SECTIONS) for (const s of sec.slides) {
   if (s.t === 'swap') s.opts.forEach((o) => add(s.pre + o + s.post, 'me'));
   if (s.t === 'all') s.items.forEach(([en, , h]) => add(en, h ? 'them' : 'me'));
   if (s.t === 'turn') { add(s.them, 'them'); add(s.ans, 'me'); add(s.after, 'them'); }
+  if (s.t === 'email') s.lines.forEach((t) => add(t, 'me'));
   if (s.t === 'convo') s.lines.forEach(([w, t]) => add(t, w === 'me' ? 'me' : 'them'));
   if (s.t === 'sound') { add(s.say, 'me'); s.words.forEach(([w]) => add(w, 'me')); }
   if (s.t === 'pair') { add(s.a.w, 'me'); add(s.b.w, 'me'); }

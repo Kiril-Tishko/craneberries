@@ -43,5 +43,7 @@ const SECTIONS = [
       ['them','Thursday at 4 p.m.?'],['me','Yes, that works.'],
       ['them','Great. See you on Thursday!'],['me','Thank you. Bye!']]}
   ]},
+  // {t:'email', subject:'New pattern', lines:['Hi Anna,', '', 'Thanks for your email.', '', 'Best regards,', 'Mariya']}
+  //   a whole email on one screen; '' = a blank line; tap a line or ▶ to hear it
   {label:'My sentences', slides:[{t:'mine'}]}
 ];
