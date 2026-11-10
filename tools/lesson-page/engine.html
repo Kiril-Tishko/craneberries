@@ -262,7 +262,7 @@ function view(s){
     <div class="who">✍️ This week</div>
     <div class="big" style="font-size:clamp(24px,5vw,36px)">3 sentences I will use this week</div>
     <div class="mine">${[0, 1, 2].map((n) => `<input type="text" data-mine="${n}" value="${esc(saved[n] || '')}"
-      placeholder="${['Are you in line?', 'I’m free on Monday.', 'Thanks for letting me know.'][n]}" aria-label="Sentence ${n + 1}">`).join('')}</div>`;
+      placeholder="${(s.ph || ['Are you in line?', 'I’m free on Monday.', 'Thanks for letting me know.'])[n]}" aria-label="Sentence ${n + 1}">`).join('')}</div>`;
   }
   return '';
 }
