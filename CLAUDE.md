@@ -98,6 +98,9 @@ She once forwarded a whole reply to a student by mistake.
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
     Say it directly (✅ where it goes, ❌ where it doesn't); don't build up from theory.
   - Recall at the start: short, easy sentences.
+  - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
+    "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
+  - "My sentences" boxes stay empty: no example sentences in them.
   - **No role-play** for now: she didn't like how it worked. Leave it out unless she asks for it.
   - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
   - **Never draw faces, mouths or body diagrams**: she found the drawn mouth creepy.

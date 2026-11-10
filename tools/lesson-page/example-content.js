@@ -43,5 +43,5 @@ const SECTIONS = [
       ['them','Thursday at 4 p.m.?'],['me','Yes, that works.'],
       ['them','Great. See you on Thursday!'],['me','Thank you. Bye!']]}
   ]},
-  {label:'My sentences', slides:[{t:'mine', ph:['Are you in line?', 'I’m free on Monday.', 'Thanks for letting me know.']}]}  // ph = example placeholders
+  {label:'My sentences', slides:[{t:'mine'}]}
 ];
