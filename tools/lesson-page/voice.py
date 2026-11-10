@@ -18,6 +18,7 @@ def spoken(t):
     t = t.replace("’", "'")
     t = re.sub(r"\bOK\b", "okay", t)
     t = re.sub(r"\b(\d{1,2}) a\.m\.", r"\1 a m", t); t = re.sub(r"\b(\d{1,2}) p\.m\.", r"\1 p m", t)
+    t = re.sub(r"(\d+) cm\b", lambda m: m.group(1) + (" centimeter" if m.group(1) == "1" else " centimeters"), t); t = re.sub(r"\binseam\b", "in seam", t)
     return t
 out = {}
 pathlib.Path(outdir).mkdir(parents=True, exist_ok=True)
