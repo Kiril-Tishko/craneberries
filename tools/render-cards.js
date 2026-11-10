@@ -42,9 +42,10 @@ function header(c) {
 
 const body = {
   // Items with an emoji get big picture rows (for children): emoji, the English word, the Ukrainian below.
-  words: (c) => kid ? `<div class="kgrid">${c.items.map((w, i) => `
-    <div class="ktile t${i % 6}"><span class="kemo">${esc(w.emoji || '')}</span>
-      <span class="kword"><span class="hl">${esc(w.en)}</span></span><span class="ua">${esc(w.ua)}</span></div>`).join('')}</div>`
+  // kid, or grid: true → picture tiles (big emoji, the word, Ukrainian only if given)
+  words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}">${c.items.map((w, i) => `
+    <div class="ktile t${i % 6}">${w.svg ? `<span class="kemo ksvg">${w.svg}</span>` : `<span class="kemo">${esc(w.emoji || '')}</span>`}
+      <span class="kword"><span class="hl">${esc(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
     : c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
     <div class="prow"><span class="pemo">${esc(w.emoji || '')}</span>
       <div class="wk"><span class="en big"><span class="hl">${esc(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
@@ -253,6 +254,11 @@ const html = `<!doctype html>
   .ktile:nth-child(4n+1),.ktile:nth-child(4n+4){transform:rotate(-1.6deg)}
   .ktile:nth-child(4n+2),.ktile:nth-child(4n+3){transform:rotate(1.6deg)}
   .kword{font-size:28px;font-weight:800;line-height:1.1;margin-top:6px}
+  .flat .ktile{transform:none!important;padding:22px 10px 18px}
+  .flat .kemo{font-size:84px}
+  .flat .kword{font-size:30px}
+  .ksvg{display:block;height:84px;line-height:0}
+  .ksvg svg{height:84px;width:auto}
   .kph{margin-top:18px;display:grid;gap:12px}
   .kprow{border-radius:26px;padding:14px 16px;display:flex;gap:14px;align-items:center}
   .kprow:nth-child(odd){transform:rotate(-1deg)} .kprow:nth-child(even){transform:rotate(1deg)}

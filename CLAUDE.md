@@ -18,6 +18,7 @@ mistakes list short. The teacher sometimes sends the lesson materials (slides) t
 
 Students (all learn American English):
 - Sergii: B1, Tuesdays. Pays weekly for himself and his daughter Vaselina (also a student).
+  Dislikes exercises and websites: plan his lessons as talk, cards very visual with little to read.
 - Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
   she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
   Her cards must be super simple and playful: set `kid: true` in her lesson JSON (bright tiles, round font,
@@ -120,7 +121,9 @@ nextLesson[]   {min, title, detail}
 teacher        {note, english[{t, said, better, why}], habits[], strengths[], improve[]}
 studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex, emoji?}]}
-                    items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles
+                    items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles;
+                    `grid: true` gives the tile grid in the adult look (no reading needed); an item's `svg` replaces
+                    the emoji when no emoji fits (🍴 shows a fork AND a knife, 🍽️ a plate with cutlery)
   {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   emoji shows in front of each phrase
                     (with `kid`: colored bubbles, big emoji)
   {type: "qa",      kicker, title, q, pics[{emoji, en}], answers[{emoji, text, tone: yes|no}]}
