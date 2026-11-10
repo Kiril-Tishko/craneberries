@@ -33,6 +33,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;margin:0;
   -webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
@@ -229,7 +230,7 @@ h2.sec{margin-bottom:12px}
 .plist li:first-child{border-top:0;padding-top:0}
 .plist b{display:block}
 @media (max-width: 760px){ .ubody, .urev{padding-left:0} }
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);
+.toast{position:fixed;left:0;right:0;margin:0 auto;width:fit-content;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);
   padding:10px 16px;border-radius:10px;font-size:14.5px;z-index:20;max-width:calc(100% - 32px)}
 
 .toast{display:flex;align-items:center;gap:14px}
@@ -246,22 +247,22 @@ h2.sec{margin-bottom:12px}
 .btn.danger{color:var(--red)}
 .btn.danger:hover{border-color:var(--red);color:var(--red)}
 .btn.danger[data-armed]{background:var(--red);border-color:var(--red);color:var(--surface)}
-.savestate{font-size:13px;color:var(--muted);min-height:20px}
+.savestate{font-size:13px;color:var(--muted);min-height:20px;margin-left:6px}
 .savestate.err{color:var(--red);font-weight:600}
 .tzbtn{border:0;background:none;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:18px}
 .day{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:168px;min-width:0}
 .day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.dh{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+.dh{display:flex;align-items:baseline;justify-content:space-between;gap:0 6px;flex-wrap:wrap}
 .dh b{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
-.dh span{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dh span{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .day.today .dh b,.day.today .dh span{color:var(--accent)}
 .day.past .dh b{color:var(--muted)}
 .dbody{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
 .occ{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;background:var(--sunk);border:1px solid transparent;
   border-radius:9px;padding:7px 8px;cursor:pointer;min-width:0}
 .occ:hover{border-color:var(--accent)}
-.occ .ot{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.occ .ot{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .occ .on{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}
 .occ .on > span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .occ .om{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
@@ -273,7 +274,7 @@ h2.sec{margin-bottom:12px}
 .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c0)}
 .dot.c1{background:var(--c1)} .dot.c2{background:var(--c2)} .dot.c3{background:var(--c3)} .dot.c4{background:var(--c4)}
 .dot.c5{background:var(--c5)} .dot.c6{background:var(--c6)} .dot.c7{background:var(--c7)}
-.dadd{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0}
+.dadd{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;text-align:left}
 .dadd:hover{color:var(--accent)}
 .duelist{list-style:none;margin:0;padding:0}
 .duelist li{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line)}
@@ -288,6 +289,7 @@ h2.sec{margin-bottom:12px}
 .todaybar .slot{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14.5px}
 .todaybar .slot .ts{font-size:12px}
 .slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.slots .chip{text-decoration:none}
 
 dialog.sheet{border:0;border-radius:16px;padding:0;background:var(--surface);color:var(--ink);width:min(540px, calc(100% - 32px));
   max-height:calc(100% - 32px);box-shadow:0 24px 64px rgb(0 0 0 / .35);overscroll-behavior:contain}
@@ -389,6 +391,9 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   // toast(msg) or toast(msg, {label: 'Undo', fn}) for an action button
   function toast(msg, action) {
     const t = document.getElementById('toast');
+    // an open modal sheet makes the rest of the page inert (and covers the toast on phones): show it inside the sheet
+    const host = document.querySelector('dialog[open]') || document.body;
+    if (t.parentNode !== host) host.append(t);
     t.replaceChildren(document.createTextNode(msg));
     if (action) {
       const b = document.createElement('button');
@@ -807,12 +812,18 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DOW_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const LENGTHS = [30, 45, 50, 60, 75, 90, 120];
-  const browserTz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } })();
+  // one zone can have two names (Chrome reports Europe/Kiev for Europe/Kyiv): compare zones by the engine's canonical name
+  const canon = new Map();
+  const sameTz = (a, b) => {
+    const c = (z) => { if (!canon.has(z)) { let r = z; try { r = new Intl.DateTimeFormat('en-US', { timeZone: z }).resolvedOptions().timeZone; } catch (e) { /* keep */ } canon.set(z, r); } return canon.get(z); };
+    return a === b || (!!a && !!b && c(a) === c(b));
+  };
+  const browserTz = (() => { try { const z = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; return sameTz(z, 'Europe/Kyiv') ? 'Europe/Kyiv' : z; } catch (e) { return 'UTC'; } })();
   const setg = () => S.schedSettings || {};
   const myTz = () => (SC && SC.validTz(setg().tz) ? setg().tz : browserTz);
   const h12 = () => !!setg().hour12;
-  const stuTz = (sid) => { const z = (setg().studentTz || {})[sid]; return SC && z && SC.validTz(z) && z !== myTz() ? z : ''; };
-  const city = (tz) => String(tz || '').split('/').pop().replace(/_/g, ' ');
+  const stuTz = (sid) => { const z = (setg().studentTz || {})[sid]; return SC && z && SC.validTz(z) && !sameTz(z, myTz()) ? z : ''; };
+  const city = (tz) => String(tz || '').split('/').pop().replace(/_/g, ' ').replace(/^Kiev$/, 'Kyiv');
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const strip = (d) => { const { id, ...rest } = d; return clone(rest); };
   const schedDocs = () => Object.values(S.sched);
@@ -824,6 +835,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   const dayLong = (iso) => { const d = parseD(iso); return `${DOW_LONG[SC.weekday(iso)]}, ${d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`; };
   const at = (ms, tz) => SC.fromInstant(ms, tz || myTz());
   const range = (o, tz) => `${ft(at(o.start, tz).time)}–${ft(at(o.end, tz).time)}`;
+  const nb = (s) => s.replace(/ /g, '\u00a0');   // "5:00 PM–6:00 PM" may break after the dash only
   const colorOf = (sid) => {
     const ids = Object.keys(S.students).sort();
     const i = ids.indexOf(sid);
@@ -960,7 +972,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
         <button class="btn primary lg grow" type="button" data-add="${esc(UI.week === 0 ? today : ws)}">+ Lesson</button></div></div>`;
 
     const duePanel = due.length ? `<section class="panel due" style="margin-top:18px"><div class="panel-h"><h2>Did these happen?</h2><span class="muted small">${due.length} to mark · done ones log −1 lesson</span></div>
-      <ul class="duelist">${due.slice(0, 6).map((o) => { const a = at(o.start); return `<li>
+      <ul class="duelist">${due.slice(-6).map((o) => { const a = at(o.start); return `<li>
         <span class="who">${dot(o.student)}<span>${esc(nameOf(o.student, S.sched[o.docId]))} <span class="when2">${esc(dayShort(a.date))} · ${esc(ft(a.time))}</span></span></span>
         <span class="acts"><button class="btn" type="button" data-status="done" data-key="${esc(o.key)}" data-near="${esc(a.date)}">Done</button>
           <button class="btn ghost" type="button" data-status="cancelled" data-key="${esc(o.key)}" data-near="${esc(a.date)}">Didn’t happen</button></span></li>`; }).join('')}</ul>
@@ -983,10 +995,10 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
           const meta = [
             o.status === 'done' ? 'Done' : o.status === 'cancelled' ? 'Cancelled' : due1 ? 'Mark it' : '',
             o.moved && o.status !== 'cancelled' ? 'Moved' : '',
-            st ? `${city(st)} ${range(o, st)}` : '',
+            st ? `${city(st)} ${nb(range(o, st))}` : '',
           ].filter(Boolean).join(' · ');
           return `<button type="button" class="occ ${o.status} ${due1 ? 'due' : ''} ${cl ? 'clash' : ''}" data-open="${esc(o.key)}" data-near="${esc(dte)}">
-            <span class="ot">${esc(range(o))}</span>
+            <span class="ot">${esc(nb(range(o)))}</span>
             <span class="on">${dot(o.student)}<span>${esc(nameOf(o.student, doc))}</span></span>
             ${meta ? `<span class="om">${esc(meta)}</span>` : ''}${cl ? '<span class="om clash-t">Overlaps</span>' : ''}</button>`;
         }).join('')}<button class="dadd" type="button" data-add="${esc(dte)}" aria-label="Add a lesson on ${esc(dayLong(dte))}">+ Add</button></div></section>`;
@@ -1012,7 +1024,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     if (f) f.focus();
   }
   function closeSheet() { UI.sheet = null; if (sheet.open) sheet.close(); }
-  sheet.addEventListener('close', () => { UI.sheet = null; });
+  sheet.addEventListener('close', () => { UI.sheet = null; const t = document.getElementById('toast'); if (t && t.parentNode === sheet) document.body.append(t); });
   sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });   // tap on the backdrop
 
   // re-paint lesson details when data changes underneath (never a form: it would wipe what she typed)
@@ -1024,7 +1036,9 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   function paintSheet() {
     const st = UI.sheet;
     if (!st) return;
+    const t = sheet.querySelector('#toast');   // keep a toast shown inside the sheet
     sheet.innerHTML = st.type === 'info' ? infoHTML(st) : st.type === 'tz' ? tzHTML() : formHTML(st);
+    if (t) sheet.append(t);
     if (st.type === 'form') syncForm();
   }
   const closeBtn = '<button class="xbtn" type="button" data-close aria-label="Close">×</button>';
@@ -1067,10 +1081,12 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   function tzOptions(sel, extra) {
     let all = [];
     try { all = Intl.supportedValuesOf('timeZone'); } catch (e) { all = []; }
-    const common = [...new Set([myTz(), browserTz, 'Europe/Kyiv', 'America/Vancouver', 'America/Edmonton', 'America/Winnipeg', 'America/Toronto', 'Europe/Warsaw', 'Europe/London', ...(extra || [])])].filter((z) => SC.validTz(z));
+    const common = [];
+    [myTz(), browserTz, 'Europe/Kyiv', 'America/Vancouver', 'America/Edmonton', 'America/Winnipeg', 'America/Toronto', 'Europe/Warsaw', 'Europe/London', ...(extra || [])]
+      .forEach((z) => { if (SC.validTz(z) && !common.some((c) => sameTz(c, z))) common.push(z); });
     const off = (z) => { const m = SC.tzOffsetMin(Date.now(), z); return `UTC${m < 0 ? '−' : '+'}${Math.floor(Math.abs(m) / 60)}${Math.abs(m) % 60 ? ':' + String(Math.abs(m) % 60).padStart(2, '0') : ''}`; };
     const opt = (z) => `<option value="${esc(z)}" ${z === sel ? 'selected' : ''}>${esc(city(z))} (${esc(off(z))})</option>`;
-    return `<optgroup label="Common">${common.map(opt).join('')}</optgroup>${all.length ? `<optgroup label="All">${all.filter((z) => !common.includes(z)).map((z) => `<option value="${esc(z)}" ${z === sel ? 'selected' : ''}>${esc(z.replace(/_/g, ' '))}</option>`).join('')}</optgroup>` : ''}`;
+    return `<optgroup label="Common">${common.map(opt).join('')}</optgroup>${all.length ? `<optgroup label="All">${all.filter((z) => !common.some((c) => sameTz(c, z))).map((z) => `<option value="${esc(z)}" ${z === sel ? 'selected' : ''}>${esc(z.replace(/_/g, ' '))}</option>`).join('')}</optgroup>` : ''}`;
   }
   function tzHTML() {
     const ids = Object.keys(S.students).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
@@ -1078,7 +1094,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     return `<form class="sheet-in" id="tzform" novalidate>
       <div class="sheet-h"><div><h2 id="sheet-title">Time zones</h2><p class="hint" style="margin:4px 0 0">Lessons stay at the time you set, in the zone you set them in. When clocks change in one country only, the other side’s time moves.</p></div>${closeBtn}</div>
       <div class="field"><label class="flabel" for="tz-me">Your time zone</label><select class="inp" id="tz-me">${tzOptions(myTz())}</select>
-        ${browserTz !== myTz() ? `<span class="hint">This device is set to ${esc(city(browserTz))}.</span>` : ''}</div>
+        ${!sameTz(browserTz, myTz()) ? `<span class="hint">This device is set to ${esc(city(browserTz))}.</span>` : ''}</div>
       <div class="field"><label class="flabel" for="tz-12">Clock</label><select class="inp" id="tz-12"><option value="24" ${h12() ? '' : 'selected'}>24-hour (17:30)</option><option value="12" ${h12() ? 'selected' : ''}>12-hour (5:30 PM)</option></select></div>
       ${ids.length ? `<div class="field"><span class="flabel">Students who live elsewhere</span><div class="tzrows">${ids.map((sid) => `
         <div class="tzrow"><label for="tz-s-${esc(sid)}">${esc(nameOf(sid))}</label><select class="inp" id="tz-s-${esc(sid)}" data-sid="${esc(sid)}">
@@ -1108,7 +1124,8 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const pickStudent = m === 'new' || m === 'edit';
     const other = pickStudent && v.student && !S.students[v.student];
     const lens = [...new Set([...LENGTHS, Number(v.len) || 60])].sort((a, b) => a - b);
-    const tzs = [...new Set([v.tz, myTz(), stuTz(v.student)].filter(Boolean))];
+    const tzs = [];
+    [v.tz, myTz(), stuTz(v.student)].forEach((z) => { if (z && !tzs.some((x) => sameTz(x, z))) tzs.push(z); });
     const canRepeat = m !== 'move';
     return `<form class="sheet-in" id="lform" novalidate>
       <div class="sheet-h"><div><h2 id="sheet-title">${esc(title)}</h2>${sub ? `<p class="hint" style="margin:4px 0 0">${esc(sub)}</p>` : ''}</div>${closeBtn}</div>
@@ -1132,7 +1149,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
         ${m === 'new' ? `<div class="field" id="f-days-w"><span class="flabel" id="f-days-l">On</span><div class="wdays" role="group" aria-labelledby="f-days-l">
           ${[1, 2, 3, 4, 5, 6, 0].map((d) => `<button type="button" class="wday" data-wday="${d}" aria-pressed="${v.days.includes(d)}">${DOW[d]}</button>`).join('')}</div>
           <span class="hint">Pick several days for a student with more than one lesson a week.</span></div>` : ''}` : ''}
-      ${tzs.length > 1 ? `<div class="field"><label class="flabel" for="f-tz">Time is in</label><select class="inp" id="f-tz">${tzs.map((z) => `<option value="${esc(z)}" ${z === v.tz ? 'selected' : ''}>${esc(city(z))} time${z === myTz() ? ' (yours)' : ''}</option>`).join('')}</select></div>` : ''}
+      ${tzs.length > 1 ? `<div class="field"><label class="flabel" for="f-tz">Time is in</label><select class="inp" id="f-tz">${tzs.map((z) => `<option value="${esc(z)}" ${z === v.tz ? 'selected' : ''}>${esc(city(z))} time${sameTz(z, myTz()) ? ' (yours)' : ''}</option>`).join('')}</select></div>` : ''}
       <div class="field"><label class="flabel" for="f-note">Note <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
         <input class="inp" id="f-note" value="${esc(v.note)}" maxlength="200" placeholder="${m === 'move' ? 'e.g. moved at her request' : 'e.g. trial lesson'}"></div>
       ${F.errors.length ? `<div class="box err" role="alert">${F.errors.length === 1 ? esc(F.errors[0]) : `<ul>${F.errors.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`}</div>` : ''}
@@ -1163,7 +1180,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     if (F.mode === 'new') v.days = [...sheet.querySelectorAll('.wday[aria-pressed="true"]')].map((b) => Number(b.dataset.wday));
     return v;
   }
-  const slug = (s) => String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  const slug = (s) => String(s).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
   // the documents a form produces: [{id, data|null}] plus the occurrence keys to check for overlaps (null = every occurrence of those docs)
   function buildChanges(F, v) {
     const errs = [];
@@ -1180,6 +1197,10 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const repeating = F.mode !== 'move' && v.repeat !== 'none';
     if (repeating && v.until && SC.isDate(v.until) && SC.isDate(v.date) && v.until < v.date) errs.push('The last lesson can’t be before the first one.');
     if (F.mode === 'new' && repeating && !(v.days || []).length) errs.push('Pick at least one day.');
+    if (F.mode === 'new' && repeating && v.until && SC.isDate(v.until) && SC.isDate(v.date) && v.until >= v.date) {
+      const late = (v.days || []).filter((wd) => SC.addDays(v.date, (wd - SC.weekday(v.date) + 7) % 7) > v.until);
+      if (late.length) errs.push(`There’s no ${late.map((wd) => DOW_LONG[wd]).join(' or ')} between the first and the last lesson date.`);
+    }
     if (errs.length) return { errs };
     const common = { student, ...(name ? { name } : {}), time: v.time, durationMin: v.len, tz: v.tz || myTz(), ...(v.note ? { note: v.note } : {}) };
     const series = (start) => ({ kind: 'series', ...common, start, every, until: v.until || null, ex: {} });
@@ -1197,7 +1218,9 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       d.ex = d.ex || {};
       const e = { ...(d.ex[F.o.origDate] || {}) };
       delete e.date; delete e.time; delete e.durationMin; delete e.note;
-      if (v.date !== F.o.origDate || v.time !== d.time || v.len !== d.durationMin) Object.assign(e, { date: v.date, time: v.time, durationMin: v.len });
+      // ex times are wall-clock in the series' own zone: convert when she typed the time in another zone
+      const w = v.tz && !sameTz(v.tz, d.tz) ? at(SC.toInstant(v.date, v.time, v.tz), d.tz) : { date: v.date, time: v.time };
+      if (w.date !== F.o.origDate || w.time !== d.time || v.len !== d.durationMin) Object.assign(e, { date: w.date, time: w.time, durationMin: v.len });
       if (v.note) e.note = v.note;
       if (Object.keys(e).length) d.ex[F.o.origDate] = e; else delete d.ex[F.o.origDate];
       changes = [{ id: F.o.docId, data: d }];
@@ -1231,7 +1254,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const out = [];
     mine.forEach((o) => (map.get(o.key) || []).forEach((k) => {
       const c = byKey.get(k);
-      if (!c || ids.has(c.docId) && c.student === o.student) return;
+      if (!c) return;
       const a = at(c.start);
       out.push(`${nameOf(c.student, after[c.docId])}, ${dayShort(a.date)} ${range(c)}`);
     }));
