@@ -254,11 +254,11 @@ const html = `<!doctype html>
   .ktile:nth-child(4n+1),.ktile:nth-child(4n+4){transform:rotate(-1.6deg)}
   .ktile:nth-child(4n+2),.ktile:nth-child(4n+3){transform:rotate(1.6deg)}
   .kword{font-size:28px;font-weight:800;line-height:1.1;margin-top:6px}
-  .flat .ktile{transform:none!important;padding:22px 10px 18px}
+  .flat .ktile{transform:none!important;padding:22px 10px 18px;background:#fff!important;border:1px solid #e3e7ef;box-shadow:0 1px 2px rgba(20,30,54,.05),0 10px 26px rgba(20,30,54,.08)}
   .flat .kemo{font-size:84px}
   .flat .kword{font-size:30px}
-  .ksvg{display:block;height:84px;line-height:0}
-  .ksvg svg{height:84px;width:auto}
+  .ksvg{display:block;height:104px;line-height:0}
+  .ksvg svg{height:104px;width:auto}
   .kph{margin-top:18px;display:grid;gap:12px}
   .kprow{border-radius:26px;padding:14px 16px;display:flex;gap:14px;align-items:center}
   .kprow:nth-child(odd){transform:rotate(-1deg)} .kprow:nth-child(even){transform:rotate(1deg)}
