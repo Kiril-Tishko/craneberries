@@ -17,13 +17,13 @@ recorded on the teacher's phone and catch mostly the teacher's voice: say so and
 mistakes list short. The teacher sometimes sends the lesson materials (slides) too.
 
 Students (all learn American English):
-- Sergii: B1, Tuesdays at 1 AM. Pays weekly for himself and his daughter Vaselina (also a student).
-- Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
+- Sergii: B1, Tuesdays at 1 PM. Pays weekly for himself and his daughter Vaselina (also a student).
+- Vaselina: a child, A1 (estimate), Sergii's daughter. Mon and Wed at 6 PM, Sat at 2 PM. Kids' materials, her topics (toys, animals, food);
   she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
   Her cards must be super simple and playful: set `kid: true` in her lesson JSON (bright tiles, round font,
   big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
   with an emoji each, no "not X" notes and no wrong forms.
-- Vova: A2+, 3 lessons a week at 7 PM, pays for 10-lesson packages.
+- Vova: A2+, Tue, Wed and Thu at 7 PM, pays for 10-lesson packages.
 - Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week at 7 or 8 PM (her
   schedule says 8 for now), payment not decided.
   Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
@@ -31,9 +31,10 @@ Students (all learn American English):
 - Julia: A2+, lessons at random times (one-offs), always pays after each lesson (`billing/julia` has
   `autopay: true`: never shown as unpaid). Has had present simple, present continuous, past simple and will; past
   continuous only a glimpse (not for drills yet).
-- Mariya: A2, 2 lessons a week, pays weekly.
-- Timofey: lessons Mon–Fri at 5:30 PM, often moved: the teacher tells Claude each change; update `schedule`
-  (move that day's lesson with an `ex` entry, or cancel it).
+- Mariya: A2, Tue and Thu at 9 PM, pays weekly.
+- Timofey: lessons Mon–Fri at 5:30 PM (30 min), often moved: the teacher tells Claude each change; update
+  `schedule` (move that day's lesson with an `ex` entry, or cancel it). Always paid: no `billing/timofey` ledger.
+- Sunday is always a day off.
 - Other students are on a break.
 
 1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
@@ -173,7 +174,9 @@ whenever it changes. Docs in `schedule`:
   lesson's date (its weekday is the lesson day); `ex` is keyed by the original date and holds marks and one-off moves.
 - one-off `{kind: "one", student, date, time, durationMin, tz, status?, note?, name?}` (`name` only for someone
   not in `students`).
-- `schedule/settings` = `{tz, hour12, studentTz{<slug>: tz}}` (the teacher's zone; students who live elsewhere).
+- `schedule/settings` = `{tz, hour12, studentTz{<slug>: tz}, daysOff?}` (the teacher's zone, Europe/Kyiv; students who
+  live elsewhere; `daysOff` weekdays, default `[0]` = Sunday: no column unless a lesson is there, saving asks first).
+The week is a timeline (each lesson at its start time); only start times are shown, never the end.
 Times are wall-clock in the doc's own `tz` (IANA), so DST is handled per zone. Marking a lesson done adds
 `{date, kind: "lesson", n: -1, src: "schedule"}` to `billing/<slug>` unless that day already has a lesson entry,
 and stores the charged day as `billed` on the mark; un-marking reverses only that charge.

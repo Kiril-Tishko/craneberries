@@ -250,32 +250,48 @@ h2.sec{margin-bottom:12px}
 .savestate{font-size:13px;color:var(--muted);min-height:20px;margin-left:6px}
 .savestate.err{color:var(--red);font-weight:600}
 .tzbtn{border:0;background:none;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:18px}
-.day{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:168px;min-width:0}
-.day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.dh{display:flex;align-items:baseline;justify-content:space-between;gap:0 6px;flex-wrap:wrap}
-.dh b{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
-.dh span{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.day.today .dh b,.day.today .dh span{color:var(--accent)}
-.day.past .dh b{color:var(--muted)}
-.dbody{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
-.occ{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;background:var(--sunk);border:1px solid transparent;
-  border-radius:9px;padding:7px 8px;cursor:pointer;min-width:0}
-.occ:hover{border-color:var(--accent)}
-.occ .ot{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.occ .on{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}
+.wgrid-wrap{margin-top:18px;overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overscroll-behavior-x:contain}
+.wgrid{--hh:58px;--ax:58px;min-width:0}
+.wrow{display:grid;grid-template-columns:var(--ax) repeat(var(--days,6),minmax(0,1fr))}
+.whead{border-bottom:1px solid var(--line)}
+.wcorner,.waxis{position:sticky;left:0;z-index:2;background:var(--surface)}
+.wdh{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:10px 6px 10px 10px;border-left:1px solid var(--line);min-width:0}
+.wdh > span{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0}
+.wdh b{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+.wdh > span > span{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.wdh.today{background:var(--accent-soft)} .wdh.today b,.wdh.today > span > span{color:var(--accent)}
+.wdh.past b{color:var(--muted)}
+.wadd{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid transparent;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer}
+.wadd:hover{border-color:var(--accent);color:var(--accent)}
+.wbody{height:calc(var(--hh) * var(--hours) + 16px);padding-block:8px}
+.waxis{position:sticky;height:100%}
+.waxis span{position:absolute;right:8px;transform:translateY(-50%);font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.wcol{position:relative;height:100%;border-left:1px solid var(--line);cursor:copy;
+  background:repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px var(--hh)) 0 0 / 100% var(--hh)}
+.wcol.today{background-color:color-mix(in srgb, var(--accent-soft) 45%, transparent)}
+.nowline{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:1;pointer-events:none}
+.nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.occ{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:0;text-align:left;background:var(--sunk);
+  border:1px solid var(--line);border-radius:8px;padding:3px 7px;cursor:pointer;min-width:0;overflow:hidden;z-index:1;box-shadow:0 1px 0 var(--line)}
+.occ:hover{border-color:var(--accent);z-index:3}
+.occ .ot{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.35;white-space:nowrap}
+.occ .on{font-weight:600;font-size:13.5px;line-height:1.3;display:flex;align-items:center;gap:5px;min-width:0;max-width:100%}
 .occ .on > span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.occ .om{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
-.occ.done{background:var(--green-soft)} .occ.done .om{color:var(--green);font-weight:600}
-.occ.cancelled{background:transparent;border:1px dashed var(--line)}
+.occ.short{flex-direction:row;align-items:center;gap:6px;padding-block:0}
+.occ.short .on .dot{display:none}
+.occ.done{background:var(--green-soft);border-color:transparent} .occ.done .ot{color:var(--green)}
+.occ.cancelled{background:var(--surface);border:1px dashed var(--line)}
 .occ.cancelled .on{text-decoration:line-through;color:var(--muted)}
-.occ.due{background:var(--amber-soft)} .occ.due .om{color:var(--amber);font-weight:600}
-.occ.clash{border-color:var(--red)} .occ .clash-t{color:var(--red);font-weight:600}
+.occ.due{background:var(--amber-soft);border-color:transparent} .occ.due .ot{color:var(--amber)}
+.occ.clash{border:1.5px solid var(--red)}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:8px 0 0}
+.lgd{display:inline-block;width:14px;height:10px;border-radius:3px;background:var(--sunk);border:1px solid var(--line);margin-left:6px}
+.lgd:first-child{margin-left:0}
+.lgd.done{background:var(--green-soft);border-color:transparent} .lgd.due{background:var(--amber-soft);border-color:transparent}
+.lgd.cancelled{background:transparent;border-style:dashed} .lgd.clash{background:transparent;border:1.5px solid var(--red)}
 .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c0)}
 .dot.c1{background:var(--c1)} .dot.c2{background:var(--c2)} .dot.c3{background:var(--c3)} .dot.c4{background:var(--c4)}
 .dot.c5{background:var(--c5)} .dot.c6{background:var(--c6)} .dot.c7{background:var(--c7)}
-.dadd{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;text-align:left}
-.dadd:hover{color:var(--accent)}
 .duelist{list-style:none;margin:0;padding:0}
 .duelist li{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line)}
 .duelist li:first-child{border-top:0;padding-top:0}
@@ -321,14 +337,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
 .tzrows{display:flex;flex-direction:column;gap:10px}
 .tzrow{display:grid;grid-template-columns:minmax(0,110px) minmax(0,1fr);gap:10px;align-items:center}
 @media (max-width: 900px){
-  .week{grid-template-columns:minmax(0,1fr);gap:6px}
-  .day{min-height:0;display:grid;grid-template-columns:62px minmax(0,1fr);gap:4px 12px;align-items:start;padding:10px 12px}
-  .dh{flex-direction:column;gap:0;padding-top:6px}
-  .dh span{font-size:14px;color:var(--ink)}
-  .dbody{flex-direction:row;flex-wrap:wrap}
-  .occ{width:auto;flex:1 1 200px}
-  .dadd{margin:0;align-self:center;padding:8px 0}
-  .dbody:has(.occ) .dadd{flex-basis:100%;padding:2px 0}
+  .wgrid{min-width:calc(52px + var(--days,6) * 112px);--ax:52px}
 }
 @media (max-width: 560px){
   dialog.sheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:18px 18px 0 0;max-height:92%;padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -849,7 +858,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   const dayShort = (iso) => `${DOW[SC.weekday(iso)]}, ${fmtDate(iso)}`;
   const dayLong = (iso) => { const d = parseD(iso); return `${DOW_LONG[SC.weekday(iso)]}, ${d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`; };
   const at = (ms, tz) => SC.fromInstant(ms, tz || myTz());
-  const range = (o, tz) => `${ft(at(o.start, tz).time)}–${ft(at(o.end, tz).time)}`;
+  const startT = (o, tz) => ft(at(o.start, tz).time);   // only the start is shown anywhere
   const nb = (s) => s.replace(/ /g, '\u00a0');   // "5:00 PM–6:00 PM" may break after the dash only
   const colorOf = (sid) => {
     const ids = Object.keys(S.students).sort();
@@ -989,14 +998,12 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const occs = occsIn(ws, we);
     const clash = SC.overlaps(occs);
     const live = occs.filter((o) => o.status !== 'cancelled');
-    const mins = live.reduce((a, o) => a + (o.durationMin || 0), 0);
-    const hrs = `${Math.floor(mins / 60)} h${mins % 60 ? ` ${mins % 60} min` : ''}`;
     const due = dueOccs();
     const span = `${fmtDate(ws)} – ${parseD(ws).getMonth() === parseD(we).getMonth() ? parseD(we).getDate() : fmtDate(we)}`;
     const rel = UI.week === 0 ? 'This week' : UI.week === 1 ? 'Next week' : UI.week === -1 ? 'Last week' : `Week of ${fmtDate(ws)}`;
 
     const head = `<div class="sched-h"><div><h1>Schedule</h1>
-        <p class="lede">${esc(rel)} · ${esc(span)} · ${live.length ? `${live.length} lesson${live.length === 1 ? '' : 's'}, ${esc(hrs)}` : 'no lessons'}</p>
+        <p class="lede">${esc(rel)} · ${esc(span)} · ${live.length ? `${live.length} lesson${live.length === 1 ? '' : 's'}` : 'no lessons'}</p>
         <p class="hint" style="margin:4px 0 0">Times in ${esc(city(tz))} time · <button class="tzbtn" type="button" data-tzopen>Time zones</button>
           <span class="savestate" id="savestate" role="status"></span></p></div>
       <div class="wknav"><button class="btn sq" type="button" data-week="-1" aria-label="Previous week">‹</button>
@@ -1011,35 +1018,83 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
           <button class="btn ghost" type="button" data-status="cancelled" data-key="${esc(o.key)}" data-near="${esc(a.date)}">Didn’t happen</button></span></li>`; }).join('')}</ul>
       ${due.length > 6 ? `<p class="hint" style="margin:10px 0 0">${due.length - 6} more in earlier weeks.</p>` : ''}</section>` : '';
 
-    const days = [];
-    for (let i = 0; i < 7; i++) days.push(SC.addDays(ws, i));
-    const byDay = {};
-    occs.forEach((o) => { const dte = at(o.start).date; (byDay[dte] = byDay[dte] || []).push(o); });
-    const week = `<div class="week">${days.map((dte) => {
-      const list = byDay[dte] || [];
-      const isToday = dte === today, past = dte < today;
-      return `<section class="day ${isToday ? 'today' : ''} ${past ? 'past' : ''}" aria-label="${esc(dayLong(dte))}">
-        <div class="dh"><b>${DOW[SC.weekday(dte)]}${isToday ? ' · today' : ''}</b><span>${esc(fmtDate(dte))}</span></div>
-        <div class="dbody">${list.map((o) => {
-          const doc = S.sched[o.docId];
-          const due1 = o.status === 'planned' && o.end <= now;
-          const st = stuTz(o.student);
-          const cl = o.status !== 'cancelled' && (clash.get(o.key) || []).length;
-          const meta = [
-            o.status === 'done' ? 'Done' : o.status === 'cancelled' ? 'Cancelled' : due1 ? 'Mark it' : '',
-            o.moved && o.status !== 'cancelled' ? 'Moved' : '',
-            st ? `${city(st)} ${nb(range(o, st))}` : '',
-          ].filter(Boolean).join(' · ');
-          return `<button type="button" class="occ ${o.status} ${due1 ? 'due' : ''} ${cl ? 'clash' : ''}" data-open="${esc(o.key)}" data-near="${esc(dte)}">
-            <span class="ot">${esc(nb(range(o)))}</span>
-            <span class="on">${dot(o.student)}<span>${esc(nameOf(o.student, doc))}</span></span>
-            ${meta ? `<span class="om">${esc(meta)}</span>` : ''}${cl ? '<span class="om clash-t">Overlaps</span>' : ''}</button>`;
-        }).join('')}<button class="dadd" type="button" data-add="${esc(dte)}" aria-label="Add a lesson on ${esc(dayLong(dte))}">+ Add</button></div></section>`;
-    }).join('')}</div>`;
+    const week = weekGrid(ws, occs, clash, today, now);
 
     const empty = !schedDocs().length ? `<div class="callout" style="margin-top:18px">No lessons yet. Tap <b>+ Lesson</b> and pick “Every week” for a regular slot. Mark each lesson done afterwards and it comes off the student’s balance.</div>` : '';
     return head + duePanel + empty + week;
   }
+
+  // the week as a timeline: one column per day, each lesson placed at its start time (early at the top, late
+  // at the bottom), lessons that really overlap share the width. Tap an empty spot to add a lesson there.
+  const daysOff = () => (Array.isArray(setg().daysOff) ? setg().daysOff : [0]);   // Sunday is always off
+  const isOff = (iso) => daysOff().includes(SC.weekday(iso));
+  const hourLabel = (h) => (h12() ? `${h % 12 || 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}` : `${String(h % 24).padStart(2, '0')}:00`);
+  const toMin = (t) => { const [h, m] = String(t).split(':').map(Number); return h * 60 + m; };
+  function weekGrid(ws, occs, clash, today, now) {
+    const items = occs.map((o) => {
+      const a = at(o.start), s0 = toMin(a.time);
+      return { o, date: a.date, s: s0, e: Math.min(24 * 60, s0 + Math.max(15, Number(o.durationMin) || 60)) };
+    });
+    const days = [];   // a day off gets a column only when a lesson landed on it
+    for (let i = 0; i < 7; i++) { const d = SC.addDays(ws, i); if (!isOff(d) || items.some((x) => x.date === d)) days.push(d); }
+    const nowA = at(now), nowMin = toMin(nowA.time);
+    let h0 = items.length ? Math.floor(Math.min(...items.map((x) => x.s)) / 60) : 9;
+    let h1 = items.length ? Math.ceil(Math.max(...items.map((x) => x.e)) / 60) : 18;
+    if (h1 - h0 < 6) { h1 = Math.min(24, h0 + 6); h0 = Math.max(0, h1 - 6); }
+    const span = (h1 - h0) * 60;
+    const pct = (m) => `${(((m - h0 * 60) / span) * 100).toFixed(3)}%`;
+    const hours = [];
+    for (let h = h0; h <= h1; h++) hours.push(h);
+    const cols = days.map((dte) => {
+      const list = items.filter((x) => x.date === dte).sort((a, b) => a.s - b.s || a.e - b.e);
+      // lanes: lessons that overlap in time sit side by side
+      let cluster = [], laneEnds = [], clusterEnd = -1;
+      const close = () => { cluster.forEach((x) => { x.lanes = laneEnds.length; }); cluster = []; laneEnds = []; };
+      list.forEach((x) => {
+        if (x.s >= clusterEnd) close();
+        let lane = laneEnds.findIndex((end) => end <= x.s);
+        if (lane < 0) { lane = laneEnds.length; laneEnds.push(0); }
+        laneEnds[lane] = x.e; x.lane = lane; cluster.push(x); clusterEnd = Math.max(clusterEnd, x.e);
+      });
+      close();
+      const isToday = dte === today;
+      const blocks = list.map((x) => {
+        const o = x.o, doc = S.sched[o.docId];
+        const due1 = o.status === 'planned' && o.end <= now;
+        const cl = o.status !== 'cancelled' && (clash.get(o.key) || []).length;
+        const st = stuTz(o.student);
+        const short = (x.e - x.s) / span < 0.075;   // too short for two lines
+        const tip = [nameOf(o.student, doc), startT(o), st ? `${city(st)} ${startT(o, st)}` : '',
+          o.status === 'done' ? 'done' : o.status === 'cancelled' ? 'cancelled' : due1 ? 'did it happen?' : '', o.moved ? 'moved' : '', cl ? 'overlaps' : ''].filter(Boolean).join(' · ');
+        return `<button type="button" class="occ ${o.status} ${due1 ? 'due' : ''} ${cl ? 'clash' : ''} ${short ? 'short' : ''}" data-open="${esc(o.key)}" data-near="${esc(dte)}"
+          style="top:${pct(x.s)};height:${(((x.e - x.s) / span) * 100).toFixed(3)}%;left:calc(${(100 * x.lane / x.lanes).toFixed(3)}% + 2px);width:calc(${(100 / x.lanes).toFixed(3)}% - 4px)"
+          title="${esc(tip)}" aria-label="${esc(tip)}"><span class="ot">${esc(startT(o).replace(/\s?[AP]M$/, ''))}</span><span class="on">${dot(o.student)}<span>${esc(nameOf(o.student, doc))}</span></span></button>`;
+      }).join('');
+      const nowLine = isToday && nowMin >= h0 * 60 && nowMin <= h1 * 60 ? `<div class="nowline" style="top:${pct(nowMin)}" aria-hidden="true"></div>` : '';
+      return `<div class="wcol ${isToday ? 'today' : ''}" data-day="${esc(dte)}" data-h0="${h0}" data-h1="${h1}" role="group" aria-label="${esc(dayLong(dte))}">${blocks}${nowLine}</div>`;
+    }).join('');
+    const head = days.map((dte) => `<div class="wdh ${dte === today ? 'today' : ''} ${dte < today ? 'past' : ''}"><span><b>${DOW[SC.weekday(dte)]}</b> <span>${esc(fmtDate(dte))}</span></span>
+      <button class="wadd" type="button" data-add="${esc(dte)}" aria-label="Add a lesson on ${esc(dayLong(dte))}">+</button></div>`).join('');
+    const axis = hours.map((h, i) => `<span style="top:${pct(h * 60)}" class="${i === 0 ? 'first' : i === hours.length - 1 ? 'last' : ''}">${esc(hourLabel(h))}</span>`).join('');
+    return `<div class="wgrid-wrap" id="wgrid-wrap"><div class="wgrid" style="--hours:${h1 - h0};--days:${days.length}">
+        <div class="wrow whead"><div class="wcorner"></div>${head}</div>
+        <div class="wrow wbody"><div class="waxis" aria-hidden="true">${axis}</div>${cols}</div></div></div>
+      <p class="hint legend"><span class="lgd done"></span>done <span class="lgd due"></span>did it happen? <span class="lgd cancelled"></span>cancelled <span class="lgd clash"></span>overlaps · tap an empty spot to add a lesson there</p>`;
+  }
+  // keep the timeline's sideways scroll (phones) across re-renders; open on today
+  function afterRenderGrid() {
+    const w = document.getElementById('wgrid-wrap');
+    if (!w || w.scrollWidth <= w.clientWidth) return;
+    const key = UI.week;
+    if (UI.gridX && UI.gridX.week === key) { w.scrollLeft = UI.gridX.x; return; }
+    const t = w.querySelector('.wcol.today') || w.querySelector('.wcol');
+    const ax = w.querySelector('.waxis');
+    w.scrollLeft = Math.max(0, t.offsetLeft - (ax ? ax.offsetWidth : 0) - 8);
+    UI.gridX = { week: key, x: w.scrollLeft };
+  }
+  main.addEventListener('scroll', (e) => { if (e.target.id === 'wgrid-wrap') UI.gridX = { week: UI.week, x: e.target.scrollLeft }; }, true);
+  // times move on: refresh the schedule (now line, "did it happen?") every minute
+  setInterval(() => { if (S.status === 'ready' && SC && (route().name === 'schedule' || route().name === 'home')) render(); }, 60000);
 
   // ----- the sheet (dialog): lesson details, or a form -----
   const sheet = document.getElementById('sheet');
@@ -1094,10 +1149,10 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     return `<div class="sheet-in">
       <div class="sheet-h"><div><div class="eyebrow">${esc(repeatText(doc))}</div>
         <h2 id="sheet-title">${dot(o.student)} ${esc(nameOf(o.student, doc))}</h2>
-        <div class="when3">${esc(dayLong(a.date))} · ${esc(range(o))}${o.durationMin ? ` · ${o.durationMin} min` : ''}</div>
-        ${stz ? `<div class="when3">${esc(city(stz))}: ${esc(dayShort(at(o.start, stz).date))} · ${esc(range(o, stz))}</div>` : ''}</div>${closeBtn}</div>
+        <div class="when3">${esc(dayLong(a.date))} · ${esc(startT(o))}</div>
+        ${stz ? `<div class="when3">${esc(city(stz))}: ${esc(dayShort(at(o.start, stz).date))} · ${esc(startT(o, stz))}</div>` : ''}</div>${closeBtn}</div>
       ${status || o.moved ? `<div class="chips">${status}${o.moved ? `<span class="chip new big">Moved from ${esc(dayShort(o.origDate))}</span>` : ''}</div>` : ''}
-      ${clashes.length ? `<div class="box warn">Overlaps with ${clashes.map((c) => `${esc(nameOf(c.student, S.sched[c.docId]))} (${esc(range(c))})`).join(', ')}.</div>` : ''}
+      ${clashes.length ? `<div class="box warn">Overlaps with ${clashes.map((c) => `${esc(nameOf(c.student, S.sched[c.docId]))} (${esc(startT(c))})`).join(', ')}.</div>` : ''}
       ${o.note ? `<p style="margin:0">${esc(o.note)}</p>` : ''}
       ${report ? `<a class="small" href="#s-${esc(o.student)}" data-close>Open the lesson report →</a>` : ''}
       <div class="acts">${o.status === 'planned'
@@ -1140,12 +1195,12 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   }
 
   // form modes: new | move (one lesson of a series) | series (this and following) | edit (a one-off)
-  function formFor(mode, o, date) {
+  function formFor(mode, o, date, time) {
     const doc = o ? S.sched[o.docId] : null;
     const base = { type: 'form', mode, o, confirmed: false, errors: [], warn: [] };
     if (mode === 'new') {
       const sid = UI.lastStudent && S.students[UI.lastStudent] ? UI.lastStudent : '';
-      return { ...base, v: { student: sid, name: '', date, time: '17:00', len: 60, repeat: '1', days: [SC.weekday(date)], until: '', tz: myTz(), note: '' } };
+      return { ...base, v: { student: sid, name: '', date, time: time || '17:00', len: 60, repeat: '1', days: [SC.weekday(date)], until: '', tz: myTz(), note: '' } };
     }
     if (mode === 'move') return { ...base, v: { student: o.student, date: o.date, time: o.time, len: o.durationMin, tz: o.tz, note: (doc.ex && doc.ex[o.origDate] && doc.ex[o.origDate].note) || '' } };
     if (mode === 'series') return { ...base, v: { student: o.student, date: o.origDate, time: doc.time, len: doc.durationMin, repeat: String(doc.every || 1), until: doc.until || '', tz: doc.tz, note: doc.note || '' } };
@@ -1184,13 +1239,13 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
         <div class="field" id="f-until-w"><label class="flabel" for="f-until">Last lesson <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
           <input class="inp" type="date" id="f-until" value="${esc(v.until)}"></div></div>
         ${m === 'new' ? `<div class="field" id="f-days-w"><span class="flabel" id="f-days-l">On</span><div class="wdays" role="group" aria-labelledby="f-days-l">
-          ${[1, 2, 3, 4, 5, 6, 0].map((d) => `<button type="button" class="wday" data-wday="${d}" aria-pressed="${v.days.includes(d)}">${DOW[d]}</button>`).join('')}</div>
+          ${[1, 2, 3, 4, 5, 6, 0].filter((d) => !daysOff().includes(d) || v.days.includes(d)).map((d) => `<button type="button" class="wday" data-wday="${d}" aria-pressed="${v.days.includes(d)}">${DOW[d]}</button>`).join('')}</div>
           <span class="hint">Pick several days for a student with more than one lesson a week.</span></div>` : ''}` : ''}
       ${tzs.length > 1 ? `<div class="field"><label class="flabel" for="f-tz">Time is in</label><select class="inp" id="f-tz">${tzs.map((z) => `<option value="${esc(z)}" ${z === v.tz ? 'selected' : ''}>${esc(city(z))} time${sameTz(z, myTz()) ? ' (yours)' : ''}</option>`).join('')}</select></div>` : ''}
       <div class="field"><label class="flabel" for="f-note">Note <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
         <input class="inp" id="f-note" value="${esc(v.note)}" maxlength="200" placeholder="${m === 'move' ? 'e.g. moved at her request' : 'e.g. trial lesson'}"></div>
       ${F.errors.length ? `<div class="box err" role="alert">${F.errors.length === 1 ? esc(F.errors[0]) : `<ul>${F.errors.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`}</div>` : ''}
-      ${F.warn.length ? `<div class="box warn" role="alert">This overlaps with:<ul>${F.warn.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+      ${F.warn.length ? `<div class="box warn" role="alert">Check before saving:<ul>${F.warn.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
       <div class="acts"><button class="btn primary lg" type="submit">${F.warn.length ? 'Save anyway' : 'Save'}</button><button class="btn lg" type="button" data-close>Cancel</button></div>
     </form>`;
   }
@@ -1301,8 +1356,11 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       const c = byKey.get(k);
       if (!c) return;
       const a = at(c.start);
-      out.push(`${nameOf(c.student, after[c.docId])}, ${dayShort(a.date)} ${range(c)}`);
+      out.push(`Overlaps with ${nameOf(c.student, after[c.docId])}, ${dayShort(a.date)} ${startT(c)}`);
     }));
+    // only what this save places on a day off (a lesson moved there earlier was her choice)
+    const off = mine.find((o) => isOff(at(o.start).date) && (keys || !o.moved));
+    if (off) out.unshift(`${dayShort(at(off.start).date)} is your day off.`);
     return [...new Set(out)];
   }
   function submitForm() {
@@ -1344,7 +1402,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   async function copyTime(o) {
     const stz = stuTz(o.student) || myTz();
     const a = at(o.start, stz);
-    const text = `${dayLong(a.date)}, ${range(o, stz)}${stuTz(o.student) ? ' (your time)' : ''}`;
+    const text = `${dayLong(a.date)}, ${startT(o, stz)}${stuTz(o.student) ? ' (your time)' : ''}`;
     const out = sheet.querySelector('#copy-out');
     try { await navigator.clipboard.writeText(text); toast('Copied: ' + text); }
     catch (e) { if (out) { out.value = text; out.parentElement.hidden = false; out.focus(); out.select(); } }
@@ -1421,6 +1479,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       : r.name === 'course' ? viewCourse(r.sub) : r.name === 'schedule' ? viewSchedule() : viewHome();
     refreshSheet();
     renderSave();
+    if (r.name === 'schedule') afterRenderGrid();
   }
 
   // ---------- events ----------
@@ -1431,6 +1490,14 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     if (add && SC) { openSheet(formFor('new', null, add.dataset.add)); return; }
     const op = e.target.closest('[data-open]');
     if (op && SC) { openSheet({ type: 'info', key: op.dataset.open, near: op.dataset.near }); return; }
+    const col = e.target.closest('.wcol');
+    if (col && SC) {
+      const r = col.getBoundingClientRect(), h0 = Number(col.dataset.h0), h1 = Number(col.dataset.h1);
+      const m = Math.round((h0 * 60 + ((e.clientY - r.top) / r.height) * (h1 - h0) * 60) / 30) * 30;
+      const t = Math.min(23 * 60 + 30, Math.max(0, m));
+      openSheet(formFor('new', null, col.dataset.day, `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`));
+      return;
+    }
     const sst = e.target.closest('[data-status]');
     if (sst && SC) { if (tapLocked()) return; const o = findOcc(sst.dataset.key, sst.dataset.near); if (o) setStatus(o, sst.dataset.status); return; }
     if (e.target.closest('[data-tzopen]') && SC) { openSheet({ type: 'tz' }); return; }
