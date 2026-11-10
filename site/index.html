@@ -434,7 +434,8 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const b = S.billing[sid];
     if (!b) return null;
     const log = arr(b.log);
-    const bal = log.reduce((a, e) => a + (Number(e.n) || 0), 0);
+    const bal = log.reduce((a, e) => a + (Number(e && e.n) || 0), 0);
+    if (b.autopay) return { text: 'Pays every lesson', cls: 'fixed', bal };   // never owes: no unpaid count
     if (!log.length) return { text: 'No payments logged', cls: '', bal };
     if (bal > 0) return { text: `${bal} lesson${bal === 1 ? '' : 's'} left`, cls: 'fixed', bal };
     if (bal < 0) return { text: `${-bal} unpaid`, cls: 'recurring', bal };
