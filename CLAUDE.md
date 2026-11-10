@@ -170,7 +170,8 @@ whenever it changes. Docs in `schedule`:
   not in `students`).
 - `schedule/settings` = `{tz, hour12, studentTz{<slug>: tz}}` (the teacher's zone; students who live elsewhere).
 Times are wall-clock in the doc's own `tz` (IANA), so DST is handled per zone. Marking a lesson done adds
-`{date, kind: "lesson", n: -1, src: "schedule"}` to `billing/<slug>` unless that day already has a lesson entry.
+`{date, kind: "lesson", n: -1, src: "schedule"}` to `billing/<slug>` unless that day already has a lesson entry,
+and stores the charged day as `billed` on the mark; un-marking reverses only that charge.
 
 **Course.** `course/plan` (Claude writes) = the 30-unit backbone, same order for every student:
 `units[{n, grammar, cando, words, sound, materials[{title, url}], fix, extra}]`, `phases[{name, from, to, sum}]`,

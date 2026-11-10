@@ -460,18 +460,29 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const t = todayTz(), now = Date.now();
     const up = occsIn(t, SC.addDays(t, 180)).filter((o) => o.student === sid && o.status === 'planned' && o.start > now);
     if (!up.length) return '';
-    return `<p class="note" style="margin:10px 0 0">${up.length >= bal ? `Paid lessons last until ${esc(dayShort(at(up[bal - 1].start).date))}.`
+    const k = Math.ceil(bal);
+    return `<p class="note" style="margin:10px 0 0">${up.length >= k ? `Paid lessons last until ${esc(dayShort(at(up[k - 1].start).date))}.`
       : `Covers all ${up.length} scheduled lesson${up.length === 1 ? '' : 's'} in the next 6 months.`}</p>`;
   }
-  let billChain = Promise.resolve();
+  // one write chain per student; while writes are queued, their newest copy is laid over incoming snapshots
+  // (a snapshot taken before a queued write lands must not roll the page back and lose the next change)
+  const BQ = { chains: {}, local: {}, n: {} };
   function writeBill(sid, mutate) {
     const next = JSON.parse(JSON.stringify(S.billing[sid] || { log: [] }));
-    next.log = arr(next.log);
+    next.log = arr(next.log).filter((e) => e && typeof e === 'object');
     mutate(next);
     S.billing[sid] = next;
     render();
     if (!db) return;
-    billChain = billChain.then(() => db.collection('billing').doc(sid).set(next)).catch(() => toast('Couldn’t save that. Try again in a moment.'));
+    BQ.local[sid] = next; BQ.n[sid] = (BQ.n[sid] || 0) + 1;
+    const go = () => db.collection('billing').doc(sid).set(next);
+    BQ.chains[sid] = (BQ.chains[sid] || Promise.resolve())
+      .then(() => go().catch((e) => {
+        if (e && e.code === 'unavailable') return new Promise((r) => setTimeout(r, 500 + Math.random() * 1000)).then(go);
+        throw e;
+      }))
+      .catch((e) => toast(e && e.code === 'invalid_argument' ? 'You can view this notebook but not change it.' : 'Couldn’t save that. Try again in a moment.'))
+      .finally(() => { if (!--BQ.n[sid]) { delete BQ.n[sid]; delete BQ.local[sid]; } });
   }
 
   // ---------- word bank: imported list (bank/<sid>) + every lesson's words ----------
@@ -827,7 +838,10 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const strip = (d) => { const { id, ...rest } = d; return clone(rest); };
   const schedDocs = () => Object.values(S.sched);
-  const nameOf = (sid, doc) => (S.students[sid] && S.students[sid].name) || (doc && doc.name) || sid;
+  const nameOf = (sid, doc) => String((S.students[sid] && S.students[sid].name) || (doc && doc.name) || sid || '');
+  const isObj = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
+  // occurrence key → doc id: a one-off's key is its id; a series' key is id@origDate (an id may itself hold '@')
+  const docOf = (key) => { const k = String(key); return S.sched[k] || k.lastIndexOf('@') < 0 ? k : k.slice(0, k.lastIndexOf('@')); };
   const todayTz = () => SC.fromInstant(Date.now(), myTz()).date;
   const newId = () => 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const ft = (t) => SC.fmtTime(t, h12());
@@ -845,7 +859,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   const repeatText = (d) => !d || d.kind !== 'series' ? 'One-off lesson'
     : `${(d.every || 1) > 1 ? `Every ${d.every} weeks` : 'Every week'} on ${DOW_LONG[SC.weekday(d.start)]}${d.until ? ` until ${fmtDate(d.until)}` : ''}`;
   const occsIn = (from, to, docs) => SC.expand(docs || schedDocs(), from, to, myTz());
-  const dueOccs = () => { const t = todayTz(), now = Date.now(); return occsIn(SC.addDays(t, -28), t).filter((o) => o.status === 'planned' && o.end <= now); };
+  const dueOccs = () => { const t = todayTz(), now = Date.now(); return occsIn(SC.addDays(t, -60), t).filter((o) => o.status === 'planned' && o.end <= now); };
   const nextFor = (sid) => (SC ? SC.nextOccurrence(schedDocs(), sid, Date.now(), myTz()) : null);
   const nextLabel = (o) => { const a = at(o.start); return `${dayShort(a.date)} · ${ft(a.time)}`; };
   // active weekly slots of a student, for chips on their page
@@ -859,7 +873,14 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   }
 
   // ----- writes: one chain per document, optimistic, undo through the toast -----
-  const SQ = { chains: {}, pending: 0, failed: false };
+  const SQ = { chains: {}, pending: 0, failed: false, local: {}, n: {} };
+  // lay this page's queued writes over a snapshot (see BQ above)
+  function overlaySched() {
+    Object.entries(SQ.local).forEach(([id, data]) => {
+      if (id === 'settings') { if (data) S.schedSettings = data; return; }
+      if (data) S.sched[id] = { ...data, id }; else delete S.sched[id];
+    });
+  }
   function renderSave() {
     const el = document.getElementById('savestate');
     if (!el) return;
@@ -869,6 +890,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   function writeOne(id, data) {
     if (!db) return;
     SQ.pending++; renderSave();
+    SQ.local[id] = data ? clone(data) : null; SQ.n[id] = (SQ.n[id] || 0) + 1;
     const ref = db.collection('schedule').doc(id);
     const go = () => (data ? ref.set(data) : ref.delete());
     SQ.chains[id] = (SQ.chains[id] || Promise.resolve())
@@ -882,7 +904,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
           : e && e.code === 'quota_exceeded' ? 'The notebook is full. Delete old one-off lessons, then try again.'
           : 'Couldn’t save that change. Check the connection and try again.');
       })
-      .finally(() => { SQ.pending--; renderSave(); });
+      .finally(() => { SQ.pending--; if (!--SQ.n[id]) { delete SQ.n[id]; delete SQ.local[id]; } renderSave(); });
   }
   // changes: [{id, data | null}]; extra: optional {redo, undo} for side effects (billing)
   function commit(changes, msg, extra) {
@@ -902,34 +924,43 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   }
 
   // billing: a done lesson logs −1 once per day (Claude's transcript step skips days already logged)
+  // done: charge `date` unless that day is already logged (returns billed = the day charged)
+  // undone: reverse only a charge this page made (`date` = the mark's stored `billed` day)
+  const ours = (date) => (e) => e && e.kind === 'lesson' && e.date === date && e.src === 'schedule';
   function billFor(sid, date, done) {
     const b = S.billing[sid];
-    if (!b) return { msg: '' };
-    const log = arr(b.log);
+    if (!b || !date) return { msg: '' };
+    const log = arr(b.log).filter(Boolean);
     if (done) {
       if (log.some((e) => e.kind === 'lesson' && e.date === date)) return { msg: ' · already logged' };
-      return { msg: ' · −1 lesson', redo: () => writeBill(sid, (x) => { x.log.push({ date, kind: 'lesson', n: -1, src: 'schedule' }); }),
-        undo: () => writeBill(sid, (x) => { const i = x.log.findIndex((e) => e.kind === 'lesson' && e.date === date && e.src === 'schedule'); if (i >= 0) x.log.splice(i, 1); }) };
+      return { msg: ' · −1 lesson', billed: date,
+        redo: () => writeBill(sid, (x) => { x.log.push({ date, kind: 'lesson', n: -1, src: 'schedule' }); }),
+        undo: () => writeBill(sid, (x) => { const i = x.log.findIndex(ours(date)); if (i >= 0) x.log.splice(i, 1); }) };
     }
-    const i = log.findIndex((e) => e.kind === 'lesson' && e.date === date && e.src === 'schedule');
-    if (i < 0) return { msg: '' };
-    const entry = clone(log[i]);
-    return { msg: ' · lesson un-logged', redo: () => writeBill(sid, (x) => { const j = x.log.findIndex((e) => e.kind === 'lesson' && e.date === date && e.src === 'schedule'); if (j >= 0) x.log.splice(j, 1); }),
-      undo: () => writeBill(sid, (x) => { x.log.push(entry); }) };
+    const entry = log.find(ours(date));
+    if (!entry) return { msg: '' };
+    return { msg: ' · lesson un-logged', redo: () => writeBill(sid, (x) => { const j = x.log.findIndex(ours(date)); if (j >= 0) x.log.splice(j, 1); }),
+      undo: () => writeBill(sid, (x) => { x.log.push(clone(entry)); }) };
   }
 
+  // a double tap must not also mark the row that slides under the finger
+  // (a timer, not the clock: a device clock that jumps must not leave the buttons dead)
+  const tapLocked = () => { if (UI.lock) return true; UI.lock = true; setTimeout(() => { UI.lock = false; }, 450); return false; };
   function setStatus(o, status) {
     const doc = S.sched[o.docId];
     if (!doc) return;
     const d = strip(doc);
+    let mark = d;   // where status/billed live: the ex entry of a series, the doc of a one-off
     if (d.kind === 'series') {
-      d.ex = d.ex || {};
-      const e = { ...(d.ex[o.origDate] || {}) };
-      if (status === 'planned') delete e.status; else e.status = status;
-      if (Object.keys(e).length) d.ex[o.origDate] = e; else delete d.ex[o.origDate];
-    } else if (status === 'planned') delete d.status; else d.status = status;
+      d.ex = isObj(d.ex) ? d.ex : {};
+      mark = isObj(d.ex[o.origDate]) ? { ...d.ex[o.origDate] } : {};
+    }
     const lessonDate = at(o.start).date;
-    const bill = status === 'done' ? billFor(o.student, lessonDate, true) : o.status === 'done' ? billFor(o.student, lessonDate, false) : { msg: '' };
+    const bill = status === 'done' ? billFor(o.student, lessonDate, true) : o.status === 'done' ? billFor(o.student, mark.billed, false) : { msg: '' };
+    if (status === 'planned') delete mark.status; else mark.status = status;
+    if (status !== 'done') delete mark.billed;
+    if (bill.billed) mark.billed = bill.billed;
+    if (d.kind === 'series') { if (Object.keys(mark).length) d.ex[o.origDate] = mark; else delete d.ex[o.origDate]; }
     const label = status === 'done' ? 'Marked done' : status === 'cancelled' ? 'Lesson cancelled' : 'Back to planned';
     commit([{ id: o.docId, data: d }], `${label}: ${nameOf(o.student, doc)}, ${dayShort(lessonDate)}${bill.msg}`, bill);
   }
@@ -944,7 +975,8 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     }
     const d = strip(doc);
     d.until = SC.addDays(o.origDate, -1);
-    Object.keys(d.ex || {}).forEach((k) => { if (k >= o.origDate) delete d.ex[k]; });
+    d.ex = isObj(d.ex) ? d.ex : {};
+    Object.keys(d.ex).forEach((k) => { if (k >= o.origDate) delete d.ex[k]; });
     commit([{ id: o.docId, data: d }], `${who}: no more lessons from ${dayShort(o.origDate)}`);
   }
 
@@ -1011,7 +1043,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   // ----- the sheet (dialog): lesson details, or a form -----
   const sheet = document.getElementById('sheet');
   function findOcc(key, near) {
-    const docId = String(key).split('@')[0];
+    const docId = docOf(key);
     const doc = S.sched[docId];
     if (!doc || !near) return null;
     return SC.expand([doc], SC.addDays(near, -3), SC.addDays(near, 3), myTz()).find((o) => o.key === key) || null;
@@ -1025,12 +1057,14 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
   }
   function closeSheet() { UI.sheet = null; if (sheet.open) sheet.close(); }
   sheet.addEventListener('close', () => { UI.sheet = null; const t = document.getElementById('toast'); if (t && t.parentNode === sheet) document.body.append(t); });
-  sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });   // tap on the backdrop
+  let downOnBackdrop = false;   // a text selection released over the backdrop must not close a form
+  sheet.addEventListener('pointerdown', (e) => { downOnBackdrop = e.target === sheet; });
+  sheet.addEventListener('click', (e) => { if (e.target === sheet && downOnBackdrop) closeSheet(); });   // tap on the backdrop
 
   // re-paint lesson details when data changes underneath (never a form: it would wipe what she typed)
   function refreshSheet() {
     if (!UI.sheet || UI.sheet.type !== 'info' || !sheet.open) return;
-    const sig = JSON.stringify(findOcc(UI.sheet.key, UI.sheet.near)) + (S.sched[String(UI.sheet.key).split('@')[0]] ? '' : 'gone');
+    const sig = JSON.stringify(findOcc(UI.sheet.key, UI.sheet.near)) + (S.sched[docOf(UI.sheet.key)] ? '' : 'gone');
     if (sig !== UI.sheet.sig) paintSheet();
   }
   function paintSheet() {
@@ -1045,12 +1079,12 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
 
   function infoHTML(st) {
     const o = findOcc(st.key, st.near);
-    st.sig = JSON.stringify(o) + (S.sched[String(st.key).split('@')[0]] ? '' : 'gone');
+    st.sig = JSON.stringify(o) + (S.sched[docOf(st.key)] ? '' : 'gone');
     if (!o) return `<div class="sheet-in"><div class="sheet-h"><h2 id="sheet-title">Lesson removed</h2>${closeBtn}</div><p class="muted" style="margin:0">This lesson is no longer in the schedule.</p></div>`;
     const doc = S.sched[o.docId];
     const a = at(o.start), now = Date.now();
     const stz = stuTz(o.student);
-    const clashes = SC.conflictsWith(occsIn(SC.addDays(a.date, -1), SC.addDays(a.date, 1)), o, o.key);
+    const clashes = o.status === 'cancelled' ? [] : SC.conflictsWith(occsIn(SC.addDays(a.date, -1), SC.addDays(a.date, 1)), o, o.key);
     const report = S.lessons[`${o.student}-${a.date}`];
     const started = o.start <= now;
     const status = o.status === 'done' ? '<span class="chip fixed big">Done</span>' : o.status === 'cancelled' ? '<span class="chip big">Cancelled</span>'
@@ -1070,11 +1104,12 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
            <button class="btn lg" type="button" data-act="cancelled">${started ? 'Didn’t happen' : 'Cancel this lesson'}</button>`
         : `<button class="btn lg" type="button" data-act="planned">${o.status === 'done' ? 'Not done after all' : 'Restore this lesson'}</button>`}</div>
       <div class="acts split">${series
-        ? `<button class="btn" type="button" data-act="move">Move this lesson</button><button class="btn" type="button" data-act="series">Change from here on</button>`
+        ? `<button class="btn" type="button" data-act="move">Move this lesson</button>${started ? '' : '<button class="btn" type="button" data-act="series">Change from here on</button>'}`
         : `<button class="btn" type="button" data-act="edit">Edit</button>`}
         <button class="btn" type="button" data-act="copy">Copy time</button></div>
       <div class="copyslot" hidden><input class="inp copyout" id="copy-out" readonly aria-label="Lesson time to send"></div>
-      <div class="acts"><button class="btn danger" type="button" data-act="remove">${series ? (o.origDate <= doc.start ? 'Delete the whole series' : 'Stop repeating from here') : 'Delete this lesson'}</button></div>
+      ${(series ? !started : o.status !== 'done') ? `<div class="acts"><button class="btn danger" type="button" data-act="remove">${series ? (o.origDate <= doc.start ? 'Delete the whole series' : 'Stop repeating from here') : 'Delete this lesson'}</button></div>`
+        : series ? '<p class="hint" style="margin:0">To change or stop this series, open one of its coming lessons.</p>' : ''}
     </div>`;
   }
 
@@ -1133,7 +1168,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
         <select class="inp" id="f-student" ${v.student ? '' : 'autofocus'}><option value="" ${v.student ? '' : 'selected'} disabled>Choose…</option>
           ${ids.map((sid) => `<option value="${esc(sid)}" ${sid === v.student ? 'selected' : ''}>${esc(nameOf(sid))}</option>`).join('')}
           <option value="__new" ${other ? 'selected' : ''}>Someone new…</option></select>
-        <input class="inp" id="f-name" placeholder="Their name" value="${esc(other ? (v.name || v.student) : '')}" ${other ? '' : 'hidden'} aria-label="New student’s name"></div>`
+        <input class="inp" id="f-name" placeholder="Their name" value="${esc(other ? (v.student === '__new' ? v.name : (v.name || v.student)) : '')}" ${other ? '' : 'hidden'} aria-label="New student’s name"></div>`
         : `<div class="field"><span class="flabel">Student</span><b>${dot(v.student)} ${esc(nameOf(v.student, S.sched[F.o.docId]))}</b></div>`}
       <div class="grid3">
         <div class="field"><label class="flabel" for="f-date" id="f-date-l">${m === 'new' && v.repeat !== 'none' ? 'Starts' : 'Date'}</label><input class="inp" type="date" id="f-date" value="${esc(v.date)}" required></div>
@@ -1143,7 +1178,8 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       ${canRepeat ? `<div class="grid2">
         <div class="field"><label class="flabel" for="f-repeat">Repeats</label><select class="inp" id="f-repeat">
           ${m === 'series' ? '' : `<option value="none" ${v.repeat === 'none' ? 'selected' : ''}>Doesn’t repeat</option>`}
-          <option value="1" ${v.repeat === '1' ? 'selected' : ''}>Every week</option><option value="2" ${v.repeat === '2' ? 'selected' : ''}>Every 2 weeks</option></select></div>
+          <option value="1" ${v.repeat === '1' ? 'selected' : ''}>Every week</option><option value="2" ${v.repeat === '2' ? 'selected' : ''}>Every 2 weeks</option>
+          ${Number(v.repeat) > 2 ? `<option value="${esc(v.repeat)}" selected>Every ${esc(v.repeat)} weeks</option>` : ''}</select></div>
         <div class="field" id="f-until-w"><label class="flabel" for="f-until">Last lesson <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
           <input class="inp" type="date" id="f-until" value="${esc(v.until)}"></div></div>
         ${m === 'new' ? `<div class="field" id="f-days-w"><span class="flabel" id="f-days-l">On</span><div class="wdays" role="group" aria-labelledby="f-days-l">
@@ -1187,13 +1223,16 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     let student = v.student, name = '';
     if (student === '__new') {
       if (!v.name) errs.push('Write the new student’s name.');
-      name = v.name; student = slug(v.name) || 'guest-' + Math.random().toString(36).slice(2, 7);
+      const was = F.mode === 'edit' ? S.sched[F.o.docId] : null;
+      // one id per form (a retried "Save anyway" must not mint a new person); editing keeps the lesson's own id
+      F.guestId = F.guestId || (was && !S.students[was.student] ? was.student : 'guest-' + Math.random().toString(36).slice(2, 7));
+      name = v.name; student = was && was.name === v.name ? was.student : slug(v.name) || F.guestId;
       const known = Object.keys(S.students).find((sid) => nameOf(sid).toLowerCase() === v.name.toLowerCase());
       if (known) { student = known; name = ''; }
     } else if (!student) errs.push('Choose a student.');
     if (!SC.isDate(v.date)) errs.push('Pick a date.');
     if (!SC.isTime(v.time)) errs.push('Pick a start time.');
-    const every = v.repeat === '2' ? 2 : 1;
+    const every = Math.min(8, Math.max(1, Math.round(Number(v.repeat)) || 1));
     const repeating = F.mode !== 'move' && v.repeat !== 'none';
     if (repeating && v.until && SC.isDate(v.until) && SC.isDate(v.date) && v.until < v.date) errs.push('The last lesson can’t be before the first one.');
     if (F.mode === 'new' && repeating && !(v.days || []).length) errs.push('Pick at least one day.');
@@ -1201,6 +1240,8 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       const late = (v.days || []).filter((wd) => SC.addDays(v.date, (wd - SC.weekday(v.date) + 7) % 7) > v.until);
       if (late.length) errs.push(`There’s no ${late.map((wd) => DOW_LONG[wd]).join(' or ')} between the first and the last lesson date.`);
     }
+    if (F.mode === 'series' && SC.isDate(v.date) && v.date < todayTz()) errs.push('The new schedule has to start today or later.');
+    if (F.mode === 'edit' && repeating && S.sched[F.o.docId] && S.sched[F.o.docId].status) errs.push('This lesson is already marked. Add a new weekly lesson with “+ Lesson” instead.');
     if (errs.length) return { errs };
     const common = { student, ...(name ? { name } : {}), time: v.time, durationMin: v.len, tz: v.tz || myTz(), ...(v.note ? { note: v.note } : {}) };
     const series = (start) => ({ kind: 'series', ...common, start, every, until: v.until || null, ex: {} });
@@ -1211,12 +1252,12 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       changes = repeating ? v.days.map((wd) => ({ id: newId(), data: series(firstOn(wd)) })) : [{ id: newId(), data: one({}) }];
     } else if (F.mode === 'edit') {
       const doc = S.sched[F.o.docId];
-      const keep = doc.status ? { status: doc.status } : {};
+      const keep = { ...(doc.status ? { status: doc.status } : {}), ...(doc.billed ? { billed: doc.billed } : {}) };
       changes = repeating ? [{ id: F.o.docId, data: null }, { id: newId(), data: series(v.date) }] : [{ id: F.o.docId, data: one(keep) }];
     } else if (F.mode === 'move') {
       const d = strip(S.sched[F.o.docId]);
-      d.ex = d.ex || {};
-      const e = { ...(d.ex[F.o.origDate] || {}) };
+      d.ex = isObj(d.ex) ? d.ex : {};
+      const e = isObj(d.ex[F.o.origDate]) ? { ...d.ex[F.o.origDate] } : {};
       delete e.date; delete e.time; delete e.durationMin; delete e.note;
       // ex times are wall-clock in the series' own zone: convert when she typed the time in another zone
       const w = v.tz && !sameTz(v.tz, d.tz) ? at(SC.toInstant(v.date, v.time, v.tz), d.tz) : { date: v.date, time: v.time };
@@ -1233,8 +1274,11 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       if (v.note) next.note = v.note; else delete next.note;
       if (doc.name) next.name = doc.name;
       // a new day or rhythm makes old per-date changes meaningless
-      if (v.date !== at0 || every !== (doc.every || 1)) next.ex = {};
-      else next.ex = next.ex || {};
+      if (v.date !== at0 || every !== (doc.every || 1)) {
+        if (Object.values(isObj(next.ex) ? next.ex : {}).some((e) => isObj(e) && e.status === 'done')) errs.push('A later lesson of this series is already marked done. Change the series from a lesson after it.');
+        next.ex = {};
+      } else next.ex = isObj(next.ex) ? next.ex : {};
+      if (next.until) Object.keys(next.ex).forEach((k) => { if (k > next.until) delete next.ex[k]; });   // like "Stop repeating": changes after the last lesson go too
       delete next.id;
       changes = split.old ? [{ id: F.o.docId, data: split.old }, { id: newId(), data: next }] : [{ id: F.o.docId, data: next }];
       if (split.old) keys = null;
@@ -1278,7 +1322,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
       : F.mode === 'move' ? `Moved ${who}’s lesson to ${dayShort(v.date)}` : 'Saved';
     closeSheet();
     commit(changes, msg);
-    if (F.mode === 'new' || F.mode === 'move') {   // show the week the lesson landed in
+    if (F.mode !== 'series') {   // show the week the lesson landed in
       const w = Math.round(SC.daysBetween(SC.weekStart(todayTz()), SC.weekStart(v.date)) / 7);
       if (route().name === 'schedule' && w !== UI.week) { UI.week = w; render(); }
     }
@@ -1314,7 +1358,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const o = findOcc(UI.sheet.key, UI.sheet.near);
     if (!o) return;
     const k = act.dataset.act;
-    if (k === 'done' || k === 'cancelled' || k === 'planned') { setStatus(o, k); return; }
+    if (k === 'done' || k === 'cancelled' || k === 'planned') { if (tapLocked()) return; setStatus(o, k); return; }
     if (k === 'move' || k === 'series' || k === 'edit') { openSheet(formFor(k, o)); return; }
     if (k === 'copy') { copyTime(o); return; }
     if (k === 'remove') {
@@ -1375,6 +1419,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     main.innerHTML = r.name === 'student' ? viewStudent(r.id) : r.name === 'teaching' ? viewTeaching()
       : r.name === 'course' ? viewCourse(r.sub) : r.name === 'schedule' ? viewSchedule() : viewHome();
     refreshSheet();
+    renderSave();
   }
 
   // ---------- events ----------
@@ -1386,7 +1431,7 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     const op = e.target.closest('[data-open]');
     if (op && SC) { openSheet({ type: 'info', key: op.dataset.open, near: op.dataset.near }); return; }
     const sst = e.target.closest('[data-status]');
-    if (sst && SC) { const o = findOcc(sst.dataset.key, sst.dataset.near); if (o) setStatus(o, sst.dataset.status); return; }
+    if (sst && SC) { if (tapLocked()) return; const o = findOcc(sst.dataset.key, sst.dataset.near); if (o) setStatus(o, sst.dataset.status); return; }
     if (e.target.closest('[data-tzopen]') && SC) { openSheet({ type: 'tz' }); return; }
     const tabBtn = e.target.closest('.tab');
     if (tabBtn) {
@@ -1472,13 +1517,14 @@ dialog.sheet::backdrop{background:rgb(8 12 24 / .5)}
     sub('state', (docs) => { S.states = {}; docs.forEach((d) => { S.states[d.id] = d.data() || {}; }); });
     sub('materials', (docs) => { S.materials = {}; docs.forEach((d) => { S.materials[d.id] = d.data() || {}; }); });
     sub('bank', (docs) => { S.bank = {}; docs.forEach((d) => { S.bank[d.id] = d.data() || {}; }); });
-    sub('billing', (docs) => { S.billing = {}; docs.forEach((d) => { S.billing[d.id] = d.data() || {}; }); });
+    sub('billing', (docs) => { S.billing = {}; docs.forEach((d) => { S.billing[d.id] = d.data() || {}; }); Object.assign(S.billing, BQ.local); });
     sub('teacher', (docs) => { const p = docs.find((d) => d.id === 'profile'); S.teacher = p ? p.data() : null; });
     sub('course', (docs) => { const p = docs.find((d) => d.id === 'plan'); S.course = p ? p.data() : null; });
     sub('progress', (docs) => { S.progress = {}; docs.forEach((d) => { S.progress[d.id] = d.data() || {}; }); });
     sub('schedule', (docs) => {
       S.sched = {}; S.schedSettings = null;
       docs.forEach((d) => { if (d.id === 'settings') S.schedSettings = d.data() || {}; else S.sched[d.id] = { ...d.data(), id: d.id }; });
+      overlaySched();
     });
   }
   start();
