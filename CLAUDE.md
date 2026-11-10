@@ -104,7 +104,8 @@ She once forwarded a whole reply to a student by mistake.
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
-    (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`).
+    (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`). When an emoji doesn't show the thing (🛒 is not a
+    checkout), draw an SVG (`pic` and card `svg` take one; keep it on one line in content.js). Reusable drawings: `tools/pics/`.
   - **Never put personal data on a page**: no student names (sign emails with a made-up name), no real
     details of their work or life (company deals, customers, places, dates of birth). Use made-up, general examples.
   - **No role-play** for now: she didn't like how it worked. Leave it out unless she asks for it.
