@@ -17,7 +17,7 @@ recorded on the teacher's phone and catch mostly the teacher's voice: say so and
 mistakes list short. The teacher sometimes sends the lesson materials (slides) too.
 
 Students (all learn American English):
-- Sergii: B1, Tuesdays. Pays weekly for himself and his daughter Vaselina (also a student).
+- Sergii: B1, Tuesdays at 4 PM. Pays weekly for himself and his daughter Vaselina (also a student).
   Dislikes exercises and websites: plan his lessons as talk, cards very visual with little to read.
 - Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
   she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
