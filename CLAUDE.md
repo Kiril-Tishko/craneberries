@@ -24,7 +24,7 @@ Students (all learn American English):
   Her cards must be super simple and playful: set `kid: true` in her lesson JSON (bright tiles, round font,
   big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
   with an emoji each, no "not X" notes and no wrong forms.
-- Vova: A2+, 3 lessons a week, pays for 10-lesson packages.
+- Vova: A2+, 3 lessons a week, pays for 10-lesson packages. Knows don't / doesn't have well (Julia is the one who mixes it up).
 - Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week, payment not decided.
   Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
   Keep the short forms that already work for her ("Sorry?" to ask for a repeat); don't teach longer versions.
