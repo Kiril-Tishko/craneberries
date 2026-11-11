@@ -7,92 +7,99 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap">
 <style>
-/* Layout: video, clip timeline and the lyrics on the left (top on phones); words, meaning and buttons on the right. */
+/* Layout: the left column is the player (video, clip bar, lyrics, one fixed row of buttons);
+   the right column is only what to learn. Nothing changes size while she works, so nothing jumps. */
 :root{
-  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#141B24; --muted:#56606C; --line:#D5DBE2;
-  --accent:#C2410C; --accent-ink:#FFFFFF; --soft:#FCE9DE; --ua:#5B4A0E; --ua-bg:#FFF2C6; --ok:#1E7A4F;
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#141B24; --muted:#5D6773; --line:#D5DBE2;
+  --accent:#C2410C; --accent-ink:#FFFFFF; --soft:#FCE9DE; --ua:#5B4A0E; --ua-bg:#FFF2C6; --ok:#1E7A4F; --tint:#F4F6F8;
   --font:"Lexend","Segoe UI",system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#0F141A; --surface:#18202A; --ink:#E8EDF2; --muted:#9AA6B3; --line:#2A3542;
-  --accent:#FB8A4C; --accent-ink:#0F141A; --soft:#3A2418; --ua:#F4DD8A; --ua-bg:#3A3214; --ok:#6FD1A0; color-scheme:dark}}
+  --accent:#FB8A4C; --accent-ink:#0F141A; --soft:#3A2418; --ua:#F4DD8A; --ua-bg:#3A3214; --ok:#6FD1A0; --tint:#121921; color-scheme:dark}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
+.ghost{visibility:hidden}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
   padding:max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
-.app{max-width:1200px;margin:0 auto;display:grid;gap:14px}
+.app{max-width:1200px;margin:0 auto;display:grid;gap:12px}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-h1{margin:0;font-size:clamp(20px,3vw,28px);font-weight:800}
+h1{margin:0;font-size:clamp(20px,3vw,26px);font-weight:800}
 h1 span{color:var(--muted);font-weight:600;font-size:.7em}
-.head-r{display:flex;align-items:center;gap:14px}
-.mywords{font-size:14px;color:var(--muted);font-weight:600}
-.dots{display:flex;gap:6px;flex-wrap:wrap}
-.dots i{width:9px;height:9px;border-radius:99px;background:var(--line)}
-.dots i.done{background:var(--muted)}
-.dots i.on{background:var(--accent);width:22px}
-main{display:grid;gap:16px;grid-template-columns:1.25fr 1fr;align-items:start}
+.where{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--muted);font-weight:600}
+main{display:grid;gap:16px;grid-template-columns:1.3fr 1fr;align-items:start}
 @media (max-width:820px){main{grid-template-columns:1fr}}
+
+/* Player column */
+.player{display:flex;flex-direction:column;gap:8px;min-width:0}
 .video{position:relative;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:16/9;width:100%;max-width:100%}
 .video iframe,.video #player{position:absolute;inset:0;width:100%;height:100%;border:0}
 .cover{position:absolute;inset:0;border:0;border-radius:0;padding:0;background:rgba(10,12,16,.82);
   display:flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
-.cover span{width:84px;height:84px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:38px;line-height:1}
+.cover span{width:80px;height:80px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:36px;line-height:1}
 .cover.playing{background:transparent}
 .cover.playing span{display:none}
-.clip{display:flex;align-items:center;gap:10px;margin-top:8px}
+.clip{display:flex;align-items:center;gap:10px;height:16px}
 .bar{flex:1;height:5px;border-radius:99px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--accent)}
-.clip span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
-.subs{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px;min-height:86px;
-  display:flex;flex-direction:column;justify-content:center;gap:6px;text-align:center}
-.subs p{margin:0;font-size:clamp(20px,2.5vw,26px);font-weight:600;line-height:1.3}
-.subs.many p{font-size:clamp(16px,1.8vw,19px)}
-.subs.cols{display:block;column-count:2;column-gap:24px;text-align:left}
-.subs.cols p{break-inside:avoid;margin-bottom:4px}
-@media (max-width:520px){.subs.cols{column-count:1}}
-.subs .note{color:var(--muted);font-size:22px;font-weight:400}
+.clip span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;width:64px;text-align:right}
+.subs{height:132px;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 18px;
+  display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:center}
+.subs p{margin:0;font-size:clamp(19px,2.3vw,24px);font-weight:600;line-height:1.3;transition:opacity .25s}
+.subs .wait{opacity:0}
+.subs.cols{display:block;column-count:2;column-gap:24px;text-align:left;padding-block:10px}
+.subs.cols p{font-size:15px;line-height:1.25;break-inside:avoid;margin-bottom:2px}
+.subs .note{color:var(--muted);font-weight:400}
 .subs mark{background:var(--ua-bg);color:var(--ua);border-radius:6px;padding:0 4px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
-.kicker{margin:0;font-size:14px;font-weight:600;color:var(--muted)}
-.words{display:flex;flex-direction:column;gap:12px}
-.w{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:start}
-.w b{font-size:clamp(28px,4.2vw,44px);font-weight:800;line-height:1.1;text-wrap:balance}
-.w .ua{grid-column:1;justify-self:start;font-size:clamp(17px,2.2vw,21px);font-weight:600;color:var(--ua);background:var(--ua-bg);padding:4px 12px;border-radius:12px}
-.add{grid-column:2;grid-row:1;width:40px;height:40px;border-radius:99px;padding:0;font-size:22px;line-height:1;margin-top:4px}
-.add[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
-.mean{margin:0;background:var(--bg);border-radius:14px;padding:10px 14px;font-size:18px;line-height:1.4}
-.mean span{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:2px}
-.ex{margin:0;color:var(--muted);font-size:16px;line-height:1.4}
-.ex em{font-style:normal;color:var(--ink);font-weight:600}
-.big{font-size:clamp(26px,3.4vw,36px);font-weight:800;line-height:1.15;margin:0;text-wrap:balance}
-.ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls{display:grid;grid-template-columns:auto auto auto 1fr auto;gap:10px;align-items:center}
 button{font:inherit;cursor:pointer;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 16px;font-size:16px;font-weight:600}
 button:hover{border-color:var(--accent)}
 button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:20px;padding:13px 24px}
-button[aria-pressed="true"]:not(.add){border-color:var(--accent);background:var(--soft)}
-.nav{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.tiny{background:none;border:0;color:var(--muted);font-size:14px;padding:4px 6px}
-.sync{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);justify-content:flex-end;margin-top:6px}
-.sync button{padding:2px 9px;font-size:13px;border-radius:8px}
+button:disabled{opacity:.45;cursor:default}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#listen{min-width:172px}
+#next{min-width:184px}
+.tiny{background:none;border:0;color:var(--muted);font-size:15px;padding:6px 4px}
+#slow[aria-pressed="true"]{border-color:var(--accent);background:var(--soft)}
+
+/* Learn column */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0;min-height:300px}
+.kicker{margin:0;font-size:14px;font-weight:600;color:var(--muted)}
+.words{display:flex;flex-direction:column;gap:12px}
+.w{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:start}
+.w b{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.1;text-wrap:balance}
+.w .ua{grid-column:1;justify-self:start;font-size:clamp(17px,2.1vw,20px);font-weight:600;color:var(--ua);background:var(--ua-bg);padding:4px 12px;border-radius:12px}
+.add{grid-column:2;grid-row:1;width:40px;height:40px;border-radius:99px;padding:0;font-size:22px;line-height:1;margin-top:4px}
+.add[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.mean{margin:0;background:var(--tint);border-radius:14px;padding:10px 14px;font-size:18px;line-height:1.4;transition:opacity .25s}
+.mean span{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:2px}
+.ex{margin:0;color:var(--muted);font-size:16px;line-height:1.4}
+.ex em{font-style:normal;color:var(--ink);font-weight:600}
+.big{font-size:clamp(26px,3.2vw,34px);font-weight:800;line-height:1.15;margin:0;text-wrap:balance}
 .answer{font-size:clamp(28px,4vw,40px);font-weight:800;margin:0}
-@media (prefers-reduced-motion:no-preference){.primary{transition:transform .1s}.primary:active{transform:scale(.97)}}
+.skip{align-self:flex-start;margin-top:auto}
+@media (prefers-reduced-motion:reduce){.subs p,.mean{transition:none}}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <h1>Human <span>Rag’n’Bone Man</span></h1>
-    <div class="head-r"><span class="mywords" id="mywords"></span><div class="dots" id="dots" aria-hidden="true"></div></div>
+    <div class="where"><span id="mywords"></span><span id="where"></span></div>
   </header>
   <main>
-    <div>
-      <div class="video"><div id="player"></div><button class="cover" id="cover" aria-label="Play"><span id="coverIcon">▶</span></button></div>
+    <div class="player">
+      <div class="video"><div id="player"></div><button class="cover" id="cover" aria-label="Play or pause"><span id="coverIcon">▶</span></button></div>
       <div class="clip"><div class="bar"><i id="fill"></i></div><span id="cliptime"></span></div>
       <div class="subs" id="subs" aria-live="polite"></div>
-      <div class="sync" id="syncrow" hidden>Lyrics timing <button id="minus" aria-label="Earlier">−</button><span id="off">0.0 s</span><button id="plus" aria-label="Later">+</button></div>
+      <div class="controls">
+        <button id="back" class="tiny">← Back</button>
+        <button id="listen" class="primary">▶ Listen</button>
+        <button id="slow" aria-pressed="false" title="Play slower">🐢 Slower</button>
+        <span></span>
+        <button id="next" class="primary ghost">Next →</button>
+      </div>
     </div>
     <section class="card" id="card" aria-live="polite"></section>
   </main>
@@ -101,7 +108,7 @@ button[aria-pressed="true"]:not(.add){border-color:var(--accent);background:var(
 const VIDEO = 'L3wKzyIN1yk';
 const LYRICS_URL = 'https://lrclib.net/api/get/7918608';
 // Times in seconds (from the song's synced lyrics). The lyrics load live from lrclib.net; they are not stored here.
-// hl = the few words to highlight in that line; mean = what the line means, in simple Ukrainian.
+// hl = the exact words to highlight in that line; mean = what the line means, in simple Ukrainian.
 const PARTS = [
   {name:'Part 1', start:0, end:24.5, lines:[
     {words:[['I’m only human','я лише людина']], hl:['I’m only human'], mean:'Я звичайна людина, я не ідеальний.', ex:'Everyone makes mistakes. <em>We’re only human.</em>', start:2.4, end:12.9},
@@ -115,28 +122,26 @@ const PARTS = [
     {words:[['put the blame on (someone)','звинувачувати (когось)']], hl:['put your blame on','put the blame on'], mean:'Не звинувачуй мене.', ex:'Don’t <em>put the blame on</em> me. It wasn’t my fault.', start:30.7, end:37.6}
   ]}
 ];
-// Flow per part: listen without stopping → (break it down: each line) → the whole part again.
+// Each part: listen without stopping → break it down line by line → the whole part again. Then My words.
 const STEPS = [];
 PARTS.forEach((p, pn) => {
   STEPS.push({kind:'first', pn, start:p.start, end:p.end});
-  p.lines.forEach((l) => STEPS.push(Object.assign({kind:'line', pn}, l)));
+  p.lines.forEach((l, ln) => STEPS.push(Object.assign({kind:'line', pn, ln}, l)));
   STEPS.push({kind:'again', pn, start:p.start, end:p.end});
 });
 STEPS.push({kind:'practice'});
 
 let i = 0, player = null, ready = false, timer = null, off = 0;
-let state = 'idle';            // idle · playing · paused · ended (for the current clip)
-let clip = null;               // {start, end} of the clip being played
-let slow = false, slowRate = 0.75, slowOk = true;
+let state = 'idle';            // idle · playing · paused · ended
+let clip = null;               // {start, end} of the clip in use
+let slow = false, slowRate = 0.75;
 const heard = STEPS.map(() => false);
 let LINES = [], lyricsFailed = false;
-let dict = [];                 // the words she added with +
-let pr = {n: 0, show: false};  // practice position
+let dict = [], pr = {n: 0, show: false};
 try { off = parseFloat(localStorage.getItem('human-offset') || '0') || 0; } catch (e) {}
 try { dict = JSON.parse(localStorage.getItem('human-dict') || '[]'); } catch (e) { dict = []; }
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt = (t) => `${Math.max(0, t).toFixed(1)} s`;
 const saveDict = () => { try { localStorage.setItem('human-dict', JSON.stringify(dict)); } catch (e) {} };
 
 fetch(LYRICS_URL).then((r) => r.json()).then((d) => {
@@ -147,11 +152,10 @@ fetch(LYRICS_URL).then((r) => r.json()).then((d) => {
   drawSubs();
 }).catch(() => { lyricsFailed = true; drawSubs(); });
 
-// Highlight only the exact key phrases of the step (or of the whole part).
 function hlFor(s){
   if (s.kind === 'line') return s.hl;
   if (s.kind === 'first' || s.kind === 'again') return PARTS[s.pn].lines.flatMap((l) => l.hl);
-  return [];
+  return (dict[pr.n] || {}).hl || [];
 }
 function marked(text, hls){
   let h = esc(text);
@@ -162,109 +166,102 @@ function marked(text, hls){
   return h;
 }
 const linesIn = (a, b) => LINES.filter((l) => l.t >= a - .3 && l.t < b - .3);
-function nowT(){ return ready ? player.getCurrentTime() - off : (clip ? clip.start : 0); }
+const nowT = () => (ready ? player.getCurrentTime() - off : (clip ? clip.start : 0));
 
+// Lyrics box: fixed height. Every line of the clip is laid out from the start and fades in when it is sung,
+// so nothing moves. In a whole part, only the current line shows while it plays; when it stops, the whole part stays.
 function drawSubs(){
   const box = $('subs'), s = STEPS[i];
   box.className = 'subs';
-  if (s.kind === 'practice'){
-    if (!clip || !LINES.length){ box.innerHTML = '<p class="note">📒</p>'; return; }
-    const d = dict[pr.n] || {}, end = state === 'ended' ? clip.end : Math.max(nowT() + .5, clip.start + .4);
-    box.innerHTML = linesIn(clip.start, end).map((l) => `<p>${marked(l.text, d.hl || [])}</p>`).join('') || '<p class="note">♪</p>';
+  if (lyricsFailed){ box.innerHTML = '<p class="note">The lyrics didn’t load. Reload the page.</p>'; return; }
+  const range = s.kind === 'practice' ? clip : s;
+  if (!range || !LINES.length || (s.kind !== 'practice' && !heard[i])){ box.innerHTML = '<p class="note">♪</p>'; return; }
+  const hls = hlFor(s), lines = linesIn(range.start, range.end), t = nowT();
+  const live = state === 'playing' || state === 'paused';
+  if (s.kind === 'first' || s.kind === 'again'){
+    if (live){ const cur = LINES.filter((l) => l.t <= t + .15).pop(); box.innerHTML = `<p>${cur ? marked(cur.text, hls) : '♪'}</p>`; return; }
+    if (lines.length > 3) box.classList.add('cols');
+    box.innerHTML = lines.map((l) => `<p>${marked(l.text, hls)}</p>`).join('');
     return;
   }
-  if (lyricsFailed){ box.innerHTML = '<p class="note">The lyrics didn’t load. Reload the page.</p>'; return; }
-  if (!heard[i] || !LINES.length){ box.innerHTML = '<p class="note">♪</p>'; return; }
-  const hls = hlFor(s);
-  let lines;
-  if (state === 'playing' || state === 'paused'){
-    const t = nowT();
-    if (s.kind === 'line') lines = linesIn(s.start, Math.max(t + .5, s.start + .4));      // lines stack as they come
-    else { const cur = LINES.filter((l) => l.t <= t + .15).pop(); lines = cur ? [cur] : []; } // whole part: only the line now
-  } else lines = linesIn(s.start, s.end);                                                  // stopped: the whole step stays
-  if (lines.length > 2) box.classList.add('many');
-  if (lines.length > 4) box.classList.add('cols');
-  box.innerHTML = lines.map((l) => `<p>${marked(l.text, hls)}</p>`).join('') || '<p class="note">♪</p>';
+  box.innerHTML = lines.map((l) => `<p class="${live && l.t > t + .15 && l !== lines[0] ? 'wait' : ''}">${marked(l.text, hls)}</p>`).join('') || '<p class="note">♪</p>';
 }
 function drawClip(){
   if (!clip){ $('fill').style.width = '0'; $('cliptime').textContent = ''; return; }
   const len = clip.end - clip.start;
   const done = state === 'ended' ? len : Math.min(len, Math.max(0, nowT() - clip.start));
   $('fill').style.width = `${(done / len) * 100}%`;
-  $('cliptime').textContent = `${fmt(done)} / ${fmt(len)}`;
+  $('cliptime').textContent = `${Math.round(done)} / ${Math.round(len)} s`;
 }
-function drawCover(){
+function drawPlayer(){
+  const s = STEPS[i], practice = s.kind === 'practice';
+  const noClip = practice && !(pr.show && dict[pr.n]);
   $('cover').classList.toggle('playing', state === 'playing');
   $('coverIcon').textContent = state === 'ended' ? '↺' : '▶';
-  const idle = STEPS[i].kind === 'practice' && !clip;
-  $('coverIcon').hidden = idle; $('cover').style.cursor = idle ? 'default' : 'pointer';
+  $('coverIcon').hidden = noClip;
+  $('cover').style.cursor = noClip ? 'default' : 'pointer';
+  const L = $('listen');
+  L.textContent = practice ? '▶ Hear it in the song' : (heard[i] ? '↺ Listen again' : '▶ Listen');
+  L.className = practice || heard[i] ? '' : 'primary';
+  L.classList.toggle('ghost', practice && noClip);
+  $('back').classList.toggle('ghost', i === 0);
+  const N = $('next');
+  let label = 'Next →', show = heard[i];
+  if (s.kind === 'first') label = 'Break it down →';
+  if (s.kind === 'again') label = s.pn + 1 < PARTS.length ? `${PARTS[s.pn + 1].name} →` : 'My words →';
+  if (practice){ label = 'Next word →'; show = pr.show && pr.n < dict.length; }
+  N.textContent = label;
+  N.classList.toggle('ghost', !show);
 }
-function playLabel(){
-  return {idle: '▶ Listen', playing: '⏸ Pause', paused: '▶ Continue', ended: '↺ Listen again'}[state];
+function where(){
+  const s = STEPS[i];
+  if (s.kind === 'practice') return 'My words';
+  const p = PARTS[s.pn];
+  if (s.kind === 'line') return `${p.name} · line ${s.ln + 1} of ${p.lines.length}`;
+  return p.name;
 }
 
 function render(){
   const s = STEPS[i], h = heard[i];
-  $('dots').innerHTML = STEPS.map((x, n) => `<i class="${n === i ? 'on' : heard[n] ? 'done' : ''}"></i>`).join('');
-  $('mywords').textContent = dict.length ? `📒 My words: ${dict.length}` : '';
-  $('off').textContent = `${off > 0 ? '+' : ''}${off.toFixed(1)} s`;
-  const play = `<button id="play" class="${h ? '' : 'primary'}">${playLabel()}</button>
-      ${slowOk ? `<button id="slow" aria-pressed="${slow}">🐢 Slower</button>` : ''}`;
-  const back = i > 0 ? '<button id="back" class="tiny">← Back</button>' : '<span></span>';
+  $('mywords').textContent = dict.length ? `📒 ${dict.length}` : '';
+  $('where').textContent = where();
   let html = '';
   if (s.kind === 'first'){
     const nextPart = STEPS.findIndex((x, n) => n > i && x.kind === 'first');
-    html = `<p class="kicker">${PARTS[s.pn].name}</p>
-      <p class="big">Listen without stopping 🎧</p>
-      <div class="ctrl">${play}</div>
-      <div class="nav">${back}
-        ${h ? `<span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button id="skip" class="tiny" data-to="${nextPart > -1 ? nextPart : STEPS.length - 1}">${nextPart > -1 ? PARTS[s.pn + 1].name : 'My words'} →</button>
-          <button id="next" class="primary">Break it down →</button></span>` : ''}
-      </div>`;
+    html = `<p class="big">Listen to ${PARTS[s.pn].name.toLowerCase()} without stopping 🎧</p>
+      <p class="ex">Then we break it down line by line.</p>
+      <button class="tiny skip ${h ? '' : 'ghost'}" id="skip" data-to="${nextPart > -1 ? nextPart : STEPS.length - 1}">Skip to ${nextPart > -1 ? PARTS[s.pn + 1].name : 'My words'} →</button>`;
   } else if (s.kind === 'line'){
     html = `<div class="words">${s.words.map(([en, ua]) => {
         const on = dict.some((d) => d.en === en);
         return `<div class="w"><b>${esc(en)}</b><button class="add" data-en="${esc(en)}" aria-pressed="${on}" aria-label="${on ? 'Remove from my words' : 'Add to my words'}">${on ? '✓' : '+'}</button><span class="ua">${esc(ua)}</span></div>`;
       }).join('')}</div>
-      ${h ? `<p class="mean"><span>У пісні це означає</span>${esc(s.mean)}</p>` : ''}
-      <p class="ex">${s.ex}</p>
-      <div class="ctrl">${play}</div>
-      <div class="nav">${back}${h ? '<button id="next" class="primary">Next →</button>' : ''}</div>`;
+      <p class="mean ${h ? '' : 'ghost'}"><span>У пісні це означає</span>${esc(s.mean)}</p>
+      <p class="ex">${s.ex}</p>`;
   } else if (s.kind === 'again'){
-    html = `<p class="kicker">${PARTS[s.pn].name}</p>
-      <p class="big">Now the whole part again, without stopping</p>
-      <div class="ctrl">${play}</div>
-      <div class="nav">${back}${h ? `<button id="next" class="primary">${s.pn + 1 < PARTS.length ? PARTS[s.pn + 1].name : 'My words'} →</button>` : ''}</div>`;
+    html = `<p class="big">Now ${PARTS[s.pn].name.toLowerCase()} again, without stopping</p>
+      <p class="ex">Can you catch every word now?</p>`;
+  } else if (!dict.length){
+    html = `<p class="big">That’s all for now 🎉</p><p class="ex">Tap + next to a word to practice it here.</p>`;
+  } else if (pr.n >= dict.length){
+    html = `<p class="big">You practiced ${dict.length} word${dict.length > 1 ? 's' : ''} 🎉</p>
+      <button id="restart" class="primary" style="align-self:flex-start">↺ Once more</button>`;
   } else {
-    if (!dict.length){
-      html = `<p class="big">That’s all for now 🎉</p><p class="ex">Tap + next to a word to practice it here.</p><div class="nav">${back}</div>`;
-    } else if (pr.n >= dict.length){
-      html = `<p class="big">You practiced ${dict.length} word${dict.length > 1 ? 's' : ''} 🎉</p>
-        <div class="ctrl"><button id="restart" class="primary">↺ Once more</button></div><div class="nav">${back}</div>`;
-    } else {
-      const d = dict[pr.n];
-      html = `<p class="kicker">📒 My words · ${pr.n + 1} / ${dict.length}</p>
-        <p class="big">${esc(d.ua)}</p>
-        ${pr.show ? `<p class="answer">${esc(d.en)}</p>` : '<p class="ex">Say it in English.</p>'}
-        <div class="ctrl">${pr.show ? `<button id="hear">▶ Hear it in the song</button><button id="pnext" class="primary">Next word →</button>`
-          : '<button id="reveal" class="primary">Answer</button>'}</div>
-        <div class="nav">${back}</div>`;
-    }
+    const d = dict[pr.n];
+    html = `<p class="kicker">📒 ${pr.n + 1} of ${dict.length}</p>
+      <p class="big">${esc(d.ua)}</p>
+      <p class="answer ${pr.show ? '' : 'ghost'}">${esc(d.en)}</p>
+      <button id="reveal" class="primary ${pr.show ? 'ghost' : ''}" style="align-self:flex-start">Show the answer</button>`;
   }
   $('card').innerHTML = html;
-  drawCover(); drawSubs(); drawClip();
+  drawPlayer(); drawSubs(); drawClip();
 }
 
 function tick(){
   drawSubs(); drawClip();
-  if (state === 'playing' && player.getCurrentTime() >= clip.end + off){ finish(); }
+  if (state === 'playing' && player.getCurrentTime() >= clip.end + off) finish();
 }
-function finish(){
-  clearInterval(timer); state = 'ended';
-  if (ready) player.pauseVideo();
-  render();
-}
+function finish(){ clearInterval(timer); state = 'ended'; if (ready) player.pauseVideo(); drawPlayer(); drawSubs(); drawClip(); }
 function startClip(c){
   if (!ready) return;
   clip = c; state = 'playing';
@@ -272,21 +269,27 @@ function startClip(c){
   player.seekTo(Math.max(0, c.start + off), true);
   player.playVideo();
   timer = setInterval(tick, 120);
-  render();
+  drawPlayer(); drawSubs(); drawClip();
 }
-function pause(){ if (!ready) return; clearInterval(timer); player.pauseVideo(); state = 'paused'; render(); }
-function resume(){ if (!ready) return; player.playVideo(); state = 'playing'; timer = setInterval(tick, 120); render(); }
-function toggle(){
+function pause(){ clearInterval(timer); if (ready) player.pauseVideo(); state = 'paused'; drawPlayer(); }
+function resume(){ if (!ready) return; player.playVideo(); state = 'playing'; timer = setInterval(tick, 120); drawPlayer(); }
+function stepClip(){
   const s = STEPS[i];
-  if (s.kind === 'practice'){ if (clip) state === 'playing' ? pause() : (state === 'paused' ? resume() : startClip(clip)); return; }
+  if (s.kind !== 'practice') return {start: s.start, end: s.end};
+  const d = dict[pr.n]; return d && pr.show ? {start: d.start, end: d.end} : null;
+}
+function listen(){            // side button: always plays the clip from its start
+  const c = stepClip(); if (!c) return;
+  if (STEPS[i].kind !== 'practice' && !heard[i]){ heard[i] = true; render(); }
+  startClip(c);
+}
+function videoClick(){        // the video: pause / continue; after the end, play again
   if (state === 'playing') return pause();
   if (state === 'paused') return resume();
-  heard[i] = true;
-  startClip({start: s.start, end: s.end});
+  listen();
 }
 function go(n){
-  clearInterval(timer);
-  if (ready) player.pauseVideo();
+  clearInterval(timer); if (ready) player.pauseVideo();
   state = 'idle'; clip = null;
   i = Math.min(STEPS.length - 1, Math.max(0, n));
   if (STEPS[i].kind === 'practice') pr = {n: 0, show: false};
@@ -294,12 +297,16 @@ function go(n){
 }
 
 document.addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return;
-  if (b.id === 'play' || b.id === 'cover') toggle();
-  if (b.id === 'slow'){ slow = !slow; if (ready && state === 'playing') player.setPlaybackRate(slow ? slowRate : 1); render(); }
-  if (b.id === 'next') go(i + 1);
-  if (b.id === 'skip') go(+b.dataset.to);
+  const b = e.target.closest('button'); if (!b || b.classList.contains('ghost')) return;
+  if (b.id === 'listen') listen();
+  if (b.id === 'cover') videoClick();
+  if (b.id === 'slow'){ slow = !slow; b.setAttribute('aria-pressed', slow); if (ready && state === 'playing') player.setPlaybackRate(slow ? slowRate : 1); }
   if (b.id === 'back') go(i - 1);
+  if (b.id === 'skip') go(+b.dataset.to);
+  if (b.id === 'next'){
+    if (STEPS[i].kind === 'practice'){ clearInterval(timer); if (ready) player.pauseVideo(); state = 'idle'; clip = null; pr = {n: pr.n + 1, show: false}; render(); }
+    else go(i + 1);
+  }
   if (b.classList.contains('add')){
     const s = STEPS[i], en = b.dataset.en, k = dict.findIndex((d) => d.en === en);
     if (k > -1) dict.splice(k, 1);
@@ -307,23 +314,18 @@ document.addEventListener('click', (e) => {
     saveDict(); render();
   }
   if (b.id === 'reveal'){ pr.show = true; render(); }
-  if (b.id === 'pnext'){ pr = {n: pr.n + 1, show: false}; clip = null; state = 'idle'; if (ready) player.pauseVideo(); clearInterval(timer); render(); }
   if (b.id === 'restart'){ pr = {n: 0, show: false}; render(); }
-  if (b.id === 'hear'){ const d = dict[pr.n]; startClip({start: d.start, end: d.end}); }
-  if (b.id === 'gear') $('syncrow').hidden = !$('syncrow').hidden;
-  if (b.id === 'minus' || b.id === 'plus'){
-    off = Math.round((off + (b.id === 'plus' ? .5 : -.5)) * 10) / 10;
-    try { localStorage.setItem('human-offset', String(off)); } catch (err) {}
-    $('off').textContent = `${off > 0 ? '+' : ''}${off.toFixed(1)} s`;
-  }
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === ' '){ e.preventDefault(); toggle(); }
-  if (e.key === 'ArrowRight' && heard[i] && STEPS[i].kind !== 'practice') go(i + 1);
-  if (e.key === 'ArrowLeft') go(i - 1);
+  if (e.key === ' '){ e.preventDefault(); videoClick(); }
+  if (e.key === 'ArrowRight' && !$('next').classList.contains('ghost')) $('next').click();
+  if (e.key === 'ArrowLeft' && i > 0) go(i - 1);
+  // Lyrics out of time with the video? [ and ] move them by half a second (remembered in this browser).
+  if (e.key === '[' || e.key === ']'){
+    off = Math.round((off + (e.key === ']' ? .5 : -.5)) * 10) / 10;
+    try { localStorage.setItem('human-offset', String(off)); } catch (err) {}
+  }
 });
-// The lyrics-timing control sits behind a small gear under the lyrics.
-$('syncrow').insertAdjacentHTML('beforebegin', '<div class="sync"><button id="gear" class="tiny">⚙ Lyrics timing</button></div>');
 
 window.onYouTubeIframeAPIReady = () => {
   player = new YT.Player('player', {videoId: VIDEO,
@@ -335,7 +337,7 @@ window.onYouTubeIframeAPIReady = () => {
         // Speed can only be set while the video plays; hide the button if this video has no slower speed.
         const rates = player.getAvailablePlaybackRates ? player.getAvailablePlaybackRates() : [1];
         slowRate = rates.includes(0.75) ? 0.75 : (rates.includes(0.5) ? 0.5 : 1);
-        if (slowRate === 1 && slowOk){ slowOk = false; slow = false; render(); }
+        if (slowRate === 1){ slow = false; $('slow').classList.add('ghost'); }
         player.setPlaybackRate(slow ? slowRate : 1);
       }
     }});
