@@ -92,7 +92,8 @@ She once forwarded a whole reply to a student by mistake.
   her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
   structure from their last lesson. ~120–170 words for A2, ~60 for Sergii (he dislikes long texts).
   Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
-  emoji, and don't end with someone laughing.
+  emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
+  she asked about but never got taught (e.g. Julia's "interrupt") stays out until it has been taught.
 - **Song lessons** (e.g. Julia: "Human") need the video on the page, which Claude pages can't embed: they live in
   `docs/` and are served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). Each step shows a few key
   words, then plays just the line that has them (YouTube player in the page). Subtitles under the video load live
