@@ -262,17 +262,21 @@ function view(s){
     <button class="btn playall" data-playall>▶ Play the whole call</button>
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
   if (s.t === 'recall'){
-    // en may mark the key word: 'Is it [mandatory]?' → the screen shows 'Is it m________?' as a hint.
+    // en may mark the key word: 'Is it [mandatory]?'. Then one 💡 button gives three steps:
+    // 1) the sentence with a blank, 2) the blank with its first letter, 3) the answer.
     const plain = s.en.replace(/[\[\]]/g, '');
-    const blank = (w) => w.split(' ').map((x) => x[0] + '_'.repeat(Math.max(1, x.replace(/[’'.,!?]/g, '').length - 1))).join(' ');
-    const cue = /\[/.test(s.en) ? esc(s.en).replace(/\[([^\]]+)\]/g, (m, w) => `<span class="gapw">${blank(w)}</span>`) : '';
+    const clean = (x) => x.replace(/[’'.,!?]/g, '');
+    const gap = (w) => w.split(' ').map((x) => '_'.repeat(Math.max(2, clean(x).length))).join(' ');
+    const first = (w) => w.split(' ').map((x) => x[0] + '_'.repeat(Math.max(1, clean(x).length - 1))).join(' ');
+    const line = (f) => esc(s.en).replace(/\[([^\]]+)\]/g, (m, w) => `<span class="gapw">${f(w)}</span>`);
+    const hinted = /\[/.test(s.en);
     return `
     <div class="who">🧠 Say it in English</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="recall-ua">${esc(s.ua)}</div>
-    ${cue ? `<div class="cueline" data-part="cue">${cue}</div>` : ''}
+    ${hinted ? `<div class="cueline" data-cue="1" hidden>${line(gap)}</div><div class="cueline" data-cue="2" hidden>${line(first)}</div>` : ''}
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(plain)}</span></div>
-    <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
+    <div class="row">${hinted ? '<button class="btn" data-hint="0">💡 Hint</button>' : '<button class="btn" data-show="ans">Answer</button>'}</div>`;
   }
   if (s.t === 'sound') return `
     <div class="who swapw">🔊 The sound</div>
@@ -369,6 +373,15 @@ card.addEventListener('click', (e) => {
   }
 
   if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map((l) => Array.isArray(l) ? l[1] : l).filter((t) => AUDIO[t])); return; }
+  const hb = e.target.closest('[data-hint]');
+  if (hb){
+    const n = Number(hb.dataset.hint) + 1; hb.dataset.hint = n;
+    card.querySelectorAll('[data-cue]').forEach((x) => { x.hidden = Number(x.dataset.cue) !== n; });
+    if (n === 1) hb.textContent = '💡 First letter';
+    if (n === 2) hb.textContent = 'Answer';
+    if (n >= 3){ card.querySelectorAll('[data-part="ans"]').forEach((x) => { x.hidden = false; }); hb.hidden = true; }
+    return;
+  }
   const sh = e.target.closest('[data-show]');
   if (sh){
     const part = sh.dataset.show;
@@ -376,7 +389,6 @@ card.addEventListener('click', (e) => {
     if (part === 'ans'){
       card.querySelectorAll('[data-part="after"]').forEach((x) => { x.hidden = false; });
       card.querySelectorAll('[data-part="hint"]').forEach((x) => { x.hidden = true; });
-      card.querySelectorAll('[data-part="cue"]').forEach((x) => { x.hidden = true; });
       const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.hidden = true;
     } else if (part === 'hint') sh.hidden = true;
     return;

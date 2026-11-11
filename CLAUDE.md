@@ -108,9 +108,9 @@ She once forwarded a whole reply to a student by mistake.
   - Keep each drill set short (about 4 items). A rule she asks for gets one `rule` screen
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
     Say it directly (✅ where it goes, ❌ where it doesn't); don't build up from theory.
-  - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`:
-    the screen shows the English with that word as its first letter + blanks ("Is it m________?"), so there is one
-    clear answer to find. Natural, everyday Ukrainian prompts (no odd words like «здирство»).
+  - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`.
+    The screen shows only the Ukrainian; one button gives three steps: 💡 Hint (the sentence with a blank, "Is it ____?"),
+    💡 First letter ("Is it m________?"), Answer. Natural, everyday Ukrainian prompts (no odd words like «здирство»).
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
