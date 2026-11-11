@@ -85,6 +85,11 @@ She once forwarded a whole reply to a student by mistake.
   Stories must not describe the student's own life or retell what she told the teacher (her appointment,
   her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
   structure from their last lesson. ~120–170 words for A2, ~60 for Sergii (he dislikes long texts).
+  Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
+  emoji, and don't end with someone laughing.
+- **Song lessons** (e.g. Julia: "Human") need the video on the page, which Claude pages can't embed: they live in
+  `docs/` and are served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). Each step shows a few key
+  words, then plays just the line that has them (YouTube player in the page). Never put the lyrics on the page.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js`, record it with `extract.js` + `voice.py`, then `build.py`, test every
   screen at phone and laptop size, publish as a new artifact with the mp3s in `files`):
