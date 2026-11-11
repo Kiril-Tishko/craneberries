@@ -5,7 +5,7 @@ const out = new Map();
 const add = (t, v) => { if (!t || /\(/.test(t)) return; t = t.trim(); if (t && !out.has(t)) out.set(t, v); };
 for (const sec of SECTIONS) for (const s of sec.slides) {
   if (s.t === 'phrase') add(s.en, s.who === 'hear' || s.who === 'read' ? 'them' : 'me');
-  if (s.t === 'recall') add(s.en, 'me');
+  if (s.t === 'recall') add(s.en.replace(/[\[\]]/g, ''), 'me');
   if (s.t === 'flip') add(s.ans.replace(/[\[\]]/g, ''), 'me');
   if (s.t === 'swap') s.opts.forEach((o) => add(s.pre + o + s.post, 'me'));
   if (s.t === 'all') s.items.forEach(([en, , h]) => add(en, h ? 'them' : 'me'));

@@ -110,6 +110,8 @@ a.btn.main{color:#fff}
 .next{background:var(--accent);color:var(--accent-ink);flex:1;max-width:260px}
 .nav button:disabled{opacity:.35;cursor:default}
 
+.cueline{font-size:clamp(22px,4vh,32px);font-weight:700;color:var(--muted);line-height:1.3}
+.gapw{color:var(--swap);letter-spacing:.14em;font-family:ui-monospace,monospace}
 .recall-ua{font-size:clamp(26px,6vw,44px);font-weight:700;line-height:1.2}
 .ans.big2{font-size:clamp(26px,5.4vw,42px)}
 .mouth{width:min(320px,70vw);height:auto;max-height:34vh}
@@ -259,12 +261,19 @@ function view(s){
   if (s.t === 'convo') return `
     <button class="btn playall" data-playall>▶ Play the whole call</button>
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
-  if (s.t === 'recall') return `
+  if (s.t === 'recall'){
+    // en may mark the key word: 'Is it [mandatory]?' → the screen shows 'Is it m________?' as a hint.
+    const plain = s.en.replace(/[\[\]]/g, '');
+    const blank = (w) => w.split(' ').map((x) => x[0] + '_'.repeat(Math.max(1, x.replace(/[’'.,!?]/g, '').length - 1))).join(' ');
+    const cue = /\[/.test(s.en) ? esc(s.en).replace(/\[([^\]]+)\]/g, (m, w) => `<span class="gapw">${blank(w)}</span>`) : '';
+    return `
     <div class="who">🧠 Say it in English</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="recall-ua">${esc(s.ua)}</div>
-    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center">${esc(s.en)} ${spk(s.en)}</span></div>
+    ${cue ? `<div class="cueline" data-part="cue">${cue}</div>` : ''}
+    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(plain)}</span></div>
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
+  }
   if (s.t === 'sound') return `
     <div class="who swapw">🔊 The sound</div>
     <div class="big">${esc(s.word).replace(/\[([^\]]+)\]/, '<span class="hlw">$1</span>')}</div>
@@ -367,6 +376,7 @@ card.addEventListener('click', (e) => {
     if (part === 'ans'){
       card.querySelectorAll('[data-part="after"]').forEach((x) => { x.hidden = false; });
       card.querySelectorAll('[data-part="hint"]').forEach((x) => { x.hidden = true; });
+      card.querySelectorAll('[data-part="cue"]').forEach((x) => { x.hidden = true; });
       const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.hidden = true;
     } else if (part === 'hint') sh.hidden = true;
     return;
