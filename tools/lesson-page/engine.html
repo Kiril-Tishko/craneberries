@@ -62,6 +62,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .btn{border:2px solid var(--line);background:var(--surface);border-radius:16px;padding:10px 18px;font-size:17px;font-weight:600}
 .btn:hover{border-color:var(--accent)}
+a.btn{display:inline-block;text-decoration:none;color:inherit}
+a.btn.main{color:#fff}
+.ylink{font-size:14px;color:var(--muted)}
+.ex{font-size:clamp(17px,2.8vh,22px);font-style:italic;max-width:32ch;line-height:1.35}
 .btn.main{background:var(--swap);border-color:var(--swap);color:#fff;font-size:20px;padding:12px 26px}
 .sp{border:0;background:var(--accent-soft);color:var(--accent);border-radius:99px;width:46px;height:46px;font-size:21px;display:grid;place-items:center;flex:none}
 
@@ -233,6 +237,23 @@ function view(s){
     <div class="who">✉️ ${esc(s.label || 'The whole email')}</div>
     <div class="mail">${s.subject ? `<div class="mh">Subject: ${esc(s.subject)}</div>` : ''}${s.lines.map((t) => t ? `<p${AUDIO[t] ? ` data-say="${esc(t)}"` : ''}>${esc(t)}</p>` : '<div class="gap"></div>').join('')}</div>
     <button class="btn playall" data-playall>▶ Read it aloud</button>`;
+  if (s.t === 'listen'){
+    const id = s.yt || (typeof SONG !== 'undefined' ? SONG.id : '');
+    const clip = `https://www.youtube.com/embed/${id}?start=${s.start}&end=${s.end}&autoplay=1&cc_load_policy=1&rel=0`;
+    const full = `https://www.youtube.com/watch?v=${id}&t=${s.start}s`;
+    return `
+    <div class="who hear">🎵 ${esc(s.label || 'Listen')}</div>
+    <div class="big">${esc(s.from)} – ${esc(s.to)}</div>
+    <a class="btn main" href="${clip}" target="_blank" rel="noopener">▶ Listen</a>
+    ${s.words && s.words.length ? `<div class="when">Listen for: ${s.words.map(esc).join(' · ')}</div>` : ''}
+    <a class="ylink" href="${full}" target="_blank" rel="noopener">Doesn’t play? Open it on YouTube at ${esc(s.from)}</a>`;
+  }
+  if (s.t === 'word') return `
+    <div class="who">${esc(s.label || '📖 New phrase')}</div>
+    ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
+    <div class="big">${esc(s.en)}</div>
+    <div class="ua">${esc(s.ua)}</div>
+    ${s.ex ? `<div class="row" style="align-items:center"><span class="ex">${esc(s.ex)}</span>${spk(s.ex)}</div>` : ''}`;
   if (s.t === 'convo') return `
     <button class="btn playall" data-playall>▶ Play the whole call</button>
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;

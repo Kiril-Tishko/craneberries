@@ -45,5 +45,8 @@ const SECTIONS = [
   ]},
   // {t:'email', subject:'New pattern', lines:['Hi Anna,', '', 'Thanks for your email.', '', 'Best regards,', 'Mariya']}
   //   a whole email on one screen; '' = a blank line; tap a line or ▶ to hear it
+  // Song lessons: const SONG = {id:'<YouTube id>'}; then {t:'listen', label:'Part 1', from:'0:00', to:'0:24', start:0, end:24, words:['…']}
+  //   (YouTube can't be embedded in an artifact: ▶ opens just that clip in a new tab, with captions on).
+  //   Never put song lyrics on a page (copyright): teach short phrases with {t:'word', en, ua, ex, pic} and your own example.
   {label:'My sentences', slides:[{t:'mine'}]}
 ];
