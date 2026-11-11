@@ -68,9 +68,13 @@ She once forwarded a whole reply to a student by mistake.
 - The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
   comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
   Put those first; keep subtitles short or leave them out.
-- **Words card** ("Don't forget"): only words the student **forgot** in the lesson (asked again, couldn't recall),
-  not words you prompted in a drill. Brand-new words go into the next lesson's page review, not on the card
-  (rule from Nov 11 on; earlier cards stay as they are).
+- **Cards are a quick recap of what was said, never something the student sees for the first time.**
+  - Words card ("Don't forget"): only words the student **forgot** in the lesson (asked again, couldn't recall).
+  - "Say it like this": the phrases that were corrected in the lesson.
+  - Brand-new words and mistakes nobody corrected go to the next lesson: a "Next lesson · Words to review" card
+    for the teacher, and a short list of phrases to talk about in the chat reply (teacher only).
+  - Pronunciation: give 2–3 card options so she can pick one.
+  (Rule from Nov 11 on; earlier cards stay as they are.)
   For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
