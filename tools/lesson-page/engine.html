@@ -120,6 +120,7 @@ a.btn.main{color:#fff}
 .score{font-size:18px;font-weight:600;color:var(--muted)}
 .chipsay{border:2px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-size:clamp(17px,2.8vh,21px);font-weight:600}
 .chipsay:hover{border-color:var(--accent)}
+s.no{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--swap);opacity:.75}
 .hlw{color:var(--swap);background:var(--swap-bg);border-radius:8px;padding:0 .04em}
 .rules{display:grid;gap:12px;width:100%;max-width:560px;text-align:left}
 .rulebox{background:var(--accent-soft);border-radius:18px;padding:12px 16px}
@@ -168,6 +169,7 @@ let sec = 0, idx = 0;
 const pick = {};            // which option each change-one-thing screen shows
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const card = document.getElementById('card');
+const xs = (t) => esc(t).replace(/~~(.+?)~~/g, '<s class="no">$1</s>');   // ~~wrong form~~ is shown crossed out
 
 /* ---------- voice: recorded clips (Kokoro neural voice), browser voice only as a fallback ---------- */
 const AUDIO = /*AUDIO*/{};
@@ -219,7 +221,7 @@ function view(s){
   if (s.t === 'all') return `
     <div class="who">✅ All together</div>
     <ul class="all">${s.items.map(([en, ua, h]) => `<li><div class="tx"><span class="en">${esc(en)}</span>
-      <span class="u">${h ? `<span class="s">${h === 'read' ? '📩 you read' : '👂 you hear'} · </span>` : ''}${esc(ua)}</span></div>${spk(en)}</li>`).join('')}</ul>`;
+      <span class="u">${h ? `<span class="s">${h === 'read' ? '📩 you read' : '👂 you hear'} · </span>` : ''}${xs(ua)}</span></div>${spk(en)}</li>`).join('')}</ul>`;
   if (s.t === 'turn'){
     const n = SECTIONS[sec].slides.filter((x) => x.t === 'turn' && x.scene === s.scene);
     const pos = n.indexOf(s) + 1;
@@ -280,13 +282,13 @@ function view(s){
     <div class="score" id="gscore">Натисніть ▶, потім виберіть слово</div>`;
   if (s.t === 'rule') return `
     <div class="who">${esc(s.label || '📌 How it works')}</div>
-    <div class="rules">${s.rows.map(([icon, head, text, ex]) => `<div class="rulebox"><div class="rh">${icon} ${esc(head)}</div>
-      ${text ? `<div class="rt">${esc(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${esc(x)}</div>`).join('')}</div></div>`).join('')}</div>`;
+    <div class="rules">${s.rows.map(([icon, head, text, ex]) => `<div class="rulebox"><div class="rh">${icon} ${xs(head)}</div>
+      ${text ? `<div class="rt">${xs(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${xs(x)}</div>`).join('')}</div></div>`).join('')}</div>`;
   if (s.t === 'flip') return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
-    <div class="when" style="font-size:clamp(18px,3vh,24px)">${esc(s.from)}</div>
-    <div class="big">${esc(s.subj)}${s.dots === false ? '' : ' …'}</div>
+    <div class="when" style="font-size:clamp(18px,3vh,24px)">${xs(s.from)}</div>
+    <div class="big">${xs(s.subj)}${s.dots === false ? '' : ' …'}</div>
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(s.ans.replace(/[\[\]]/g, ''))}</span></div>
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
   if (s.t === 'mine'){

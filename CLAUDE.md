@@ -112,6 +112,8 @@ She once forwarded a whole reply to a student by mistake.
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
+  - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
+    flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
     (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`). When an emoji doesn't show the thing (🛒 is not a
     checkout), draw an SVG (`pic` and card `svg` take one; keep it on one line in content.js). Reusable drawings: `tools/pics/`.
