@@ -91,6 +91,9 @@ She once forwarded a whole reply to a student by mistake.
   `docs/` and are served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). Each step shows a few key
   words, then plays just the line that has them (YouTube player in the page). Subtitles under the video load live
   from lrclib.net when the page opens (timed lyrics, key words highlighted); never store lyrics in the repo.
+  Key words show the Ukrainian translation (no "what the line means" box: it was just a translation); a 💡 Note
+  (hidden until tapped) only where something is easy to miss. In future video lessons (podcasts, shows), tapping
+  any word shows its Ukrainian translation.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js`, record it with `extract.js` + `voice.py`, then `build.py`, test every
   screen at phone and laptop size, publish as a new artifact with the mp3s in `files`):

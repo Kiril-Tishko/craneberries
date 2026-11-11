@@ -69,6 +69,7 @@ button:disabled{opacity:.45;cursor:default}
 .words{display:flex;flex-direction:column;gap:12px}
 .w{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:start}
 .w b{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.1;text-wrap:balance}
+.w .ua{grid-column:1;justify-self:start;font-size:clamp(17px,2.1vw,20px);font-weight:600;color:var(--ua);background:var(--ua-bg);padding:4px 12px;border-radius:12px}
 .add{grid-column:2;grid-row:1;width:40px;height:40px;border-radius:99px;padding:0;font-size:22px;line-height:1;margin-top:4px}
 .add[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
 .mean{margin:0;background:var(--tint);border-radius:14px;padding:10px 14px;font-size:18px;line-height:1.4;transition:opacity .25s}
@@ -113,18 +114,18 @@ const LYRICS_URL = 'https://lrclib.net/api/get/7918608';
 // hl = the exact words to highlight in that line; mean = what the line means, in simple Ukrainian.
 const PARTS = [
   {name:'Part 1', start:0, end:24.5, lines:[
-    {words:['I’m only human'], hl:['I’m only human'], mean:'I’m not perfect. I make mistakes, like everyone.', ex:'Everyone makes mistakes. <em>We’re only human.</em>',
+    {words:[['I’m only human','я лише людина']], hl:['I’m only human'], ex:'Everyone makes mistakes. <em>We’re only human.</em>',
       note:'People say this after a small mistake: “Sorry, I forgot. I’m only human.”', start:2.4, end:12.9},
-    {words:['foolish'], hl:['foolish'], mean:'Maybe I’m acting in a silly way.', ex:'That was a <em>foolish</em> idea.', start:13.1, end:15.3},
-    {words:['blind'], hl:['blind'], mean:'Maybe I can’t see the truth.', ex:'Love is <em>blind</em>.', start:15.2, end:16.8},
-    {words:['see through','behind'], hl:['see through','behind'], mean:'I think I understand what is really going on.', ex:'I can <em>see through</em> his excuses.', start:16.7, end:20.1},
-    {words:['no way to','prove'], hl:['no way to','prove'], mean:'I can’t show that it’s true, so maybe I’m wrong.', ex:'Can you <em>prove</em> it?',
+    {words:[['foolish','дурний, нерозумний']], hl:['foolish'], ex:'That was a <em>foolish</em> idea.', start:13.1, end:15.3},
+    {words:[['blind','сліпий']], hl:['blind'], ex:'Love is <em>blind</em>.', start:15.2, end:16.8},
+    {words:[['see through','бачити наскрізь'],['behind','за, позаду']], hl:['see through','behind'], ex:'I can <em>see through</em> his excuses.', start:16.7, end:20.1},
+    {words:[['no way to','немає як'],['prove','довести']], hl:['no way to','prove'], ex:'Can you <em>prove</em> it?',
       note:'He sings “Got no way to prove it”. In fast, casual English people drop “I’ve”: (I’ve) got no way to…', start:20.0, end:24.5}
   ]},
   {name:'Part 2', start:24.5, end:37.6, lines:[
-    {words:['after all'], hl:['after all'], mean:'Remember, I’m just a person.', ex:'Don’t be angry with him. He’s only a kid, <em>after all</em>.',
+    {words:[['after all','зрештою, усе-таки']], hl:['after all'], ex:'Don’t be angry with him. He’s only a kid, <em>after all</em>.',
       note:'“After all” here means “don’t forget that…”. It doesn’t mean “finally”.', start:24.5, end:30.7},
-    {words:['put the blame on (someone)'], hl:['put your blame on','put the blame on'], mean:'Don’t say it’s my fault.', ex:'Don’t <em>put the blame on</em> me. It wasn’t my fault.',
+    {words:[['put the blame on (someone)','звинувачувати (когось)']], hl:['put your blame on','put the blame on'], ex:'Don’t <em>put the blame on</em> me. It wasn’t my fault.',
       note:'He sings both “your blame” and “the blame”. In everyday English people usually just say “Don’t blame me.”', start:30.7, end:37.6}
   ]}
 ];
@@ -238,11 +239,10 @@ function render(){
       <p class="ex">Then we break it down line by line.</p>
       <button class="tiny skip ${h ? '' : 'ghost'}" id="skip" data-to="${nextPart > -1 ? nextPart : STEPS.length - 1}">Skip to ${nextPart > -1 ? PARTS[s.pn + 1].name : 'My words'} →</button>`;
   } else if (s.kind === 'line'){
-    html = `<div class="words">${s.words.map((en) => {
+    html = `<div class="words">${s.words.map(([en, ua]) => {
         const on = dict.some((d) => d.en === en);
-        return `<div class="w"><b>${esc(en)}</b><button class="add" data-en="${esc(en)}" aria-pressed="${on}" aria-label="${on ? 'Remove from my words' : 'Add to my words'}">${on ? '✓' : '+'}</button></div>`;
+        return `<div class="w"><b>${esc(en)}</b><button class="add" data-en="${esc(en)}" aria-pressed="${on}" aria-label="${on ? 'Remove from my words' : 'Add to my words'}">${on ? '✓' : '+'}</button><span class="ua">${esc(ua)}</span></div>`;
       }).join('')}</div>
-      <p class="mean ${h ? '' : 'ghost'}"><span>What it means</span>${esc(s.mean)}</p>
       <p class="ex">${s.ex}</p>
       ${s.note ? `<div class="notewrap"><button class="tiny" id="noteBtn" aria-expanded="false">💡 Note</button><p class="tip" id="noteText" hidden>${esc(s.note)}</p></div>` : ''}`;
   } else if (s.kind === 'again'){
