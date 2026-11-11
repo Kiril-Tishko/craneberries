@@ -68,7 +68,9 @@ She once forwarded a whole reply to a student by mistake.
 - The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
   comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
   Put those first; keep subtitles short or leave them out.
-- **Words card**: only words the student actually searched for, not words you prompted in a drill.
+- **Words card** ("Don't forget"): only words the student **forgot** in the lesson (asked again, couldn't recall),
+  not words you prompted in a drill. Brand-new words go into the next lesson's page review, not on the card
+  (rule from Nov 11 on; earlier cards stay as they are).
   For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
@@ -111,8 +113,6 @@ She once forwarded a whole reply to a student by mistake.
   - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`.
     The screen shows only the Ukrainian; one button gives three steps: 💡 Hint (the sentence with a blank, "Is it ____?"),
     💡 First letter ("Is it m________?"), Answer. Natural, everyday Ukrainian prompts (no odd words like «здирство»).
-  - Review / repeat parts hold only words from earlier lessons (the ones the student forgot, or older ones not
-    practiced lately). A lesson's new words are reviewed on the NEXT lesson's page, never on the same page.
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
