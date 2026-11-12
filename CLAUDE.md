@@ -121,6 +121,10 @@ She once forwarded a whole reply to a student by mistake.
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
+  - **Nothing to guess**: every exercise shows exactly what to say. Give the Ukrainian sentence itself, not a
+    situation the student has to interpret, plus the English sentence with a gap and first letters when the
+    student's `brief` asks for it (`C(who, ua, 'My c______ takes an hour.', 'My [commute] takes an hour.')`).
+    Don't ask a student to fix a form she doesn't know is wrong: give the `rule` screen first, then the drills.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
