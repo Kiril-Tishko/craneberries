@@ -65,6 +65,9 @@ She once forwarded a whole reply to a student by mistake.
 - The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
   comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
   Put those first; keep subtitles short or leave them out.
+- **Pictures first, for every student**: a card should be understood at a glance: big pictures, almost nothing
+  to read (picture tiles with `grid: true`; picture rows when the words are long). Give about 3 cards to choose
+  from; she usually sends one.
 - **Cards are a quick recap of what was said, never something the student sees for the first time.**
   - Words card ("Don't forget"): only words the student **forgot** in the lesson (asked again, couldn't recall).
   - "Say it like this": the phrases that were corrected in the lesson.
@@ -87,7 +90,7 @@ She once forwarded a whole reply to a student by mistake.
 - **Reading texts**: only when she asks. Give plain text in chat, not pictures, no questions at the end.
   Stories must not describe the student's own life or retell what she told the teacher (her appointment,
   her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
-  structure from their last lesson. ~120–170 words for A2; shorter when the student's `brief` says so.
+  structure from their last lesson. ~80–120 words for A2 (she asked for shorter texts); shorter, or none, when the student's `brief` says so.
   Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
   emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
   she asked about but never got taught (e.g. "interrupt") stays out until it has been taught.
