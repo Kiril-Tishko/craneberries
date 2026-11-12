@@ -102,8 +102,11 @@ She once forwarded a whole reply to a student by mistake.
   (hidden until tapped) only where something is easy to miss. In future video lessons (podcasts, shows), tapping
   any word shows its Ukrainian translation.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
-  content file like `example-content.js`, record it with `extract.js` + `voice.py`, then `build.py`, test every
-  screen at phone and laptop size, publish as a new artifact with the mp3s in `files`):
+  content file like `example-content.js` in the scratchpad; `prep.py <content.js> "<Title>" <work-dir>` records
+  the lines and builds `<work-dir>/page.html`; `qa.js <work-dir>` checks every screen at phone and laptop size
+  (no scrolling, nothing jumps, every line has sound) and must say "no problems"; look at a few screens yourself;
+  publish as a new artifact with `root: <work-dir>` and the mp3s listed in `files.json`; add the link to
+  `materials/<slug>`):
   - **One topic per lesson** by default (e.g. "At the dentist"). When she lists the parts she wants, follow her
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
