@@ -29,6 +29,12 @@ database, in the `brief` field of `students/<slug>` (list the `students` collect
   font, big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
   with an emoji each, no "not X" notes and no wrong forms.
 
+**Audio.** When she sends recordings (the PC one and the phone one), run
+`python3 tools/audio/lesson-audio.py <work-dir> --pc <file> --phone <file>` (add `--pc-is-student` when the PC
+recorded only the student) with `<work-dir>` in the scratchpad. Work from `transcript.txt` (one turn per line,
+S = student, T = teacher, PC times for timestamps; ⁽NN⁾ = recognizer unsure), set `source: "audio"`, and tell her
+in one line how good the transcript was (`quality.txt`). Misheard words are pronunciation hints, not proof.
+
 1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
 2. Render the cards: `node tools/render-cards.js <lesson.json> <out-dir>`, then look at them.
 3. Upload the PNGs to the artifact: Artifact tool, `asset: true`, `url`, `file_paths`. Put the returned
