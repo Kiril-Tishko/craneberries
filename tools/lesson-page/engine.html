@@ -310,7 +310,7 @@ function view(s){
     // start, the full sentence takes its place (never both). A Ukrainian prompt or a crossed-out wrong form stays.
     const full = s.ans.replace(/[\[\]]/g, '');
     const start = s.subj.replace(/\s*(…|\.\.\.)\s*$/, '');
-    const inPlace = s.inline != null ? s.inline : (/_/.test(s.subj) || s.dots !== false || start !== s.subj || full.toLowerCase().startsWith(start.toLowerCase()));
+    const inPlace = s.inline != null ? s.inline : (/_|…/.test(s.subj) || s.dots !== false || start !== s.subj || full.toLowerCase().startsWith(start.toLowerCase()));
     const hl = esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>');
     return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
