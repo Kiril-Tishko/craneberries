@@ -132,9 +132,17 @@ She once forwarded a whole reply to a student by mistake.
     student's `brief` asks for it (`C(who, ua, 'My c______ takes an hour.', 'My [commute] takes an hour.')`).
     Don't ask a student to fix a form she doesn't know is wrong: give the `rule` screen first, then the drills.
   - **No one-word hints** (a lone English word under the Ukrainian line confuses). For a longer sentence, show the
-    Ukrainian line and the first English words with "…"; the answer continues after the dots and the start is not
-    shown twice: `{t:'flip', from: ua, subj: 'Thanks! I like …', ans: 'Thanks! I like [yours too].', inline: true,
-    dots: false}`. `hear: 'Nice hat!'` on a flip adds a "You hear" bubble (playable) for the line being answered.
+    Ukrainian line and the first English words with "…": `{t:'flip', from: ua, subj: 'Thanks! I like …',
+    ans: 'Thanks! I like [yours too].', dots: false}`. `hear: 'Nice hat!'` on a flip adds a "You hear" bubble
+    (playable) for the line being answered.
+  - **The answer appears where it was asked, once**: on Answer the full sentence takes the place of the gap line
+    ("We have a lot i_ c_____." becomes "We have a lot in common."); never the gap line and the answer together.
+    The engine does this for every `flip` whose `subj` has a gap, ends with "…" or is the start of the answer.
+  - **Nothing jumps** when a button is tapped: parts that appear later keep their space from the start
+    (check with a before/after position test on every screen).
+  - A useful frame ("Can I get …?") gets drilled with many different things: first the start is shown, then the
+    frame is the gap ("C__ I g__ a receipt, please?"), then the whole sentence from the Ukrainian line.
+  - Not too many topics: about three parts of content between the opening recall and "Before you go".
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.

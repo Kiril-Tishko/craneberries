@@ -27,6 +27,12 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+/* No jumping: a part that appears on a tap keeps its place from the start (invisible, not removed),
+   and parts that replace each other (gap line → full sentence) share one cell. */
+#card [data-part][hidden],#card [data-cue][hidden],#card [data-hide-on-ans][hidden]{display:block!important;visibility:hidden}
+#card .row[data-part][hidden]{display:flex!important}
+.stack{display:grid;width:100%;justify-items:center;align-items:center}
+.stack>*{grid-area:1/1}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -96,7 +102,8 @@ a.btn.main{color:#fff}
 .mail .mh{font-size:13px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:6px}
 .mail p{margin:0 0 clamp(2px,.6vh,6px);cursor:pointer}
 .mail .gap{height:clamp(4px,1vh,10px)}
-.ans .sp,.after .sp{width:34px;height:34px;font-size:15px}
+.ans .sp,.after .sp,.inplace .sp{width:34px;height:34px;font-size:15px}
+.big.inplace{color:var(--accent)}
 @media (min-width:760px){.chat{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(7,auto);column-gap:18px;max-width:none}.bub{justify-self:start}.bub.me{justify-self:end}}
 .bub.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:var(--accent-soft);color:var(--accent);font-weight:700}
 
@@ -274,8 +281,8 @@ function view(s){
     <div class="who">🧠 Say it in English</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="recall-ua">${esc(s.ua)}</div>
-    ${hinted ? `<div class="cueline" data-cue="1" hidden>${line(gap)}</div><div class="cueline" data-cue="2" hidden>${line(first)}</div>` : ''}
-    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(plain)}</span></div>
+    <div class="stack">${hinted ? `<div class="cueline" data-cue="1" hidden>${line(gap)}</div><div class="cueline" data-cue="2" hidden>${line(first)}</div>` : ''}
+    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(plain)}</span></div></div>
     <div class="row">${hinted ? '<button class="btn" data-hint="0">💡 Hint</button>' : '<button class="btn" data-show="ans">Answer</button>'}</div>`;
   }
   if (s.t === 'sound') return `
@@ -297,14 +304,26 @@ function view(s){
     <div class="who">${esc(s.label || '📌 How it works')}</div>
     <div class="rules">${s.rows.map(([icon, head, text, ex]) => `<div class="rulebox"><div class="rh">${icon} ${xs(head)}</div>
       ${text ? `<div class="rt">${xs(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${xs(x)}</div>`).join('')}</div></div>`).join('')}</div>`;
-  if (s.t === 'flip') return `
+  if (s.t === 'flip'){
+    // The answer is shown where it was asked: when the prompt is the English sentence with a gap or only its
+    // start, the full sentence takes its place (never both). A Ukrainian prompt or a crossed-out wrong form stays.
+    const full = s.ans.replace(/[\[\]]/g, '');
+    const start = s.subj.replace(/\s*(…|\.\.\.)\s*$/, '');
+    const inPlace = s.inline != null ? s.inline : (/_/.test(s.subj) || s.dots !== false || start !== s.subj || full.toLowerCase().startsWith(start.toLowerCase()));
+    const hl = esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>');
+    return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     ${s.hear ? `<div class="them"><div class="t"><span class="lbl">You hear</span>${esc(s.hear)}</div>${spk(s.hear)}</div>` : ''}
     ${s.from ? `<div class="when" style="font-size:clamp(18px,3vh,24px)">${xs(s.from)}</div>` : ''}
-    <div class="big"${s.inline ? ' data-hide-on-ans' : ''}>${xs(s.subj)}${s.dots === false ? '' : ' …'}</div>
-    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(s.ans.replace(/[\[\]]/g, ''))}</span></div>
-    <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
+    ${inPlace ? `<div class="stack">
+      <div class="big" data-hide-on-ans>${xs(s.subj)}${s.dots === false ? '' : ' …'}</div>
+      <div class="big inplace" data-part="ans" hidden>${hl}</div></div>
+    <div class="row"><button class="btn" data-show="ans">Answer</button>${spk(full) ? `<button class="btn" data-say="${esc(full)}" data-listen hidden>🔊 Listen</button>` : ''}</div>` : `
+    <div class="big">${xs(s.subj)}</div>
+    <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${hl}</span> ${spk(full)}</span></div>
+    <div class="row"><button class="btn" data-show="ans">Answer</button></div>`}`;
+  }
   if (s.t === 'mine'){
     let saved = [];
     try { saved = JSON.parse(localStorage.getItem('lesson-mine') || '[]'); } catch (e) {}
@@ -380,7 +399,7 @@ card.addEventListener('click', (e) => {
     card.querySelectorAll('[data-cue]').forEach((x) => { x.hidden = Number(x.dataset.cue) !== n; });
     if (n === 1) hb.textContent = '💡 First letter';
     if (n === 2) hb.textContent = 'Answer';
-    if (n >= 3){ card.querySelectorAll('[data-part="ans"]').forEach((x) => { x.hidden = false; }); hb.hidden = true; }
+    if (n >= 3){ card.querySelectorAll('[data-part="ans"]').forEach((x) => { x.hidden = false; }); hb.style.visibility = 'hidden'; }
     return;
   }
   const sh = e.target.closest('[data-show]');
@@ -390,9 +409,10 @@ card.addEventListener('click', (e) => {
     if (part === 'ans'){
       card.querySelectorAll('[data-part="after"]').forEach((x) => { x.hidden = false; });
       card.querySelectorAll('[data-part="hint"]').forEach((x) => { x.hidden = true; });
-      card.querySelectorAll('[data-hide-on-ans]').forEach((x) => { x.hidden = true; });   // inline flips: the full sentence replaces its start
-      const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.hidden = true;
-    } else if (part === 'hint') sh.hidden = true;
+      card.querySelectorAll('[data-hide-on-ans]').forEach((x) => { x.hidden = true; });   // the full sentence takes the place of its gap or start
+      const l = card.querySelector('[data-listen]'); if (l){ l.hidden = false; sh.hidden = true; }   // Answer button becomes Listen, same size
+      const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.style.visibility = 'hidden';
+    } else if (part === 'hint') sh.style.visibility = 'hidden';
     return;
   }
   if (e.target.closest('[data-change]')){
