@@ -110,6 +110,7 @@ a.btn.main{color:#fff}
 .mine{width:100%;max-width:520px;display:flex;flex-direction:column;gap:12px}
 .mine input{width:100%;font:inherit;font-size:20px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
 .mine input:focus{outline:none;border-color:var(--accent)}
+.saved{font-size:14px;font-weight:600;color:var(--muted);min-height:1.3em}
 
 .nav{flex:none;display:flex;gap:12px;justify-content:space-between;align-items:center}
 .nav button{border:0;border-radius:18px;font-weight:600;font-size:18px;padding:14px 22px}
@@ -325,13 +326,13 @@ function view(s){
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`}`;
   }
   if (s.t === 'mine'){
-    let saved = [];
-    try { saved = JSON.parse(localStorage.getItem('lesson-mine') || '[]'); } catch (e) {}
+    const saved = mineLoad();
     return `
     <div class="who">✍️ This week</div>
     <div class="big" style="font-size:clamp(24px,5vw,36px)">3 sentences I will use this week</div>
     <div class="mine">${[0, 1, 2].map((n) => `<input type="text" data-mine="${n}" value="${esc(saved[n] || '')}"
-      placeholder="${esc((s.ph || [])[n] || '')}" aria-label="Sentence ${n + 1}">`).join('')}</div>`;
+      placeholder="${esc((s.ph || [])[n] || '')}" aria-label="Sentence ${n + 1}" autocomplete="off">`).join('')}</div>
+    <div class="saved" id="saved" aria-live="polite">${saved.some(Boolean) ? '✓ Saved' : '&nbsp;'}</div>`;
   }
   return '';
 }
@@ -425,13 +426,45 @@ card.addEventListener('click', (e) => {
     const b = card.querySelector('[data-say]'); if (b) b.dataset.say = s.pre + s.opts[k] + s.post;
   }
 });
+/* ---------- "My sentences": kept as they are typed, so a reload or a closed tab loses nothing ----------
+   Two places: this browser (localStorage, at once) and, for a signed-in viewer of the published page, that
+   person's private rows in the page database (publish with capabilities db + user). Either one is enough. */
+const MINE_KEY = 'lesson-mine';
+let mineMem = null, mineDoc = null, mineTimer = 0;
+function mineLoad(){
+  if (mineMem) return mineMem;
+  try { mineMem = JSON.parse(localStorage.getItem(MINE_KEY) || '[]'); } catch (e) { mineMem = []; }
+  if (!Array.isArray(mineMem)) mineMem = [];
+  return mineMem;
+}
+function mineMark(t){ const x = document.getElementById('saved'); if (x) x.textContent = t; }
+function mineSave(all){
+  mineMem = all; let ok = false;
+  try { localStorage.setItem(MINE_KEY, JSON.stringify(all)); ok = true; } catch (e) {}
+  mineMark(ok ? '✓ Saved' : '…');
+  if (!mineDoc) return;
+  clearTimeout(mineTimer);
+  mineTimer = setTimeout(() => { mineDoc.set({ s: all, at: Date.now() }).then(() => mineMark('✓ Saved'), () => {}); }, 700);
+}
 card.addEventListener('input', (e) => {
-  const inp = e.target.closest('[data-mine]'); if (!inp) return;
-  try {
-    const all = [...card.querySelectorAll('[data-mine]')].map((x) => x.value);
-    localStorage.setItem('lesson-mine', JSON.stringify(all));
-  } catch (err) {}
+  if (!e.target.closest('[data-mine]')) return;
+  mineSave([...card.querySelectorAll('[data-mine]')].map((x) => x.value));
 });
+(async () => {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    const id = db && user ? await user.id() : null; if (!id) return;
+    mineDoc = db.collection('data/users/' + id).doc('mine');
+    const snap = await mineDoc.get(), remote = snap.exists ? (snap.data().s || []) : [];
+    const local = mineLoad();
+    if (local.some(Boolean)){ if (JSON.stringify(local) !== JSON.stringify(remote)) mineSave(local); return; }
+    if (!remote.some(Boolean)) return;
+    mineMem = remote; try { localStorage.setItem(MINE_KEY, JSON.stringify(remote)); } catch (e) {}
+    const inputs = [...card.querySelectorAll('[data-mine]')];
+    if (inputs.length && !inputs.some((x) => x.value)){ inputs.forEach((x, n) => { x.value = remote[n] || ''; }); mineMark('✓ Saved'); }
+  } catch (e) {}
+})();
 document.addEventListener('keydown', (e) => {
   if (e.target.matches('input')) return;
   if (e.key === 'ArrowRight') go(1);

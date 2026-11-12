@@ -52,6 +52,17 @@ goes in its own fenced block that contains only what the student should read: no
 Everything outside the block is for the teacher.
 She once forwarded a whole reply to a student by mistake.
 
+## When the user sends audio
+
+Recordings never leave the container: `python3 tools/audio/transcribe.py <file> <scratchpad prefix>` (local
+Whisper, about 6x real time; `pip install faster-whisper soundfile`, model from huggingface.co). Then the same steps
+as for a transcript, with `source: "audio"`.
+- A phone recording catches mostly the teacher; a PC recording is one mixed track. There are no speaker labels:
+  infer who spoke from context and say so in the summary. Don't guess what can't be told.
+- Pronunciation notes for the student and the teacher: a word the recognizer got wrong or was unsure of is a hint,
+  not proof. Mark it `confidence: check`.
+- Chat uploads are limited to 30 MB. Speech needs no more than mono 32 kbps (an hour ≈ 15 MB).
+
 ## What the teacher asked for
 
 - **Replies in chat are short**: say briefly what you did and give the links; don't list the lesson content.
@@ -124,6 +135,11 @@ She once forwarded a whole reply to a student by mistake.
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
+    What is typed there must survive a reload or a closed tab: the engine saves on every keystroke, in the browser
+    and in the viewer's private rows of the page database. So publish every lesson page with
+    `capabilities: {db: {}, user: {}}` (test: type, reload, the text is still there, "✓ Saved" shows).
+  - A brand-new word is practiced in one form only. "Change the time" and "every day or now" drills use verbs the
+    student already owns (send, call, work); a new word in a tense drill confuses (interrupt → interrupting did).
   - **More drilling than new material**: few new words or phrases on a page (about 8 at most). Each one comes
     back at least three times in different sentences (gaps, answers, change the time, a final "Before you go"
     check), and words from earlier lessons are recycled inside the new sentences. The first part repeats only
