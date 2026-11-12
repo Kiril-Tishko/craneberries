@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Real Video Clips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#EEF1F4;--surface:#FFF;--ink:#141B24;--muted:#5D6773;--line:#D5DBE2;--accent:#C2410C;--accent-ink:#FFF;
+  --ua:#5B4A0E;--ua-bg:#FFF2C6;--font:"Lexend","Segoe UI",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0F141A;--surface:#18202A;--ink:#E8EDF2;--muted:#9AA6B3;--line:#2A3542;
+  --accent:#FB8A4C;--accent-ink:#0F141A;--ua:#F4DD8A;--ua-bg:#3A3214;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+  padding:max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 12px max(16px,env(safe-area-inset-left))}
+.app{max-width:1100px;margin:0 auto;display:grid;gap:12px}
+.words{display:flex;gap:8px;flex-wrap:wrap}
+.words button{font:600 16px var(--font);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.words button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+main{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
+@media (max-width:820px){main{grid-template-columns:1fr}.card{order:-1;padding:14px;gap:6px}.pic{font-size:40px}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start}
+.pic{font-size:56px;line-height:1}
+.en{font-size:clamp(28px,4vw,40px);font-weight:800;line-height:1.15}
+.uaw{justify-self:start;background:var(--ua-bg);color:var(--ua);padding:4px 12px;border-radius:10px;font-weight:600;font-size:18px}
+.count{color:var(--muted);font-size:14px;font-weight:600;min-height:20px}
+.yg{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-height:200px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.controls button{font:600 17px var(--font);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.controls .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.controls button[aria-pressed="true"]{outline:3px solid var(--accent)}
+.foot{color:var(--muted);font-size:13px}
+.foot a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="words" id="words"></nav>
+  <main>
+    <div class="yg"><div id="widget"></div></div>
+    <section class="card">
+      <div class="pic" id="pic"></div>
+      <div class="en" id="en"></div>
+      <div class="uaw" id="ua"></div>
+      <div class="count" id="count"></div>
+      <div class="controls">
+        <button class="primary" id="again">▶ Again</button>
+        <button id="next">Another clip →</button>
+        <button id="slow" aria-pressed="false">🐢 Slower</button>
+      </div>
+    </section>
+  </main>
+  <p class="foot">Clips: Powered by <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, American English, restricted mode, from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
+</div>
+<script>
+// Words for the demo. A lesson page can also open this page for any word: …/real-video/#q=rip-off&ua=здирство
+const WORDS = [
+  {en: 'rip-off', q: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸'},
+  {en: 'mandatory', q: 'mandatory', ua: 'обов’язковий', pic: '📋'},
+  {en: 'Is that a thing?', q: 'is that a thing', ua: 'Таке буває? / Це щось відоме?', pic: '🤔'},
+  {en: 'excuse', q: 'excuse', ua: 'відмовка, виправдання', pic: '🙈'},
+];
+const $ = (id) => document.getElementById(id);
+const h = new URLSearchParams(location.hash.slice(1));
+if (h.get('q')) WORDS.unshift({en: h.get('q'), q: h.get('q'), ua: h.get('ua') || '', pic: h.get('pic') || ''});
+
+let widget = null, ready = false, cur = 0, slow = false, track = 0, total = 0, pending = null;
+$('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${w.en}</button>`).join('');
+$('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); };
+
+function pick(i){
+  cur = i; const w = WORDS[i];
+  document.querySelectorAll('#words button').forEach((b, n) => b.setAttribute('aria-current', n === i));
+  $('pic').textContent = w.pic; $('en').textContent = w.en; $('ua').textContent = w.ua; $('ua').hidden = !w.ua;
+  $('count').textContent = 'Loading…';
+  if (ready) widget.fetch(w.q, 'english', 'us'); else pending = w.q;
+}
+
+// YouGlish widget: video + the sentence only; our own buttons below. It stops after one sentence.
+const tag = document.createElement('script');
+tag.src = 'https://youglish.com/public/emb/widget.js';
+document.head.appendChild(tag);
+window.onYouglishAPIReady = function(){
+  widget = new YG.Widget('widget', {
+    components: 8,          // caption only
+    autoStart: 1,
+    restrictionMode: 1,     // block inappropriate videos
+    captionSize: 24,
+    events: {
+      onFetchDone: (e) => { total = e.totalResult; track = 0; show(); },
+      onVideoChange: (e) => { track = e.trackNumber; show(); if (slow) widget.setSpeed(0.75); },
+      onCaptionConsumed: () => widget.pause(),
+      onError: () => { $('count').textContent = 'This clip did not load. Tap “Another clip”.'; }
+    }
+  });
+  ready = true;
+  if (pending) { widget.fetch(pending, 'english', 'us'); pending = null; }
+};
+function show(){
+  $('count').textContent = total ? `Clip ${track || 1} of ${total}` : 'No clips found for this one.';
+}
+$('again').onclick = () => widget && widget.replay();
+$('next').onclick = () => widget && widget.next();
+$('slow').onclick = () => {
+  slow = !slow; $('slow').setAttribute('aria-pressed', slow);
+  if (widget) widget.setSpeed(slow ? 0.75 : 1);
+};
+pick(0);
+</script>
+</body>
+</html>
