@@ -121,6 +121,12 @@ She once forwarded a whole reply to a student by mistake.
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
+  - **More drilling than new material**: few new words or phrases on a page (about 8 at most). Each one comes
+    back at least three times in different sentences (gaps, answers, change the time, a final "Before you go"
+    check), and words from earlier lessons are recycled inside the new sentences. The first part repeats only
+    what the student has already had: never open with something new.
+  - No notes about where a word is used («Так кажуть в Америці»): useless in a lesson. Some students need
+    international English (see their `brief`): for them, avoid words that are US-only.
   - **Nothing to guess**: every exercise shows exactly what to say. Give the Ukrainian sentence itself, not a
     situation the student has to interpret, plus the English sentence with a gap and first letters when the
     student's `brief` asks for it (`C(who, ua, 'My c______ takes an hour.', 'My [commute] takes an hour.')`).
