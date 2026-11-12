@@ -29,12 +29,6 @@ database, in the `brief` field of `students/<slug>` (list the `students` collect
   font, big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
   with an emoji each, no "not X" notes and no wrong forms.
 
-**Audio.** When she sends recordings (the PC one and the phone one), run
-`python3 tools/audio/lesson-audio.py <work-dir> --pc <file> --phone <file>` (add `--pc-is-student` when the PC
-recorded only the student) with `<work-dir>` in the scratchpad. Work from `transcript.txt` (one turn per line,
-S = student, T = teacher, PC times for timestamps; ⁽NN⁾ = recognizer unsure), set `source: "audio"`, and tell her
-in one line how good the transcript was (`quality.txt`). Misheard words are pronunciation hints, not proof.
-
 1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
 2. Render the cards: `node tools/render-cards.js <lesson.json> <out-dir>`, then look at them.
 3. Upload the PNGs to the artifact: Artifact tool, `asset: true`, `url`, `file_paths`. Put the returned
@@ -60,11 +54,16 @@ She once forwarded a whole reply to a student by mistake.
 
 ## When the user sends audio
 
-Recordings never leave the container: `python3 tools/audio/transcribe.py <file> <scratchpad prefix>` (local
-Whisper, about 6x real time; `pip install faster-whisper soundfile`, model from huggingface.co). Then the same steps
-as for a transcript, with `source: "audio"`.
-- A phone recording catches mostly the teacher; a PC recording is one mixed track. There are no speaker labels:
-  infer who spoke from context and say so in the summary. Don't guess what can't be told.
+Recordings never leave the container (work in the scratchpad; `pip install faster-whisper soundfile`, model from
+huggingface.co, about 15 min per hour of audio).
+- **PC + phone recordings of the same lesson**: `python3 tools/audio/lesson-audio.py <work-dir> --pc <file> --phone <file>`
+  (add `--pc-is-student` when the PC recorded only the student). It lines the two up and labels every word: the teacher
+  is loud on the phone, the student is almost silent there. Work from `transcript.txt` (one turn per line, S = student,
+  T = teacher, PC times; ⁽NN⁾ = recognizer unsure) and tell her in one line how good it was (`quality.txt`).
+- **One recording only**: `python3 tools/audio/transcribe.py <file> <scratchpad prefix>`. A phone recording catches
+  mostly the teacher; a PC recording is one mixed track. No speaker labels: infer who spoke from context and say so
+  in the summary. Don't guess what can't be told.
+- Then the same steps as for a transcript, with `source: "audio"`.
 - Pronunciation notes for the student and the teacher: a word the recognizer got wrong or was unsure of is a hint,
   not proof. Mark it `confidence: check`.
 - Chat uploads are limited to 30 MB. Speech needs no more than mono 32 kbps (an hour ≈ 15 MB).
