@@ -300,8 +300,9 @@ function view(s){
   if (s.t === 'flip') return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
-    <div class="when" style="font-size:clamp(18px,3vh,24px)">${xs(s.from)}</div>
-    <div class="big">${xs(s.subj)}${s.dots === false ? '' : ' …'}</div>
+    ${s.hear ? `<div class="them"><div class="t"><span class="lbl">You hear</span>${esc(s.hear)}</div>${spk(s.hear)}</div>` : ''}
+    ${s.from ? `<div class="when" style="font-size:clamp(18px,3vh,24px)">${xs(s.from)}</div>` : ''}
+    <div class="big"${s.inline ? ' data-hide-on-ans' : ''}>${xs(s.subj)}${s.dots === false ? '' : ' …'}</div>
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(s.ans.replace(/[\[\]]/g, ''))}</span></div>
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`;
   if (s.t === 'mine'){
@@ -389,6 +390,7 @@ card.addEventListener('click', (e) => {
     if (part === 'ans'){
       card.querySelectorAll('[data-part="after"]').forEach((x) => { x.hidden = false; });
       card.querySelectorAll('[data-part="hint"]').forEach((x) => { x.hidden = true; });
+      card.querySelectorAll('[data-hide-on-ans]').forEach((x) => { x.hidden = true; });   // inline flips: the full sentence replaces its start
       const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.hidden = true;
     } else if (part === 'hint') sh.hidden = true;
     return;

@@ -131,6 +131,11 @@ She once forwarded a whole reply to a student by mistake.
     situation the student has to interpret, plus the English sentence with a gap and first letters when the
     student's `brief` asks for it (`C(who, ua, 'My c______ takes an hour.', 'My [commute] takes an hour.')`).
     Don't ask a student to fix a form she doesn't know is wrong: give the `rule` screen first, then the drills.
+  - **No one-word hints** (a lone English word under the Ukrainian line confuses). For a longer sentence, show the
+    Ukrainian line and the first English words with "…"; the answer continues after the dots and the start is not
+    shown twice: `{t:'flip', from: ua, subj: 'Thanks! I like …', ans: 'Thanks! I like [yours too].', inline: true,
+    dots: false}`. `hear: 'Nice hat!'` on a flip adds a "You hear" bubble (playable) for the line being answered.
+  - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
