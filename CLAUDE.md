@@ -16,22 +16,18 @@ Polish-looking fragments are transcription errors of Ukrainian, never Russian or
 recorded on the teacher's phone and catch mostly the teacher's voice: say so and keep the student's
 mistakes list short. The teacher sometimes sends the lesson materials (slides) too.
 
-Students (all learn American English):
-- Sergii: B1, Tuesdays at 4 PM. Pays weekly for himself and his daughter Vaselina (also a student).
-  Dislikes exercises and websites: plan his lessons as talk, cards very visual with little to read.
-- Vaselina: a child, A1 (estimate), Sergii's daughter. Kids' materials, her topics (toys, animals, food);
-  she tells long stories in Ukrainian. Her ledger is `billing/vaselina` (paid by Sergii).
-  Her cards must be super simple and playful: set `kid: true` in her lesson JSON (bright tiles, round font,
-  big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
+**Students.** All learn American English. Their notes are **not in this repo, because it is public**: each
+student's level, schedule, billing rule, goals, preferences and what they have covered are in the site
+database, in the `brief` field of `students/<slug>` (list the `students` collection to see who there is).
+- Read the student's `brief` before any work for them. When the teacher tells you something new about a
+  student, update the `brief` there (short; no sensitive details such as health, family or money troubles).
+- Never write a student's name or personal details in this repo: not in files, not in commit messages.
+- The `brief` is for planning only. Nothing personal about a student or about the teacher (job details, goals,
+  family, where they live, what they told the teacher) may appear in anything a student can see: lesson pages,
+  cards, texts.
+- A child's cards must be super simple and playful: set `kid: true` in the lesson JSON (bright tiles, round
+  font, big pictures). About 6 words with emojis and no examples, a `qa` cheat sheet, 2–3 very short phrases
   with an emoji each, no "not X" notes and no wrong forms.
-- Vova: A2+, 3 lessons a week, pays for 10-lesson packages. Knows don't / doesn't have well (Julia is the one who mixes it up).
-- Victoria: A2- (estimate), lives in western Canada, works in delivery. 2–3 lessons a week, payment not decided.
-  Survival block first: one practical pattern at a time from her real week, lots of repetition, then unit 1.
-  Keep the short forms that already work for her ("Sorry?" to ask for a repeat); don't teach longer versions.
-- Julia: A2+, pays after each lesson and is always paid: never log her lessons or payments in billing. Has had present simple, present continuous, past simple and will; past
-  continuous only a glimpse (not for drills yet).
-- Mariya: A2, 2 lessons a week, pays weekly.
-- Other students are on a break.
 
 1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
 2. Render the cards: `node tools/render-cards.js <lesson.json> <out-dir>`, then look at them.
@@ -39,8 +35,9 @@ Students (all learn American English):
    ids into `cards[].asset`.
 4. Write the database rows with ArtifactData `batch` (read first, then pin `if_version` on existing docs):
    - `billing/<slug>`: add `{date, kind: "lesson", n: -1}` for the lesson date unless an entry of kind
-     "lesson" for that date is already there (the teacher may have tapped "− Lesson"). Payments come only
-     from the teacher: add `{date, kind: "paid", n: perPayment}` when she tells you.
+     "lesson" for that date is already there (the teacher may have tapped "− Lesson"), or the student's `brief`
+     says not to log their billing. Payments come only from the teacher: add `{date, kind: "paid", n: perPayment}`
+     when she tells you.
    - `students/<slug>`: create the student, or update `focus` (bump `seen`, set `status` to recurring,
      improving or fixed).
    - `lessons/<slug>-<YYYY-MM-DD>`: the lesson JSON without `studentCards`, plus `cards`.
@@ -81,8 +78,8 @@ She once forwarded a whole reply to a student by mistake.
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
   For A2 and below, write the mouth tips in Ukrainian ("Опустіть щелепу", not "Drop your jaw").
-  Never repeat a pair the student already had (check her earlier lessons' cards first: Julia had desert/dessert
-  and of/off). Fast-speech forms from the lesson (let me → "lemme") are a good alternative.
+  Never repeat a pair the student already had (check their earlier lessons' cards and their `brief` first).
+  Fast-speech forms from the lesson (let me → "lemme") are a good alternative.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time). **Be as blunt as possible**: only the teacher reads it. Keep
@@ -90,11 +87,11 @@ She once forwarded a whole reply to a student by mistake.
 - **Reading texts**: only when she asks. Give plain text in chat, not pictures, no questions at the end.
   Stories must not describe the student's own life or retell what she told the teacher (her appointment,
   her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
-  structure from their last lesson. ~120–170 words for A2, ~60 for Sergii (he dislikes long texts).
+  structure from their last lesson. ~120–170 words for A2; shorter when the student's `brief` says so.
   Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
   emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
-  she asked about but never got taught (e.g. Julia's "interrupt") stays out until it has been taught.
-- **Song lessons** (e.g. Julia: "Human") need the video on the page, which Claude pages can't embed: they live in
+  she asked about but never got taught (e.g. "interrupt") stays out until it has been taught.
+- **Song lessons** (e.g. "Human") need the video on the page, which Claude pages can't embed: they live in
   `docs/` and are served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). Each step shows a few key
   words, then plays just the line that has them (YouTube player in the page). Subtitles under the video load live
   from lrclib.net when the page opens (timed lyrics, key words highlighted); never store lyrics in the repo.
@@ -105,12 +102,12 @@ She once forwarded a whole reply to a student by mistake.
   content file like `example-content.js`, record it with `extract.js` + `voice.py`, then `build.py`, test every
   screen at phone and laptop size, publish as a new artifact with the mp3s in `files`):
   - **One topic per lesson** by default (e.g. "At the dentist"). When she lists the parts she wants, follow her
-    order (Julia: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
+    order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
   - One thing per screen, an "All together" screen at the end of each part, no scrolling.
   - No "change one word" drills that only swap numbers or days: she finds them pointless. Use **change the time**
     instead (`flip`: every day → now / yesterday / tomorrow) with the tenses the student has had.
-  - When the student knows a rule but forgets it in speech (Julia's he/she + s), don't explain it: use
+  - When the student knows a rule but forgets it in speech (he/she + s), don't explain it: use
     `flip` screens (`{t:'flip', from, subj, ans}` with the changed part in [brackets]) so she says it herself.
   - Keep each drill set short (about 4 items). A rule she asks for gets one `rule` screen
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
