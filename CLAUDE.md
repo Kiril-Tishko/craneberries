@@ -71,6 +71,8 @@ huggingface.co, about 15 min per hour of audio).
 ## What the teacher asked for
 
 - **Replies in chat are short**: say briefly what you did and give the links; don't list the lesson content.
+- **Questions to her are multiple choice** (AskUserQuestion, recommended option first), never open questions in chat.
+  When a request is unclear ("a review sheet": page, picture or text?), ask that way before building.
 
 - **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/). IPA goes on the
   teacher site only: **no phonetic transcription on student cards**.
