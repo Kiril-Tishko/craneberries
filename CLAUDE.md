@@ -174,7 +174,8 @@ huggingface.co, about 15 min per hour of audio).
     in (students review in the order they got them; a new order adds useful difficulty). Short "All together" screens
     (about 5 lines fit on a phone).
   - When only part of a lesson uses the page (a song or free talk after it), make the page that much shorter.
-  - **Weekly review sheet** (after a student's review day, see their `brief`): ONE picture, a `phrases` card with
+  - **Weekly review sheet** (after a student's review day, see their `brief`): a `phrases` card (two cards when it is
+    long, split between groups, each under about 1,600 px tall so nothing gets cut or shrunk in chat) with
     the week's words in theme groups split by `{break: true}` (no group names), in a new order, each in a slightly
     changed example sentence (same word, a new short everyday sentence) with the key word in [brackets] and its
     Ukrainian meaning as the note, plus 4–6 older words the student forgot, and the week as `period` at the top.
