@@ -174,6 +174,9 @@ function setJaw(to){
 }
 /* ---------- listening game ---------- */
 let G = { cur: null, right: 0, total: 0 };
+// The student's language for the few interface words (content may set `const LANG = 'ru'`; default Ukrainian).
+const RU = typeof LANG !== 'undefined' && LANG === 'ru';
+const T_ = (uk, ru) => RU ? ru : uk;
 /* ---------- state ---------- */
 let sec = 0, idx = 0;
 const pick = {};            // which option each change-one-thing screen shows
@@ -218,7 +221,7 @@ function view(s){
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="big">${esc(s.en)}</div>
     <div class="when">${esc(s.when)}</div>
-    <div class="row">${spk(s.en)}<button class="btn" data-show="ua">Переклад</button></div>
+    <div class="row">${spk(s.en)}<button class="btn" data-show="ua">${T_('Переклад', 'Перевод')}</button></div>
     <div class="ua" data-part="ua" hidden>${esc(s.ua)}</div>`;
   if (s.t === 'swap'){
     const k = pick[sec + '-' + idx] || 0;
@@ -295,12 +298,12 @@ function view(s){
     <div class="who swapw">👄 Look at the mouth</div>
     ${MOUTH}
     <div class="row">${[s.a, s.b].map((x, i) => `<button class="word" data-pair="${i}">${x.emoji} ${esc(x.w)}</button>`).join('')}</div>
-    <div class="ua" id="ptip">Натисніть на слово 👆</div>`;
+    <div class="ua" id="ptip">${T_('Натисніть на слово 👆', 'Нажмите на слово 👆')}</div>`;
   if (s.t === 'game') return `
     <div class="who hear">👂 Which word do you hear?</div>
     <button class="btn main" data-gplay>▶ Listen</button>
     <div class="row">${s.words.map(([w, e]) => `<button class="word" data-gans="${esc(w)}">${e} ${esc(w)}</button>`).join('')}</div>
-    <div class="score" id="gscore">Натисніть ▶, потім виберіть слово</div>`;
+    <div class="score" id="gscore">${T_('Натисніть ▶, потім виберіть слово', 'Нажмите ▶, потом выберите слово')}</div>`;
   if (s.t === 'rule') return `
     <div class="who">${esc(s.label || '📌 How it works')}</div>
     <div class="rules">${s.rows.map(([icon, head, text, ex]) => `<div class="rulebox"><div class="rh">${icon} ${xs(head)}</div>
@@ -382,13 +385,13 @@ card.addEventListener('click', (e) => {
   const ga = e.target.closest('[data-gans]');
   if (ga){
     const s = SECTIONS[sec].slides[idx], sc = document.getElementById('gscore');
-    if (!G.cur){ sc.textContent = 'Спершу натисніть ▶'; return; }
+    if (!G.cur){ sc.textContent = T_('Спершу натисніть ▶', 'Сначала нажмите ▶'); return; }
     const ok = ga.dataset.gans === G.cur;
     G.total++; if (ok) G.right++;
     ga.classList.add(ok ? 'right' : 'wrong');
     if (!ok) card.querySelector(`[data-gans="${G.cur}"]`).classList.add('right');
     G.cur = null;
-    sc.textContent = `${ok ? '✓' : '✗'}  ${G.right} / ${G.total}` + (G.total >= s.rounds ? (G.right >= s.rounds - 1 ? '  🎉' : '  · ще раз?') : '');
+    sc.textContent = `${ok ? '✓' : '✗'}  ${G.right} / ${G.total}` + (G.total >= s.rounds ? (G.right >= s.rounds - 1 ? '  🎉' : T_('  · ще раз?', '  · ещё раз?')) : '');
     if (G.total >= s.rounds){ G.right = 0; G.total = 0; }
     return;
   }

@@ -11,8 +11,11 @@ artifact's database and asset store.
 
 The transcript is auto-generated and has no speaker labels. The teacher is a Ukrainian speaker who
 teaches in English; students are mostly Ukrainian speakers. Infer who said what from context, and say so
-in the teacher report. The teacher and all students speak only Ukrainian besides English: Russian- or
-Polish-looking fragments are transcription errors of Ukrainian, never Russian or Polish. Some lessons are
+in the teacher report. Besides English, the teacher and the students speak Ukrainian, and everything in their language is Ukrainian.
+**One exception:** a student whose `brief` has `language: Russian` gets lesson pages (content file sets
+`const LANG = 'ru'`), card tips and word translations in Russian, and the Russian in their recordings is real.
+Never carry this over to anyone else. For everyone else, Russian- or Polish-looking fragments are transcription
+errors of Ukrainian, never Russian or Polish. Some lessons are
 recorded on the teacher's phone and catch mostly the teacher's voice: say so and keep the student's
 mistakes list short. The teacher sometimes sends the lesson materials (slides) too.
 
@@ -98,7 +101,7 @@ huggingface.co, about 15 min per hour of audio).
   (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
-  For A2 and below, write the mouth tips in Ukrainian ("Опустіть щелепу", not "Drop your jaw").
+  For A2 and below, write the mouth tips in the student's language ("Опустіть щелепу", not "Drop your jaw").
   Never repeat a pair the student already had (check their earlier lessons' cards and their `brief` first).
   Fast-speech forms from the lesson (let me → "lemme") are a good alternative.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
@@ -125,6 +128,10 @@ huggingface.co, about 15 min per hour of audio).
   (no scrolling, nothing jumps, every line has sound) and must say "no problems"; look at a few screens yourself;
   publish as a new artifact with `root: <work-dir>` and the mp3s listed in `files.json`; add the link to
   `materials/<slug>`):
+  - **Ask her first, for every student**: before building a lesson page, ask what to include with AskUserQuestion
+    (multiple choice, several answers allowed): offer the parts you would pick from the student's last lessons
+    (forgotten words, corrected phrases, uncorrected mistakes, one sound, saved topics, her real situations), with
+    your pick first. Build only what she chose.
   - **One topic per lesson** by default (e.g. "At the dentist"). When she lists the parts she wants, follow her
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
