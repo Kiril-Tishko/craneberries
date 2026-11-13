@@ -79,14 +79,14 @@ const body = {
 
   forms: (c) => `<div class="pp-grid">${c.items.map((f) => `
     <div class="pp"><span class="base">${esc(f.base)} →</span><span class="ppf"><span class="hl">${esc(f.pp)}</span></span></div>`).join('')}</div>
-    ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
+    ${c.examples && c.examples.length ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`,
 
   compare: (c) => `<div class="cmp">${c.cols.map((col) => `
     <div class="cmp-col"><div class="cmp-h"><span class="cmp-emo">${esc(col.emoji)}</span>
       <div><div class="cmp-verb"><span class="hl">${esc(col.head)}</span></div><div class="cmp-rule">${esc(col.rule)}</div></div></div>
       <div class="cmp-items">${col.items.map((i) => `<span class="chip2">${esc(i)}</span>`).join('')}</div></div>`).join('')}</div>
-    ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
+    ${c.examples && c.examples.length ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}
     ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}`,
 
@@ -109,7 +109,7 @@ const body = {
         const cells = [r.base, r.past, r.pp];
         return `<tr>${cells.map((x, i) => `<td class="${cls(i)}">${i === 0 ? `<span class="emo">${esc(r.emoji || '')}</span>` : ''}${esc(x)}</td>`).join('')}</tr>`;
       }).join('')}</tbody></table>
-    ${c.examples ? `<div class="practice"><div class="flabel">In a sentence</div>
+    ${c.examples && c.examples.length ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}`;
   },
 

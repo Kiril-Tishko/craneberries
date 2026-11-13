@@ -167,6 +167,11 @@ huggingface.co, about 15 min per hour of audio).
   - A useful frame ("Can I get …?") gets drilled with many different things: first the start is shown, then the
     frame is the gap ("C__ I g__ a receipt, please?"), then the whole sentence from the Ukrainian line.
   - Not too many topics: about three parts of content between the opening recall and "Before you go".
+  - **Review pages** (a student's review day, see their `brief`): only what was already taught that week, nothing
+    new. Group the words and phrases by theme with no group labels, in a different order from the one they were taught
+    in (students review in the order they got them; a new order adds useful difficulty). Short "All together" screens
+    (about 5 lines fit on a phone).
+  - When only part of a lesson uses the page (a song or free talk after it), make the page that much shorter.
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
