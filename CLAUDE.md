@@ -179,7 +179,8 @@ huggingface.co, about 15 min per hour of audio).
     the week's words in theme groups split by `{break: true}` (no group names), in a new order, each in a slightly
     changed example sentence (same word, a new short everyday sentence) with the key word in [brackets] and its
     Ukrainian meaning as the note, plus 4–6 older words the student forgot, and the week as `period` at the top.
-    Only what was taught: a word that only came up, or that the teacher didn't give, waits (ask her when unsure).
+    Only what was taught. **Before making it, ask her with multiple-choice questions (AskUserQuestion, multiSelect)
+    which of the week's words go in**: she picks them; a word that only came up in a lesson is often not taught yet.
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
