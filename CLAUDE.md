@@ -177,8 +177,8 @@ huggingface.co, about 15 min per hour of audio).
   - **Weekly review sheet** (after a student's review day, see their `brief`): ONE picture, a `phrases` card with
     the week's words in theme groups split by `{break: true}` (no group names), in a new order, each in a slightly
     changed example sentence (same word, a new short everyday sentence) with the key word in [brackets] and its
-    Ukrainian meaning as the note, plus 4–6 older words the student forgot. Only what was taught: a word the teacher
-    didn't give in the lesson waits.
+    Ukrainian meaning as the note, plus 4–6 older words the student forgot, and the week as `period` at the top.
+    Only what was taught: a word that only came up, or that the teacher didn't give, waits (ask her when unsure).
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
@@ -201,7 +201,7 @@ huggingface.co, about 15 min per hour of audio).
 
 ```
 student, date (YYYY-MM-DD), durationMin, topics[], grammar, summary, talk, strengths[], nextWhen (optional),
-kid (optional: true = children's look for every card)
+kid (optional: true = children's look for every card), period (optional: "Nov 9–13", shown on the cards instead of the date)
 words[]        {t, ua, en, ex}
 mistakes[]     {id, priority: high|medium|low, cat, count, t[], said, better, note}
 pronunciation[]{id, confidence: clear|check, issue, evidence, tip}

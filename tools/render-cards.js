@@ -27,7 +27,7 @@ const mark = (s = '') => esc(s).replace(/\[([^\]]+)\]/g, '<span class="hl">$1</s
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const [y, m, d] = lesson.date.split('-').map(Number);
-const dateLabel = `${MONTHS[m - 1]} ${d}`;
+const dateLabel = lesson.period || `${MONTHS[m - 1]} ${d}`;   // `period` ("Nov 9–13") replaces the date, e.g. on a weekly review
 
 const kid = !!lesson.kid;
 const cards = lesson.studentCards || [];
