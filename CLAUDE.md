@@ -33,7 +33,10 @@ database, in the `brief` field of `students/<slug>` (list the `students` collect
   with an emoji each, no "not X" notes and no wrong forms.
 
 1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
-2. Render the cards: `node tools/render-cards.js <lesson.json> <out-dir>`, then look at them.
+2. **Ask her first** which words, phrases and sound go on the cards: AskUserQuestion, multiple choice, several
+   answers allowed, your picks first (forgotten words, corrected phrases, the sound pair). The site report doesn't
+   wait for her answer; the cards do. Then render only what she chose: `node tools/render-cards.js <lesson.json>
+   <out-dir>`, and look at them.
 3. Upload the PNGs to the artifact: Artifact tool, `asset: true`, `url`, `file_paths`. Put the returned
    ids into `cards[].asset`.
 4. Write the database rows with ArtifactData `batch` (read first, then pin `if_version` on existing docs):
@@ -89,6 +92,8 @@ huggingface.co, about 15 min per hour of audio).
 - **Pictures first, for every student**: a card should be understood at a glance: big pictures, almost nothing
   to read (picture tiles with `grid: true`; picture rows when the words are long). Give about 3 cards to choose
   from; she usually sends one.
+- **Review cards and review sheets: ask first**, every time, with multiple-choice questions (several answers
+  allowed) about what goes on them. Never pick the content on your own.
 - **Cards are a quick recap of what was said, never something the student sees for the first time.**
   - Words card ("Don't forget"): only words the student **forgot** in the lesson (asked again, couldn't recall).
   - "Say it like this": the phrases that were corrected in the lesson.
