@@ -174,6 +174,11 @@ huggingface.co, about 15 min per hour of audio).
     in (students review in the order they got them; a new order adds useful difficulty). Short "All together" screens
     (about 5 lines fit on a phone).
   - When only part of a lesson uses the page (a song or free talk after it), make the page that much shorter.
+  - **Weekly review sheet** (after a student's review day, see their `brief`): ONE picture, a `phrases` card with
+    the week's words in theme groups split by `{break: true}` (no group names), in a new order, each in a slightly
+    changed example sentence (same word, a new short everyday sentence) with the key word in [brackets] and its
+    Ukrainian meaning as the note, plus 4–6 older words the student forgot. Only what was taught: a word the teacher
+    didn't give in the lesson waits.
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
@@ -209,6 +214,7 @@ studentCards[] one of:
                     `grid: true` gives the tile grid in the adult look (no reading needed); an item's `svg` replaces
                     the emoji when no emoji fits (🍴 shows a fork AND a knife, 🍽️ a plate with cutlery)
   {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   emoji shows in front of each phrase
+                    `{break: true}` between items leaves a gap: unlabeled groups (weekly review sheet)
                     (with `kid`: colored bubbles, big emoji)
   {type: "qa",      kicker, title, q, pics[{emoji, en}], answers[{emoji, text, tone: yes|no}]}
                     children's cheat sheet: a question bubble with pictures, then big answer tiles
