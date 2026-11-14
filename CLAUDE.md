@@ -131,7 +131,10 @@ huggingface.co, about 15 min per hour of audio).
   Choose the words to learn from the student's level and `brief`, then ask her (multiple choice) which to teach.
   Every word under the video is tappable for its Ukrainian; words left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. A 💡 Note
-  (hidden until tapped) only where something is easy to miss; no "what the line means" box. A video from her
+  (hidden until tapped) only where something is easy to miss; no "what the line means" box. Where a line isn't clear,
+  its note also says in one simple sentence what the author meant (not a translation, not deep). **Every tap gives the
+  word's meaning in that line**: check each word against its lines, above all words with two meanings (to, in, down,
+  take); a key or `later` phrase gives a word its line's meaning. Keep a translation that fits; don't polish it. A video from her
   device (`video: {type: 'file'}`) stays in her browser and its captions come in the link. `?mute` plays silently
   (for testing).
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
