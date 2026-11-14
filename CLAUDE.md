@@ -246,6 +246,9 @@ huggingface.co, about 15 min per hour of audio).
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
+  - Kids' pages: tiny stories as one sentence per screen with a big picture (`P('story', en, ua, '', pic)`), then the
+    whole story (`{t:'email', icon:'📖', label, lines}`) and yes / no questions about it; `P('draw', …)` gives a
+    "🎨 Draw it!" screen. No wrong forms on kids' pages.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
     (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`). When an emoji doesn't show the thing (🛒 is not a
     checkout), draw an SVG (`pic` and card `svg` take one; keep it on one line in content.js). Reusable drawings: `tools/pics/`.

@@ -217,7 +217,7 @@ const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in 
 /* ---------- screens ---------- */
 function view(s){
   if (s.t === 'phrase') return `
-    <div class="who ${s.who === 'hear' || s.who === 'read' ? 'hear' : ''}">${{hear:'👂 You hear', read:'📩 You read', write:'✍️ You write'}[s.who] || '💬 You say'}</div>
+    <div class="who ${s.who === 'hear' || s.who === 'read' ? 'hear' : ''}">${{hear:'👂 You hear', read:'📩 You read', write:'✍️ You write', story:'📖 Story', draw:'🎨 Draw it!'}[s.who] || '💬 You say'}</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="big">${esc(s.en)}</div>
     <div class="when">${esc(s.when)}</div>
@@ -249,7 +249,7 @@ function view(s){
     ${s.after ? `<div class="after row" data-part="after" hidden style="align-items:center">They say: “${esc(s.after)}” ${spk(s.after)}</div>` : ''}`;
   }
   if (s.t === 'email') return `
-    <div class="who">✉️ ${esc(s.label || 'The whole email')}</div>
+    <div class="who">${s.icon != null ? s.icon : '✉️'} ${esc(s.label || 'The whole email')}</div>
     <div class="mail">${s.subject ? `<div class="mh">Subject: ${esc(s.subject)}</div>` : ''}${s.lines.map((t) => t ? `<p${AUDIO[t] ? ` data-say="${esc(t)}"` : ''}>${esc(t)}</p>` : '<div class="gap"></div>').join('')}</div>
     <button class="btn playall" data-playall>▶ Read it aloud</button>`;
   if (s.t === 'listen'){
