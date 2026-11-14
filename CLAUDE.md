@@ -128,9 +128,10 @@ huggingface.co, about 15 min per hour of audio).
   (hidden until tapped) only where something is easy to miss. In future video lessons (podcasts, shows), tapping
   any word shows its Ukrainian translation.
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
-  YouTube player (no YouTube buttons, title or timeline; our caption bar and a small timeline you can tap; ▶ Again,
-  ▶ Longer plays 1–2 lines before and after and the caption bar follows them, 🐢 Slower; pause goes on from where it
-  stopped; the picture is dark only before the clip starts, a paused clip is only dimmed). The clip stops when its
+  YouTube player in one panel (no YouTube buttons, title or timeline; play/pause, a timeline to tap or drag, our caption
+  bar; Again / With context (1–2 lines before and after, the caption bar follows them); speed 1× / 0.75× / 0.5×;
+  ‹ clip › arrows). Space = play/pause wherever the focus is, ← → and double-tap = 1 s; pause goes on from where it
+  stopped; the picture is dark only before the clip starts, a paused clip is only dimmed. The clip stops when its
   line ends, before the next line. Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
     or calling its API): quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
