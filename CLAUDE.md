@@ -120,13 +120,20 @@ huggingface.co, about 15 min per hour of audio).
   Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
   emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
   she asked about but never got taught (e.g. "interrupt") stays out until it has been taught.
-- **Song lessons** (e.g. "Human") need the video on the page, which Claude pages can't embed: they live in
-  `docs/` and are served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). Each step shows a few key
-  words, then plays just the line that has them (YouTube player in the page). Subtitles under the video load live
-  from lrclib.net when the page opens (timed lyrics, key words highlighted); never store lyrics in the repo.
-  Key words show the Ukrainian translation (no "what the line means" box: it was just a translation); a 💡 Note
-  (hidden until tapped) only where something is easy to miss. In future video lessons (podcasts, shows), tapping
-  any word shows its Ukrainian translation.
+- **Song and video lessons** (e.g. "Human", "The Bridge") need the video on the page, which Claude pages can't
+  embed: they live in `docs/<lesson>/` (only a `window.LESSON` config) and share one player, `docs/video/player.js`
+  + `player.css`, served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). The player follows the real
+  video clips rules below (one quiet panel, no YouTube UI, steady layout, Space / ← → / double-tap, presses count
+  while loading, 1× / 0.75× / 0.5×, ⓘ for the YouTube links). Calm for A2, one small part at a time: each screen is
+  one short line, its 1–2 key words with Ukrainian first, then ▶ plays just that line (the lyrics show under it, key
+  words in yellow). A line with nothing to learn now gets no screen. After each part, "All together" (the lyrics
+  follow the line being sung); at the end, My words (+ on a word → gap sentences with first letters).
+  Choose the words to learn from the student's level and `brief`, then ask her (multiple choice) which to teach.
+  Every word under the video is tappable for its Ukrainian; words left for later (`later`) also say
+  "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. A 💡 Note
+  (hidden until tapped) only where something is easy to miss; no "what the line means" box. A video from her
+  device (`video: {type: 'file'}`) stays in her browser and its captions come in the link. `?mute` plays silently
+  (for testing).
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
   YouTube player in one panel (no YouTube buttons, title or timeline; play/pause, a timeline to tap or drag, our caption
   bar; a "With context" switch (1–2 lines before and after, the caption bar follows them; the yellow part of the
