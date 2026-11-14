@@ -28,8 +28,6 @@ main{display:grid;grid-template-columns:650px minmax(260px,1fr);gap:16px;align-i
 .uaw{justify-self:start;background:var(--ua-bg);color:var(--ua);padding:4px 12px;border-radius:10px;font-weight:600;font-size:18px}
 .count{color:var(--muted);font-size:14px;font-weight:600;min-height:20px}
 .yg{justify-self:center;background:#000;border:1px solid var(--line);border-radius:16px;overflow:hidden;width:648px;height:345px;max-width:100%}
-.yg{position:relative}
-.finding{position:absolute;inset:0;display:grid;place-items:center;background:var(--surface);color:var(--muted);font-weight:600;font-size:18px}
 .yg.small{width:356px;height:248px}
 .controls{display:flex;gap:8px;flex-wrap:wrap}
 .controls button{font:600 17px var(--font);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
@@ -43,7 +41,7 @@ main{display:grid;grid-template-columns:650px minmax(260px,1fr);gap:16px;align-i
 <div class="app">
   <nav class="words" id="words"></nav>
   <main>
-    <div class="yg"><div id="widget"></div><div class="finding" id="finding" hidden>Finding a good clip…</div></div>
+    <div class="yg"></div>
     <section class="card">
       <div class="pic" id="pic"></div>
       <div class="en" id="en"></div>
@@ -56,73 +54,87 @@ main{display:grid;grid-template-columns:650px minmax(260px,1fr);gap:16px;align-i
       </div>
     </section>
   </main>
-  <p class="foot">Clips: Powered by <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, American English, restricted mode, from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
+  <p class="foot">Clips: Powered by <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, American English, from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
 </div>
 <script>
-// Words for the demo. A lesson page can also open this page for any word: …/real-video/#q=rip-off&ua=здирство
+// Clips are picked before the lesson: each word lists YouGlish caption ids (only the ids, never the text).
+// The page opens exactly that clip, plays the sentence and stops a moment after the word's line ends.
+// To pick clips for new words: tools/real-video/ (reads the candidate lines, Claude chooses).
+// A word with no picks falls back to a live YouGlish search: …/real-video/#q=rip-off&ua=грабіж
 const WORDS = [
-  {en: 'rip-off', q: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸', must: /\b(a|the|total|blatant|of a|such a|what a) rip[- ]off\b(?! (of|the|my|your|our|their|his|her|everyone|someone|these|this|that|it)\b)/i},
-  {en: 'mandatory', q: 'mandatory', ua: 'обов’язковий', pic: '📋'},
-  {en: 'Is that a thing?', q: 'is that a thing', ua: 'Таке буває? / Це щось відоме?', pic: '🤔'},
-  {en: 'excuse', q: 'excuse', ua: 'відмовка, виправдання', pic: '🙈', must: /\b(an|no|the|my|your|his|her|good|bad|same|perfect) excuse\b/i},
+  {en: 'rip-off', q: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸',
+    clips: ['17228321', '123088445', '133581547', '27250096']},
+  {en: 'mandatory', q: 'mandatory', ua: 'обов’язковий', pic: '📋',
+    clips: ['89329271', '29991111', '5605650', '4600566', '66306018']},
+  {en: 'Is that a thing?', q: 'is that a thing', ua: 'Таке буває? / Це щось відоме?', pic: '🤔',
+    clips: ['66962891', '175099060', '76949621', '106707286', '80675520']},
+  {en: 'excuse', q: 'excuse', ua: 'відмовка, виправдання', pic: '🙈',
+    clips: ['130888690', '85209929', '171607674', '68564010', '69527378']},
 ];
-// Swear words, adult words and touchy topics (politics, crime, war): a clip whose sentence has one is skipped.
-const BAD = /\b(f+u+c*k\w*|shit\w*|bitch\w*|damn\w*|ass(hole)?s?|bastards?|dick\w*|cock\w*|pussy|sex\w*|porn\w*|nude\w*|naked|crap\w*|hell|goddamn|wtf|kill\w*|drugs?|cocaine|weed|guns?|shot|dead|died|trump|biden|obama|democrats?|republicans?|senat\w*|congress|election\w*|war|police|prison|sentences?)\b/i;
+const STOP_AFTER = 1200;   // ms to keep playing after the word's line ends
 const $ = (id) => document.getElementById(id);
 const h = new URLSearchParams(location.hash.slice(1));
-if (h.get('q')) WORDS.unshift({en: h.get('q'), q: h.get('q'), ua: h.get('ua') || '', pic: h.get('pic') || ''});
+if (h.get('q')) WORDS.unshift({en: h.get('q'), q: h.get('q'), ua: h.get('ua') || '', pic: h.get('pic') || '',
+  clips: (h.get('clips') || '').split(',').filter(Boolean)});
 
-let skipped = 0, widget = null, ready = false, cur = 0, slow = false, track = 0, total = 0, pending = null;
+let widget = null, ready = false, cur = 0, clipN = 0, slow = false, total = 0, track = 0, stopped = false, stopTimer = null, made = 0;
 $('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${w.en}</button>`).join('');
 $('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); };
 
 function pick(i){
-  cur = i; const w = WORDS[i];
+  cur = i; clipN = 0; const w = WORDS[i];
   document.querySelectorAll('#words button').forEach((b, n) => b.setAttribute('aria-current', n === i));
   $('pic').textContent = w.pic; $('en').textContent = w.en; $('ua').textContent = w.ua; $('ua').hidden = !w.ua;
-  $('count').textContent = 'Loading…';
-  if (ready) widget.fetch(w.q, 'english', 'us'); else pending = w.q;
+  load();
 }
 
-// YouGlish widget: video + the sentence only; our own buttons below. It stops after one sentence.
+// A fresh widget for every clip: YouGlish opens a given clip id only when a widget is first created.
+function load(){
+  if (!ready) return;
+  const w = WORDS[cur], id = w.clips[clipN];
+  clearTimeout(stopTimer); stopped = false;
+  const box = document.querySelector('.yg'), small = document.querySelector('main').clientWidth < 650;
+  box.classList.toggle('small', small);
+  // The box ends right under the sentence, so YouGlish's panel below it (an "AI coach" ad) stays out of sight.
+  // Measured: width 648 → video 297 px; width 356 → video 200 px. No height given → the frame never scrolls.
+  const slot = 'w' + (++made);
+  box.innerHTML = `<div id="${slot}"></div>`;
+  widget = new YG.Widget(slot, {
+    width: small ? 356 : 648,
+    components: 8,          // video + caption only
+    autoStart: 1,
+    captionSize: 24,
+    events: {
+      onFetchDone: (e) => { total = e.totalResult; show(); },
+      onVideoChange: (e) => { track = e.trackNumber; if (slow) widget.setSpeed(0.75); },
+      onCaptionChange: (e) => { (window.CAPS = window.CAPS || []).push(e.id); },   // for checks
+      onCaptionConsumed: () => {
+        if (stopped) return;
+        stopped = true;
+        const me = widget;
+        stopTimer = setTimeout(() => me.pause(), STOP_AFTER / (slow ? 0.75 : 1));
+      },
+      onError: () => { show(); $('count').textContent += ' · did not load, tap “Another clip”'; }
+    }
+  });
+  if (id) widget.fetch(w.q, 'english', 'us', id); else widget.fetch(w.q, 'english', 'us');
+  show();
+}
+function show(){
+  const w = WORDS[cur];
+  $('count').textContent = w.clips.length ? `Clip ${clipN + 1} of ${w.clips.length}` : (total ? `Clip ${track || 1} of ${total}` : '');
+}
+window.onYouglishAPIReady = () => { ready = true; load(); };
 const tag = document.createElement('script');
 tag.src = 'https://youglish.com/public/emb/widget.js';
 document.head.appendChild(tag);
-window.onYouglishAPIReady = function(){
-  // The widget's own panel under the sentence (an "AI coach" ad) is cut off: the box ends right
-  // under the sentence. Measured sizes: width 648 → video 297 px; width 356 → video 200 px.
-  const box = document.querySelector('.yg'), small = document.querySelector('main').clientWidth < 650;
-  box.classList.toggle('small', small);
-  widget = new YG.Widget('widget', {
-    width: small ? 356 : 648, height: small ? 260 : 360,
-    components: 8,          // caption only
-    autoStart: 1,
-    restrictionMode: 1,     // block inappropriate videos
-    captionSize: 24,
-    events: {
-      onFetchDone: (e) => { total = e.totalResult; track = 0; skipped = 0; show(); },
-      onVideoChange: (e) => { track = e.trackNumber; show(); if (slow) widget.setSpeed(0.75); },
-      onCaptionChange: (e) => {
-        const text = decodeURIComponent(e.caption).replace(/\[\[\[|\]\]\]/g, '');
-        (window.CAPS = window.CAPS || []).push(text);
-        // Skip a clip whose sentence has a swear word or a touchy topic, or uses the word in another meaning.
-        const w = WORDS[cur];
-        if ((BAD.test(text) || (w.must && !w.must.test(text))) && skipped < 40) {
-          skipped++; $('finding').hidden = false; widget.pause(); setTimeout(() => widget.next(), 1500);
-        } else $('finding').hidden = true;
-      },
-      onCaptionConsumed: () => widget.pause(),
-      onError: () => { $('count').textContent = 'This clip did not load. Tap “Another clip”.'; }
-    }
-  });
-  ready = true;
-  if (pending) { widget.fetch(pending, 'english', 'us'); pending = null; }
+
+$('again').onclick = () => { if (!widget) return; clearTimeout(stopTimer); stopped = false; widget.replay(); };
+$('next').onclick = () => {
+  const w = WORDS[cur];
+  if (w.clips.length) { clipN = (clipN + 1) % w.clips.length; load(); }
+  else if (widget) { clearTimeout(stopTimer); stopped = false; widget.next(); }
 };
-function show(){
-  $('count').textContent = total ? `Clip ${track || 1} of ${total}` : 'No clips found for this one.';
-}
-$('again').onclick = () => widget && widget.replay();
-$('next').onclick = () => widget && widget.next();
 $('slow').onclick = () => {
   slow = !slow; $('slow').setAttribute('aria-pressed', slow);
   if (widget) widget.setSpeed(slow ? 0.75 : 1);
