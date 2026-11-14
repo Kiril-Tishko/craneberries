@@ -5,7 +5,8 @@
 //   captions  {type:'lrc', url}: timed lyrics loaded live (lrclib.net), never stored in the repo
 //             {type:'link'}: captions arrive in the page link (#c=…), compressed, and stay in her browser
 //   parts     [{name, start, end, lines:[{words:[[en, ua, example]], hl:[exact phrases in the captions], note?, start, end}]}]
-//             the example marks the word with <em> (it becomes the gap in My words)
+//             the example marks the word with <em> (it becomes the gap in My words); hl[k] is how words[k] is sung
+//             ("making you cry" for "make you cry"), and a tap on it gives its Ukrainian in every part
 //   gloss     {word: Ukrainian}: tap any word in the captions (lowercase, ’ for apostrophes)
 //   later     [[phrase, Ukrainian]]: words left for a later lesson; tapping one says so
 // Steps: every line of a part (its key words first, then just that line plays), then the whole part, "All together".
@@ -253,20 +254,30 @@ function find(text, phrases){              // → [[from, to, index]] where each
   });
   return out;
 }
+// Each tappable word may sit in a key phrase from another part (data-key) or in a phrase for later (data-later).
 function marked(text, hls){
-  const n = text.length, mk = new Array(n).fill(false), lt = new Array(n).fill(-1);
+  const n = text.length, mk = new Array(n).fill(false), kk = new Array(n).fill(-1), lt = new Array(n).fill(-1);
   find(text, hls).forEach(([a, b]) => { for (let c = a; c < b; c++) mk[c] = true; });
+  find(text, KEYS.map((x) => x.p)).forEach(([a, b, k]) => { for (let c = a; c < b; c++) if (kk[c] < 0) kk[c] = k; });
   find(text, LATER.map((x) => x.p)).forEach(([a, b, k]) => { for (let c = a; c < b; c++) if (lt[c] < 0) lt[c] = k; });
   const re = /[A-Za-z0-9’']+|[^A-Za-z0-9’']+/g;
   let h = '', open = false, m;
   while ((m = re.exec(text))) {
     const a = m.index, t = m[0], word = /[A-Za-z0-9]/.test(t);
     if (mk[a] !== open) { h += open ? '</mark>' : '<mark>'; open = mk[a]; }
-    h += word ? `<span class="tw"${lt[a] >= 0 && !mk[a] ? ` data-later="${lt[a]}"` : ''}>${esc(t)}</span>` : esc(t);
+    const tag = mk[a] ? '' : kk[a] >= 0 ? ` data-key="${kk[a]}"` : lt[a] >= 0 ? ` data-later="${lt[a]}"` : '';
+    h += word ? `<span class="tw"${tag}>${esc(t)}</span>` : esc(t);
   }
   return h + (open ? '</mark>' : '');
 }
 const base = (t) => t.toLowerCase().replace(/'/g, '’').replace(/\(.*?\)|…/g, '').replace(/\s+/g, ' ').trim();
+// Every key phrase of the lesson as it is sung (hl[k] belongs to words[k]), so a tap gives the phrase's Ukrainian
+// in any part, also where it isn't yellow.
+const KEYS = [];
+PARTS.forEach((p) => p.lines.forEach((l) => (l.hl || []).forEach((h, k) => {
+  const w = l.words[k] || l.words[0];
+  if (w && w[1] && !KEYS.some((x) => base(x.p) === base(h))) KEYS.push({p: h, ua: w[1]});
+})));
 function learnWords(){
   const s = STEPS[i];
   if (s.kind === 'line') return s.words;
@@ -284,12 +295,15 @@ function glossOf(el){
     const p = base(mk.textContent), ws = learnWords();
     const w = ws.find((x) => base(x[0]) === p) || ws.find((x) => p.includes(base(x[0])) || base(x[0]).includes(p));
     if (w && w[1]) return {en: mk.textContent, ua: w[1]};
+    const key = KEYS.find((x) => base(x.p) === p);
+    if (key) return {en: mk.textContent, ua: key.ua};
   }
-  if (el.dataset.later != null) {
-    const x = LATER[+el.dataset.later], line = el.parentNode.textContent;
-    const hit = find(line, [x.p])[0];
-    return {en: hit ? line.slice(hit[0], hit[1]) : x.p, ua: x.ua, later: true};
-  }
+  const phrase = (x, later) => {
+    const line = el.parentNode.textContent, hit = find(line, [x.p])[0];
+    return {en: hit ? line.slice(hit[0], hit[1]) : x.p, ua: x.ua, later};
+  };
+  if (el.dataset.key != null) return phrase(KEYS[+el.dataset.key], false);
+  if (el.dataset.later != null) return phrase(LATER[+el.dataset.later], true);
   const ua = lookup(el.textContent);
   return ua ? {en: el.textContent, ua} : null;
 }
@@ -426,7 +440,7 @@ function renderCard(){
   } else {
     // The answer appears where it was asked: the gap sentence becomes the whole sentence.
     const d = dict[pr.n], ex = d.ex || '';
-    const gap = ex ? ex.replace(/<em>(.*?)<\/em>/, (m, w) => w.split(' ').map((x) => `${x[0]}${'_'.repeat(Math.max(2, x.length - 1))}`).join(' ')) : '';
+    const gap = ex ? ex.replace(/<em>(.*?)<\/em>/, (m, w) => w.split(' ').map((x) => x.length < 2 ? x : `${x[0]}${'_'.repeat(Math.max(2, x.length - 1))}`).join(' ')) : '';
     const full = ex ? ex.replace(/<em>(.*?)<\/em>/, '<mark>$1</mark>') : `<mark>${esc(d.en)}</mark>`;
     h = `<p class="kicker">📒 ${pr.n + 1} / ${dict.length}</p>
       ${d.ua ? `<span class="uahint">${esc(d.ua)}</span>` : ''}
@@ -437,11 +451,16 @@ function renderCard(){
 }
 
 /* ---------- Steps ---------- */
+// The player stands ready at the new step's start a moment later, so quick taps on Next / Back don't pile up jumps
+// (YouTube can apply them late, while the next line is already playing).
+let prepT = null;
 function newRange(){
   started = false; ended = false; intent = false; wantPlay = null; moved = false;
   range = stepRange();
   drawTimeline(range ? range.from : 0); drawCaption(true); setCover(); drawNav();
-  if (range && media.ready()) media.prepare(range.from);
+  clearTimeout(prepT);
+  const r = range;
+  if (r) prepT = setTimeout(() => { if (range === r && !started && media.ready()) media.prepare(r.from); }, 250);
 }
 function go(n){
   hidePop();
@@ -466,6 +485,7 @@ function playRange(at){
     wantPlay = {at}; return;
   }
   started = true; ended = false; intent = true; loadedAt = now(); heard[i] = true;
+  clearTimeout(prepT);
   media.play(at ?? range.from);
   drawTimeline(at ?? range.from); drawCaption(); setCover();
 }
@@ -502,6 +522,8 @@ setInterval(() => {
   // Right after a jump the player can still report the old time for a moment: wait for the new one.
   if (!range || !started || !media.canSeek() || now() - loadedAt < 300) return;
   const playing = media.playing(), t = media.time();
+  // Ended: it stays stopped where it ended (a late "pause" is sent again; it never jumps back to the start).
+  if (ended) { if (playing) media.pause(); return; }
   // Safety net: if the video ever plays outside the step (YouTube started it somewhere else), bring it back.
   if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { media.seek(range.from); loadedAt = now(); return; }
   if (playing && t >= range.to - 0.06) { finish(); return; }
