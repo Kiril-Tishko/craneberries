@@ -127,11 +127,13 @@ huggingface.co, about 15 min per hour of audio).
   Key words show the Ukrainian translation (no "what the line means" box: it was just a translation); a 💡 Note
   (hidden until tapped) only where something is easy to miss. In future video lessons (podcasts, shows), tapping
   any word shows its Ukrainian translation.
-- **Real video clips** (docs/real-video/, a YouGlish widget on GitHub Pages): a native speaker says the word in a
-  real video. Pick the clips before the lesson, never live: list the candidates with `tools/real-video/pick.js`,
-  choose 4–5 where the word has the lesson's meaning (another meaning is the one thing she doesn't want; swearing,
-  politics and so on are fine), check the ids with `--check`, and store only the clip ids in `WORDS[].clips`.
-  The clip plays its line, then stops about a second later; nothing skips on its own.
+- **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
+  YouTube player (no YouTube buttons, title or timeline; our caption bar; ▶ Again, ▶ Longer for context, 🐢 Slower).
+  Pick the clips before the lesson, never live: list candidates with `tools/real-video/pick.js` (search phrases
+  that give the meaning: "a rip-off|what a rip-off", not just the word), choose 4–5 where the word has the
+  lesson's meaning (another meaning is the one thing she doesn't want; swearing, politics and so on are fine),
+  then `--meta` gives the `[YouTube id, start, end, line]` rows for `WORDS[].clips` (she chose this over the
+  YouGlish window, knowing YouGlish's rules don't allow saving their results). Nothing skips on its own.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js` in the scratchpad; `prep.py <content.js> "<Title>" <work-dir>` records
   the lines and builds `<work-dir>/page.html`; `qa.js <work-dir>` checks every screen at phone and laptop size
