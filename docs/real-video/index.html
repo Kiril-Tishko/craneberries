@@ -92,6 +92,37 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .foot button{border:0;background:transparent;color:var(--muted);opacity:.45;font-size:15px;padding:2px 4px;cursor:pointer}
 .foot button:hover,.foot button[aria-expanded="true"]{opacity:1}
 .foot a{color:var(--muted)}
+
+/* Top row: back to the lesson, the lesson's words, the search. */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.top .words{flex:1 1 auto}
+.ltitle{font-weight:800;font-size:16px;margin-right:4px}
+#back{padding:7px 12px 7px 8px}
+.search{position:relative;flex:0 1 220px;min-width:160px}
+.search input{width:100%;font:500 15px var(--font);color:var(--ink);padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+#sugg{position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:100%;width:max-content;max-width:min(360px,90vw);margin:0;padding:4px;list-style:none;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#sugg button{display:block;width:100%;text-align:left;font-size:15px;padding:8px 10px;border:0;border-radius:8px;background:transparent;cursor:pointer}
+#sugg button:hover{background:var(--soft)}
+#sugg span{color:var(--muted);font-size:13px}
+#sugg .none{padding:8px 10px;color:var(--muted);font-size:14px}
+@media (max-width:560px){.search{flex:1 1 100%}}
+/* The invisible corner for edit mode. */
+.corner{position:fixed;left:0;top:0;width:44px;height:44px;border:0;padding:0;background:transparent;z-index:30;cursor:default}
+body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 4px,transparent 4px 8px);opacity:.35}
+/* Edit mode panel (edit.js fills it). */
+.edit{background:var(--surface);border:2px dashed var(--accent);border-radius:16px;padding:16px;display:grid;gap:12px}
+.edit h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.edit .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.edit label{display:grid;gap:4px;font-size:12px;font-weight:600;color:var(--muted);flex:1 1 160px}
+.edit input,.edit textarea{font:500 15px var(--font);color:var(--ink);padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);width:100%}
+.edit textarea{min-height:60px;resize:vertical}
+.edit .num{flex:0 0 110px}
+.edit .btn{font-size:14px;padding:6px 10px}
+.edit .msg{font-size:13px;color:var(--muted)}
+.edit .msg.bad{color:var(--accent);font-weight:600}
+.edit .hidden-tag{font-size:12px;background:var(--soft);border-radius:6px;padding:2px 6px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -103,8 +134,15 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="m8.6 5.4 6.6 6.6-6.6 6.6L10 20l8-8-8-8z"/></symbol>
 </svg>
+<!-- 5 quick taps here open edit mode -->
+<button class="corner" id="corner" tabindex="-1" aria-hidden="true"></button>
 <div class="app">
-  <nav class="words" id="words"></nav>
+  <header class="top">
+    <button class="btn" id="back" hidden><svg><use href="#i-prev"/></svg>Lesson</button>
+    <span class="ltitle" id="ltitle" hidden></span>
+    <nav class="words" id="words"></nav>
+    <div class="search"><input id="q" type="search" placeholder="Find a word…" autocomplete="off" aria-label="Find a word"><ul id="sugg" hidden></ul></div>
+  </header>
   <main>
     <section class="player" aria-label="Video">
       <div class="video">
@@ -134,361 +172,17 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
       <div class="pic" id="pic"></div>
       <div class="en" id="en"></div>
       <div class="uaw" id="ua"></div>
-      <div class="tip">
+      <div class="tip" id="tip">
         <button class="btn" id="tipbtn" aria-expanded="false">💡 What’s happening?</button>
         <p class="note off" id="note"></p>
       </div>
     </section>
   </main>
+  <section class="edit" id="edit" hidden></section>
   <!-- The YouTube player's rules want links to YouTube's Terms and Google's Privacy Policy: they stay, behind a quiet ⓘ. -->
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script>
-// Clips are picked before the lesson: [YouTube id, start, end, the line, 💡 note, the lines around it].
-// The note says very simply what is happening and why the word fits (English or the student's language).
-// The lines around it ([start, end, line], 1–2 before and after) are what "With context" plays and shows; they
-// also tell where the next line starts, so the clip stops before it. Only these few short lines are stored, never
-// transcripts or videos. `hl` marks the word in the line.
-const WORDS = [
-  {en: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸', hl: /rip[- ]?off/gi, clips: [
-    ['2jIC6MBkjjs', 39, 40, 'It is such a rip-off.',
-      'They are tasting bottled water and he sees the price. He thinks it costs far too much for water.'],
-    ['iaYdIU5n6vw', 871.24, 874.72, 'and I just thought that that was a rip-off for what it actually was.',
-      'He paid $40 for one pizza. He thinks it wasn’t worth that much money.', [
-      [865.32, 867.68, 'especially in the last 10 years, is pizza.'],
-      [867.68, 871.24, 'I have definitely spent $40 for a pizza pie in the last year,'],
-      [874.72, 877.32, 'The only saving grace out of all of this is probably Costco.']]],
-    ['ebyeLhKlUT4', 110, 111, 'I think this is a total rip off.',
-      'He thinks the price is much too high. “Total” makes it stronger: completely a rip-off.'],
-    ['QvFXCJx2Dlo', 509, 511, 'I got ripped off, ah, what a rip-off.',
-      'He explains the word: you paid much more than something is worth. “I got ripped off” = someone took too much money from me.', [
-      [510.94, 514.04, 'Sometimes if things are way too expensive,'],
-      [514.04, 516.98, 'more expensive than they should be, you pay for that,']]],
-    ['EnYsqXY_MRs', 155, 158, 'They charge a lot and I think they’re a bit of a rip off.',
-      'He talks about people who ask for a lot of money. He thinks they aren’t worth it. “A bit of” makes it softer.']]},
-  {en: 'mandatory', ua: 'обов’язковий', pic: '📋', hl: /mandatory/gi, clips: [
-    ['DkR4Ksuifo0', 2934.32, 2938.96, 'But I had to cancel because Angela’s party is mandatory.',
-      'He wanted to go to a museum (the Met) in New York tonight. He can’t: everyone has to go to Angela’s party.', [
-      [2931.2, 2934.32, 'I was going to be in New York tonight to go to the Met,']]],
-    ['kj2fpM57Z7A', 439, 443, 'And public school is mandatory and public school is free.',
-      'He talks about school: all children have to go, and public school costs nothing.'],
-    ['iWH_llRxewE', 656, 661, 'It’s not mandatory, but we do hope our employees will take the opportunity',
-      'A company leader says the workers don’t have to do it, but the company hopes they will.'],
-    ['AvhtymEvpbk', 484, 487, 'And the important thing is, summer school is not mandatory',
-      'She says students don’t have to go to summer school. They can choose.'],
-    ['PLZV9Aj0e1Q', 259, 261, 'I had to attend some mandatory classes,',
-      'He had to go to some classes. He had no choice.']]},
-  {en: 'Is that a thing?', ua: 'Таке буває? / Це щось відоме?', pic: '🤔', hl: /is that a thing/gi, clips: [
-    ['FO0yZagkA-E', 1312.88, 1313.76, 'Is that a thing?',
-      'They say a science idea: “super asymmetry”. Someone asks if it is real. The answer: no, they are making it up right now.', [
-      [1310.4, 1311.76, 'Super asymmetry.'],
-      [1312, 1312.88, 'Super asymmetry.'],
-      [1313.88, 1315.76, 'We’re inventing it right now.']]],
-    ['W8kIAgoqDAI', 499.92, 500.92, 'Wait, is that a thing?',
-      'One cook talks about learning from your mistakes. The other is surprised: is that a real, known idea? “Yeah.”', [
-      [495.52, 497.04, 'start not enjoying making mistakes,'],
-      [497.04, 499.84, 'but learning from them and not seeing them as failures?'],
-      [502.08, 503.28, 'Yeah.']]],
-    ['5nouz6GFApE', 1063.52, 1064.24, 'Is that a thing?',
-      'An American is taking a British driving test. One answer says the car “stalls”. He isn’t sure that really happens, so he asks.', [
-      [1061.04, 1062.96, 'pedal down or roll in neutral for too long?'],
-      [1062.96, 1063.52, 'It stalls.'],
-      [1064.24, 1065.44, 'It will use more fuel.'],
-      [1065.44, 1066.96, 'It will cause the engine to overheat.']]],
-    ['nT07OaBdvP0', 303, 305, 'Dish detergent. Is that a thing? I don’t even know',
-      'He isn’t sure “dish detergent” is a real, normal thing. He really doesn’t know.'],
-    ['ALyCuBW9l0E', 178, 180, 'I’m like 28, with knee-high socks, is that a thing?',
-      'The speaker is 28 and wears knee-high socks. Is that normal for adults? Do other people do it too?']]},
-  {en: 'excuse', ua: 'відмовка, виправдання', pic: '🙈', hl: /excuse/gi, clips: [
-    ['5doVqBQ8A0M', 1730.32, 1731.76, 'It’s a good, good excuse.',
-      'A boy explains what happened: “I was just standing there.” Ellen jokes that it is a good reason.', [
-      [1727.48, 1728.88, 'Cuz I was just standing there.'],
-      [1729, 1730.32, 'Just standing there.'],
-      [1731.76, 1732.56, 'All right.'],
-      [1732.56, 1734.32, 'So, you’ve been dancing for a long time.']]],
-    ['fh-sBZdxiqs', 1383.36, 1385.04, 'I don’t really have a good excuse.',
-      'Someone told him about some books. He still hasn’t read them, and he has no good reason why.', [
-      [1377.04, 1382.24, 'and, uh, it’s such a great concept and I should read them.'],
-      [1382.24, 1383.36, 'I hear they’re really good.'],
-      [1385.04, 1389.84, 'Um, yeah, I might just order copies after I finish shooting this.']]],
-    ['bQUwQNZXWIo', 3063, 3065, 'I always try to find an excuse, but—',
-      'He says he always looks for a reason not to do something.'],
-    ['uBqY4kZd3lw', 225, 226, 'And I don’t. That is the easiest excuse in the world.',
-      'She says this reason is too easy: people use it all the time, so it isn’t a real reason.'],
-    ['XO9J-wk-G9Y', 47, 52, 'Really that difficult. Frankly, there’s no excuse for not doing them.',
-      'He says these things are not really hard, so there is no good reason not to do them.']]},
-];
-// Exact times (with decimals, from Caption Search): start just before the line and stop when it ends, before the
-// next line. Whole-second times (YouGlish): start a bit early and stop about a second later (or at the next line).
-const EXACT_BEFORE = 0.1, EXACT_AFTER = 0.12, PAD_BEFORE = 0.4, PAD_AFTER = 1.2, LONGER_BEFORE = 6, LONGER_AFTER = 4;
-const STEP = 1; // ← → and double-tap move this many seconds
-
-const $ = (id) => document.getElementById(id);
-const esc = (t) => t.replace(/[&<>]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]));
-let cur = 0, clipN = 0, rate = 1, wantPlay = null, longerMode = false;
-let range = null, started = false, ended = false, endedAt = 0, shown = null, loadedAt = 0, dragging = false;
-// `intent` is what you last asked for (play or pause). Play/pause buttons follow it, not the player's state, so a
-// press counts even while a clip is still loading.
-let intent = false;
-
-// Two YouTube players on top of each other: the one you see, and a hidden one that already loads the next clip,
-// so "Next clip" starts at once. A clip is "warmed": loaded muted and stopped on its first frame.
-const slots = [{el: 'yt0'}, {el: 'yt1'}];
-let act = 0;
-const S = () => slots[act];
-const P = () => slots[act].p;
-const ready = () => !!slots[act].ready;
-const clip = () => WORDS[cur].clips[clipN];
-
-$('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${esc(w.en)}</button>`).join('');
-$('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i, true); };
-
-function pick(i, play){
-  cur = i; clipN = 0;
-  const w = WORDS[i];
-  document.querySelectorAll('#words button').forEach((b, n) => b.setAttribute('aria-current', n === i));
-  $('pic').textContent = w.pic; $('en').textContent = w.en; $('ua').textContent = w.ua;
-  sizeCaption();
-  showClip(play);
-}
-function showClip(play){
-  const w = WORDS[cur], c = clip();
-  $('count').textContent = `${clipN + 1} / ${w.clips.length}`;
-  $('note').textContent = c[4]; $('note').classList.add('off'); $('tipbtn').setAttribute('aria-expanded', 'false');
-  showLine(c[3]);
-  started = false; ended = false; intent = false;
-  range = rangeOf(c, longerMode); drawTimeline(range.from);
-  // The next clip may already be waiting in the hidden player: then it simply comes to the front.
-  const other = slots[1 - act];
-  if (other.ready && other.vid === c[0]) {
-    if (S().ready) { P().pauseVideo(); P().mute(); }
-    act = 1 - act;
-    slots.forEach((s, i) => s.p && s.p.getIframe().classList.toggle('on', i === act));
-  }
-  if (play) playClip(); else warm(S(), c, range.from);
-  setCover();
-  const n = WORDS[cur].clips[(clipN + 1) % w.clips.length];
-  warm(slots[1 - act], n, rangeOf(n, longerMode).from);
-}
-function showLine(text){
-  $('capbar').innerHTML = `<span>${esc(text).replace(WORDS[cur].hl, (m) => `<mark>${m}</mark>`)}</span>`;
-}
-// The caption bar keeps the height of this word's longest line, so nothing below it moves from clip to clip.
-function sizeCaption(){
-  const bar = $('capbar'), probe = bar.cloneNode(false);
-  probe.removeAttribute('id');
-  probe.style.cssText = `position:absolute;visibility:hidden;left:-9999px;top:0;width:${bar.clientWidth}px;min-height:0`;
-  document.body.appendChild(probe);
-  let h = 0;
-  for (const c of WORDS[cur].clips) for (const t of [c[3], ...(c[5] || []).map((l) => l[2])]) {
-    probe.innerHTML = `<span>${esc(t).replace(WORDS[cur].hl, (m) => `<mark>${m}</mark>`)}</span>`;
-    h = Math.max(h, probe.getBoundingClientRect().height);
-  }
-  probe.remove(); bar.style.minHeight = `${Math.ceil(h)}px`;
-}
-// What a play covers: just the line, or with context the lines around it too.
-function rangeOf(c, longer){
-  const around = c[5] || [], exact = !Number.isInteger(c[1]);
-  const before = around.filter((l) => l[0] < c[1]), after = around.filter((l) => l[0] > c[1]);
-  if (longer && around.length) {
-    const lines = [...before, [c[1], c[2], c[3]], ...after];
-    return {from: Math.max(0, lines[0][0] - EXACT_BEFORE), to: lines[lines.length - 1][1] + 0.1, lines, c, longer};
-  }
-  if (longer) return {from: Math.max(0, c[1] - LONGER_BEFORE), to: c[2] + LONGER_AFTER, lines: null, c, longer};
-  let to = c[2] + (exact ? EXACT_AFTER : PAD_AFTER);
-  if (after.length) to = Math.min(to, after[0][0]);
-  return {from: Math.max(0, c[1] - (exact ? EXACT_BEFORE : PAD_BEFORE)), to, lines: null, c, longer};
-}
-// `loaded`: the slot's video has really started once, so jumping in it is safe. While a video is still loading,
-// YouTube ignores a jump and may start from 0:00, so then the clip is loaded again at the right second instead.
-function warm(s, c, from){
-  if (!s.ready) { s.pending = {c, from}; return; }
-  if (s.vid === c[0]) {
-    if (!s.loaded) s.warmFrom = from;
-    else if (s !== S() || !started) s.p.seekTo(from, true);
-    return;
-  }
-  s.vid = c[0]; s.loaded = false; s.warming = true; s.warmFrom = from;
-  s.p.mute(); s.p.loadVideoById({videoId: c[0], startSeconds: from});
-}
-// Play the clip from its start (or from `at`). If its video is already loaded, it just jumps there: no reload.
-function playClip(at){
-  const c = clip(), s = S();
-  range = rangeOf(c, longerMode); shown = null;
-  if (!s.ready) { wantPlay = {at}; return; }
-  started = true; ended = false; intent = true; loadedAt = performance.now();
-  showLine(c[3]);
-  const from = at ?? range.from;
-  s.warming = false; s.p.unMute();
-  if (s.vid === c[0] && s.loaded) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
-  else { s.vid = c[0]; s.loaded = false; s.p.loadVideoById({videoId: c[0], startSeconds: from}); }
-  s.p.setPlaybackRate(rate);
-  setCover();
-}
-const isPlaying = () => started && !ended && intent;
-// Play/pause: a paused clip goes on from where it stopped; a finished one plays again.
-// A press that comes just as the clip ends was meant as "pause": it stays stopped instead of starting over.
-function toggle(){
-  if (!ready()) return;
-  if (isPlaying()) { intent = false; P().pauseVideo(); }
-  else if (started && !ended) { intent = true; P().playVideo(); }
-  else if (!(ended && performance.now() - endedAt < 700)) playClip();
-  setCover();
-}
-// 1 second back or forward, inside the clip. A paused clip stays paused.
-function seekBy(d){
-  if (!ready() || !started || performance.now() - loadedAt < 400) return;
-  const t = Math.min(range.to - 0.05, Math.max(range.from, P().getCurrentTime() + d));
-  if (t < range.to - 0.1) ended = false;
-  shown = null; P().seekTo(t, true); drawTimeline(t); setCover();
-  flash(d < 0 ? 'flashl' : 'flashr');
-}
-function flash(id){
-  const f = $(id); f.classList.add('on'); clearTimeout(f.t); f.t = setTimeout(() => f.classList.remove('on'), 350);
-}
-// One clock for everything: stop at the end, move the timeline, and with context follow the lines.
-setInterval(() => {
-  // Right after a load the player can still report the old clip's time for a moment: wait for the new one.
-  if (!ready() || !range || !started || performance.now() - loadedAt < 300) return;
-  const playing = P().getPlayerState() === YT.PlayerState.PLAYING, t = P().getCurrentTime();
-  // Safety net: if the video ever plays outside the clip (YouTube started it somewhere else), bring it back.
-  if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { P().seekTo(range.from, true); return; }
-  if (playing && t >= range.to - 0.06) {
-    P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
-    if (range.lines) { showLine(range.c[3]); shown = null; }
-    drawTimeline(range.to); setCover(); return;
-  }
-  if (!ended && !dragging) drawTimeline(t);
-  if (range.lines && !ended) {
-    const l = range.lines.reduce((on, x) => (t >= x[0] - 0.1 ? x : on), range.lines[0]);
-    if (l !== shown) { shown = l; showLine(l[2]); }
-  }
-}, 50);
-function drawTimeline(t){
-  const r = range, len = r.to - r.from, f = Math.min(1, Math.max(0, (t - r.from) / len));
-  $('tlfill').style.width = `${f * 100}%`; $('tldot').style.left = `${f * 100}%`;
-  // The yellow part (the word's line) shows only with context, where it is a part of the whole.
-  const ws = Math.max(0, (r.c[1] - r.from) / len), we = Math.min(1, (r.c[2] - r.from) / len);
-  $('tlword').hidden = !r.longer;
-  $('tlword').style.left = `${ws * 100}%`; $('tlword').style.width = `${Math.max(0, we - ws) * 100}%`;
-  $('tltime').textContent = `${(f * len).toFixed(1)} / ${len.toFixed(1)} s`;
-}
-// ▶ before it starts or while paused, ❚❚ while playing, ↻ when it has ended.
-function setCover(){
-  const playing = isPlaying(), icon = playing ? 'pause' : ended ? 'again' : 'play';
-  $('cover').classList.toggle('playing', playing);
-  $('cover').classList.toggle('dim', !playing && started);
-  $('cover').setAttribute('aria-label', playing ? 'Pause' : ended ? 'Play again' : 'Play');
-  $('bigicon').setAttribute('href', `#i-${ended ? 'again' : 'play'}`);
-  $('ppicon').setAttribute('href', `#i-${icon}`);
-  $('pp').setAttribute('aria-label', playing ? 'Pause' : ended ? 'Play again' : 'Play');
-}
-function setMode(longer){
-  longerMode = longer; $('longer').setAttribute('aria-pressed', longer);
-}
-
-window.onYouTubeIframeAPIReady = () => {
-  slots.forEach((s, i) => {
-    s.p = new YT.Player(s.el, {
-      width: '100%', height: '100%',
-      playerVars: {controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, rel: 0, playsinline: 1, cc_load_policy: 0, modestbranding: 1},
-      events: {
-        onReady: () => {
-          s.ready = true; s.p.getIframe().classList.toggle('on', i === act);
-          if (s === S() && wantPlay) { const w = wantPlay; wantPlay = null; playClip(w.at); }
-          else if (s.pending) { const q = s.pending; s.pending = null; warm(s, q.c, q.from); }
-        },
-        onStateChange: (e) => {
-          // A clip being warmed stops on its first frame as soon as it starts.
-          if (s.warming && e.data === YT.PlayerState.PLAYING) {
-            s.warming = false; s.loaded = true; s.p.pauseVideo(); s.p.seekTo(s.warmFrom, true); return;
-          }
-          if (e.data === YT.PlayerState.PLAYING) s.loaded = true;
-          if (s !== S()) return;
-          // It started although you pressed pause while it was loading: pause it now.
-          if (e.data === YT.PlayerState.PLAYING && !isPlaying()) s.p.pauseVideo();
-          setCover();
-          if (e.data === YT.PlayerState.PLAYING && s.p.getPlaybackRate() !== rate) s.p.setPlaybackRate(rate);
-        },
-        onError: () => {
-          if (s !== S()) { s.vid = null; s.warming = false; return; }
-          $('capbar').innerHTML = '<span class="err">This clip didn’t load. Try the next one →</span>';
-        }
-      }
-    });
-  });
-};
-const tag = document.createElement('script');
-tag.src = 'https://www.youtube.com/iframe_api';
-document.head.appendChild(tag);
-
-// Tap the video = play/pause, at once. Double-tap the left or right half = 1 s back or forward (more taps = more
-// seconds): the second tap undoes the first tap's play/pause, then moves.
-let lastTap = 0, seeking = 0, tapWas = null;
-$('cover').onclick = (e) => {
-  const now = performance.now(), box = $('cover').getBoundingClientRect();
-  const dir = e.clientX - box.left < box.width / 2 ? -1 : 1;
-  if (started && (now - seeking < 500 || now - lastTap < 300)) {
-    if (tapWas === 'playing') { intent = true; P().playVideo(); } else if (tapWas === 'paused') { intent = false; P().pauseVideo(); }
-    tapWas = null; lastTap = 0; seeking = now; seekBy(dir * STEP); return;
-  }
-  lastTap = now;
-  tapWas = isPlaying() ? 'playing' : started && !ended ? 'paused' : null;
-  toggle();
-};
-$('pp').onclick = toggle;
-// The timeline: tap or drag to move; letting go plays from there.
-const pointT = (e) => {
-  const box = $('tl').getBoundingClientRect();
-  return range.from + Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)) * (range.to - range.from);
-};
-$('tlhit').onpointerdown = (e) => {
-  if (!ready() || !range) return;
-  dragging = true; $('tlhit').setPointerCapture(e.pointerId); drawTimeline(pointT(e));
-};
-$('tlhit').onpointermove = (e) => { if (dragging) drawTimeline(pointT(e)); };
-$('tlhit').onpointerup = (e) => {
-  if (!dragging) return;
-  dragging = false; const t = pointT(e);
-  if (!started) { playClip(t); return; }
-  ended = false; intent = true; shown = null; drawTimeline(t);
-  P().seekTo(t, true); P().playVideo(); setCover();
-};
-$('tlhit').onpointercancel = () => { dragging = false; };
-// "With context" is on or off; switching it plays the clip again the new way. It stays on for the next clips.
-$('longer').onclick = () => { setMode(!longerMode); playClip(); };
-$('next').onclick = () => { clipN = (clipN + 1) % WORDS[cur].clips.length; showClip(true); };
-$('prev').onclick = () => { clipN = (clipN + WORDS[cur].clips.length - 1) % WORDS[cur].clips.length; showClip(true); };
-$('speed').onclick = (e) => {
-  const b = e.target.closest('button'); if (!b) return;
-  rate = +b.dataset.r;
-  $('speed').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
-  if (ready()) P().setPlaybackRate(rate);
-};
-$('about').onclick = () => {
-  $('credits').hidden = !$('credits').hidden; $('about').setAttribute('aria-expanded', !$('credits').hidden);
-};
-$('tipbtn').onclick = () => {
-  const open = $('note').classList.toggle('off') === false;
-  $('tipbtn').setAttribute('aria-expanded', open);
-};
-// Keys work wherever the focus is: Space = play/pause (never "clicks" the last button), ← → = 1 second.
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); if (!e.repeat) toggle(); }
-  else if (e.key === 'ArrowLeft') { e.preventDefault(); seekBy(-STEP); }
-  else if (e.key === 'ArrowRight') { e.preventDefault(); seekBy(STEP); }
-}, true);
-document.addEventListener('keyup', (e) => { if (e.code === 'Space' || e.key === ' ') e.preventDefault(); }, true);
-// A mouse click or tap doesn't leave the button focused (no ring around it afterwards).
-document.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && e.detail > 0) b.blur(); });
-let resizeT = null;
-window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });
-if (document.fonts) document.fonts.ready.then(sizeCaption);
-// A lesson page can open one word: …/real-video/#w=rip-off
-const want = decodeURIComponent(location.hash.replace(/^#w=/, '')).toLowerCase();
-pick(Math.max(0, WORDS.findIndex((w) => w.en.toLowerCase() === want)), false);
-</script>
+<script src="app.js"></script>
 </body>
 </html>

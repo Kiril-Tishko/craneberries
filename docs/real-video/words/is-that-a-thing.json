@@ -1,0 +1,31 @@
+{
+  "en": "Is that a thing?",
+  "ua": "Таке буває? / Це щось відоме?",
+  "pic": "🤔",
+  "hl": "is that a thing",
+  "clips": [
+    {"v": "FO0yZagkA-E", "s": 1312.88, "e": 1313.76, "line": "Is that a thing?",
+      "note": "They say a science idea: “super asymmetry”. Someone asks if it is real. The answer: no, they are making it up right now.",
+      "around": [
+        [1310.4, 1311.76, "Super asymmetry."],
+        [1312, 1312.88, "Super asymmetry."],
+        [1313.88, 1315.76, "We’re inventing it right now."]]},
+    {"v": "W8kIAgoqDAI", "s": 499.92, "e": 500.92, "line": "Wait, is that a thing?",
+      "note": "One cook talks about learning from your mistakes. The other is surprised: is that a real, known idea? “Yeah.”",
+      "around": [
+        [495.52, 497.04, "start not enjoying making mistakes,"],
+        [497.04, 499.84, "but learning from them and not seeing them as failures?"],
+        [502.08, 503.28, "Yeah."]]},
+    {"v": "5nouz6GFApE", "s": 1063.52, "e": 1064.24, "line": "Is that a thing?",
+      "note": "An American is taking a British driving test. One answer says the car “stalls”. He isn’t sure that really happens, so he asks.",
+      "around": [
+        [1061.04, 1062.96, "pedal down or roll in neutral for too long?"],
+        [1062.96, 1063.52, "It stalls."],
+        [1064.24, 1065.44, "It will use more fuel."],
+        [1065.44, 1066.96, "It will cause the engine to overheat."]]},
+    {"v": "nT07OaBdvP0", "s": 303, "e": 305, "line": "Dish detergent. Is that a thing? I don’t even know",
+      "note": "He isn’t sure “dish detergent” is a real, normal thing. He really doesn’t know."},
+    {"v": "ALyCuBW9l0E", "s": 178, "e": 180, "line": "I’m like 28, with knee-high socks, is that a thing?",
+      "note": "The speaker is 28 and wears knee-high socks. Is that normal for adults? Do other people do it too?"}
+  ]
+}

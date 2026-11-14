@@ -137,9 +137,33 @@ huggingface.co, about 15 min per hour of audio).
   YouTube Terms / Google Privacy links stay behind a faint ⓘ at the bottom. Space = play/pause wherever the focus is,
   ← → and double-tap = 1 s; pause goes on from where it stopped (a press just as the clip ends never restarts it);
   the picture is dark only before the clip starts, a paused clip is only dimmed. The clip stops when its line ends,
-  before the next line. Pick the clips before the lesson, never live:
+  before the next line.
+  **The clip library** (one place for every lesson and student; a word is picked once and reused):
+  - One file per word: `docs/real-video/words/<slug>.json` (slug: lowercase, letters and digits joined by "-";
+    "Is that a thing?" → `is-that-a-thing`) = `{en, ua, pic, hl?, clips: [{v, s, e, line, note, noteUa?, around?,
+    hidden?}]}`: v = YouTube id, s/e = where the line starts/ends (seconds; exact decimals when known), note = the 💡
+    note in English, noteUa in Ukrainian, around = `[[start, end, line], …]` 1–2 lines before and after (for "With
+    context"), hidden = kept but not shown, hl = a regex for other forms of the word ("rip[- ]?off").
+    `words/index.json` lists them for the search: after changing word files run `python3 tools/real-video/build_index.py`.
+  - The player reads them: `https://kiril-tishko.github.io/craneberries/real-video/?words=rip-off,excuse` (a lesson's
+    words; `&title=…`, `&notes=ua` for Ukrainian notes, `&from=lesson` adds "← Lesson", which closes the tab). Without
+    `?words` it shows the whole library; the search box finds any word in it.
+  - **She edits it herself** on the page: 5 quick taps in the top-left corner open edit mode (word, translation, line,
+    times with ⏱ Now, notes, lines around, hide / move / delete, add a clip by pasting a YouTube link with a time) and
+    "Save" commits to this branch with her own GitHub key. So `git pull --rebase` before touching the library, and
+    never overwrite her edits.
+  - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
+    screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian). It
+    opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
+    file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),
+    and otherwise say in the reply which words still need clips (picked on her PC with Claude in Chrome, or she pastes
+    links in edit mode). Never put student names or personal details in the library (the repo is public).
+  - **A YouTube link with a time from her** (youtu.be/…?t=83): open it in Chrome, read the lines around that second
+    (YouTube's "Show transcript"), and add the clip with exact times, the lines around it and a note.
+  Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
-    or calling its API): quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
+    or calling its API; she has emailed them asking to allow light automated use, so check for their answer before
+    automating anything): quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
     times and the lines around it. No accent filter: check the channel is American (sitcom clips like The Office work well).
   - **YouGlish** is the backup (`tools/real-video/pick.js`, US filter, search phrases that give the meaning: "a
     rip-off|what a rip-off"; `--meta` gives the rows): only 20 searches a day per browser (paging with next is free);
@@ -149,10 +173,9 @@ huggingface.co, about 15 min per hour of audio).
   talking and about what. Never guess the situation from the one line.
   Choose 4–5 where the word has the lesson's meaning (another meaning is the one thing she doesn't want; swearing,
   politics and so on are fine) and watch each one in the page: a clear picture (the speaker's face or the thing, not
-  a back or a far-away hall), no subtitles burned into the video, no "Video unavailable". Rows in `WORDS[].clips`:
-  `[YouTube id, start, end, line, 💡 note, [[start, end, line], …lines around it]]`. The 💡 note (hidden until tapped)
-  says in one or two very simple sentences what is happening and why the word fits; English or Ukrainian depending
-  on the student (ask her). Only these few lines are stored, never transcripts (she chose this over the YouGlish
+  a back or a far-away hall), no subtitles burned into the video, no "Video unavailable". The 💡 note (hidden until
+  tapped) says in one or two very simple sentences what is happening and why the word fits; English or Ukrainian
+  depending on the student (ask her). Only these few lines are stored, never transcripts (she chose this over the YouGlish
   window, knowing YouGlish's rules don't allow saving their results). Nothing skips on its own.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js` in the scratchpad; `prep.py <content.js> "<Title>" <work-dir>` records

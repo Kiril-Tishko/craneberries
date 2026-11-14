@@ -263,6 +263,19 @@ function view(s){
     ${s.words && s.words.length ? `<div class="when">Listen for: ${s.words.map(esc).join(' · ')}</div>` : ''}
     <a class="ylink" href="${full}" target="_blank" rel="noopener">Doesn’t play? Open it on YouTube at ${esc(s.from)}</a>`;
   }
+  if (s.t === 'clips'){
+    // Real video clips of the lesson's words, from the shared clip library (docs/real-video/words/). YouTube can't
+    // play inside an artifact, so ▶ opens the clip player in a new tab; its "← Lesson" button closes it again.
+    const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
+    if (s.notes === 'ua') q.set('notes', 'ua');
+    const url = `https://kiril-tishko.github.io/craneberries/real-video/?${q}`;
+    return `
+    <div class="who hear">🎬 ${esc(s.label || 'Real people say it')}</div>
+    <div class="big">${s.words.map(esc).join(' · ')}</div>
+    <a class="btn main" href="${esc(url)}" target="_blank" rel="noopener">▶ Watch the clips</a>
+    <div class="when">${esc(s.when || 'Short clips from real videos')}</div>`;
+  }
   if (s.t === 'word') return `
     <div class="who">${esc(s.label || '📖 New phrase')}</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}

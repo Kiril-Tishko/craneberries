@@ -2,11 +2,12 @@
 //   cd tools/real-video && python3 -m http.server 8766   (in another shell)
 //   node pick.js "<word or phrase>|<another phrase>|…" <out.txt> [how many per phrase, default 45]
 // Phrases give context ("a rip-off|such a rip-off" finds the noun, not "rip off the tape").
+// (YouGlish is the backup source; Caption Search is the main one, see CLAUDE.md.)
 // Writes "phrase <tab> clip id <tab> the line" for each clip. Keep the output in the scratchpad, never in
-// the repo: only the chosen clip ids go into docs/real-video/index.html (WORDS[].clips).
+// the repo: only the chosen clips go into the clip library (docs/real-video/words/<slug>.json, "clips").
 // Then check the ids: node pick.js --check "<word>" id1,id2,…  (each id must open its own line),
-// and get the rows for the page: node pick.js --meta "<word>" id1,id2,…
-//   → ['YouTube id', start, end, 'the line'], ready for WORDS[].clips in docs/real-video/index.html.
+// and get the clips for the library: node pick.js --meta "<word>" id1,id2,…
+//   → {"v": YouTube id, "s": start, "e": end, "line": the line}; add "note" (and "around" if known).
 const {chromium} = require('playwright');
 const fs = require('fs');
 const URL = 'http://localhost:8766/harvest.html';
@@ -31,7 +32,7 @@ const clean = (t) => t.replace(/\[\[\[|\]\]\]/g, '');
       const m = t.match(/"cid_track":\{"display":"((?:[^"\\]|\\.)*)".*?"vid":"([\w-]+)","start":"(\d+)","end":"(\d+)"/);
       if (!m) { console.log(id, 'not found'); continue; }
       const line = m[1].replace(/\\"/g, '"').replace(/^"/, '“').replace(/'/g, '’');
-      console.log(`    ['${m[2]}', ${m[3]}, ${m[4]}, '${line}'],`);
+      console.log(`    ${JSON.stringify({v: m[2], s: +m[3], e: +m[4], line})},`);
       await new Promise((r) => setTimeout(r, 1000));
     }
   } else if (process.argv[2] === '--check') {

@@ -1,0 +1,25 @@
+{
+  "en": "rip-off",
+  "ua": "грабіж, завищена ціна",
+  "pic": "💸",
+  "hl": "rip[- ]?off",
+  "clips": [
+    {"v": "2jIC6MBkjjs", "s": 39, "e": 40, "line": "It is such a rip-off.",
+      "note": "They are tasting bottled water and he sees the price. He thinks it costs far too much for water."},
+    {"v": "iaYdIU5n6vw", "s": 871.24, "e": 874.72, "line": "and I just thought that that was a rip-off for what it actually was.",
+      "note": "He paid $40 for one pizza. He thinks it wasn’t worth that much money.",
+      "around": [
+        [865.32, 867.68, "especially in the last 10 years, is pizza."],
+        [867.68, 871.24, "I have definitely spent $40 for a pizza pie in the last year,"],
+        [874.72, 877.32, "The only saving grace out of all of this is probably Costco."]]},
+    {"v": "ebyeLhKlUT4", "s": 110, "e": 111, "line": "I think this is a total rip off.",
+      "note": "He thinks the price is much too high. “Total” makes it stronger: completely a rip-off."},
+    {"v": "QvFXCJx2Dlo", "s": 509, "e": 511, "line": "I got ripped off, ah, what a rip-off.",
+      "note": "He explains the word: you paid much more than something is worth. “I got ripped off” = someone took too much money from me.",
+      "around": [
+        [510.94, 514.04, "Sometimes if things are way too expensive,"],
+        [514.04, 516.98, "more expensive than they should be, you pay for that,"]]},
+    {"v": "EnYsqXY_MRs", "s": 155, "e": 158, "line": "They charge a lot and I think they’re a bit of a rip off.",
+      "note": "He talks about people who ask for a lot of money. He thinks they aren’t worth it. “A bit of” makes it softer."}
+  ]
+}

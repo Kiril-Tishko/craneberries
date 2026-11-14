@@ -1,0 +1,19 @@
+{
+  "en": "mandatory",
+  "ua": "обов’язковий",
+  "pic": "📋",
+  "clips": [
+    {"v": "DkR4Ksuifo0", "s": 2934.32, "e": 2938.96, "line": "But I had to cancel because Angela’s party is mandatory.",
+      "note": "He wanted to go to a museum (the Met) in New York tonight. He can’t: everyone has to go to Angela’s party.",
+      "around": [
+        [2931.2, 2934.32, "I was going to be in New York tonight to go to the Met,"]]},
+    {"v": "kj2fpM57Z7A", "s": 439, "e": 443, "line": "And public school is mandatory and public school is free.",
+      "note": "He talks about school: all children have to go, and public school costs nothing."},
+    {"v": "iWH_llRxewE", "s": 656, "e": 661, "line": "It’s not mandatory, but we do hope our employees will take the opportunity",
+      "note": "A company leader says the workers don’t have to do it, but the company hopes they will."},
+    {"v": "AvhtymEvpbk", "s": 484, "e": 487, "line": "And the important thing is, summer school is not mandatory",
+      "note": "She says students don’t have to go to summer school. They can choose."},
+    {"v": "PLZV9Aj0e1Q", "s": 259, "e": 261, "line": "I had to attend some mandatory classes,",
+      "note": "He had to go to some classes. He had no choice."}
+  ]
+}
