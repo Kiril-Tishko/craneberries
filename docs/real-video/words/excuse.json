@@ -3,24 +3,10 @@
   "ua": "відмовка, виправдання",
   "pic": "🙈",
   "clips": [
-    {"v": "5doVqBQ8A0M", "s": 1730.32, "e": 1731.76, "line": "It’s a good, good excuse.",
-      "note": "A boy explains what happened: “I was just standing there.” Ellen jokes that it is a good reason.",
-      "around": [
-        [1727.48, 1728.88, "Cuz I was just standing there."],
-        [1729, 1730.32, "Just standing there."],
-        [1731.76, 1732.56, "All right."],
-        [1732.56, 1734.32, "So, you’ve been dancing for a long time."]]},
-    {"v": "fh-sBZdxiqs", "s": 1383.36, "e": 1385.04, "line": "I don’t really have a good excuse.",
-      "note": "Someone told him about some books. He still hasn’t read them, and he has no good reason why.",
-      "around": [
-        [1377.04, 1382.24, "and, uh, it’s such a great concept and I should read them."],
-        [1382.24, 1383.36, "I hear they’re really good."],
-        [1385.04, 1389.84, "Um, yeah, I might just order copies after I finish shooting this."]]},
-    {"v": "bQUwQNZXWIo", "s": 3063, "e": 3065, "line": "I always try to find an excuse, but—",
-      "note": "He says he always looks for a reason not to do something."},
-    {"v": "uBqY4kZd3lw", "s": 225, "e": 226, "line": "And I don’t. That is the easiest excuse in the world.",
-      "note": "She says this reason is too easy: people use it all the time, so it isn’t a real reason."},
-    {"v": "XO9J-wk-G9Y", "s": 47, "e": 52, "line": "Really that difficult. Frankly, there’s no excuse for not doing them.",
-      "note": "He says these things are not really hard, so there is no good reason not to do them."}
+    {"v":"5doVqBQ8A0M","s":1730.32,"e":1731.76,"line":"It’s a good, good excuse .","note":"A boy explains what happened: “I was just standing there.” Ellen jokes that it is a good reason.","around":[[1727.48,1728.88,"Cuz I was just standing there."],[1729,1730.32,"Just standing there."],[1731.76,1732.56,"All right."],[1732.56,1734.32,"So, you’ve been dancing for a long time."]]},
+    {"v":"fh-sBZdxiqs","s":1383.36,"e":1385.04,"line":"I don’t really have a good excuse.","note":"Someone told him about some books. He still hasn’t read them, and he has no good reason why.","around":[[1377.04,1382.24,"and, uh, it’s such a great concept and I should read them."],[1382.24,1383.36,"I hear they’re really good."],[1385.04,1389.84,"Um, yeah, I might just order copies after I finish shooting this."]]},
+    {"v":"bQUwQNZXWIo","s":3063,"e":3065,"line":"I always try to find an excuse, but—","note":"He says he always looks for a reason not to do something."},
+    {"v":"uBqY4kZd3lw","s":225,"e":226,"line":"And I don’t. That is the easiest excuse in the world.","note":"She says this reason is too easy: people use it all the time, so it isn’t a real reason."},
+    {"v":"XO9J-wk-G9Y","s":47,"e":52,"line":"Really that difficult. Frankly, there’s no excuse for not doing them.","note":"He says these things are not really hard, so there is no good reason not to do them."}
   ]
 }
