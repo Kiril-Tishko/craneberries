@@ -128,12 +128,19 @@ huggingface.co, about 15 min per hour of audio).
   (hidden until tapped) only where something is easy to miss. In future video lessons (podcasts, shows), tapping
   any word shows its Ukrainian translation.
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
-  YouTube player (no YouTube buttons, title or timeline; our caption bar; ▶ Again, ▶ Longer for context, 🐢 Slower).
-  Pick the clips before the lesson, never live: list candidates with `tools/real-video/pick.js` (search phrases
-  that give the meaning: "a rip-off|what a rip-off", not just the word), choose 4–5 where the word has the
-  lesson's meaning (another meaning is the one thing she doesn't want; swearing, politics and so on are fine),
-  then `--meta` gives the `[YouTube id, start, end, line]` rows for `WORDS[].clips` (she chose this over the
-  YouGlish window, knowing YouGlish's rules don't allow saving their results). Nothing skips on its own.
+  YouTube player (no YouTube buttons, title or timeline; our caption bar; ▶ Again, ▶ Longer plays 1–2 lines before
+  and after and the caption bar follows them, 🐢 Slower). Pick the clips before the lesson, never live:
+  - **Caption Search** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts or calling its
+    API): quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact times and the
+    lines around it. No accent filter: check the channel is American (sitcom clips like The Office work well).
+  - **YouGlish** (`tools/real-video/pick.js`, US filter, search phrases that give the meaning: "a rip-off|what a
+    rip-off"; `--meta` gives the rows): only 20 searches a day per browser (paging with next is free).
+  Choose 4–5 where the word has the lesson's meaning (another meaning is the one thing she doesn't want; swearing,
+  politics and so on are fine) and watch each one in the page: a clear picture (the speaker's face or the thing, not
+  a back or a far-away hall), no subtitles burned into the video, no "Video unavailable". Rows in `WORDS[].clips`:
+  `[YouTube id, start, end, line, [[start, end, line], …lines around it for Longer]]`; only these few lines are
+  stored, never transcripts (she chose this over the YouGlish window, knowing YouGlish's rules don't allow saving
+  their results). Nothing skips on its own.
 - **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js` in the scratchpad; `prep.py <content.js> "<Title>" <work-dir>` records
   the lines and builds `<work-dir>/page.html`; `qa.js <work-dir>` checks every screen at phone and laptop size

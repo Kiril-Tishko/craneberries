@@ -70,33 +70,57 @@ main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16
       </div>
     </section>
   </main>
-  <p class="foot">Clips found with <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
+  <p class="foot">Clips found with <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a> and <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
 </div>
 <script>
-// Clips are picked before the lesson (tools/real-video/pick.js): [YouTube id, start, end, the line].
-// Only these short lines are stored, never transcripts or videos. `hl` marks the word in the line.
+// Clips are picked before the lesson: [YouTube id, start, end, the line, the lines around it].
+// The lines around it ([start, end, line], 1–2 before and after) are what ▶ Longer plays and shows.
+// Only these few short lines are stored, never transcripts or videos. `hl` marks the word in the line.
 const WORDS = [
   {en: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸', hl: /rip[- ]?off/gi, clips: [
     ['2jIC6MBkjjs', 39, 40, 'It is such a rip-off.'],
-    ['iaYdIU5n6vw', 871.24, 874.72, 'and I just thought that that was a rip-off for what it actually was.'],
+    ['iaYdIU5n6vw', 871.24, 874.72, 'and I just thought that that was a rip-off for what it actually was.', [
+      [865.32, 867.68, 'especially in the last 10 years, is pizza.'],
+      [867.68, 871.24, 'I have definitely spent $40 for a pizza pie in the last year,'],
+      [874.72, 877.32, 'The only saving grace out of all of this is probably Costco.']]],
     ['ebyeLhKlUT4', 110, 111, 'I think this is a total rip off.'],
-    ['QvFXCJx2Dlo', 509, 511, 'I got ripped off, ah, what a rip-off.'],
+    ['QvFXCJx2Dlo', 509, 511, 'I got ripped off, ah, what a rip-off.', [
+      [510.94, 514.04, 'Sometimes if things are way too expensive,'],
+      [514.04, 516.98, 'more expensive than they should be, you pay for that,']]],
     ['EnYsqXY_MRs', 155, 158, 'They charge a lot and I think they’re a bit of a rip off.']]},
   {en: 'mandatory', ua: 'обов’язковий', pic: '📋', hl: /mandatory/gi, clips: [
-    ['DkR4Ksuifo0', 2934.32, 2938.96, 'But I had to cancel because Angela’s party is mandatory.'],
+    ['DkR4Ksuifo0', 2934.32, 2938.96, 'But I had to cancel because Angela’s party is mandatory.', [
+      [2931.2, 2934.32, 'I was going to be in New York tonight to go to the Met,']]],
     ['kj2fpM57Z7A', 439, 443, 'And public school is mandatory and public school is free.'],
     ['iWH_llRxewE', 656, 661, 'It’s not mandatory, but we do hope our employees will take the opportunity'],
     ['AvhtymEvpbk', 484, 487, 'And the important thing is, summer school is not mandatory'],
     ['PLZV9Aj0e1Q', 259, 261, 'I had to attend some mandatory classes,']]},
   {en: 'Is that a thing?', ua: 'Таке буває? / Це щось відоме?', pic: '🤔', hl: /is that a thing/gi, clips: [
-    ['FO0yZagkA-E', 1312.88, 1313.76, 'Is that a thing?'],
-    ['W8kIAgoqDAI', 499.92, 500.92, 'Wait, is that a thing?'],
-    ['5nouz6GFApE', 1063.52, 1064.24, 'Is that a thing?'],
+    ['FO0yZagkA-E', 1312.88, 1313.76, 'Is that a thing?', [
+      [1310.4, 1311.76, 'Super asymmetry.'],
+      [1312, 1312.88, 'Super asymmetry.'],
+      [1313.88, 1315.76, 'We’re inventing it right now.']]],
+    ['W8kIAgoqDAI', 499.92, 500.92, 'Wait, is that a thing?', [
+      [495.52, 497.04, 'start not enjoying making mistakes,'],
+      [497.04, 499.84, 'but learning from them and not seeing them as failures?'],
+      [502.08, 503.28, 'Yeah.']]],
+    ['5nouz6GFApE', 1063.52, 1064.24, 'Is that a thing?', [
+      [1061.04, 1062.96, 'pedal down or roll in neutral for too long?'],
+      [1062.96, 1063.52, 'It stalls.'],
+      [1064.24, 1065.44, 'It will use more fuel.'],
+      [1065.44, 1066.96, 'It will cause the engine to overheat.']]],
     ['nT07OaBdvP0', 303, 305, 'Dish detergent. Is that a thing? I don’t even know'],
     ['ALyCuBW9l0E', 178, 180, 'I’m like 28, with knee-high socks, is that a thing?']]},
   {en: 'excuse', ua: 'відмовка, виправдання', pic: '🙈', hl: /excuse/gi, clips: [
-    ['5doVqBQ8A0M', 1730.32, 1731.76, 'It’s a good, good excuse.'],
-    ['fh-sBZdxiqs', 1383.36, 1385.04, 'I don’t really have a good excuse.'],
+    ['5doVqBQ8A0M', 1730.32, 1731.76, 'It’s a good, good excuse.', [
+      [1727.48, 1728.88, 'Cuz I was just standing there.'],
+      [1729, 1730.32, 'Just standing there.'],
+      [1731.76, 1732.56, 'All right.'],
+      [1732.56, 1734.32, 'So, you’ve been dancing for a long time.']]],
+    ['fh-sBZdxiqs', 1383.36, 1385.04, 'I don’t really have a good excuse.', [
+      [1377.04, 1382.24, 'and, uh, it’s such a great concept and I should read them.'],
+      [1382.24, 1383.36, 'I hear they’re really good.'],
+      [1385.04, 1389.84, 'Um, yeah, I might just order copies after I finish shooting this.']]],
     ['bQUwQNZXWIo', 3063, 3065, 'I always try to find an excuse, but—'],
     ['uBqY4kZd3lw', 225, 226, 'And I don’t. That is the easiest excuse in the world.'],
     ['XO9J-wk-G9Y', 47, 52, 'Really that difficult. Frankly, there’s no excuse for not doing them.']]},
@@ -121,9 +145,14 @@ function pick(i, play){
 function showClip(play){
   const w = WORDS[cur], c = w.clips[clipN];
   $('count').textContent = `Clip ${clipN + 1} of ${w.clips.length}`;
-  $('capbar').innerHTML = `<span>${esc(c[3]).replace(w.hl, (m) => `<mark>${m}</mark>`)}</span>`;
+  showLine(c[3]);
   if (play) playClip(false); else cue();
 }
+function showLine(text){
+  $('capbar').innerHTML = `<span>${esc(text).replace(WORDS[cur].hl, (m) => `<mark>${m}</mark>`)}</span>`;
+}
+// ▶ Longer plays the lines around the word's line, and the caption bar follows them.
+function linesOf(c){ return [...(c[4] || []), [c[1], c[2], c[3]]].sort((a, b) => a[0] - b[0]); }
 function cue(){
   if (!ready) return;
   const c = WORDS[cur].clips[clipN];
@@ -133,14 +162,21 @@ function cue(){
 function playClip(longer){
   if (!ready) { wantPlay = true; return; }
   const c = WORDS[cur].clips[clipN];
-  const from = Math.max(0, c[1] - (longer ? LONGER_BEFORE : PAD_BEFORE));
-  stopAt = c[2] + (longer ? LONGER_AFTER : PAD_AFTER);
+  const lines = longer && c[4] ? linesOf(c) : null;
+  const from = Math.max(0, lines ? lines[0][0] - 0.3 : c[1] - (longer ? LONGER_BEFORE : PAD_BEFORE));
+  stopAt = lines ? lines[lines.length - 1][1] + 0.6 : c[2] + (longer ? LONGER_AFTER : PAD_AFTER);
+  showLine(c[3]);
   player.loadVideoById({videoId: c[0], startSeconds: from});
   player.setPlaybackRate(slow ? 0.75 : 1);
   clearInterval(timer);
+  let shown = null;
   timer = setInterval(() => {
-    if (player.getPlayerState() === YT.PlayerState.PLAYING && player.getCurrentTime() >= stopAt) {
-      player.pauseVideo(); clearInterval(timer);
+    if (player.getPlayerState() !== YT.PlayerState.PLAYING) return;
+    const t = player.getCurrentTime();
+    if (t >= stopAt) { player.pauseVideo(); clearInterval(timer); if (lines) showLine(c[3]); return; }
+    if (lines) {
+      const l = lines.reduce((on, x) => (t >= x[0] - 0.1 ? x : on), lines[0]);
+      if (l !== shown) { shown = l; showLine(l[2]); }
     }
   }, 50);
 }
