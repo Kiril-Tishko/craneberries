@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap">
 <style>
 :root{--bg:#EEF1F4;--surface:#FFF;--ink:#141B24;--muted:#5D6773;--line:#D5DBE2;--accent:#C2410C;--accent-ink:#FFF;
-  --ua:#5B4A0E;--ua-bg:#FFF2C6;--font:"Lexend","Segoe UI",system-ui,sans-serif;color-scheme:light}
+  --ua:#5B4A0E;--ua-bg:#FFF2C6;--word:#FFE14D;--font:"Lexend","Segoe UI",system-ui,sans-serif;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#0F141A;--surface:#18202A;--ink:#E8EDF2;--muted:#9AA6B3;--line:#2A3542;
   --accent:#FB8A4C;--accent-ink:#0F141A;--ua:#F4DD8A;--ua-bg:#3A3214;color-scheme:dark}}
 *{box-sizing:border-box}
@@ -27,14 +27,24 @@ main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16
    and "Watch on YouTube" bar (bottom) land in black margins that the box cuts off. */
 .video iframe,#player{position:absolute;left:0;top:-30%;width:100%;height:160%;border:0}
 /* Our cover sits on the video all the time: no YouTube buttons, title or timeline under the mouse.
-   When the clip is not playing it darkens the picture and shows a big ▶. */
-.cover{position:absolute;inset:0;border:0;padding:0;background:rgba(10,12,16,.86);display:flex;align-items:center;justify-content:center;cursor:pointer}
+   Before a clip has started it darkens the picture; once started, a pause only dims it a little. */
+.cover{position:absolute;inset:0;border:0;padding:0;background:rgba(10,12,16,.86);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .cover span{width:80px;height:80px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:34px}
+.cover.dim{background:rgba(10,12,16,.25)}
+.cover.dim span{width:64px;height:64px;font-size:27px;opacity:.92}
 .cover.playing{background:transparent}
 .cover.playing span{display:none}
-.capbar{min-height:64px;display:flex;align-items:center;justify-content:center;padding:8px 16px;background:var(--surface);
+/* Our timeline: the whole clip, the word's line in yellow; tap anywhere to jump there. */
+.tlrow{display:flex;align-items:center;gap:12px;padding:6px 14px 0;background:var(--surface)}
+.tlhit{flex:1;padding:8px 0;cursor:pointer;touch-action:none}
+.tl{position:relative;height:6px;border-radius:99px;background:var(--line)}
+.tl-word{position:absolute;top:0;bottom:0;background:var(--word);opacity:.75;border-radius:99px}
+.tl-fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:99px;opacity:.85}
+.tl-dot{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:99px;background:var(--accent);border:2px solid var(--surface)}
+.tltime{color:var(--muted);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
+.capbar{min-height:64px;display:flex;align-items:center;justify-content:center;padding:6px 16px 10px;background:var(--surface);
   font-size:clamp(17px,2.2vw,22px);font-weight:600;text-align:center;line-height:1.3}
-.capbar mark{background:#FFE14D;color:#141B24;border-radius:4px;padding:0 3px}
+.capbar mark{background:var(--word);color:#141B24;border-radius:4px;padding:0 3px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start}
 @media (max-width:820px){.card{padding:14px;gap:8px}}
 .pic{font-size:52px;line-height:1}
@@ -45,6 +55,11 @@ main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16
 .controls button{font:600 17px var(--font);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .controls .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .controls button[aria-pressed="true"]{outline:3px solid var(--accent)}
+/* 💡 note: hidden until tapped; its space is kept so nothing jumps. */
+.tip{display:grid;gap:6px;justify-items:start}
+.tip button{font:600 15px var(--font);padding:6px 12px;border-radius:10px;border:1px dashed var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.note{margin:0;font-size:16px;line-height:1.45;color:var(--ink)}
+.note.off{visibility:hidden}
 .foot{color:var(--muted);font-size:13px}
 .foot a{color:var(--accent)}
 </style>
@@ -55,6 +70,10 @@ main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16
   <main>
     <div class="vwrap">
       <div class="video"><div id="player"></div><button class="cover" id="cover" aria-label="Play"><span>▶</span></button></div>
+      <div class="tlrow">
+        <div class="tlhit" id="tlhit"><div class="tl" id="tl"><div class="tl-word" id="tlword"></div><div class="tl-fill" id="tlfill"></div><div class="tl-dot" id="tldot"></div></div></div>
+        <span class="tltime" id="tltime"></span>
+      </div>
       <div class="capbar" id="capbar"></div>
     </div>
     <section class="card">
@@ -68,69 +87,97 @@ main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16
         <button id="next">Another clip →</button>
         <button id="slow" aria-pressed="false">🐢 Slower</button>
       </div>
+      <div class="tip">
+        <button id="tipbtn" aria-expanded="false">💡 What’s happening?</button>
+        <p class="note off" id="note"></p>
+      </div>
     </section>
   </main>
-  <p class="foot">Clips found with <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a> and <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
+  <p class="foot">Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
 </div>
 <script>
-// Clips are picked before the lesson: [YouTube id, start, end, the line, the lines around it].
-// The lines around it ([start, end, line], 1–2 before and after) are what ▶ Longer plays and shows.
-// Only these few short lines are stored, never transcripts or videos. `hl` marks the word in the line.
+// Clips are picked before the lesson: [YouTube id, start, end, the line, 💡 note, the lines around it].
+// The note says very simply what is happening and why the word fits (English or the student's language).
+// The lines around it ([start, end, line], 1–2 before and after) are what ▶ Longer plays and shows; they also
+// tell where the next line starts, so the clip stops before it. Only these few short lines are stored, never
+// transcripts or videos. `hl` marks the word in the line.
 const WORDS = [
   {en: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸', hl: /rip[- ]?off/gi, clips: [
-    ['2jIC6MBkjjs', 39, 40, 'It is such a rip-off.'],
-    ['iaYdIU5n6vw', 871.24, 874.72, 'and I just thought that that was a rip-off for what it actually was.', [
+    ['2jIC6MBkjjs', 39, 40, 'It is such a rip-off.',
+      'They are tasting bottled water and he sees the price. He thinks it costs far too much for water.'],
+    ['iaYdIU5n6vw', 871.24, 874.72, 'and I just thought that that was a rip-off for what it actually was.',
+      'He paid $40 for one pizza. He thinks it wasn’t worth that much money.', [
       [865.32, 867.68, 'especially in the last 10 years, is pizza.'],
       [867.68, 871.24, 'I have definitely spent $40 for a pizza pie in the last year,'],
       [874.72, 877.32, 'The only saving grace out of all of this is probably Costco.']]],
-    ['ebyeLhKlUT4', 110, 111, 'I think this is a total rip off.'],
-    ['QvFXCJx2Dlo', 509, 511, 'I got ripped off, ah, what a rip-off.', [
+    ['ebyeLhKlUT4', 110, 111, 'I think this is a total rip off.',
+      'He thinks the price is much too high. “Total” makes it stronger: completely a rip-off.'],
+    ['QvFXCJx2Dlo', 509, 511, 'I got ripped off, ah, what a rip-off.',
+      'He explains the word: you paid much more than something is worth. “I got ripped off” = someone took too much money from me.', [
       [510.94, 514.04, 'Sometimes if things are way too expensive,'],
       [514.04, 516.98, 'more expensive than they should be, you pay for that,']]],
-    ['EnYsqXY_MRs', 155, 158, 'They charge a lot and I think they’re a bit of a rip off.']]},
+    ['EnYsqXY_MRs', 155, 158, 'They charge a lot and I think they’re a bit of a rip off.',
+      'He talks about people who ask for a lot of money. He thinks they aren’t worth it. “A bit of” makes it softer.']]},
   {en: 'mandatory', ua: 'обов’язковий', pic: '📋', hl: /mandatory/gi, clips: [
-    ['DkR4Ksuifo0', 2934.32, 2938.96, 'But I had to cancel because Angela’s party is mandatory.', [
+    ['DkR4Ksuifo0', 2934.32, 2938.96, 'But I had to cancel because Angela’s party is mandatory.',
+      'He wanted to go to a museum (the Met) in New York tonight. He can’t: everyone has to go to Angela’s party.', [
       [2931.2, 2934.32, 'I was going to be in New York tonight to go to the Met,']]],
-    ['kj2fpM57Z7A', 439, 443, 'And public school is mandatory and public school is free.'],
-    ['iWH_llRxewE', 656, 661, 'It’s not mandatory, but we do hope our employees will take the opportunity'],
-    ['AvhtymEvpbk', 484, 487, 'And the important thing is, summer school is not mandatory'],
-    ['PLZV9Aj0e1Q', 259, 261, 'I had to attend some mandatory classes,']]},
+    ['kj2fpM57Z7A', 439, 443, 'And public school is mandatory and public school is free.',
+      'He talks about school: all children have to go, and public school costs nothing.'],
+    ['iWH_llRxewE', 656, 661, 'It’s not mandatory, but we do hope our employees will take the opportunity',
+      'A company leader says the workers don’t have to do it, but the company hopes they will.'],
+    ['AvhtymEvpbk', 484, 487, 'And the important thing is, summer school is not mandatory',
+      'She says students don’t have to go to summer school. They can choose.'],
+    ['PLZV9Aj0e1Q', 259, 261, 'I had to attend some mandatory classes,',
+      'He had to go to some classes. He had no choice.']]},
   {en: 'Is that a thing?', ua: 'Таке буває? / Це щось відоме?', pic: '🤔', hl: /is that a thing/gi, clips: [
-    ['FO0yZagkA-E', 1312.88, 1313.76, 'Is that a thing?', [
+    ['FO0yZagkA-E', 1312.88, 1313.76, 'Is that a thing?',
+      'They say a science idea: “super asymmetry”. Someone asks if it is real. The answer: no, they are making it up right now.', [
       [1310.4, 1311.76, 'Super asymmetry.'],
       [1312, 1312.88, 'Super asymmetry.'],
       [1313.88, 1315.76, 'We’re inventing it right now.']]],
-    ['W8kIAgoqDAI', 499.92, 500.92, 'Wait, is that a thing?', [
+    ['W8kIAgoqDAI', 499.92, 500.92, 'Wait, is that a thing?',
+      'One cook talks about learning from your mistakes. The other is surprised: is that a real, known idea? “Yeah.”', [
       [495.52, 497.04, 'start not enjoying making mistakes,'],
       [497.04, 499.84, 'but learning from them and not seeing them as failures?'],
       [502.08, 503.28, 'Yeah.']]],
-    ['5nouz6GFApE', 1063.52, 1064.24, 'Is that a thing?', [
+    ['5nouz6GFApE', 1063.52, 1064.24, 'Is that a thing?',
+      'An American is taking a British driving test. One answer says the car “stalls”. He isn’t sure that really happens, so he asks.', [
       [1061.04, 1062.96, 'pedal down or roll in neutral for too long?'],
       [1062.96, 1063.52, 'It stalls.'],
       [1064.24, 1065.44, 'It will use more fuel.'],
       [1065.44, 1066.96, 'It will cause the engine to overheat.']]],
-    ['nT07OaBdvP0', 303, 305, 'Dish detergent. Is that a thing? I don’t even know'],
-    ['ALyCuBW9l0E', 178, 180, 'I’m like 28, with knee-high socks, is that a thing?']]},
+    ['nT07OaBdvP0', 303, 305, 'Dish detergent. Is that a thing? I don’t even know',
+      'He isn’t sure “dish detergent” is a real, normal thing. He really doesn’t know.'],
+    ['ALyCuBW9l0E', 178, 180, 'I’m like 28, with knee-high socks, is that a thing?',
+      'The speaker is 28 and wears knee-high socks. Is that normal for adults? Do other people do it too?']]},
   {en: 'excuse', ua: 'відмовка, виправдання', pic: '🙈', hl: /excuse/gi, clips: [
-    ['5doVqBQ8A0M', 1730.32, 1731.76, 'It’s a good, good excuse.', [
+    ['5doVqBQ8A0M', 1730.32, 1731.76, 'It’s a good, good excuse.',
+      'A boy explains what happened: “I was just standing there.” Ellen jokes that it is a good reason.', [
       [1727.48, 1728.88, 'Cuz I was just standing there.'],
       [1729, 1730.32, 'Just standing there.'],
       [1731.76, 1732.56, 'All right.'],
       [1732.56, 1734.32, 'So, you’ve been dancing for a long time.']]],
-    ['fh-sBZdxiqs', 1383.36, 1385.04, 'I don’t really have a good excuse.', [
+    ['fh-sBZdxiqs', 1383.36, 1385.04, 'I don’t really have a good excuse.',
+      'Someone told him about some books. He still hasn’t read them, and he has no good reason why.', [
       [1377.04, 1382.24, 'and, uh, it’s such a great concept and I should read them.'],
       [1382.24, 1383.36, 'I hear they’re really good.'],
       [1385.04, 1389.84, 'Um, yeah, I might just order copies after I finish shooting this.']]],
-    ['bQUwQNZXWIo', 3063, 3065, 'I always try to find an excuse, but—'],
-    ['uBqY4kZd3lw', 225, 226, 'And I don’t. That is the easiest excuse in the world.'],
-    ['XO9J-wk-G9Y', 47, 52, 'Really that difficult. Frankly, there’s no excuse for not doing them.']]},
+    ['bQUwQNZXWIo', 3063, 3065, 'I always try to find an excuse, but—',
+      'He says he always looks for a reason not to do something.'],
+    ['uBqY4kZd3lw', 225, 226, 'And I don’t. That is the easiest excuse in the world.',
+      'She says this reason is too easy: people use it all the time, so it isn’t a real reason.'],
+    ['XO9J-wk-G9Y', 47, 52, 'Really that difficult. Frankly, there’s no excuse for not doing them.',
+      'He says these things are not really hard, so there is no good reason not to do them.']]},
 ];
-// Times from YouGlish are whole seconds: start a bit early, stop about a second after the line ends.
-const PAD_BEFORE = 0.4, PAD_AFTER = 1.2, LONGER_BEFORE = 6, LONGER_AFTER = 4;
+// Exact times (with decimals, from Caption Search): start just before the line and stop when it ends, before the
+// next line. Whole-second times (YouGlish): start a bit early and stop about a second later (or at the next line).
+const EXACT_BEFORE = 0.1, EXACT_AFTER = 0.12, PAD_BEFORE = 0.4, PAD_AFTER = 1.2, LONGER_BEFORE = 6, LONGER_AFTER = 4;
 
 const $ = (id) => document.getElementById(id);
 const esc = (t) => t.replace(/[&<>]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]));
-let cur = 0, clipN = 0, slow = false, player = null, ready = false, stopAt = 0, timer = null, wantPlay = false;
+let cur = 0, clipN = 0, slow = false, player = null, ready = false, wantPlay = null;
+let range = null, started = false, ended = false, shown = null, loadedAt = 0;
 
 $('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${esc(w.en)}</button>`).join('');
 $('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i, true); };
@@ -145,43 +192,72 @@ function pick(i, play){
 function showClip(play){
   const w = WORDS[cur], c = w.clips[clipN];
   $('count').textContent = `Clip ${clipN + 1} of ${w.clips.length}`;
+  $('note').textContent = c[4]; $('note').classList.add('off'); $('tipbtn').setAttribute('aria-expanded', 'false');
   showLine(c[3]);
+  started = false; ended = false;
+  range = rangeOf(c, false); drawTimeline(range.from);
   if (play) playClip(false); else cue();
 }
 function showLine(text){
   $('capbar').innerHTML = `<span>${esc(text).replace(WORDS[cur].hl, (m) => `<mark>${m}</mark>`)}</span>`;
 }
-// ▶ Longer plays the lines around the word's line, and the caption bar follows them.
-function linesOf(c){ return [...(c[4] || []), [c[1], c[2], c[3]]].sort((a, b) => a[0] - b[0]); }
+// What a play covers: just the line (Again), or the lines around it too (Longer).
+function rangeOf(c, longer){
+  const around = c[5] || [], exact = !Number.isInteger(c[1]);
+  const before = around.filter((l) => l[1] <= c[1] + 0.05), after = around.filter((l) => l[0] >= c[2] - 0.05);
+  if (longer && around.length) {
+    const lines = [...before, [c[1], c[2], c[3]], ...after];
+    return {from: Math.max(0, lines[0][0] - EXACT_BEFORE), to: lines[lines.length - 1][1] + 0.1, lines, c};
+  }
+  if (longer) return {from: Math.max(0, c[1] - LONGER_BEFORE), to: c[2] + LONGER_AFTER, lines: null, c};
+  let to = c[2] + (exact ? EXACT_AFTER : PAD_AFTER);
+  if (after.length) to = Math.min(to, after[0][0]);
+  return {from: Math.max(0, c[1] - (exact ? EXACT_BEFORE : PAD_BEFORE)), to, lines: null, c};
+}
 function cue(){
   if (!ready) return;
   const c = WORDS[cur].clips[clipN];
-  player.cueVideoById({videoId: c[0], startSeconds: Math.max(0, c[1] - PAD_BEFORE)});
-  setCover(false);
+  player.cueVideoById({videoId: c[0], startSeconds: range.from});
+  setCover();
 }
-function playClip(longer){
-  if (!ready) { wantPlay = true; return; }
+function playClip(longer, at){
   const c = WORDS[cur].clips[clipN];
-  const lines = longer && c[4] ? linesOf(c) : null;
-  const from = Math.max(0, lines ? lines[0][0] - 0.3 : c[1] - (longer ? LONGER_BEFORE : PAD_BEFORE));
-  stopAt = lines ? lines[lines.length - 1][1] + 0.6 : c[2] + (longer ? LONGER_AFTER : PAD_AFTER);
+  range = rangeOf(c, longer); shown = null;
+  if (!ready) { wantPlay = {longer, at}; return; }
+  started = true; ended = false; loadedAt = performance.now();
   showLine(c[3]);
-  player.loadVideoById({videoId: c[0], startSeconds: from});
+  player.loadVideoById({videoId: c[0], startSeconds: at ?? range.from});
   player.setPlaybackRate(slow ? 0.75 : 1);
-  clearInterval(timer);
-  let shown = null;
-  timer = setInterval(() => {
-    if (player.getPlayerState() !== YT.PlayerState.PLAYING) return;
-    const t = player.getCurrentTime();
-    if (t >= stopAt) { player.pauseVideo(); clearInterval(timer); if (lines) showLine(c[3]); return; }
-    if (lines) {
-      const l = lines.reduce((on, x) => (t >= x[0] - 0.1 ? x : on), lines[0]);
-      if (l !== shown) { shown = l; showLine(l[2]); }
-    }
-  }, 50);
 }
-function setCover(playing){
+// One clock for everything: stop at the end, move the timeline, and in Longer follow the lines.
+setInterval(() => {
+  // Right after a load the player can still report the old clip's time for a moment: wait for the new one.
+  if (!ready || !range || !player.getCurrentTime || performance.now() - loadedAt < 300) return;
+  const playing = player.getPlayerState() === YT.PlayerState.PLAYING;
+  const t = player.getCurrentTime();
+  if (playing && t >= range.to - 0.06) {
+    player.pauseVideo(); ended = true;
+    if (range.lines) { showLine(range.c[3]); shown = null; }
+    drawTimeline(range.to); return;
+  }
+  if (started && !ended) drawTimeline(t);
+  if (playing && range.lines) {
+    const l = range.lines.reduce((on, x) => (t >= x[0] - 0.1 ? x : on), range.lines[0]);
+    if (l !== shown) { shown = l; showLine(l[2]); }
+  }
+}, 50);
+function drawTimeline(t){
+  const r = range, len = r.to - r.from, f = Math.min(1, Math.max(0, (t - r.from) / len));
+  $('tlfill').style.width = `${f * 100}%`; $('tldot').style.left = `${f * 100}%`;
+  const ws = Math.max(0, (r.c[1] - r.from) / len), we = Math.min(1, (r.c[2] - r.from) / len);
+  $('tlword').style.left = `${ws * 100}%`; $('tlword').style.width = `${Math.max(0, we - ws) * 100}%`;
+  $('tltime').textContent = `${(f * len).toFixed(1)} / ${len.toFixed(1)} s`;
+}
+function setCover(){
+  const s = ready ? player.getPlayerState() : -1;
+  const playing = s === YT.PlayerState.PLAYING || (s === YT.PlayerState.BUFFERING && started);
   $('cover').classList.toggle('playing', playing);
+  $('cover').classList.toggle('dim', !playing && started);
   $('cover').setAttribute('aria-label', playing ? 'Pause' : 'Play');
 }
 
@@ -190,9 +266,9 @@ window.onYouTubeIframeAPIReady = () => {
     width: '100%', height: '100%',
     playerVars: {controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, rel: 0, playsinline: 1, cc_load_policy: 0, modestbranding: 1},
     events: {
-      onReady: () => { ready = true; if (wantPlay) { wantPlay = false; playClip(false); } else cue(); },
+      onReady: () => { ready = true; if (wantPlay) { const w = wantPlay; wantPlay = null; playClip(w.longer, w.at); } else cue(); },
       onStateChange: (e) => {
-        setCover(e.data === YT.PlayerState.PLAYING || e.data === YT.PlayerState.BUFFERING);
+        setCover();
         if (e.data === YT.PlayerState.PLAYING && player.getPlaybackRate() !== (slow ? 0.75 : 1)) player.setPlaybackRate(slow ? 0.75 : 1);
       },
       onError: () => { $('count').textContent = `Clip ${clipN + 1} of ${WORDS[cur].clips.length} · did not load, tap “Another clip”`; }
@@ -203,10 +279,20 @@ const tag = document.createElement('script');
 tag.src = 'https://www.youtube.com/iframe_api';
 document.head.appendChild(tag);
 
+// Pause, then play again: it goes on from where it stopped. After the end, it starts the line again.
 $('cover').onclick = () => {
   if (!ready) return;
-  if (player.getPlayerState() === YT.PlayerState.PLAYING) { player.pauseVideo(); clearInterval(timer); }
+  if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
+  else if (started && !ended) player.playVideo();
   else playClip(false);
+};
+$('tlhit').onclick = (e) => {
+  if (!ready || !range) return;
+  const box = $('tl').getBoundingClientRect();
+  const t = range.from + Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)) * (range.to - range.from);
+  if (!started) { playClip(false, t); return; }
+  ended = false; shown = null; drawTimeline(t);
+  player.seekTo(t, true); player.playVideo();
 };
 $('again').onclick = () => playClip(false);
 $('longer').onclick = () => playClip(true);
@@ -214,6 +300,10 @@ $('next').onclick = () => { clipN = (clipN + 1) % WORDS[cur].clips.length; showC
 $('slow').onclick = () => {
   slow = !slow; $('slow').setAttribute('aria-pressed', slow);
   if (ready) player.setPlaybackRate(slow ? 0.75 : 1);
+};
+$('tipbtn').onclick = () => {
+  const open = $('note').classList.toggle('off') === false;
+  $('tipbtn').setAttribute('aria-expanded', open);
 };
 // A lesson page can open one word: …/real-video/#w=rip-off
 const want = decodeURIComponent(location.hash.replace(/^#w=/, '')).toLowerCase();
