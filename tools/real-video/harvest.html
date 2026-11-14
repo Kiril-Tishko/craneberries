@@ -1,0 +1,14 @@
+<!doctype html><html><body><div id="w"></div>
+<script>
+window.LOG = [];
+const s = document.createElement('script'); s.src = 'https://youglish.com/public/emb/widget.js'; document.head.appendChild(s);
+window.onYouglishAPIReady = function(){
+  window.W = new YG.Widget('w', {width: 648, height: 900, components: 8, autoStart: 1, events: {
+    onFetchDone: e => LOG.push(['fetch', e.totalResult]),
+    onVideoChange: e => LOG.push(['video', e.video, e.trackNumber]),
+    onCaptionChange: e => LOG.push(['cap', e.id, decodeURIComponent(e.caption)]),
+    onError: e => LOG.push(['err', e.code])
+  }});
+  window.READY = true;
+};
+</script></body></html>

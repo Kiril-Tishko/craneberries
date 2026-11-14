@@ -29,6 +29,11 @@ main{display:grid;grid-template-columns:650px minmax(260px,1fr);gap:16px;align-i
 .count{color:var(--muted);font-size:14px;font-weight:600;min-height:20px}
 .yg{justify-self:center;background:#000;border:1px solid var(--line);border-radius:16px;overflow:hidden;width:648px;height:345px;max-width:100%}
 .yg.small{width:356px;height:248px}
+.yg{position:relative}
+.capbar{position:absolute;left:0;right:0;bottom:0;height:48px;display:flex;align-items:center;justify-content:center;padding:0 12px;background:var(--surface);color:var(--ink);font-size:20px;font-weight:600;text-align:center;line-height:1.2;overflow:hidden}
+.yg.small .capbar{font-size:15px}
+.capbar mark{background:#FFE14D;color:#141B24;border-radius:4px;padding:0 3px}
+.wait{position:absolute;inset:0;display:grid;place-items:center;background:#000;color:#fff;font-weight:600;font-size:18px}
 .controls{display:flex;gap:8px;flex-wrap:wrap}
 .controls button{font:600 17px var(--font);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .controls .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -89,7 +94,7 @@ function pick(i){
 }
 
 // A fresh widget for every clip: YouGlish opens a given clip id only when a widget is first created.
-function load(){
+function load(retry = 0){
   if (!ready) return;
   const w = WORDS[cur], id = w.clips[clipN];
   clearTimeout(stopTimer); stopped = false;
@@ -98,7 +103,7 @@ function load(){
   // The box ends right under the sentence, so YouGlish's panel below it (an "AI coach" ad) stays out of sight.
   // Measured: width 648 → video 297 px; width 356 → video 200 px. No height given → the frame never scrolls.
   const slot = 'w' + (++made);
-  box.innerHTML = `<div id="${slot}"></div>`;
+  box.innerHTML = `<div id="${slot}"></div><div class="capbar" id="capbar"></div>` + (id ? '<div class="wait">Loading the clip…</div>' : '');
   widget = new YG.Widget(slot, {
     width: small ? 356 : 648,
     components: 8,          // video + caption only
@@ -107,16 +112,26 @@ function load(){
     events: {
       onFetchDone: (e) => { total = e.totalResult; show(); },
       onVideoChange: (e) => { track = e.trackNumber; if (slow) widget.setSpeed(0.75); },
-      onCaptionChange: (e) => { (window.CAPS = window.CAPS || []).push(e.id); },   // for checks
+      onCaptionChange: (e) => {
+        (window.CAPS = window.CAPS || []).push(e.id);
+        // Our own caption bar covers YouGlish's (and whatever sits under it).
+        const esc = (t) => t.replace(/[&<>]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]));
+        if (me === widget) $('capbar').innerHTML = '<span>' + esc(unescape(e.caption)).replace(/\[\[\[(.*?)\]\]\]/g, '<mark>$1</mark>').replace(/<\/mark>([- ]?)<mark>/g, '$1') + '</span>';
+        const wait = box.querySelector('.wait');
+        if (!wait || me !== widget) return;
+        // Sometimes YouGlish starts on its own first result instead of the picked clip: open it again.
+        if (e.id !== id && retry < 4) { me.pause(); load(retry + 1); }
+        else wait.remove();
+      },
       onCaptionConsumed: () => {
         if (stopped) return;
         stopped = true;
-        const me = widget;
         stopTimer = setTimeout(() => me.pause(), STOP_AFTER / (slow ? 0.75 : 1));
       },
       onError: () => { show(); $('count').textContent += ' · did not load, tap “Another clip”'; }
     }
   });
+  const me = widget;
   if (id) widget.fetch(w.q, 'english', 'us', id); else widget.fetch(w.q, 'english', 'us');
   show();
 }
