@@ -18,14 +18,16 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
 .words{display:flex;gap:8px;flex-wrap:wrap}
 .words button{font:600 16px var(--font);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .words button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-main{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
-@media (max-width:820px){main{grid-template-columns:1fr}.card{order:-1;padding:14px;gap:6px}.pic{font-size:40px}}
+main{display:grid;grid-template-columns:650px minmax(260px,1fr);gap:16px;align-items:start}
+@media (max-width:990px){main{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:700px){.card{order:-1;padding:14px;gap:6px}.pic{font-size:40px}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start}
 .pic{font-size:56px;line-height:1}
 .en{font-size:clamp(28px,4vw,40px);font-weight:800;line-height:1.15}
 .uaw{justify-self:start;background:var(--ua-bg);color:var(--ua);padding:4px 12px;border-radius:10px;font-weight:600;font-size:18px}
 .count{color:var(--muted);font-size:14px;font-weight:600;min-height:20px}
-.yg{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-height:200px}
+.yg{justify-self:center;background:#000;border:1px solid var(--line);border-radius:16px;overflow:hidden;width:648px;height:345px;max-width:100%}
+.yg.small{width:356px;height:248px}
 .controls{display:flex;gap:8px;flex-wrap:wrap}
 .controls button{font:600 17px var(--font);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .controls .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -56,16 +58,18 @@ main{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
 <script>
 // Words for the demo. A lesson page can also open this page for any word: …/real-video/#q=rip-off&ua=здирство
 const WORDS = [
-  {en: 'rip-off', q: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸'},
+  {en: 'rip-off', q: 'rip-off', ua: 'грабіж, завищена ціна', pic: '💸', must: /\b(a|the|total|blatant|of a|such a|what a) rip[- ]off\b(?! (of|the|my|your|our|their|his|her|everyone|someone|these|this|that|it)\b)/i},
   {en: 'mandatory', q: 'mandatory', ua: 'обов’язковий', pic: '📋'},
   {en: 'Is that a thing?', q: 'is that a thing', ua: 'Таке буває? / Це щось відоме?', pic: '🤔'},
-  {en: 'excuse', q: 'excuse', ua: 'відмовка, виправдання', pic: '🙈'},
+  {en: 'excuse', q: 'excuse', ua: 'відмовка, виправдання', pic: '🙈', must: /\b(an|no|the|my|your|his|her|good|bad|same|perfect) excuse\b/i},
 ];
+// Swear words, adult words and touchy topics (politics, crime, war): a clip whose sentence has one is skipped.
+const BAD = /\b(f+u+c*k\w*|shit\w*|bitch\w*|damn\w*|ass(hole)?s?|bastards?|dick\w*|cock\w*|pussy|sex\w*|porn\w*|nude\w*|naked|crap\w*|hell|goddamn|wtf|kill\w*|drugs?|cocaine|weed|guns?|shot|dead|died|trump|biden|obama|democrats?|republicans?|senat\w*|congress|election\w*|war|police|prison|sentences?)\b/i;
 const $ = (id) => document.getElementById(id);
 const h = new URLSearchParams(location.hash.slice(1));
 if (h.get('q')) WORDS.unshift({en: h.get('q'), q: h.get('q'), ua: h.get('ua') || '', pic: h.get('pic') || ''});
 
-let widget = null, ready = false, cur = 0, slow = false, track = 0, total = 0, pending = null;
+let skipped = 0, widget = null, ready = false, cur = 0, slow = false, track = 0, total = 0, pending = null;
 $('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${w.en}</button>`).join('');
 $('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); };
 
@@ -82,14 +86,26 @@ const tag = document.createElement('script');
 tag.src = 'https://youglish.com/public/emb/widget.js';
 document.head.appendChild(tag);
 window.onYouglishAPIReady = function(){
+  // The widget's own panel under the sentence (an "AI coach" ad) is cut off: the box ends right
+  // under the sentence. Measured sizes: width 648 → video 297 px; width 356 → video 200 px.
+  const box = document.querySelector('.yg'), small = document.querySelector('main').clientWidth < 650;
+  box.classList.toggle('small', small);
   widget = new YG.Widget('widget', {
+    width: small ? 356 : 648, height: small ? 260 : 360,
     components: 8,          // caption only
     autoStart: 1,
     restrictionMode: 1,     // block inappropriate videos
     captionSize: 24,
     events: {
-      onFetchDone: (e) => { total = e.totalResult; track = 0; show(); },
+      onFetchDone: (e) => { total = e.totalResult; track = 0; skipped = 0; show(); },
       onVideoChange: (e) => { track = e.trackNumber; show(); if (slow) widget.setSpeed(0.75); },
+      onCaptionChange: (e) => {
+        const text = decodeURIComponent(e.caption).replace(/\[\[\[|\]\]\]/g, '');
+        (window.CAPS = window.CAPS || []).push(text);
+        // Skip a clip whose sentence has a swear word or a touchy topic, or uses the word in another meaning.
+        const w = WORDS[cur];
+        if ((BAD.test(text) || (w.must && !w.must.test(text))) && skipped < 40) { skipped++; widget.next(); }
+      },
       onCaptionConsumed: () => widget.pause(),
       onError: () => { $('count').textContent = 'This clip did not load. Tap “Another clip”.'; }
     }
