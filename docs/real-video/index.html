@@ -31,7 +31,9 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .video{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
 /* The player is taller than the box: the picture keeps its full size in the middle, and YouTube's title (top)
    and "Watch on YouTube" bar (bottom) land in black margins that the box cuts off. */
-.video iframe,#player{position:absolute;left:0;top:-30%;width:100%;height:160%;border:0}
+.video iframe{position:absolute;left:0;top:-30%;width:100%;height:160%;border:0;opacity:0}
+/* Two players lie on top of each other; only the one in use is seen, the other preloads the next clip. */
+.video iframe.on{opacity:1}
 /* Our cover sits on the video all the time, so no YouTube buttons ever show. Before a clip starts it darkens the
    picture; once started, a pause only dims it a little. Tap = play/pause, double-tap a side = 1 s back/forward. */
 .cover{position:absolute;inset:0;border:0;padding:0;background:rgba(10,12,16,.86);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
@@ -55,7 +57,8 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .tl-word{position:absolute;top:0;bottom:0;background:var(--word);border-radius:99px}
 .tl-fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:99px;opacity:.8}
 .tl-dot{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:99px;background:var(--accent);border:2px solid var(--surface)}
-.tltime{color:var(--muted);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;min-width:70px;text-align:right}
+/* Fixed width, so the timeline doesn't move when 9.9 s becomes 10.0 s. */
+.tltime{flex:none;width:12.5ch;color:var(--muted);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .capbar{min-height:60px;display:flex;align-items:center;justify-content:center;padding:4px 16px 10px;
   font-size:clamp(17px,2.2vw,22px);font-weight:600;text-align:center;line-height:1.3}
 .capbar mark{background:var(--word);color:#141B24;border-radius:4px;padding:0 3px}
@@ -105,19 +108,18 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
   <main>
     <section class="player" aria-label="Video">
       <div class="video">
-        <div id="player"></div>
-        <button class="cover" id="cover" tabindex="-1" aria-label="Play"><span class="big"><svg><use href="#i-play"/></svg></span></button>
+        <div id="yt0"></div><div id="yt1"></div>
+        <button class="cover" id="cover" tabindex="-1" aria-label="Play"><span class="big"><svg><use id="bigicon" href="#i-play"/></svg></span></button>
         <div class="flash l" id="flashl">− 1 s</div><div class="flash r" id="flashr">+ 1 s</div>
       </div>
       <div class="bar">
-        <button class="pp" id="pp" aria-label="Play" title="Play / pause (Space)"><svg><use href="#i-play"/></svg></button>
+        <button class="pp" id="pp" aria-label="Play" title="Play / pause (Space)"><svg><use id="ppicon" href="#i-play"/></svg></button>
         <div class="tlhit" id="tlhit" title="Tap or drag to move"><div class="tl" id="tl"><div class="tl-word" id="tlword"></div><div class="tl-fill" id="tlfill"></div><div class="tl-dot" id="tldot"></div></div></div>
         <span class="tltime" id="tltime"></span>
       </div>
       <div class="capbar" id="capbar"></div>
       <div class="tools">
         <div class="group">
-          <button class="btn mode" id="again" aria-pressed="true" title="Play just the line with the word"><svg><use href="#i-again"/></svg>Again</button>
           <button class="btn mode" id="longer" aria-pressed="false" title="Play the sentences before and after it too"><svg><use href="#i-wide"/></svg>With context</button>
           <div class="seg" id="speed" title="Speed"><button data-r="1" aria-pressed="true">1×</button><button data-r="0.75" aria-pressed="false">0.75×</button><button data-r="0.5" aria-pressed="false">0.5×</button></div>
         </div>
@@ -224,8 +226,17 @@ const STEP = 1; // ← → and double-tap move this many seconds
 
 const $ = (id) => document.getElementById(id);
 const esc = (t) => t.replace(/[&<>]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]));
-let cur = 0, clipN = 0, rate = 1, player = null, ready = false, wantPlay = null, longerMode = false;
+let cur = 0, clipN = 0, rate = 1, wantPlay = null, longerMode = false;
 let range = null, started = false, ended = false, endedAt = 0, shown = null, loadedAt = 0, dragging = false;
+
+// Two YouTube players on top of each other: the one you see, and a hidden one that already loads the next clip,
+// so "Next clip" starts at once. A clip is "warmed": loaded muted and stopped on its first frame.
+const slots = [{el: 'yt0'}, {el: 'yt1'}];
+let act = 0;
+const S = () => slots[act];
+const P = () => slots[act].p;
+const ready = () => !!slots[act].ready;
+const clip = () => WORDS[cur].clips[clipN];
 
 $('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${esc(w.en)}</button>`).join('');
 $('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i, true); };
@@ -235,90 +246,114 @@ function pick(i, play){
   const w = WORDS[i];
   document.querySelectorAll('#words button').forEach((b, n) => b.setAttribute('aria-current', n === i));
   $('pic').textContent = w.pic; $('en').textContent = w.en; $('ua').textContent = w.ua;
+  sizeCaption();
   showClip(play);
 }
 function showClip(play){
-  const w = WORDS[cur], c = w.clips[clipN];
+  const w = WORDS[cur], c = clip();
   $('count').textContent = `${clipN + 1} / ${w.clips.length}`;
   $('note').textContent = c[4]; $('note').classList.add('off'); $('tipbtn').setAttribute('aria-expanded', 'false');
   showLine(c[3]);
-  started = false; ended = false; setMode(false);
-  range = rangeOf(c, false); drawTimeline(range.from);
-  if (play) playClip(false); else cue();
+  started = false; ended = false;
+  range = rangeOf(c, longerMode); drawTimeline(range.from);
+  // The next clip may already be waiting in the hidden player: then it simply comes to the front.
+  const other = slots[1 - act];
+  if (other.ready && other.vid === c[0]) {
+    if (S().ready) { P().pauseVideo(); P().mute(); }
+    act = 1 - act;
+    slots.forEach((s, i) => s.p && s.p.getIframe().classList.toggle('on', i === act));
+  }
+  if (play) playClip(); else warm(S(), c, range.from);
+  setCover();
+  const n = WORDS[cur].clips[(clipN + 1) % w.clips.length];
+  warm(slots[1 - act], n, rangeOf(n, longerMode).from);
 }
 function showLine(text){
   $('capbar').innerHTML = `<span>${esc(text).replace(WORDS[cur].hl, (m) => `<mark>${m}</mark>`)}</span>`;
 }
-function setMode(longer){
-  longerMode = longer;
-  $('again').setAttribute('aria-pressed', !longer); $('longer').setAttribute('aria-pressed', longer);
+// The caption bar keeps the height of this word's longest line, so nothing below it moves from clip to clip.
+function sizeCaption(){
+  const bar = $('capbar'), probe = bar.cloneNode(false);
+  probe.removeAttribute('id');
+  probe.style.cssText = `position:absolute;visibility:hidden;left:-9999px;top:0;width:${bar.clientWidth}px;min-height:0`;
+  document.body.appendChild(probe);
+  let h = 0;
+  for (const c of WORDS[cur].clips) for (const t of [c[3], ...(c[5] || []).map((l) => l[2])]) {
+    probe.innerHTML = `<span>${esc(t).replace(WORDS[cur].hl, (m) => `<mark>${m}</mark>`)}</span>`;
+    h = Math.max(h, probe.getBoundingClientRect().height);
+  }
+  probe.remove(); bar.style.minHeight = `${Math.ceil(h)}px`;
 }
-// What a play covers: just the line (Again), or the lines around it too (With context).
+// What a play covers: just the line, or with context the lines around it too.
 function rangeOf(c, longer){
   const around = c[5] || [], exact = !Number.isInteger(c[1]);
   const before = around.filter((l) => l[1] <= c[1] + 0.05), after = around.filter((l) => l[0] >= c[2] - 0.05);
   if (longer && around.length) {
     const lines = [...before, [c[1], c[2], c[3]], ...after];
-    return {from: Math.max(0, lines[0][0] - EXACT_BEFORE), to: lines[lines.length - 1][1] + 0.1, lines, c};
+    return {from: Math.max(0, lines[0][0] - EXACT_BEFORE), to: lines[lines.length - 1][1] + 0.1, lines, c, longer};
   }
-  if (longer) return {from: Math.max(0, c[1] - LONGER_BEFORE), to: c[2] + LONGER_AFTER, lines: null, c};
+  if (longer) return {from: Math.max(0, c[1] - LONGER_BEFORE), to: c[2] + LONGER_AFTER, lines: null, c, longer};
   let to = c[2] + (exact ? EXACT_AFTER : PAD_AFTER);
   if (after.length) to = Math.min(to, after[0][0]);
-  return {from: Math.max(0, c[1] - (exact ? EXACT_BEFORE : PAD_BEFORE)), to, lines: null, c};
+  return {from: Math.max(0, c[1] - (exact ? EXACT_BEFORE : PAD_BEFORE)), to, lines: null, c, longer};
 }
-function cue(){
-  if (!ready) return;
-  const c = WORDS[cur].clips[clipN];
-  player.cueVideoById({videoId: c[0], startSeconds: range.from});
-  setCover();
+function warm(s, c, from){
+  if (!s.ready) { s.pending = {c, from}; return; }
+  if (s.vid === c[0]) { if (s !== S() || !started) s.p.seekTo(from, true); return; }
+  s.vid = c[0]; s.warming = true; s.warmFrom = from;
+  s.p.mute(); s.p.loadVideoById({videoId: c[0], startSeconds: from});
 }
-function playClip(longer, at){
-  const c = WORDS[cur].clips[clipN];
-  setMode(longer);
-  range = rangeOf(c, longer); shown = null;
-  if (!ready) { wantPlay = {longer, at}; return; }
+// Play the clip from its start (or from `at`). If its video is already loaded, it just jumps there: no reload.
+function playClip(at){
+  const c = clip(), s = S();
+  range = rangeOf(c, longerMode); shown = null;
+  if (!s.ready) { wantPlay = {at}; return; }
   started = true; ended = false; loadedAt = performance.now();
   showLine(c[3]);
-  player.loadVideoById({videoId: c[0], startSeconds: at ?? range.from});
-  player.setPlaybackRate(rate);
+  const from = at ?? range.from;
+  s.warming = false; s.p.unMute();
+  if (s.vid === c[0]) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
+  else { s.vid = c[0]; s.p.loadVideoById({videoId: c[0], startSeconds: from}); }
+  s.p.setPlaybackRate(rate);
+  setCover();
 }
 // Playing (or loading to play) counts as playing, so a pause always works, even right after a clip starts.
 const isPlaying = () => {
-  if (!ready) return false;
-  const s = player.getPlayerState();
-  return s === YT.PlayerState.PLAYING || (s === YT.PlayerState.BUFFERING && started && !ended);
+  if (!ready() || !started) return false;
+  const st = P().getPlayerState();
+  return st === YT.PlayerState.PLAYING || (st === YT.PlayerState.BUFFERING && !ended);
 };
-// Play/pause: a paused clip goes on from where it stopped; a finished one plays again the same way.
+// Play/pause: a paused clip goes on from where it stopped; a finished one plays again.
 // A press that comes just as the clip ends was meant as "pause": it stays stopped instead of starting over.
 function toggle(){
-  if (!ready) return;
-  if (isPlaying()) player.pauseVideo();
-  else if (started && !ended) player.playVideo();
-  else if (!(ended && performance.now() - endedAt < 700)) playClip(longerMode);
+  if (!ready()) return;
+  if (isPlaying()) P().pauseVideo();
+  else if (started && !ended) P().playVideo();
+  else if (!(ended && performance.now() - endedAt < 700)) playClip();
 }
 // 1 second back or forward, inside the clip. A paused clip stays paused.
 function seekBy(d){
-  if (!ready || !started || performance.now() - loadedAt < 400) return;
-  const t = Math.min(range.to - 0.05, Math.max(range.from, player.getCurrentTime() + d));
+  if (!ready() || !started || performance.now() - loadedAt < 400) return;
+  const t = Math.min(range.to - 0.05, Math.max(range.from, P().getCurrentTime() + d));
   if (t < range.to - 0.1) ended = false;
-  shown = null; player.seekTo(t, true); drawTimeline(t);
+  shown = null; P().seekTo(t, true); drawTimeline(t); setCover();
   flash(d < 0 ? 'flashl' : 'flashr');
 }
 function flash(id){
   const f = $(id); f.classList.add('on'); clearTimeout(f.t); f.t = setTimeout(() => f.classList.remove('on'), 350);
 }
-// One clock for everything: stop at the end, move the timeline, and in "With context" follow the lines.
+// One clock for everything: stop at the end, move the timeline, and with context follow the lines.
 setInterval(() => {
   // Right after a load the player can still report the old clip's time for a moment: wait for the new one.
-  if (!ready || !range || !player.getCurrentTime || performance.now() - loadedAt < 300) return;
-  const playing = isPlaying(), t = player.getCurrentTime();
+  if (!ready() || !range || !started || performance.now() - loadedAt < 300) return;
+  const playing = isPlaying(), t = P().getCurrentTime();
   if (playing && t >= range.to - 0.06) {
-    player.pauseVideo(); ended = true; endedAt = performance.now();
+    P().pauseVideo(); ended = true; endedAt = performance.now();
     if (range.lines) { showLine(range.c[3]); shown = null; }
-    drawTimeline(range.to); return;
+    drawTimeline(range.to); setCover(); return;
   }
-  if (started && !ended && !dragging) drawTimeline(t);
-  if (range.lines && started && !ended) {
+  if (!ended && !dragging) drawTimeline(t);
+  if (range.lines && !ended) {
     const l = range.lines.reduce((on, x) => (t >= x[0] - 0.1 ? x : on), range.lines[0]);
     if (l !== shown) { shown = l; showLine(l[2]); }
   }
@@ -326,32 +361,50 @@ setInterval(() => {
 function drawTimeline(t){
   const r = range, len = r.to - r.from, f = Math.min(1, Math.max(0, (t - r.from) / len));
   $('tlfill').style.width = `${f * 100}%`; $('tldot').style.left = `${f * 100}%`;
+  // The yellow part (the word's line) shows only with context, where it is a part of the whole.
   const ws = Math.max(0, (r.c[1] - r.from) / len), we = Math.min(1, (r.c[2] - r.from) / len);
+  $('tlword').hidden = !r.longer;
   $('tlword').style.left = `${ws * 100}%`; $('tlword').style.width = `${Math.max(0, we - ws) * 100}%`;
   $('tltime').textContent = `${(f * len).toFixed(1)} / ${len.toFixed(1)} s`;
 }
+// ▶ before it starts or while paused, ❚❚ while playing, ↻ when it has ended.
 function setCover(){
-  const s = ready ? player.getPlayerState() : -1;
-  const playing = s === YT.PlayerState.PLAYING || (s === YT.PlayerState.BUFFERING && started);
+  const playing = isPlaying(), icon = playing ? 'pause' : ended ? 'again' : 'play';
   $('cover').classList.toggle('playing', playing);
   $('cover').classList.toggle('dim', !playing && started);
-  $('cover').setAttribute('aria-label', playing ? 'Pause' : 'Play');
-  $('pp').innerHTML = `<svg><use href="#i-${playing ? 'pause' : 'play'}"/></svg>`;
-  $('pp').setAttribute('aria-label', playing ? 'Pause' : 'Play');
+  $('cover').setAttribute('aria-label', playing ? 'Pause' : ended ? 'Play again' : 'Play');
+  $('bigicon').setAttribute('href', `#i-${ended ? 'again' : 'play'}`);
+  $('ppicon').setAttribute('href', `#i-${icon}`);
+  $('pp').setAttribute('aria-label', playing ? 'Pause' : ended ? 'Play again' : 'Play');
+}
+function setMode(longer){
+  longerMode = longer; $('longer').setAttribute('aria-pressed', longer);
 }
 
 window.onYouTubeIframeAPIReady = () => {
-  player = new YT.Player('player', {
-    width: '100%', height: '100%',
-    playerVars: {controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, rel: 0, playsinline: 1, cc_load_policy: 0, modestbranding: 1},
-    events: {
-      onReady: () => { ready = true; if (wantPlay) { const w = wantPlay; wantPlay = null; playClip(w.longer, w.at); } else cue(); },
-      onStateChange: (e) => {
-        setCover();
-        if (e.data === YT.PlayerState.PLAYING && player.getPlaybackRate() !== rate) player.setPlaybackRate(rate);
-      },
-      onError: () => { $('capbar').innerHTML = '<span class="err">This clip didn’t load. Try the next one →</span>'; }
-    }
+  slots.forEach((s, i) => {
+    s.p = new YT.Player(s.el, {
+      width: '100%', height: '100%',
+      playerVars: {controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, rel: 0, playsinline: 1, cc_load_policy: 0, modestbranding: 1},
+      events: {
+        onReady: () => {
+          s.ready = true; s.p.getIframe().classList.toggle('on', i === act);
+          if (s === S() && wantPlay) { const w = wantPlay; wantPlay = null; playClip(w.at); }
+          else if (s.pending) { const q = s.pending; s.pending = null; warm(s, q.c, q.from); }
+        },
+        onStateChange: (e) => {
+          // A clip being warmed stops on its first frame as soon as it starts.
+          if (s.warming && e.data === YT.PlayerState.PLAYING) { s.warming = false; s.p.pauseVideo(); s.p.seekTo(s.warmFrom, true); return; }
+          if (s !== S()) return;
+          setCover();
+          if (e.data === YT.PlayerState.PLAYING && s.p.getPlaybackRate() !== rate) s.p.setPlaybackRate(rate);
+        },
+        onError: () => {
+          if (s !== S()) { s.vid = null; s.warming = false; return; }
+          $('capbar').innerHTML = '<span class="err">This clip didn’t load. Try the next one →</span>';
+        }
+      }
+    });
   });
 };
 const tag = document.createElement('script');
@@ -365,7 +418,7 @@ $('cover').onclick = (e) => {
   const now = performance.now(), box = $('cover').getBoundingClientRect();
   const dir = e.clientX - box.left < box.width / 2 ? -1 : 1;
   if (started && (now - seeking < 500 || now - lastTap < 300)) {
-    if (tapWas === 'playing') player.playVideo(); else if (tapWas === 'paused') player.pauseVideo();
+    if (tapWas === 'playing') P().playVideo(); else if (tapWas === 'paused') P().pauseVideo();
     tapWas = null; lastTap = 0; seeking = now; seekBy(dir * STEP); return;
   }
   lastTap = now;
@@ -379,27 +432,27 @@ const pointT = (e) => {
   return range.from + Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)) * (range.to - range.from);
 };
 $('tlhit').onpointerdown = (e) => {
-  if (!ready || !range) return;
+  if (!ready() || !range) return;
   dragging = true; $('tlhit').setPointerCapture(e.pointerId); drawTimeline(pointT(e));
 };
 $('tlhit').onpointermove = (e) => { if (dragging) drawTimeline(pointT(e)); };
 $('tlhit').onpointerup = (e) => {
   if (!dragging) return;
   dragging = false; const t = pointT(e);
-  if (!started) { playClip(longerMode, t); return; }
+  if (!started) { playClip(t); return; }
   ended = false; shown = null; drawTimeline(t);
-  player.seekTo(t, true); player.playVideo();
+  P().seekTo(t, true); P().playVideo();
 };
 $('tlhit').onpointercancel = () => { dragging = false; };
-$('again').onclick = () => playClip(false);
-$('longer').onclick = () => playClip(true);
+// "With context" is on or off; switching it plays the clip again the new way. It stays on for the next clips.
+$('longer').onclick = () => { setMode(!longerMode); playClip(); };
 $('next').onclick = () => { clipN = (clipN + 1) % WORDS[cur].clips.length; showClip(true); };
 $('prev').onclick = () => { clipN = (clipN + WORDS[cur].clips.length - 1) % WORDS[cur].clips.length; showClip(true); };
 $('speed').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   rate = +b.dataset.r;
   $('speed').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
-  if (ready) player.setPlaybackRate(rate);
+  if (ready()) P().setPlaybackRate(rate);
 };
 $('about').onclick = () => {
   $('credits').hidden = !$('credits').hidden; $('about').setAttribute('aria-expanded', !$('credits').hidden);
@@ -418,6 +471,9 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => { if (e.code === 'Space' || e.key === ' ') e.preventDefault(); }, true);
 // A mouse click or tap doesn't leave the button focused (no ring around it afterwards).
 document.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && e.detail > 0) b.blur(); });
+let resizeT = null;
+window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });
+if (document.fonts) document.fonts.ready.then(sizeCaption);
 // A lesson page can open one word: …/real-video/#w=rip-off
 const want = decodeURIComponent(location.hash.replace(/^#w=/, '')).toLowerCase();
 pick(Math.max(0, WORDS.findIndex((w) => w.en.toLowerCase() === want)), false);

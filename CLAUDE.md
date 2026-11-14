@@ -129,8 +129,11 @@ huggingface.co, about 15 min per hour of audio).
   any word shows its Ukrainian translation.
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
   YouTube player in one panel (no YouTube buttons, title or timeline; play/pause, a timeline to tap or drag, our caption
-  bar; Again / With context (1–2 lines before and after, the caption bar follows them); 1× / 0.75× / 0.5×; a big
-  "Next clip" with a small ‹ back arrow). No text explaining the controls and no "Speed" label: she wants it quiet; the
+  bar; a "With context" switch (1–2 lines before and after, the caption bar follows them; the yellow part of the
+  timeline shows only then); 1× / 0.75× / 0.5×; a big "Next clip" with a small ‹ back arrow; no "Again" button: at the
+  end the play button turns into ↻). A hidden second player preloads the next clip so Next starts at once; replays
+  jump back instead of reloading. The caption bar keeps the height of the word's longest line, so nothing below it
+  moves. No text explaining the controls and no "Speed" label: she wants it quiet; the
   YouTube Terms / Google Privacy links stay behind a faint ⓘ at the bottom. Space = play/pause wherever the focus is,
   ← → and double-tap = 1 s; pause goes on from where it stopped (a press just as the clip ends never restarts it);
   the picture is dark only before the clip starts, a paused clip is only dimmed. The clip stops when its line ends,
