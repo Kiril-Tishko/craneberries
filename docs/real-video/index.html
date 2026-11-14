@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap">
 <style>
 :root{--bg:#EEF1F4;--surface:#FFF;--soft:#F3F5F8;--ink:#141B24;--muted:#5D6773;--line:#D5DBE2;--accent:#C2410C;--accent-ink:#FFF;
-  --ua:#5B4A0E;--ua-bg:#FFF2C6;--word:#FFE14D;--font:"Lexend","Segoe UI",system-ui,sans-serif;color-scheme:light}
+  --ua:#5B4A0E;--ua-bg:#FFF2C6;--word:#FFE14D;--tint:#FDEDE4;--font:"Lexend","Segoe UI",system-ui,sans-serif;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#0F141A;--surface:#18202A;--soft:#202A36;--ink:#E8EDF2;--muted:#9AA6B3;--line:#2A3542;
-  --accent:#FB8A4C;--accent-ink:#0F141A;--ua:#F4DD8A;--ua-bg:#3A3214;color-scheme:dark}}
+  --accent:#FB8A4C;--accent-ink:#0F141A;--ua:#F4DD8A;--ua-bg:#3A3214;--tint:#3A2618;color-scheme:dark}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
@@ -63,18 +63,17 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--soft);border-top:1px solid var(--line)}
 .group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .btn{font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
-.btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.label{color:var(--muted);font-size:13px;font-weight:600}
+.mode[aria-pressed="true"]{background:var(--tint);color:var(--accent);border-color:var(--accent)}
+.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-size:17px;padding:10px 18px;gap:4px}
+.primary svg{width:20px;height:20px;margin-right:-4px}
+.back{padding:9px}
+.count{color:var(--muted);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;margin-right:4px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
 .seg button{font-weight:600;font-size:14px;padding:7px 10px;border:0;background:transparent;cursor:pointer;font-variant-numeric:tabular-nums}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
-.nav{display:flex;align-items:center;gap:4px}
-.nav .btn{padding:8px 9px}
-.nav span{min-width:72px;text-align:center;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
-.hint{margin:0;padding:0 14px 10px;background:var(--soft);color:var(--muted);font-size:12px}
-.hint.err{color:var(--accent);font-weight:600}
-@media (hover:none){.hint .keys{display:none}}
+.nav{display:flex;align-items:center;gap:8px;margin-left:auto}
+.capbar .err{color:var(--muted);font-size:16px}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start}
 @media (max-width:820px){.card{padding:14px;gap:8px}}
@@ -86,8 +85,10 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .tip .btn{border-style:dashed}
 .note{margin:0;font-size:16px;line-height:1.45}
 .note.off{visibility:hidden}
-.foot{color:var(--muted);font-size:13px}
-.foot a{color:var(--accent)}
+.foot{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.foot button{border:0;background:transparent;color:var(--muted);opacity:.45;font-size:15px;padding:2px 4px;cursor:pointer}
+.foot button:hover,.foot button[aria-expanded="true"]{opacity:1}
+.foot a{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -116,19 +117,16 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
       <div class="capbar" id="capbar"></div>
       <div class="tools">
         <div class="group">
-          <button class="btn" id="again" aria-pressed="true" title="Play just the line with the word"><svg><use href="#i-again"/></svg>Again</button>
-          <button class="btn" id="longer" aria-pressed="false" title="Play the sentences before and after it too"><svg><use href="#i-wide"/></svg>With context</button>
-        </div>
-        <div class="group"><span class="label">🐢 Speed</span>
-          <div class="seg" id="speed"><button data-r="1" aria-pressed="true">1×</button><button data-r="0.75" aria-pressed="false">0.75×</button><button data-r="0.5" aria-pressed="false">0.5×</button></div>
+          <button class="btn mode" id="again" aria-pressed="true" title="Play just the line with the word"><svg><use href="#i-again"/></svg>Again</button>
+          <button class="btn mode" id="longer" aria-pressed="false" title="Play the sentences before and after it too"><svg><use href="#i-wide"/></svg>With context</button>
+          <div class="seg" id="speed" title="Speed"><button data-r="1" aria-pressed="true">1×</button><button data-r="0.75" aria-pressed="false">0.75×</button><button data-r="0.5" aria-pressed="false">0.5×</button></div>
         </div>
         <div class="nav">
-          <button class="btn" id="prev" aria-label="Previous clip" title="Previous clip"><svg><use href="#i-prev"/></svg></button>
-          <span id="count"></span>
-          <button class="btn" id="next" aria-label="Next clip" title="Next clip"><svg><use href="#i-next"/></svg></button>
+          <span class="count" id="count"></span>
+          <button class="btn back" id="prev" aria-label="Previous clip" title="Previous clip"><svg><use href="#i-prev"/></svg></button>
+          <button class="btn primary" id="next">Next clip<svg><use href="#i-next"/></svg></button>
         </div>
       </div>
-      <p class="hint" id="hint"><span class="keys">Space: play / pause · ← →: 1 second · </span>Double-tap the video: 1 second back or forward</p>
     </section>
     <section class="card">
       <div class="pic" id="pic"></div>
@@ -140,7 +138,9 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
       </div>
     </section>
   </main>
-  <p class="foot">Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</p>
+  <!-- The YouTube player's rules want links to YouTube's Terms and Google's Privacy Policy: they stay, behind a quiet ⓘ. -->
+  <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
+    <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
 <script>
 // Clips are picked before the lesson: [YouTube id, start, end, the line, 💡 note, the lines around it].
@@ -225,7 +225,7 @@ const STEP = 1; // ← → and double-tap move this many seconds
 const $ = (id) => document.getElementById(id);
 const esc = (t) => t.replace(/[&<>]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]));
 let cur = 0, clipN = 0, rate = 1, player = null, ready = false, wantPlay = null, longerMode = false;
-let range = null, started = false, ended = false, shown = null, loadedAt = 0, dragging = false;
+let range = null, started = false, ended = false, endedAt = 0, shown = null, loadedAt = 0, dragging = false;
 
 $('words').innerHTML = WORDS.map((w, i) => `<button data-i="${i}">${w.pic} ${esc(w.en)}</button>`).join('');
 $('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i, true); };
@@ -239,9 +239,8 @@ function pick(i, play){
 }
 function showClip(play){
   const w = WORDS[cur], c = w.clips[clipN];
-  $('count').textContent = `Clip ${clipN + 1} / ${w.clips.length}`;
+  $('count').textContent = `${clipN + 1} / ${w.clips.length}`;
   $('note').textContent = c[4]; $('note').classList.add('off'); $('tipbtn').setAttribute('aria-expanded', 'false');
-  setHint('');
   showLine(c[3]);
   started = false; ended = false; setMode(false);
   range = rangeOf(c, false); drawTimeline(range.from);
@@ -283,17 +282,23 @@ function playClip(longer, at){
   player.loadVideoById({videoId: c[0], startSeconds: at ?? range.from});
   player.setPlaybackRate(rate);
 }
-const isPlaying = () => ready && player.getPlayerState() === YT.PlayerState.PLAYING;
+// Playing (or loading to play) counts as playing, so a pause always works, even right after a clip starts.
+const isPlaying = () => {
+  if (!ready) return false;
+  const s = player.getPlayerState();
+  return s === YT.PlayerState.PLAYING || (s === YT.PlayerState.BUFFERING && started && !ended);
+};
 // Play/pause: a paused clip goes on from where it stopped; a finished one plays again the same way.
+// A press that comes just as the clip ends was meant as "pause": it stays stopped instead of starting over.
 function toggle(){
   if (!ready) return;
   if (isPlaying()) player.pauseVideo();
   else if (started && !ended) player.playVideo();
-  else playClip(longerMode);
+  else if (!(ended && performance.now() - endedAt < 700)) playClip(longerMode);
 }
 // 1 second back or forward, inside the clip. A paused clip stays paused.
 function seekBy(d){
-  if (!ready || !started) return;
+  if (!ready || !started || performance.now() - loadedAt < 400) return;
   const t = Math.min(range.to - 0.05, Math.max(range.from, player.getCurrentTime() + d));
   if (t < range.to - 0.1) ended = false;
   shown = null; player.seekTo(t, true); drawTimeline(t);
@@ -308,7 +313,7 @@ setInterval(() => {
   if (!ready || !range || !player.getCurrentTime || performance.now() - loadedAt < 300) return;
   const playing = isPlaying(), t = player.getCurrentTime();
   if (playing && t >= range.to - 0.06) {
-    player.pauseVideo(); ended = true;
+    player.pauseVideo(); ended = true; endedAt = performance.now();
     if (range.lines) { showLine(range.c[3]); shown = null; }
     drawTimeline(range.to); return;
   }
@@ -334,10 +339,6 @@ function setCover(){
   $('pp').innerHTML = `<svg><use href="#i-${playing ? 'pause' : 'play'}"/></svg>`;
   $('pp').setAttribute('aria-label', playing ? 'Pause' : 'Play');
 }
-function setHint(err){
-  $('hint').classList.toggle('err', !!err);
-  $('hint').innerHTML = err || '<span class="keys">Space: play / pause · ← →: 1 second · </span>Double-tap the video: 1 second back or forward';
-}
 
 window.onYouTubeIframeAPIReady = () => {
   player = new YT.Player('player', {
@@ -349,7 +350,7 @@ window.onYouTubeIframeAPIReady = () => {
         setCover();
         if (e.data === YT.PlayerState.PLAYING && player.getPlaybackRate() !== rate) player.setPlaybackRate(rate);
       },
-      onError: () => setHint('This clip didn’t load. Try the next one →')
+      onError: () => { $('capbar').innerHTML = '<span class="err">This clip didn’t load. Try the next one →</span>'; }
     }
   });
 };
@@ -357,17 +358,19 @@ const tag = document.createElement('script');
 tag.src = 'https://www.youtube.com/iframe_api';
 document.head.appendChild(tag);
 
-// Tap the video = play/pause; double-tap the left or right half = 1 s back or forward (more taps = more seconds).
-let tapWait = null, lastTap = 0, seeking = 0;
+// Tap the video = play/pause, at once. Double-tap the left or right half = 1 s back or forward (more taps = more
+// seconds): the second tap undoes the first tap's play/pause, then moves.
+let lastTap = 0, seeking = 0, tapWas = null;
 $('cover').onclick = (e) => {
   const now = performance.now(), box = $('cover').getBoundingClientRect();
   const dir = e.clientX - box.left < box.width / 2 ? -1 : 1;
-  if (!started) { toggle(); return; } // the first tap starts at once (phones only allow a play right on the tap)
-  if (now - seeking < 500 || (tapWait && now - lastTap < 300)) {
-    clearTimeout(tapWait); tapWait = null; seeking = now; seekBy(dir * STEP); return;
+  if (started && (now - seeking < 500 || now - lastTap < 300)) {
+    if (tapWas === 'playing') player.playVideo(); else if (tapWas === 'paused') player.pauseVideo();
+    tapWas = null; lastTap = 0; seeking = now; seekBy(dir * STEP); return;
   }
   lastTap = now;
-  tapWait = setTimeout(() => { tapWait = null; toggle(); }, 300);
+  tapWas = isPlaying() ? 'playing' : started && !ended ? 'paused' : null;
+  toggle();
 };
 $('pp').onclick = toggle;
 // The timeline: tap or drag to move; letting go plays from there.
@@ -397,6 +400,9 @@ $('speed').onclick = (e) => {
   rate = +b.dataset.r;
   $('speed').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
   if (ready) player.setPlaybackRate(rate);
+};
+$('about').onclick = () => {
+  $('credits').hidden = !$('credits').hidden; $('about').setAttribute('aria-expanded', !$('credits').hidden);
 };
 $('tipbtn').onclick = () => {
   const open = $('note').classList.toggle('off') === false;
