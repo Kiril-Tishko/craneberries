@@ -228,6 +228,9 @@ const $ = (id) => document.getElementById(id);
 const esc = (t) => t.replace(/[&<>]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]));
 let cur = 0, clipN = 0, rate = 1, wantPlay = null, longerMode = false;
 let range = null, started = false, ended = false, endedAt = 0, shown = null, loadedAt = 0, dragging = false;
+// `intent` is what you last asked for (play or pause). Play/pause buttons follow it, not the player's state, so a
+// press counts even while a clip is still loading.
+let intent = false;
 
 // Two YouTube players on top of each other: the one you see, and a hidden one that already loads the next clip,
 // so "Next clip" starts at once. A clip is "warmed": loaded muted and stopped on its first frame.
@@ -254,7 +257,7 @@ function showClip(play){
   $('count').textContent = `${clipN + 1} / ${w.clips.length}`;
   $('note').textContent = c[4]; $('note').classList.add('off'); $('tipbtn').setAttribute('aria-expanded', 'false');
   showLine(c[3]);
-  started = false; ended = false;
+  started = false; ended = false; intent = false;
   range = rangeOf(c, longerMode); drawTimeline(range.from);
   // The next clip may already be waiting in the hidden player: then it simply comes to the front.
   const other = slots[1 - act];
@@ -287,7 +290,7 @@ function sizeCaption(){
 // What a play covers: just the line, or with context the lines around it too.
 function rangeOf(c, longer){
   const around = c[5] || [], exact = !Number.isInteger(c[1]);
-  const before = around.filter((l) => l[1] <= c[1] + 0.05), after = around.filter((l) => l[0] >= c[2] - 0.05);
+  const before = around.filter((l) => l[0] < c[1]), after = around.filter((l) => l[0] > c[1]);
   if (longer && around.length) {
     const lines = [...before, [c[1], c[2], c[3]], ...after];
     return {from: Math.max(0, lines[0][0] - EXACT_BEFORE), to: lines[lines.length - 1][1] + 0.1, lines, c, longer};
@@ -297,10 +300,16 @@ function rangeOf(c, longer){
   if (after.length) to = Math.min(to, after[0][0]);
   return {from: Math.max(0, c[1] - (exact ? EXACT_BEFORE : PAD_BEFORE)), to, lines: null, c, longer};
 }
+// `loaded`: the slot's video has really started once, so jumping in it is safe. While a video is still loading,
+// YouTube ignores a jump and may start from 0:00, so then the clip is loaded again at the right second instead.
 function warm(s, c, from){
   if (!s.ready) { s.pending = {c, from}; return; }
-  if (s.vid === c[0]) { if (s !== S() || !started) s.p.seekTo(from, true); return; }
-  s.vid = c[0]; s.warming = true; s.warmFrom = from;
+  if (s.vid === c[0]) {
+    if (!s.loaded) s.warmFrom = from;
+    else if (s !== S() || !started) s.p.seekTo(from, true);
+    return;
+  }
+  s.vid = c[0]; s.loaded = false; s.warming = true; s.warmFrom = from;
   s.p.mute(); s.p.loadVideoById({videoId: c[0], startSeconds: from});
 }
 // Play the clip from its start (or from `at`). If its video is already loaded, it just jumps there: no reload.
@@ -308,28 +317,24 @@ function playClip(at){
   const c = clip(), s = S();
   range = rangeOf(c, longerMode); shown = null;
   if (!s.ready) { wantPlay = {at}; return; }
-  started = true; ended = false; loadedAt = performance.now();
+  started = true; ended = false; intent = true; loadedAt = performance.now();
   showLine(c[3]);
   const from = at ?? range.from;
   s.warming = false; s.p.unMute();
-  if (s.vid === c[0]) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
-  else { s.vid = c[0]; s.p.loadVideoById({videoId: c[0], startSeconds: from}); }
+  if (s.vid === c[0] && s.loaded) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
+  else { s.vid = c[0]; s.loaded = false; s.p.loadVideoById({videoId: c[0], startSeconds: from}); }
   s.p.setPlaybackRate(rate);
   setCover();
 }
-// Playing (or loading to play) counts as playing, so a pause always works, even right after a clip starts.
-const isPlaying = () => {
-  if (!ready() || !started) return false;
-  const st = P().getPlayerState();
-  return st === YT.PlayerState.PLAYING || (st === YT.PlayerState.BUFFERING && !ended);
-};
+const isPlaying = () => started && !ended && intent;
 // Play/pause: a paused clip goes on from where it stopped; a finished one plays again.
 // A press that comes just as the clip ends was meant as "pause": it stays stopped instead of starting over.
 function toggle(){
   if (!ready()) return;
-  if (isPlaying()) P().pauseVideo();
-  else if (started && !ended) P().playVideo();
+  if (isPlaying()) { intent = false; P().pauseVideo(); }
+  else if (started && !ended) { intent = true; P().playVideo(); }
   else if (!(ended && performance.now() - endedAt < 700)) playClip();
+  setCover();
 }
 // 1 second back or forward, inside the clip. A paused clip stays paused.
 function seekBy(d){
@@ -346,9 +351,11 @@ function flash(id){
 setInterval(() => {
   // Right after a load the player can still report the old clip's time for a moment: wait for the new one.
   if (!ready() || !range || !started || performance.now() - loadedAt < 300) return;
-  const playing = isPlaying(), t = P().getCurrentTime();
+  const playing = P().getPlayerState() === YT.PlayerState.PLAYING, t = P().getCurrentTime();
+  // Safety net: if the video ever plays outside the clip (YouTube started it somewhere else), bring it back.
+  if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { P().seekTo(range.from, true); return; }
   if (playing && t >= range.to - 0.06) {
-    P().pauseVideo(); ended = true; endedAt = performance.now();
+    P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
     if (range.lines) { showLine(range.c[3]); shown = null; }
     drawTimeline(range.to); setCover(); return;
   }
@@ -394,8 +401,13 @@ window.onYouTubeIframeAPIReady = () => {
         },
         onStateChange: (e) => {
           // A clip being warmed stops on its first frame as soon as it starts.
-          if (s.warming && e.data === YT.PlayerState.PLAYING) { s.warming = false; s.p.pauseVideo(); s.p.seekTo(s.warmFrom, true); return; }
+          if (s.warming && e.data === YT.PlayerState.PLAYING) {
+            s.warming = false; s.loaded = true; s.p.pauseVideo(); s.p.seekTo(s.warmFrom, true); return;
+          }
+          if (e.data === YT.PlayerState.PLAYING) s.loaded = true;
           if (s !== S()) return;
+          // It started although you pressed pause while it was loading: pause it now.
+          if (e.data === YT.PlayerState.PLAYING && !isPlaying()) s.p.pauseVideo();
           setCover();
           if (e.data === YT.PlayerState.PLAYING && s.p.getPlaybackRate() !== rate) s.p.setPlaybackRate(rate);
         },
@@ -418,7 +430,7 @@ $('cover').onclick = (e) => {
   const now = performance.now(), box = $('cover').getBoundingClientRect();
   const dir = e.clientX - box.left < box.width / 2 ? -1 : 1;
   if (started && (now - seeking < 500 || now - lastTap < 300)) {
-    if (tapWas === 'playing') P().playVideo(); else if (tapWas === 'paused') P().pauseVideo();
+    if (tapWas === 'playing') { intent = true; P().playVideo(); } else if (tapWas === 'paused') { intent = false; P().pauseVideo(); }
     tapWas = null; lastTap = 0; seeking = now; seekBy(dir * STEP); return;
   }
   lastTap = now;
@@ -440,8 +452,8 @@ $('tlhit').onpointerup = (e) => {
   if (!dragging) return;
   dragging = false; const t = pointT(e);
   if (!started) { playClip(t); return; }
-  ended = false; shown = null; drawTimeline(t);
-  P().seekTo(t, true); P().playVideo();
+  ended = false; intent = true; shown = null; drawTimeline(t);
+  P().seekTo(t, true); P().playVideo(); setCover();
 };
 $('tlhit').onpointercancel = () => { dragging = false; };
 // "With context" is on or off; switching it plays the clip again the new way. It stays on for the next clips.
