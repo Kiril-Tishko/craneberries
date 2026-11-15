@@ -79,6 +79,8 @@ huggingface.co, about 15 min per hour of audio).
 - **Replies in chat are short**: say briefly what you did and give the links; don't list the lesson content.
 - **Questions to her are multiple choice** (AskUserQuestion, recommended option first), never open questions in chat.
   When a request is unclear ("a review sheet": page, picture or text?), ask that way before building.
+  When the options are words or phrases to teach, put a short example sentence under each one (the option's
+  description: "solve" → "Can you help me solve this problem?"). At most 4 options a question: ask part by part.
 
 - **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/). IPA goes on the
   teacher site only: **no phonetic transcription on student cards**.
@@ -128,11 +130,19 @@ huggingface.co, about 15 min per hour of audio).
   one short line, its 1–2 key words with Ukrainian first, then ▶ plays just that line (the lyrics show under it, key
   words in yellow). A line with nothing to learn now gets no screen. After each part, "All together" (the lyrics
   follow the line being sung); at the end, My words (+ on a word → gap sentences with first letters).
-  Choose the words to learn from the student's level and `brief`, then ask her (multiple choice) which to teach.
-  Every word under the video is tappable for its Ukrainian; words left for later (`later`) also say
-  "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. A 💡 Note
+  Choose the words to learn from the student's level and `brief`, then ask her which to teach (multiple choice,
+  several answers allowed, a short example under each word); leave out words the student already knows (moment).
+  More examples on a word card only when she asks (`[en, ua, ex, ex, …]`). Only the sung parts: intros, whistling,
+  solos and exact repeats are left out (a comment in the config says which).
+  Every word under the video is tappable for its Ukrainian; a tap on any word of a phrase (listen to, a key or
+  `later` phrase) underlines and translates the whole phrase; words left for later (`later`) also say
+  "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
+  lyrics are sometimes from another version of the song: check them against the video before building (YouTube's
+  "Show transcript", the video's length); when the video is cut differently, `captions.keep` moves the lines to the
+  video's times (numbers only). A 💡 Note
   (hidden until tapped) only where something is easy to miss; no "what the line means" box. Where a line isn't clear,
-  its note also says in one simple sentence what the author meant (not a translation, not deep). **Every tap gives the
+  its `meaning` says in one simple sentence what the author meant (not a translation, not deep); it shows under the
+  note, set apart in italics. **Every tap gives the
   word's meaning in that line**: check each word against its lines, above all words with two meanings (to, in, down,
   take); a key or `later` phrase gives a word its line's meaning. Keep a translation that fits; don't polish it. A video from her
   device (`video: {type: 'file'}`) stays in her browser and its captions come in the link. `?mute` plays silently
