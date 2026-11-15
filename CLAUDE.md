@@ -150,7 +150,8 @@ huggingface.co, about 15 min per hour of audio).
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
   YouTube player in one panel (no YouTube buttons, title or timeline; play/pause, a timeline to tap or drag, our caption
   bar; a "With context" switch (1–2 lines before and after, the caption bar follows them; the yellow part of the
-  timeline shows only then); 1× / 0.75× / 0.5×; a big "Next clip" with a small ‹ back arrow; no "Again" button: at the
+  timeline shows only then; a tap = this clip only, the next clip plays without it; press and hold = it stays on for
+  the next clips, a small dot on the button, until tapped off); 1× / 0.75× / 0.5×; a big "Next clip" with a small ‹ back arrow; no "Again" button: at the
   end the play button turns into ↻). A hidden second player preloads the next clip so Next starts at once; replays
   jump back instead of reloading. The caption bar keeps the height of the word's longest line, so nothing below it
   moves. No text explaining the controls and no "Speed" label: she wants it quiet; the
@@ -168,9 +169,12 @@ huggingface.co, about 15 min per hour of audio).
   - The player reads them: `https://kiril-tishko.github.io/craneberries/real-video/?words=rip-off,excuse` (a lesson's
     words; `&title=…`, `&notes=ua` for Ukrainian notes, `&from=lesson` adds "← Lesson", which closes the tab). Without
     `?words` it shows the whole library; the search box finds any word in it.
-  - **She edits it herself** on the page: 5 quick taps in the top-left corner open edit mode (word, translation, line,
-    times with ⏱ Now, notes, lines around, hide / move / delete, add a clip by pasting a YouTube link with a time) and
-    "Save" commits to this branch with her own GitHub key. So `git pull --rebase` before touching the library, and
+  - **She edits it herself** on the page: 5 quick taps in the top-left corner open edit mode, where everything is
+    edited where it is: she clicks the caption (with context: the line shown), the word, its Ukrainian, its emoji or
+    the 💡 note and types; a small bar under the video has Start / End (− / + 0.1 s, then that bit plays again; ⏱ =
+    where the video is now), 🙈 Hide, Save and ⋯ (move, delete, add a clip by pasting a YouTube link with a time,
+    lines around with their times, the note in the other language, other forms to highlight, the GitHub key).
+    "Save" commits to this branch with her own GitHub key (`?mute` plays without sound, for testing). So `git pull --rebase` before touching the library, and
     never overwrite her edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian). It
