@@ -67,6 +67,9 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .btn{font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
 .mode[aria-pressed="true"]{background:var(--tint);color:var(--accent);border-color:var(--accent)}
+/* Pressed and held: "With context" stays on for the next clips (a small dot). */
+.mode{position:relative;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.mode.held::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:99px;background:var(--accent)}
 .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-size:17px;padding:10px 18px;gap:4px}
 .primary svg{width:20px;height:20px;margin-right:-4px}
 .back{padding:9px}
@@ -111,7 +114,25 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 /* The invisible corner for edit mode. */
 .corner{position:fixed;left:0;top:0;width:44px;height:44px;border:0;padding:0;background:transparent;z-index:30;cursor:default}
 body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 4px,transparent 4px 8px);opacity:.35}
-/* Edit mode panel (edit.js fills it). */
+/* Edit mode: click any dashed text (the caption, the word, its Ukrainian, its emoji, the note) and type. */
+body.editing [contenteditable]{outline:1.5px dashed var(--accent);outline-offset:3px;border-radius:6px;cursor:text;min-width:2ch}
+body.editing [contenteditable]:focus{outline-style:solid}
+body.editing [contenteditable]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.7}
+body.editing .capbar [contenteditable]{display:inline-block;padding:0 4px}
+/* The small bar under the video: where the line starts and ends, hide, save. */
+.etools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 14px;background:var(--tint);border-bottom:1px solid var(--line);font-size:13px}
+.etime{display:inline-flex;align-items:center;gap:3px}
+.etime .lbl{font-weight:700;color:var(--muted);margin-right:3px}
+.etime button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer;padding:0}
+.etime input{width:76px;font:600 14px var(--font);font-variant-numeric:tabular-nums;color:var(--ink);padding:5px 6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);text-align:center}
+.etools .btn{font-size:14px;padding:6px 10px}
+.etools .primary{font-size:14px;padding:6px 12px}
+.etools .btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.etools .right{margin-left:auto;display:inline-flex;gap:6px}
+.etools .msg{flex:1 1 100%;color:var(--muted);font-size:13px;min-height:0}
+.etools .msg:empty{display:none}
+.etools .msg.bad{color:var(--accent);font-weight:600}
+/* The rest of edit mode (⋯): move, delete, add a clip, lines around, highlight, GitHub key. */
 .edit{background:var(--surface);border:2px dashed var(--accent);border-radius:16px;padding:16px;display:grid;gap:12px}
 .edit h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .edit .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -150,6 +171,8 @@ body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 
         <button class="cover" id="cover" tabindex="-1" aria-label="Play"><span class="big"><svg><use id="bigicon" href="#i-play"/></svg></span></button>
         <div class="flash l" id="flashl">− 1 s</div><div class="flash r" id="flashr">+ 1 s</div>
       </div>
+      <!-- Edit mode only: the clip's times, hide, save (edit.js fills it). -->
+      <div class="etools" id="etools" hidden></div>
       <div class="bar">
         <button class="pp" id="pp" aria-label="Play" title="Play / pause (Space)"><svg><use id="ppicon" href="#i-play"/></svg></button>
         <div class="tlhit" id="tlhit" title="Tap or drag to move"><div class="tl" id="tl"><div class="tl-word" id="tlword"></div><div class="tl-fill" id="tlfill"></div><div class="tl-dot" id="tldot"></div></div></div>
@@ -169,12 +192,12 @@ body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 
       </div>
     </section>
     <section class="card">
-      <div class="pic" id="pic"></div>
-      <div class="en" id="en"></div>
-      <div class="uaw" id="ua"></div>
+      <div class="pic" id="pic" data-ph="🙂"></div>
+      <div class="en" id="en" data-ph="Word"></div>
+      <div class="uaw" id="ua" data-ph="Українською"></div>
       <div class="tip" id="tip">
         <button class="btn" id="tipbtn" aria-expanded="false">💡 What’s happening?</button>
-        <p class="note off" id="note"></p>
+        <p class="note off" id="note" data-ph="Add a note…"></p>
       </div>
     </section>
   </main>

@@ -1,7 +1,13 @@
-// Edit mode (5 quick taps in the top-left corner): change words and clips right on the page, then save them to the
-// shared library on GitHub (docs/real-video/words/*.json), so every lesson and the lesson chat see the change.
-// Saving needs a GitHub fine-grained token for this one repository (Contents: Read and write). It is kept only in
-// this browser and sent only to api.github.com.
+// Edit mode (5 quick taps in the top-left corner): change things right where they are, then Save.
+//   - Click the caption under the video, the word, its Ukrainian, its emoji or the 💡 note (all dashed) and type.
+//     With context, the caption you click is the line shown at that moment (pause there first).
+//   - The small bar under the video: where the line starts and ends (− / + = 0.1 s, then it plays that bit again;
+//     ⏱ = where the video is now), hide the clip from students, Save.
+//   - ⋯ opens the rest: move or delete the clip, add a clip from a YouTube link, the lines around it with their times,
+//     the note in the other language, other forms of the word to highlight, the GitHub key.
+// Saving writes to the shared library on GitHub (docs/real-video/words/*.json), so every lesson and the lesson chat
+// see the change. It needs a GitHub fine-grained token for this one repository (Contents: Read and write), kept only
+// in this browser and sent only to api.github.com.
 (() => {
 'use strict';
 const REPO = 'kiril-tishko/craneberries', BRANCH = 'claude/vigilant-ptolemy-ltawsa', DIR = 'docs/real-video/words';
@@ -10,7 +16,7 @@ const $ = (id) => document.getElementById(id), esc = App.esc;
 let token = '';
 try { token = localStorage.getItem(KEY) || ''; } catch (e) {}
 const dirty = new Set();
-let msg = '', bad = false, sureT = 0;
+let msg = '', bad = false, sureT = 0, more = false;
 
 /* ---------- GitHub ---------- */
 const b64 = (s) => { let bin = ''; new TextEncoder().encode(s).forEach((b) => { bin += String.fromCharCode(b); }); return btoa(bin); };
@@ -53,7 +59,8 @@ function wordText(w){
 const indexText = (list) => `[\n${list.map((x) => `  ${JSON.stringify(x)}`).join(',\n')}\n]\n`;
 
 async function save(){
-  if (!token) { say('Add the GitHub key first (below).', true); return; }
+  if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
+  if (!token) { more = true; say('Add the GitHub key first (it’s asked only once on this computer).', true); render(); return; }
   if (!dirty.size) { say('Nothing to save.'); return; }
   say('Saving…');
   try {
@@ -69,7 +76,7 @@ async function save(){
     index.sort((a, b) => a.en.localeCompare(b.en));
     await put(`${DIR}/index.json`, indexText(index), 'Real video clips: word list (edited on the page)');
     App.INDEX.splice(0, App.INDEX.length, ...index);
-    say('Saved to the library. The live page shows it within a minute or two.');
+    say('Saved ✓ The live page shows it within a minute or two.');
   } catch (e) {
     say(`Not saved: ${e.message || e}`, true);
   }
@@ -77,11 +84,22 @@ async function save(){
 }
 
 /* ---------- turning edit mode on and off ---------- */
+const FIELDS = ['en', 'ua', 'pic', 'note'];   // the card's text you can click and type in
+function setEditable(on){
+  for (const id of FIELDS) {
+    const el = $(id);
+    if (!on) { el.removeAttribute('contenteditable'); continue; }
+    el.contentEditable = 'plaintext-only';
+    if (el.contentEditable !== 'plaintext-only') el.contentEditable = 'true';
+    el.spellcheck = false;
+  }
+}
 App.toggleEdit = async () => {
   const keep = App.clip();
-  App.editing = !App.editing;
+  App.editing = !App.editing; more = false;
   document.body.classList.toggle('editing', App.editing);
-  $('edit').hidden = !App.editing;
+  $('etools').hidden = !App.editing; $('edit').hidden = true;
+  setEditable(App.editing);
   if (App.editing && token) {
     // Edit the newest version (the live page can be a minute behind), unless there are unsaved changes.
     App.getJSON = (path) => readJSON(`${DIR}/${path}`);
@@ -93,17 +111,17 @@ App.toggleEdit = async () => {
   if (App.word) {
     const i = App.list().indexOf(keep);
     App.clipN = i < 0 ? 0 : i;
-    App.showClip(false);
+    App.renderCard(); App.showClip(false);
   }
   render();
 };
 window.addEventListener('beforeunload', (e) => { if (dirty.size) { e.preventDefault(); e.returnValue = ''; } });
 
-/* ---------- the panel ---------- */
+/* ---------- the bar under the video, and ⋯ ---------- */
 function say(text, isBad){ msg = text; bad = !!isBad; const m = $('e-msg'); if (m) { m.textContent = msg; m.className = `msg${bad ? ' bad' : ''}`; } }
 function touch(){
   if (App.word) dirty.add(App.word.slug);
-  const b = $('e-save'); if (b) b.textContent = `Save to the library (${dirty.size})`;
+  const b = $('e-save'); if (b) b.textContent = `Save (${dirty.size})`;
 }
 const r2 = (x) => Math.round(x * 100) / 100;
 const aroundText = (a) => (a || []).map((l) => `${l[0]} | ${l[1]} | ${l[2]}`).join('\n');
@@ -125,49 +143,42 @@ function parseLink(text){
   return {v, s};
 }
 
+const timeBox = (f, name, c) => `<span class="etime"><span class="lbl">${name}</span>
+  <button data-nudge="${f}:-0.1" aria-label="${name} 0.1 s earlier">−</button><input type="number" step="0.01" data-c="${f}" value="${c[f]}" aria-label="${name} (seconds)"><button data-nudge="${f}:0.1" aria-label="${name} 0.1 s later">+</button><button data-now="${f}" title="Where the video is now" aria-label="${name} where the video is now">⏱</button></span>`;
 function render(){
   if (!App.editing) return;
   const w = App.word, L = App.list(), c = App.clip();
+  const other = App.NOTES === 'ua' ? 'note' : 'noteUa';
+  $('etools').innerHTML = `
+    ${c ? `${timeBox('s', 'Start', c)}${timeBox('e', 'End', c)}
+    <button class="btn" data-act="hide" aria-pressed="${!!c.hidden}">${c.hidden ? '🙈 Hidden' : '🙈 Hide'}</button>` : ''}
+    <span class="right">
+      <button class="btn primary" id="e-save">Save (${dirty.size})</button>
+      <button class="btn" id="e-more" aria-expanded="${more}" aria-label="More" title="More">⋯</button>
+      <button class="btn" id="e-exit" aria-label="Leave edit mode" title="Leave edit mode">✕</button>
+    </span>
+    <div class="msg${bad ? ' bad' : ''}" id="e-msg">${esc(msg)}</div>`;
+  $('edit').hidden = !more;
+  if (!more) { $('edit').innerHTML = ''; return; }
   $('edit').innerHTML = `
-    <h3>✏️ Edit mode
-      <button class="btn primary" id="e-save">Save to the library (${dirty.size})</button>
-      <button class="btn" id="e-exit">Close</button></h3>
-    <div class="msg${bad ? ' bad' : ''}" id="e-msg">${esc(msg)}</div>
     ${token ? '' : `
     <div class="row"><label>GitHub key, needed once on this computer to save
       <input id="e-token" type="password" autocomplete="off" placeholder="github_pat_…"></label>
       <button class="btn" id="e-token-save">Keep it</button></div>
     <div class="msg">Make one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a>:
       repository <b>craneberries</b> only, permission <b>Contents: Read and write</b>.</div>`}
-    ${w ? `
-    <div class="row">
-      <label>Word or phrase<input data-w="en" value="${esc(w.en || '')}"></label>
-      <label>Ukrainian<input data-w="ua" value="${esc(w.ua || '')}"></label>
-      <label class="num">Emoji<input data-w="pic" value="${esc(w.pic || '')}"></label>
-      <label>Highlight (other forms, e.g. rip[- ]?off)<input data-w="hl" value="${esc(w.hl || '')}"></label>
-    </div>` : ''}
     ${c ? `
-    <h3>Clip ${App.clipN + 1} / ${L.length} ${c.hidden ? '<span class="hidden-tag">hidden from students</span>' : ''}
+    <h3>Clip ${App.clipN + 1} / ${L.length}
       <button class="btn" data-act="up" ${App.clipN ? '' : 'disabled'}>◀ Move</button>
       <button class="btn" data-act="down" ${App.clipN < L.length - 1 ? '' : 'disabled'}>Move ▶</button>
-      <button class="btn" data-act="hide">${c.hidden ? 'Show to students' : 'Hide'}</button>
       <button class="btn" data-act="del">Delete</button>
       <a class="btn" href="https://www.youtube.com/watch?v=${esc(c.v)}&t=${Math.floor(c.s)}s" target="_blank" rel="noopener">Open on YouTube ↗</a></h3>
-    <div class="row"><label>The line (as it is said)<input data-c="line" value="${esc(c.line || '')}"></label></div>
-    <div class="row">
-      <label class="num">Starts (s)<input type="number" step="0.01" data-c="s" value="${c.s}"></label>
-      <button class="btn" data-now="s">⏱ Now</button><button class="btn" data-nudge="s:-0.1">−0.1</button><button class="btn" data-nudge="s:0.1">+0.1</button>
-      <label class="num">Ends (s)<input type="number" step="0.01" data-c="e" value="${c.e}"></label>
-      <button class="btn" data-now="e">⏱ Now</button><button class="btn" data-nudge="e:-0.1">−0.1</button><button class="btn" data-nudge="e:0.1">+0.1</button>
-    </div>
-    <div class="row">
-      <label>💡 Note in English<textarea data-c="note">${esc(c.note || '')}</textarea></label>
-      <label>💡 Note in Ukrainian (used with &amp;notes=ua)<textarea data-c="noteUa">${esc(c.noteUa || '')}</textarea></label>
-    </div>
-    <div class="row"><label>Lines around it, for “With context” (one per line: start | end | text)<textarea data-c="around">${esc(aroundText(c.around))}</textarea></label></div>` : ''}
+    <div class="row"><label>Lines around it, for “With context” (one per line: start | end | text)<textarea data-c="around">${esc(aroundText(c.around))}</textarea></label></div>
+    <div class="row"><label>💡 Note in ${other === 'noteUa' ? 'Ukrainian (used with &amp;notes=ua)' : 'English'}<textarea data-c="${other}">${esc(c[other] || '')}</textarea></label></div>` : ''}
     ${w ? `
     <div class="row"><label>Add a clip: paste a YouTube link with the time (…?t=83)<input id="e-link" placeholder="https://youtu.be/…?t=83"></label>
-      <button class="btn" id="e-add">Add clip</button></div>` : ''}
+      <button class="btn" id="e-add">Add clip</button></div>
+    <div class="row"><label>Other forms of the word to highlight (e.g. rip[- ]?off)<input data-w="hl" value="${esc(w.hl || '')}"></label></div>` : ''}
     ${token ? '<div class="row"><button class="btn" id="e-forget">Forget the GitHub key on this computer</button></div>' : ''}`;
 }
 App.onClip = render;
@@ -177,7 +188,7 @@ App.newWord = (text) => {
   if (App.INDEX.some((x) => x.slug === slug) || App.WORDS[slug]) { App.pick(slug, false); return; }
   App.WORDS[slug] = App.norm({en: text, ua: '', pic: '', clips: []}, slug);
   dirty.add(slug);
-  say(`New word “${text}”: add its Ukrainian, an emoji and clips, then save.`);
+  say(`New word “${text}”: type its Ukrainian and an emoji on the card, add clips (⋯), then save.`);
   App.pick(slug, false);
 };
 App.missing = (slug) => {
@@ -186,11 +197,47 @@ App.missing = (slug) => {
   if (m) m.insertAdjacentHTML('beforeend', ` <button class="btn" id="e-create" data-slug="${esc(slug)}">Create it</button>`);
 };
 
-$('edit').addEventListener('input', (e) => {
+/* ---------- typing right on the page ---------- */
+const inCap = (t) => t.closest && t.closest('#capbar');
+document.addEventListener('focusin', (e) => { if (App.editing && inCap(e.target)) App.pause(); });
+document.addEventListener('input', (e) => {
+  if (!App.editing) return;
   const t = e.target, w = App.word, c = App.clip();
+  if (inCap(t) && t.isContentEditable) { if (c) { App.setShownLine(t.textContent.replace(/\s+/g, ' ').trim()); touch(); } return; }
+  if (!t.isContentEditable || !FIELDS.includes(t.id) || !w) return;
+  const v = t.textContent.replace(/\s+/g, ' ').trim();
+  if (t.id === 'note') { if (c) { c[App.NOTES === 'ua' ? 'noteUa' : 'note'] = v; touch(); } return; }
+  w[t.id] = v; App.norm(w, w.slug); App.renderChips(); touch();
+});
+// Done typing (click elsewhere, Enter or Esc): show it the way students see it, with the word in yellow.
+document.addEventListener('focusout', (e) => {
+  if (!App.editing || !e.target.isContentEditable) return;
+  if (inCap(e.target) || e.target.id === 'en') { App.refresh(); App.sizeCaption(); }
+});
+document.addEventListener('keydown', (e) => {
+  if (App.editing && e.target.isContentEditable && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); e.target.blur(); }
+});
+// Pasted text arrives as plain text.
+document.addEventListener('paste', (e) => {
+  if (!App.editing || !e.target.closest || !e.target.closest('[contenteditable]')) return;
+  e.preventDefault();
+  document.execCommand('insertText', false, (e.clipboardData.getData('text/plain') || '').replace(/\s+/g, ' '));
+});
+
+/* ---------- the bar's and ⋯'s fields and buttons ---------- */
+let replayT = 0;
+// After a − / + on a time: play that bit again (from the new start, or the last second and a half before the end).
+function replay(f){
+  clearTimeout(replayT);
+  replayT = setTimeout(() => { const c = App.clip(); if (c) App.playClip(f === 'e' ? Math.max(c.s - 0.1, c.e - 1.5) : undefined); }, 350);
+}
+const zone = (t) => t.closest && t.closest('#etools, #edit');
+document.addEventListener('input', (e) => {
+  const t = e.target; if (!App.editing || !zone(t)) return;
+  const w = App.word, c = App.clip();
   if (t.dataset.w && w) {
     w[t.dataset.w] = t.value.trim() ? t.value : '';
-    App.norm(w, w.slug); App.renderCard(); App.renderChips(); App.refresh(); touch();
+    App.norm(w, w.slug); App.renderChips(); App.refresh(); touch();
   } else if (t.dataset.c && c) {
     const f = t.dataset.c;
     if (f === 's' || f === 'e') { const v = parseFloat(t.value); if (!isNaN(v)) c[f] = v; }
@@ -199,11 +246,12 @@ $('edit').addEventListener('input', (e) => {
     App.refresh(); touch();
   }
 });
-$('edit').addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return;
+document.addEventListener('click', (e) => {
+  const b = e.target.closest && e.target.closest('button'); if (!b || !App.editing || !zone(b)) return;
   const w = App.word, c = App.clip();
   if (b.id === 'e-save') save();
   else if (b.id === 'e-exit') App.toggleEdit();
+  else if (b.id === 'e-more') { more = !more; render(); }
   else if (b.id === 'e-token-save') {
     token = $('e-token').value.trim();
     try { localStorage.setItem(KEY, token); } catch (err) {}
@@ -219,7 +267,7 @@ $('edit').addEventListener('click', (e) => {
     const nc = {v: p.v, s: p.s, e: r2(p.s + 2), line: '', note: ''};
     const i = c ? w.clips.indexOf(c) + 1 : w.clips.length;
     w.clips.splice(i, 0, nc); App.clipN = App.list().indexOf(nc);
-    touch(); say('Clip added. Play it, set where the line starts and ends (⏱ Now), type the line, then save.');
+    touch(); say('Clip added. Play it, set Start and End (⏱ or − / +), click the caption to type the line, then save.');
     App.showClip(false);
   } else if (b.dataset.act && c) {
     const i = w.clips.indexOf(c);
@@ -228,8 +276,11 @@ $('edit').addEventListener('click', (e) => {
       if (j < 0 || j >= w.clips.length) return;
       [w.clips[i], w.clips[j]] = [w.clips[j], w.clips[i]];
       App.clipN = App.list().indexOf(c); touch(); App.showClip(false);
-    } else if (b.dataset.act === 'hide') { c.hidden = !c.hidden; touch(); render(); }
-    else if (b.dataset.act === 'del') {
+    } else if (b.dataset.act === 'hide') {
+      c.hidden = !c.hidden; touch();
+      say(c.hidden ? 'Hidden: students won’t see this clip (after you save).' : 'Shown to students again (after you save).');
+      render();
+    } else if (b.dataset.act === 'del') {
       if (Date.now() - sureT > 3000) { sureT = Date.now(); b.textContent = 'Sure? Tap again'; return; }
       w.clips.splice(i, 1); App.clipN = Math.max(0, i - 1); touch(); say('Clip deleted (save to keep it that way).');
       App.showClip(false);
@@ -238,7 +289,8 @@ $('edit').addEventListener('click', (e) => {
     c[b.dataset.now] = r2(App.now()); touch(); App.refresh(); render();
   } else if (b.dataset.nudge && c) {
     const [f, d] = b.dataset.nudge.split(':'); c[f] = r2(c[f] + parseFloat(d)); touch(); App.refresh();
-    const inp = $('edit').querySelector(`[data-c="${f}"]`); if (inp) inp.value = c[f];
+    const inp = $('etools').querySelector(`[data-c="${f}"]`); if (inp) inp.value = c[f];
+    replay(f);
   }
 });
 })();

@@ -6,7 +6,9 @@
 //     &notes=ua                            💡 notes in Ukrainian where a clip has one (otherwise English)
 //     &from=lesson                         a "← Lesson" button that closes this tab, back to the lesson page
 //   #w=excuse                              open this word first
-// Tapping the top-left corner 5 times opens edit mode (edit.js).
+//   ?mute                                  plays without sound (for testing)
+// Tapping the top-left corner 5 times opens edit mode (edit.js): click the text on the page and type, times and Save
+// in a small bar under the video.
 'use strict';
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -14,6 +16,7 @@ const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const slugify = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const Q = new URLSearchParams(location.search);
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
+const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 const LIB = new URL('words/', location.href);
 
 // Exact times (with decimals, from Caption Search or set in edit mode): start just before the line and stop when it
@@ -25,6 +28,10 @@ const STEP = 1; // ← → and double-tap move this many seconds
 let INDEX = [], ORDER = [], cur = '', word = null;
 const WORDS = {};
 let clipN = 0, rate = 1, wantPlay = null, longerMode = false;
+// "With context" is for this clip only; press and hold it, and it stays on for the next clips too.
+let contextHeld = false;
+// The line now in the caption bar: null = the clip's own line, else one of its lines around (with context).
+let lineRef = null;
 let range = null, started = false, ended = false, endedAt = 0, shown = null, loadedAt = 0, dragging = false;
 // `intent` is what you last asked for (play or pause). Play/pause buttons follow it, not the player's state, so a
 // press counts even while a clip is still loading.
@@ -32,7 +39,7 @@ let intent = false;
 
 // Shared with edit.js.
 const App = {
-  editing: false, WORDS, slugify, esc,
+  editing: false, WORDS, slugify, esc, NOTES,
   get INDEX(){ return INDEX; }, get ORDER(){ return ORDER; }, get word(){ return word; },
   get clipN(){ return clipN; }, set clipN(n){ clipN = n; },
   list: () => list(), clip: () => clip(), now: () => (ready() ? P().getCurrentTime() : 0),
@@ -91,7 +98,7 @@ async function pick(slug, play){
     }
     WORDS[slug] = w;
   }
-  cur = slug; word = w; clipN = 0;
+  cur = slug; word = w; clipN = 0; resetContext();
   if (!ORDER.includes(slug)) ORDER.push(slug); // a word found with the search joins the row
   renderChips(); renderCard(); sizeCaption();
   history.replaceState(null, '', `${location.search}#w=${slug}`);
@@ -100,7 +107,7 @@ async function pick(slug, play){
 App.pick = pick;
 function renderCard(){
   $('pic').textContent = word.pic || ''; $('en').textContent = word.en || ''; $('ua').textContent = word.ua || '';
-  $('ua').hidden = !word.ua;
+  $('ua').hidden = !word.ua && !App.editing;
 }
 App.renderCard = renderCard;
 
@@ -140,15 +147,25 @@ App.refresh = () => {
   showLine(c.line); setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || ''); sizeCaption();
   $('count').textContent = `${clipN + 1} / ${list().length}`;
 };
+// In edit mode the note is always open, so it can be clicked and typed in.
 function setNote(text){
-  $('note').textContent = text; $('note').classList.add('off'); $('tipbtn').setAttribute('aria-expanded', 'false');
-  $('tip').style.visibility = text ? 'visible' : 'hidden';
+  $('note').textContent = text; $('note').classList.toggle('off', !App.editing);
+  $('tipbtn').setAttribute('aria-expanded', String(App.editing));
+  $('tip').style.visibility = text || App.editing ? 'visible' : 'hidden';
 }
-function showLine(text, plain){
+function showLine(text, plain, ref){
+  lineRef = ref || null;
+  const ed = App.editing && !plain ? ' contenteditable="plaintext-only" spellcheck="false"' : '';
   $('capbar').innerHTML = plain
     ? `<span class="err">${esc(plain)}</span>`
-    : `<span>${esc(text).replace(word.re, (m) => `<mark>${m}</mark>`)}</span>`;
+    : `<span${ed}>${esc(text).replace(word.re, (m) => `<mark>${m}</mark>`)}</span>`;
 }
+// Edit mode: what is typed in the caption bar goes to the line that is shown there.
+App.setShownLine = (text) => {
+  const c = clip(); if (!c) return;
+  if (lineRef && (c.around || []).includes(lineRef)) lineRef[2] = text; else c.line = text;
+};
+const capFocus = () => $('capbar').contains(document.activeElement);
 // The caption bar keeps the height of this word's longest line, so nothing below it moves from clip to clip.
 function sizeCaption(){
   if (!word) return;
@@ -207,7 +224,7 @@ function playClip(at){
   started = true; ended = false; intent = true; loadedAt = performance.now();
   showLine(c.line);
   const from = at ?? range.from;
-  s.warming = false; s.p.unMute();
+  s.warming = false; if (!MUTE) s.p.unMute();
   if (s.vid === c.v && s.loaded) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
   else { s.vid = c.v; s.loaded = false; s.p.loadVideoById({videoId: c.v, startSeconds: from}); }
   s.p.setPlaybackRate(rate);
@@ -215,6 +232,7 @@ function playClip(at){
 }
 App.playClip = playClip;
 const isPlaying = () => started && !ended && intent;
+App.pause = () => { if (isPlaying()) { intent = false; P().pauseVideo(); setCover(); } };
 // Play/pause: a paused clip goes on from where it stopped; a finished one plays again.
 // A press that comes just as the clip ends was meant as "pause": it stays stopped instead of starting over.
 function toggle(){
@@ -248,9 +266,9 @@ setInterval(() => {
     drawTimeline(range.to); setCover(); return;
   }
   if (!ended && !dragging) drawTimeline(t);
-  if (range.lines && !ended) {
+  if (range.lines && !ended && !capFocus()) {
     const l = range.lines.reduce((on, x) => (t >= x[0] - 0.1 ? x : on), range.lines[0]);
-    if (l !== shown) { shown = l; showLine(l[2]); }
+    if (l !== shown) { shown = l; showLine(l[2], null, l); }
   }
 }, 50);
 function drawTimeline(t){
@@ -275,8 +293,12 @@ function setCover(){
   $('pp').setAttribute('aria-label', playing ? 'Pause' : ended ? 'Play again' : 'Play');
 }
 function setMode(longer){
-  longerMode = longer; $('longer').setAttribute('aria-pressed', longer);
+  longerMode = longer; if (!longer) contextHeld = false;
+  $('longer').setAttribute('aria-pressed', longer);
+  $('longer').classList.toggle('held', longer && contextHeld);
 }
+// Another clip or word: "With context" goes off again, unless it was pressed and held.
+function resetContext(){ if (longerMode && !contextHeld) setMode(false); }
 
 window.onYouTubeIframeAPIReady = () => {
   slots.forEach((s, i) => {
@@ -344,9 +366,27 @@ $('tlhit').onpointerup = (e) => {
   P().seekTo(t, true); P().playVideo(); setCover();
 };
 $('tlhit').onpointercancel = () => { dragging = false; };
-// "With context" is on or off; switching it plays the clip again the new way. It stays on for the next clips.
-$('longer').onclick = () => { setMode(!longerMode); playClip(); };
-const step = (d) => { const n = list().length; if (!n) return; clipN = (clipN + d + n) % n; showClip(true); };
+// "With context": a tap turns it on or off for this clip and plays the clip again the new way. Press and hold: it
+// stays on for the next clips too (a small dot on the button) until it is tapped off.
+let holdT = 0, held = false;
+const stopHold = () => clearTimeout(holdT);
+$('longer').onpointerdown = (e) => {
+  if (e.button) return;
+  held = false; stopHold();
+  holdT = setTimeout(() => {
+    held = true; contextHeld = true;
+    if (longerMode) setMode(true); else { setMode(true); playClip(); }
+  }, 550);
+};
+$('longer').onpointerup = stopHold;
+$('longer').onpointerleave = stopHold;
+$('longer').onpointercancel = stopHold;
+$('longer').oncontextmenu = (e) => e.preventDefault();
+$('longer').onclick = () => {
+  if (held) { held = false; return; }
+  contextHeld = false; setMode(!longerMode); playClip();
+};
+const step = (d) => { const n = list().length; if (!n) return; clipN = (clipN + d + n) % n; resetContext(); showClip(true); };
 $('next').onclick = () => step(1);
 $('prev').onclick = () => step(-1);
 $('speed').onclick = (e) => {
