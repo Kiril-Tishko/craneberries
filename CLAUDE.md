@@ -172,9 +172,11 @@ huggingface.co, about 15 min per hour of audio).
   - **She edits it herself** on the page: 5 quick taps in the top-left corner open edit mode, where everything is
     edited where it is: she clicks the caption (with context: the line shown), the word, its Ukrainian, its emoji or
     the 💡 note and types; a small bar under the video has Start / End (− / + 0.1 s, then that bit plays again; ⏱ =
-    where the video is now), 🙈 Hide, Save and ⋯ (move, delete, add a clip by pasting a YouTube link with a time,
-    lines around with their times, the note in the other language, other forms to highlight, the GitHub key).
-    "Save" commits to this branch with her own GitHub key (`?mute` plays without sound, for testing). So `git pull --rebase` before touching the library, and
+    where the video is now), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
+    that really changed) and ⋯ (move, delete, add a clip by pasting a YouTube link with a time, lines around with their
+    times, the note in the other language, other forms to highlight, the GitHub key). Ctrl+Z / Ctrl+Y undo and redo
+    every change. "Save" commits to this branch with her own GitHub key (`?mute` plays without sound, for testing).
+    Never test edit mode in a tab she might use: a test tab with unsaved changes can end up saved with her key. So `git pull --rebase` before touching the library, and
     never overwrite her edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian). It
