@@ -78,7 +78,10 @@ main.tall .video{aspect-ratio:auto;flex:1 1 0;min-height:240px}
 .cap.note{color:var(--muted);font-weight:400;font-size:16px}
 .capbar mark{background:var(--word);color:#141B24;border-radius:4px;padding:0 3px}
 .tw{cursor:pointer;border-radius:3px}
-.tw:hover,.tw.on{text-decoration:underline dotted var(--accent);text-underline-offset:4px}
+/* A tap underlines the whole phrase (all its words and the spaces between them), not just the word. */
+.tw:hover,.tw.on,.cap .ph:hover,.cap .ph.on{text-decoration:underline dotted var(--accent);text-underline-offset:4px}
+.cap mark:hover,.cap mark.on{text-decoration:underline 2px currentColor;text-underline-offset:3px}
+.cap mark .tw:hover,.cap mark .tw.on{text-decoration:none}
 .pop{position:fixed;z-index:9;transform:translate(-50%,-100%);background:#141B24;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:12px;
   padding:8px 14px;font-size:17px;font-weight:600;max-width:min(360px,92vw);text-align:center;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .pop b{font-weight:800}
@@ -133,6 +136,9 @@ main.tall .video{aspect-ratio:auto;flex:1 1 0;min-height:240px}
 .tip{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .tip .btn{border-style:dashed}
 .note{margin:0;font-size:16px;line-height:1.45}
+.note p{margin:0}
+.note .meaning{font-style:italic;color:var(--muted)}
+.note p+.meaning{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .foot{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;flex-wrap:wrap}
 .foot>button{border:0;background:transparent;color:var(--muted);opacity:.45;font-size:15px;padding:2px 4px;cursor:pointer}
 .foot>button:hover,.foot>button[aria-expanded="true"]{opacity:1}

@@ -4,8 +4,10 @@
 //   video     {type:'youtube', id} or {type:'file', duration}: a file she opens from her device (never put in the repo)
 //   captions  {type:'lrc', url}: timed lyrics loaded live (lrclib.net), never stored in the repo
 //             {type:'link'}: captions arrive in the page link (#c=…), compressed, and stay in her browser
-//   parts     [{name, start, end, lines:[{words:[[en, ua, example]], hl:[exact phrases in the captions], note?, start, end}]}]
-//             the example marks the word with <em> (it becomes the gap in My words); hl[k] is how words[k] is sung
+//   captions  … keep:[[from, to, shift]] when the video is cut differently from the lyrics' version (see loadCaptions)
+//   parts     [{name, start, end, lines:[{words:[[en, ua, example, more examples…]], hl:[exact phrases in the captions],
+//             note?, meaning?, start, end}]}]   note = what to notice; meaning = what the line means (shown in italics)
+//             the first example marks the word with <em> (it becomes the gap in My words); hl[k] is how words[k] is sung
 //             ("making you cry" for "make you cry"), and a tap on it gives its Ukrainian in every part
 //   gloss     {word: Ukrainian}: tap any word in the captions (lowercase, ’ for apostrophes)
 //   later     [[phrase, Ukrainian]]: words left for a later lesson; tapping one says so
@@ -218,7 +220,13 @@ if (L.captions.type === 'lrc') {
       return m ? [+m[1] * 60 + +m[2], 0, m[3].replace(/'/g, '’')] : null;
     }).filter(Boolean);
     ls.forEach((l, n) => { l[1] = ls[n + 1] ? ls[n + 1][0] : l[0] + 5; });
-    setLines(ls);
+    // A video cut differently from the lyrics' version: keep [[from, to, shift]] keeps the lines that start between
+    // from and to (the lyrics' seconds) and moves them by shift seconds. Only these numbers are in the page.
+    const keep = L.captions.keep;
+    setLines(keep ? ls.flatMap((l) => {
+      const k = keep.find(([a, b]) => l[0] >= a && l[0] < b);
+      return k ? [[l[0] + k[2], Math.min(l[1], k[1]) + k[2], l[2]]] : [];
+    }) : ls);
   }).catch(() => { capsNote = 'The lyrics didn’t load. Reload the page.'; drawCaption(true); });
 } else {
   const m = location.hash.match(/[#&]c=([\w-]+)/);
@@ -255,20 +263,29 @@ function find(text, phrases){              // → [[from, to, index]] where each
   return out;
 }
 // Each tappable word may sit in a key phrase from another part (data-key) or in a phrase for later (data-later).
+// A phrase is one box (<mark> or <span class="ph">), so a tap on any of its words underlines all of it.
+let phraseN = 0;
 function marked(text, hls){
   const n = text.length, mk = new Array(n).fill(false), kk = new Array(n).fill(-1), lt = new Array(n).fill(-1);
+  const gp = new Array(n).fill(0);
   find(text, hls).forEach(([a, b]) => { for (let c = a; c < b; c++) mk[c] = true; });
-  find(text, KEYS.map((x) => x.p)).forEach(([a, b, k]) => { for (let c = a; c < b; c++) if (kk[c] < 0) kk[c] = k; });
-  find(text, LATER.map((x) => x.p)).forEach(([a, b, k]) => { for (let c = a; c < b; c++) if (lt[c] < 0) lt[c] = k; });
+  find(text, KEYS.map((x) => x.p)).forEach(([a, b, k]) => {
+    const g = ++phraseN; for (let c = a; c < b; c++) if (kk[c] < 0) { kk[c] = k; gp[c] = g; }
+  });
+  find(text, LATER.map((x) => x.p)).forEach(([a, b, k]) => {
+    const g = ++phraseN; for (let c = a; c < b; c++) if (lt[c] < 0) { lt[c] = k; if (kk[c] < 0) gp[c] = g; }
+  });
   const re = /[A-Za-z0-9’']+|[^A-Za-z0-9’']+/g;
-  let h = '', open = false, m;
+  let h = '', open = false, og = 0, m;
   while ((m = re.exec(text))) {
-    const a = m.index, t = m[0], word = /[A-Za-z0-9]/.test(t);
+    const a = m.index, t = m[0], word = /[A-Za-z0-9]/.test(t), g = mk[a] ? 0 : gp[a];
+    if (og && g !== og) { h += '</span>'; og = 0; }
     if (mk[a] !== open) { h += open ? '</mark>' : '<mark>'; open = mk[a]; }
+    if (g && g !== og) { h += '<span class="ph">'; og = g; }
     const tag = mk[a] ? '' : kk[a] >= 0 ? ` data-key="${kk[a]}"` : lt[a] >= 0 ? ` data-later="${lt[a]}"` : '';
     h += word ? `<span class="tw"${tag}>${esc(t)}</span>` : esc(t);
   }
-  return h + (open ? '</mark>' : '');
+  return h + (og ? '</span>' : '') + (open ? '</mark>' : '');
 }
 const base = (t) => t.toLowerCase().replace(/'/g, '’').replace(/\(.*?\)|…/g, '').replace(/\s+/g, ' ').trim();
 // Every key phrase of the lesson as it is sung (hl[k] belongs to words[k]), so a tap gives the phrase's Ukrainian
@@ -307,7 +324,7 @@ function glossOf(el){
   const ua = lookup(el.textContent);
   return ua ? {en: el.textContent, ua} : null;
 }
-function hidePop(){ $('pop').hidden = true; document.querySelectorAll('.tw.on').forEach((x) => x.classList.remove('on')); }
+function hidePop(){ $('pop').hidden = true; document.querySelectorAll('.cap .on').forEach((x) => x.classList.remove('on')); }
 function showPop(el){
   const g = glossOf(el);
   hidePop();
@@ -318,7 +335,7 @@ function showPop(el){
   const half = p.offsetWidth / 2 + 8;
   p.style.left = `${Math.min(innerWidth - half, Math.max(half, r.left + r.width / 2))}px`;
   p.style.top = `${r.top - 8}px`;
-  el.classList.add('on');
+  (el.closest('mark') || el.closest('.ph') || el).classList.add('on');   // the whole phrase, not just the word
 }
 
 /* ---------- Drawing ---------- */
@@ -420,16 +437,17 @@ function drawNav(){
   $('where').textContent = s.kind === 'practice' ? 'My words' : p.name;
   $('mywords').textContent = dict.length ? `📒 ${dict.length}` : '';
 }
-function wordRow([en, ua, ex]){
+function wordRow([en, ua, ...exs]){         // one or more examples; My words uses the first
   const on = dict.some((d) => d.en === en);
-  return `<div class="w"><b class="en">${esc(en)}</b><button class="add" data-en="${esc(en)}" aria-pressed="${on}" aria-label="${on ? 'Remove from My words' : 'Add to My words'}">${on ? '✓' : '+'}</button><span class="ua">${esc(ua)}</span>${ex ? `<p class="ex">${ex}</p>` : ''}</div>`;
+  return `<div class="w"><b class="en">${esc(en)}</b><button class="add" data-en="${esc(en)}" aria-pressed="${on}" aria-label="${on ? 'Remove from My words' : 'Add to My words'}">${on ? '✓' : '+'}</button><span class="ua">${esc(ua)}</span>${exs.filter(Boolean).map((x) => `<p class="ex">${x}</p>`).join('')}</div>`;
 }
 function renderCard(){
   const s = STEPS[i];
   let h = '';
   if (s.kind === 'line') {
     h = `<div class="words">${s.words.map(wordRow).join('')}</div>`;
-    if (s.note) h += `<div class="tip"><button class="btn" id="tipbtn" aria-expanded="false">💡 Note</button><p class="note off" id="note">${esc(s.note)}</p></div>`;
+    // 💡 Note: what to notice about the words, then (set apart, in italics) what the line means.
+    if (s.note || s.meaning) h += `<div class="tip"><button class="btn" id="tipbtn" aria-expanded="false">💡 Note</button><div class="note off" id="note">${s.note ? `<p>${esc(s.note)}</p>` : ''}${s.meaning ? `<p class="meaning">${esc(s.meaning)}</p>` : ''}</div></div>`;
   } else if (s.kind === 'all') {
     const seen = new Set(), ws = PARTS[s.pn].lines.flatMap((l) => l.words).filter((w) => !seen.has(w[0]) && seen.add(w[0]));
     h = `<p class="big">All together 🎧</p><div class="chips">${ws.map(([en, ua]) => `<span class="chip"><b>${esc(en)}</b>${esc(ua)}</span>`).join('')}</div>`;
