@@ -224,7 +224,7 @@ function playClip(at){
   started = true; ended = false; intent = true; loadedAt = performance.now();
   showLine(c.line);
   const from = at ?? range.from;
-  s.warming = false; if (!MUTE) s.p.unMute();
+  s.warming = false; if (MUTE || App.silent) s.p.mute(); else s.p.unMute();
   if (s.vid === c.v && s.loaded) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
   else { s.vid = c.v; s.loaded = false; s.p.loadVideoById({videoId: c.v, startSeconds: from}); }
   s.p.setPlaybackRate(rate);
@@ -233,6 +233,12 @@ function playClip(at){
 App.playClip = playClip;
 const isPlaying = () => started && !ended && intent;
 App.pause = () => { if (isPlaying()) { intent = false; P().pauseVideo(); setCover(); } };
+// Edit mode's 🔇: no sound while she edits (students always have sound).
+App.silent = false;
+App.setSilent = (on) => {
+  App.silent = on;
+  if (ready() && started) { if (on || MUTE) P().mute(); else P().unMute(); }
+};
 // Play/pause: a paused clip goes on from where it stopped; a finished one plays again.
 // A press that comes just as the clip ends was meant as "pause": it stays stopped instead of starting over.
 function toggle(){

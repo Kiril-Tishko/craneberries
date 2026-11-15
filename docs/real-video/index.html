@@ -124,7 +124,8 @@ body.editing .capbar [contenteditable]{display:inline-block;padding:0 4px}
 .etime{display:inline-flex;align-items:center;gap:3px}
 .etime .lbl{font-weight:700;color:var(--muted);margin-right:3px}
 .etime button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer;padding:0}
-.etime input{width:76px;font:600 14px var(--font);font-variant-numeric:tabular-nums;color:var(--ink);padding:5px 6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);text-align:center}
+.etime input{width:84px;font:600 14px var(--font);font-variant-numeric:tabular-nums;color:var(--ink);padding:5px 4px;border-radius:8px;border:1px solid var(--line);background:var(--surface);text-align:center;-moz-appearance:textfield;appearance:textfield}
+.etime input::-webkit-inner-spin-button,.etime input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .etools .btn{font-size:14px;padding:6px 10px}
 .etools .primary{font-size:14px;padding:6px 12px}
 .etools .btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}

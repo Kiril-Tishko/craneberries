@@ -15,7 +15,16 @@ const KEY = 'rv-github-token';
 const $ = (id) => document.getElementById(id), esc = App.esc;
 let token = '';
 try { token = localStorage.getItem(KEY) || ''; } catch (e) {}
-const dirty = new Set();
+// Each word as it was when it was loaded or last saved: Save counts only the words that really differ from it.
+const base = {};
+const changed = () => Object.keys(base).filter((s) => App.WORDS[s] && wordText(App.WORDS[s]) !== base[s]);
+// Ctrl+Z / Ctrl+Y (or Ctrl+Shift+Z) undo and redo every change. While typing in a field, Ctrl+Z there first takes
+// back the letters, like anywhere else.
+const undo = [], redo = [];
+// 🔇 in the bar: no sound while editing (remembered in this browser; students always have sound).
+const SILENT = 'rv-edit-mute';
+let silent = false;
+try { silent = localStorage.getItem(SILENT) === '1'; } catch (e) {}
 let msg = '', bad = false, sureT = 0, more = false;
 
 /* ---------- GitHub ---------- */
@@ -61,17 +70,18 @@ const indexText = (list) => `[\n${list.map((x) => `  ${JSON.stringify(x)}`).join
 async function save(){
   if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
   if (!token) { more = true; say('Add the GitHub key first (it’s asked only once on this computer).', true); render(); return; }
-  if (!dirty.size) { say('Nothing to save.'); return; }
+  const todo = changed();
+  if (!todo.length) { say('Nothing to save: nothing has changed.'); return; }
   say('Saving…');
   try {
     const index = await readJSON(`${DIR}/index.json`).catch(() => App.INDEX.slice());
-    for (const slug of [...dirty]) {
-      const w = App.WORDS[slug];
-      await put(`${DIR}/${slug}.json`, wordText(w), `Real video clips: ${w.en || slug} (edited on the page)`);
+    for (const slug of todo) {
+      const w = App.WORDS[slug], text = wordText(w);
+      await put(`${DIR}/${slug}.json`, text, `Real video clips: ${w.en || slug} (edited on the page)`);
       const entry = {slug, en: w.en || slug, ua: w.ua || '', pic: w.pic || '', n: w.clips.filter((c) => !c.hidden).length};
       const i = index.findIndex((x) => x.slug === slug);
       if (i < 0) index.push(entry); else index[i] = entry;
-      dirty.delete(slug);
+      base[slug] = text;
     }
     index.sort((a, b) => a.en.localeCompare(b.en));
     await put(`${DIR}/index.json`, indexText(index), 'Real video clips: word list (edited on the page)');
@@ -100,12 +110,16 @@ App.toggleEdit = async () => {
   document.body.classList.toggle('editing', App.editing);
   $('etools').hidden = !App.editing; $('edit').hidden = true;
   setEditable(App.editing);
+  App.setSilent(App.editing && silent);
   if (App.editing && token) {
     // Edit the newest version (the live page can be a minute behind), unless there are unsaved changes.
     App.getJSON = (path) => readJSON(`${DIR}/${path}`);
     const w = App.word;
-    if (w && !dirty.has(w.slug)) {
-      try { App.WORDS[w.slug] = App.norm(await readJSON(`${DIR}/${w.slug}.json`), w.slug); await App.pick(w.slug, false); return; } catch (e) {}
+    if (w && !changed().includes(w.slug)) {
+      try {
+        App.WORDS[w.slug] = App.norm(await readJSON(`${DIR}/${w.slug}.json`), w.slug); delete base[w.slug];
+        await App.pick(w.slug, false); return;
+      } catch (e) {}
     }
   }
   if (App.word) {
@@ -115,13 +129,63 @@ App.toggleEdit = async () => {
   }
   render();
 };
-window.addEventListener('beforeunload', (e) => { if (dirty.size) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', (e) => { if (changed().length) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- undo and redo ---------- */
+// Called just before a change. Quick repeats of the same thing (typing in one field, several + taps) are one step.
+function remember(key){
+  const w = App.word; if (!w) return;
+  const now = Date.now(), last = undo[undo.length - 1];
+  if (key && last && last.key === key && last.slug === w.slug && now - last.t < 1500) { last.t = now; return; }
+  keep({slug: w.slug, text: wordText(w), clipN: App.clipN, key, t: now});
+}
+function keep(s){
+  if (!(s.slug in base)) base[s.slug] = s.text;
+  undo.push(s); if (undo.length > 300) undo.shift();
+  redo.length = 0;
+}
+// Typing: the word is noted when she clicks into a text, and kept as one undo step once she really types there.
+let focusN = 0, before = null;
+document.addEventListener('focusin', () => {
+  focusN++; const w = App.word;
+  before = App.editing && w ? {slug: w.slug, text: wordText(w), clipN: App.clipN, key: null, t: 0} : null;
+});
+function typed(){ if (before) { const s = before; before = null; keep(s); } }
+async function restore(s){
+  const w = App.WORDS[s.slug]; if (!w) return;
+  const o = JSON.parse(s.text);
+  for (const k of ['en', 'ua', 'pic', 'hl']) { if (k in o) w[k] = o[k]; else delete w[k]; }
+  w.clips = o.clips; App.norm(w, s.slug);
+  if (App.word !== w) await App.pick(s.slug, false);
+  App.clipN = Math.max(0, Math.min(s.clipN, App.list().length - 1));
+  App.renderCard(); App.renderChips(); App.sizeCaption(); App.showClip(false);
+  render();
+}
+function step(from, to, done){
+  const s = from.pop();
+  if (!s) { say(from === undo ? 'Nothing to undo.' : 'Nothing to redo.'); return; }
+  const w = App.WORDS[s.slug];
+  if (w) to.push({slug: s.slug, text: wordText(w), clipN: App.word === w ? App.clipN : s.clipN, key: null, t: 0});
+  say(done); restore(s);
+}
+document.addEventListener('keydown', (e) => {
+  if (!App.editing || !(e.ctrlKey || e.metaKey) || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k !== 'z' && k !== 'y') return;
+  // In a field, Ctrl+Z first takes back the typing there, the usual way.
+  const t = e.target;
+  if (t.isContentEditable || (t.closest && t.closest('input, textarea'))) return;
+  e.preventDefault();
+  if (k === 'z' && !e.shiftKey) step(undo, redo, 'Undone ↶ (Ctrl+Y brings it back)');
+  else step(redo, undo, 'Back again ↷');
+});
 
 /* ---------- the bar under the video, and ⋯ ---------- */
 function say(text, isBad){ msg = text; bad = !!isBad; const m = $('e-msg'); if (m) { m.textContent = msg; m.className = `msg${bad ? ' bad' : ''}`; } }
+const saveLabel = (n) => (n ? `Save (${n} word${n > 1 ? 's' : ''})` : 'Save');
 function touch(){
-  if (App.word) dirty.add(App.word.slug);
-  const b = $('e-save'); if (b) b.textContent = `Save (${dirty.size})`;
+  const b = $('e-save'), n = changed();
+  if (b) { b.textContent = saveLabel(n.length); b.title = n.length ? `Not saved yet: ${n.map((s) => App.WORDS[s].en || s).join(', ')}` : 'Nothing to save'; }
 }
 const r2 = (x) => Math.round(x * 100) / 100;
 const aroundText = (a) => (a || []).map((l) => `${l[0]} | ${l[1]} | ${l[2]}`).join('\n');
@@ -153,7 +217,8 @@ function render(){
     ${c ? `${timeBox('s', 'Start', c)}${timeBox('e', 'End', c)}
     <button class="btn" data-act="hide" aria-pressed="${!!c.hidden}">${c.hidden ? '🙈 Hidden' : '🙈 Hide'}</button>` : ''}
     <span class="right">
-      <button class="btn primary" id="e-save">Save (${dirty.size})</button>
+      <button class="btn" id="e-mute" aria-pressed="${silent}" aria-label="${silent ? 'Sound off while editing' : 'Sound on'}" title="${silent ? 'Sound off while editing' : 'Sound on'}">${silent ? '🔇' : '🔊'}</button>
+      <button class="btn primary" id="e-save">${saveLabel(changed().length)}</button>
       <button class="btn" id="e-more" aria-expanded="${more}" aria-label="More" title="More">⋯</button>
       <button class="btn" id="e-exit" aria-label="Leave edit mode" title="Leave edit mode">✕</button>
     </span>
@@ -187,7 +252,7 @@ App.newWord = (text) => {
   if (!slug) return;
   if (App.INDEX.some((x) => x.slug === slug) || App.WORDS[slug]) { App.pick(slug, false); return; }
   App.WORDS[slug] = App.norm({en: text, ua: '', pic: '', clips: []}, slug);
-  dirty.add(slug);
+  base[slug] = '';   // new: counts as changed until it is saved
   say(`New word “${text}”: type its Ukrainian and an emoji on the card, add clips (⋯), then save.`);
   App.pick(slug, false);
 };
@@ -203,8 +268,9 @@ document.addEventListener('focusin', (e) => { if (App.editing && inCap(e.target)
 document.addEventListener('input', (e) => {
   if (!App.editing) return;
   const t = e.target, w = App.word, c = App.clip();
-  if (inCap(t) && t.isContentEditable) { if (c) { App.setShownLine(t.textContent.replace(/\s+/g, ' ').trim()); touch(); } return; }
+  if (inCap(t) && t.isContentEditable) { if (c) { typed(); App.setShownLine(t.textContent.replace(/\s+/g, ' ').trim()); touch(); } return; }
   if (!t.isContentEditable || !FIELDS.includes(t.id) || !w) return;
+  typed();
   const v = t.textContent.replace(/\s+/g, ' ').trim();
   if (t.id === 'note') { if (c) { c[App.NOTES === 'ua' ? 'noteUa' : 'note'] = v; touch(); } return; }
   w[t.id] = v; App.norm(w, w.slug); App.renderChips(); touch();
@@ -235,6 +301,7 @@ const zone = (t) => t.closest && t.closest('#etools, #edit');
 document.addEventListener('input', (e) => {
   const t = e.target; if (!App.editing || !zone(t)) return;
   const w = App.word, c = App.clip();
+  if ((t.dataset.w && w) || (t.dataset.c && c)) typed();
   if (t.dataset.w && w) {
     w[t.dataset.w] = t.value.trim() ? t.value : '';
     App.norm(w, w.slug); App.renderChips(); App.refresh(); touch();
@@ -251,6 +318,10 @@ document.addEventListener('click', (e) => {
   const w = App.word, c = App.clip();
   if (b.id === 'e-save') save();
   else if (b.id === 'e-exit') App.toggleEdit();
+  else if (b.id === 'e-mute') {
+    silent = !silent; try { localStorage.setItem(SILENT, silent ? '1' : '0'); } catch (err) {}
+    App.setSilent(silent); render();
+  }
   else if (b.id === 'e-more') { more = !more; render(); }
   else if (b.id === 'e-token-save') {
     token = $('e-token').value.trim();
@@ -264,6 +335,7 @@ document.addEventListener('click', (e) => {
   else if (b.id === 'e-add') {
     const p = parseLink($('e-link').value);
     if (!p) { say('That doesn’t look like a YouTube link.', true); return; }
+    remember(null);
     const nc = {v: p.v, s: p.s, e: r2(p.s + 2), line: '', note: ''};
     const i = c ? w.clips.indexOf(c) + 1 : w.clips.length;
     w.clips.splice(i, 0, nc); App.clipN = App.list().indexOf(nc);
@@ -274,21 +346,27 @@ document.addEventListener('click', (e) => {
     if (b.dataset.act === 'up' || b.dataset.act === 'down') {
       const j = i + (b.dataset.act === 'up' ? -1 : 1);
       if (j < 0 || j >= w.clips.length) return;
+      remember(null);
       [w.clips[i], w.clips[j]] = [w.clips[j], w.clips[i]];
       App.clipN = App.list().indexOf(c); touch(); App.showClip(false);
     } else if (b.dataset.act === 'hide') {
+      remember(null);
       c.hidden = !c.hidden; touch();
       say(c.hidden ? 'Hidden: students won’t see this clip (after you save).' : 'Shown to students again (after you save).');
       render();
     } else if (b.dataset.act === 'del') {
       if (Date.now() - sureT > 3000) { sureT = Date.now(); b.textContent = 'Sure? Tap again'; return; }
-      w.clips.splice(i, 1); App.clipN = Math.max(0, i - 1); touch(); say('Clip deleted (save to keep it that way).');
+      remember(null);
+      w.clips.splice(i, 1); App.clipN = Math.max(0, i - 1); touch(); say('Clip deleted (Ctrl+Z brings it back; save to keep it that way).');
       App.showClip(false);
     }
   } else if (b.dataset.now && c) {
+    remember(null);
     c[b.dataset.now] = r2(App.now()); touch(); App.refresh(); render();
   } else if (b.dataset.nudge && c) {
-    const [f, d] = b.dataset.nudge.split(':'); c[f] = r2(c[f] + parseFloat(d)); touch(); App.refresh();
+    const [f, d] = b.dataset.nudge.split(':');
+    remember(`nudge-${f}`);
+    c[f] = r2(c[f] + parseFloat(d)); touch(); App.refresh();
     const inp = $('etools').querySelector(`[data-c="${f}"]`); if (inp) inp.value = c[f];
     replay(f);
   }
