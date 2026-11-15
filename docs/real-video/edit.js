@@ -170,8 +170,9 @@ function step(from, to, done){
 }
 document.addEventListener('keydown', (e) => {
   if (!App.editing || !(e.ctrlKey || e.metaKey) || e.altKey) return;
-  const k = e.key.toLowerCase();
-  if (k !== 'z' && k !== 'y') return;
+  // The key itself (KeyZ), not the letter: with the Ukrainian layout on, Ctrl+Z gives "я".
+  const k = e.code === 'KeyZ' ? 'z' : e.code === 'KeyY' ? 'y' : '';
+  if (!k) return;
   // In a field, Ctrl+Z first takes back the typing there, the usual way.
   const t = e.target;
   if (t.isContentEditable || (t.closest && t.closest('input, textarea'))) return;
@@ -207,8 +208,14 @@ function parseLink(text){
   return {v, s};
 }
 
+// Times show like on YouTube, minutes:seconds to a tenth (48:54.3); she can type them that way too (or in seconds).
+const fmt = (t) => { const x = Math.round(t * 10) / 10, m = Math.floor(x / 60); return `${m}:${(x - m * 60).toFixed(1).padStart(4, '0')}`; };
+const parseT = (v) => {
+  const p = String(v).trim().replace(',', '.').split(':').map((x) => (x.trim() === '' ? NaN : Number(x)));
+  return p.some(isNaN) ? NaN : p.reduce((a, x) => a * 60 + x, 0);
+};
 const timeBox = (f, name, c) => `<span class="etime"><span class="lbl">${name}</span>
-  <button data-nudge="${f}:-0.1" aria-label="${name} 0.1 s earlier">−</button><input type="number" step="0.01" data-c="${f}" value="${c[f]}" aria-label="${name} (seconds)"><button data-nudge="${f}:0.1" aria-label="${name} 0.1 s later">+</button><button data-now="${f}" title="Where the video is now" aria-label="${name} where the video is now">⏱</button></span>`;
+  <button data-nudge="${f}:-0.1" aria-label="${name} 0.1 s earlier">−</button><input type="text" inputmode="decimal" data-t="${f}" value="${fmt(c[f])}" aria-label="${name} (minutes:seconds)"><button data-nudge="${f}:0.1" aria-label="${name} 0.1 s later">+</button><button data-now="${f}" title="Where the video is now" aria-label="${name} where the video is now">⏱</button></span>`;
 function render(){
   if (!App.editing) return;
   const w = App.word, L = App.list(), c = App.clip();
@@ -307,12 +314,19 @@ document.addEventListener('input', (e) => {
     App.norm(w, w.slug); App.renderChips(); App.refresh(); touch();
   } else if (t.dataset.c && c) {
     const f = t.dataset.c;
-    if (f === 's' || f === 'e') { const v = parseFloat(t.value); if (!isNaN(v)) c[f] = v; }
-    else if (f === 'around') c.around = parseAround(t.value);
+    if (f === 'around') c.around = parseAround(t.value);
     else c[f] = t.value;
     App.refresh(); touch();
   }
 });
+// A typed time counts when she leaves the box or presses Enter (48:54.3, or seconds).
+document.addEventListener('change', (e) => {
+  const t = e.target, c = App.clip(); if (!App.editing || !t.dataset || !t.dataset.t || !c) return;
+  const v = parseT(t.value), f = t.dataset.t;
+  if (isNaN(v) || v < 0) { say('Type the time like 48:54.3', true); t.value = fmt(c[f]); return; }
+  remember(null); c[f] = r2(v); t.value = fmt(c[f]); touch(); App.refresh(); replay(f);
+});
+document.addEventListener('keydown', (e) => { if (App.editing && e.key === 'Enter' && e.target.dataset && e.target.dataset.t) e.target.blur(); });
 document.addEventListener('click', (e) => {
   const b = e.target.closest && e.target.closest('button'); if (!b || !App.editing || !zone(b)) return;
   const w = App.word, c = App.clip();
@@ -367,7 +381,7 @@ document.addEventListener('click', (e) => {
     const [f, d] = b.dataset.nudge.split(':');
     remember(`nudge-${f}`);
     c[f] = r2(c[f] + parseFloat(d)); touch(); App.refresh();
-    const inp = $('etools').querySelector(`[data-c="${f}"]`); if (inp) inp.value = c[f];
+    const inp = $('etools').querySelector(`[data-t="${f}"]`); if (inp) inp.value = fmt(c[f]);
     replay(f);
   }
 });

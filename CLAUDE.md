@@ -171,7 +171,7 @@ huggingface.co, about 15 min per hour of audio).
     `?words` it shows the whole library; the search box finds any word in it.
   - **She edits it herself** on the page: 5 quick taps in the top-left corner open edit mode, where everything is
     edited where it is: she clicks the caption (with context: the line shown), the word, its Ukrainian, its emoji or
-    the 💡 note and types; a small bar under the video has Start / End (− / + 0.1 s, then that bit plays again; ⏱ =
+    the 💡 note and types; a small bar under the video has Start / End (minutes:seconds; − / + 0.1 s, then that bit plays again; ⏱ =
     where the video is now), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
     that really changed) and ⋯ (move, delete, add a clip by pasting a YouTube link with a time, lines around with their
     times, the note in the other language, other forms to highlight, the GitHub key). Ctrl+Z / Ctrl+Y undo and redo
