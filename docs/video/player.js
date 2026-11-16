@@ -681,7 +681,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (API.toggleEdit) { API.toggleEdit(); return; }
-  const sc = document.createElement('script'); sc.src = '../video/edit.js'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
+  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=2'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
 };
 
 renderCard(); newRange(); loadCaptions();

@@ -139,7 +139,9 @@ huggingface.co, about 15 min per hour of audio).
   makes a new screen), types right on the card (word, Ukrainian, examples with Ctrl+B for the gap word, note, meaning),
   ✕ a word, 🗑 a screen, sets Start / End of a line or part under the video, 🔇, Ctrl+Z / Ctrl+Y, and Save commits
   lesson.json to this branch with her GitHub key. So `git pull --rebase` before touching a lesson.json, and never
-  overwrite her edits. A lesson.json keeps one line per screen (that is how the page saves it).
+  overwrite her edits. A lesson.json keeps one line per screen (that is how the page saves it). Browsers keep
+  player.js for up to 10 minutes: when a change needs the new player and the new pages together, bump `?v=` on
+  player.js / player.css in every `docs/<lesson>/index.html`.
   Every word under the video is tappable for its Ukrainian; a tap on any word of a phrase (listen to, a key or
   `later` phrase) underlines and translates the whole phrase; words left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
