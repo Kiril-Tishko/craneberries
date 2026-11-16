@@ -25,7 +25,7 @@ const undo = [], redo = [];
 const SILENT = 'rv-edit-mute';
 let silent = false;
 try { silent = localStorage.getItem(SILENT) === '1'; } catch (e) {}
-let msg = '', bad = false, sureT = 0, more = false;
+let msg = '', bad = false, sureT = 0, more = false, leaving = false;
 
 /* ---------- GitHub ---------- */
 const b64 = (s) => { let bin = ''; new TextEncoder().encode(s).forEach((b) => { bin += String.fromCharCode(b); }); return btoa(bin); };
@@ -93,9 +93,44 @@ async function save(){
   render();
 }
 
+/* ---------- ↻ make again (../video/remake.js, loaded the first time) ---------- */
+const rmkBtn = (kind) => `<button class="rmk-btn" data-rmk="${kind}" title="Make again with Claude" aria-label="Make again with Claude">↻</button>`;
+const remake = () => (window.Remake ? Promise.resolve(window.Remake) : new Promise((res, rej) => {
+  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=1';
+  sc.onload = () => res(window.Remake); sc.onerror = () => rej(new Error('load')); document.head.appendChild(sc);
+}));
+function openRemake(b){
+  const w = App.word, c = App.clip(), kind = b.dataset.rmk, nf = App.NOTES === 'ua' ? 'noteUa' : 'note';
+  if (!w || (kind === 'note' && !c)) return;
+  remake().then((R) => R.open(b, {
+    page: 'clip', kind, lang: App.NOTES, label: kind === 'ua' ? 'Ukrainian' : 'Note',
+    en: w.en || '', ua: w.ua || '', line: c ? c.line || '' : '',
+    around: c && c.around ? c.around.map((l) => l[2]).join(' / ') : '',
+    now: kind === 'ua' ? w.ua || '' : c[nf] || ''
+  }, (t) => {
+    remember(null);
+    if (kind === 'ua') { w.ua = t; App.renderCard(); App.renderChips(); } else { c[nf] = t; App.refresh(); }
+    touch(); say('Changed. Ctrl+Z brings the old one back.');
+  })).catch(() => say('The ↻ tool didn’t load. Reload the page.', true));
+}
+// Throw away what isn't saved: every changed word goes back to how it was loaded or last saved.
+function discard(){
+  for (const slug of changed()) {
+    const w = App.WORDS[slug];
+    if (!base[slug]) { delete App.WORDS[slug]; delete base[slug]; continue; }
+    const o = JSON.parse(base[slug]);
+    for (const k of Object.keys(w)) if (k !== 'slug' && k !== 're') delete w[k];
+    Object.assign(w, o); App.norm(w, slug);
+  }
+  undo.length = 0; redo.length = 0;
+}
+
 /* ---------- turning edit mode on and off ---------- */
 const FIELDS = ['en', 'ua', 'pic', 'note'];   // the card's text you can click and type in
 function setEditable(on){
+  // ↻ make again (Claude writes another version) beside the Ukrainian and the note.
+  document.querySelectorAll('.card .rmk-btn').forEach((x) => x.remove());
+  if (on) { $('ua').insertAdjacentHTML('afterend', rmkBtn('ua')); $('note').insertAdjacentHTML('afterend', rmkBtn('note')); }
   for (const id of FIELDS) {
     const el = $(id);
     if (!on) { el.removeAttribute('contenteditable'); continue; }
@@ -118,7 +153,11 @@ App.toggleEdit = async () => {
     if (w && !changed().includes(w.slug)) {
       try {
         App.WORDS[w.slug] = App.norm(await readJSON(`${DIR}/${w.slug}.json`), w.slug); delete base[w.slug];
-        await App.pick(w.slug, false); return;
+        await App.pick(w.slug, false);
+        // Stay on the clip that was open (picking the word again starts at its first clip).
+        const L = App.list(), i = keep ? L.findIndex((c) => c.v === keep.v && Math.abs(c.s - keep.s) < 0.05) : -1;
+        if (i > 0) { App.clipN = i; App.showClip(false); }
+        render(); return;
       } catch (e) {}
     }
   }
@@ -229,6 +268,8 @@ function render(){
       <button class="btn" id="e-more" aria-expanded="${more}" aria-label="More" title="More">⋯</button>
       <button class="btn" id="e-exit" aria-label="Leave edit mode" title="Leave edit mode">✕</button>
     </span>
+    ${leaving ? `<div class="msg"><b>Not saved yet.</b> <button class="btn primary" id="e-leave-save">Save and leave</button>
+      <button class="btn" id="e-leave-drop">Throw the changes away</button> <button class="btn" id="e-leave-stay">Keep editing</button></div>` : ''}
     <div class="msg${bad ? ' bad' : ''}" id="e-msg">${esc(msg)}</div>`;
   $('edit').hidden = !more;
   if (!more) { $('edit').innerHTML = ''; return; }
@@ -339,10 +380,20 @@ document.addEventListener('change', (e) => {
 });
 document.addEventListener('keydown', (e) => { if (App.editing && e.key === 'Enter' && e.target.dataset && e.target.dataset.t) e.target.blur(); });
 document.addEventListener('click', (e) => {
-  const b = e.target.closest && e.target.closest('button'); if (!b || !App.editing || !zone(b)) return;
+  const b = e.target.closest && e.target.closest('button'); if (!b || !App.editing) return;
+  if (b.dataset.rmk) { openRemake(b); return; }
+  if (!zone(b)) return;
   const w = App.word, c = App.clip();
   if (b.id === 'e-save') save();
-  else if (b.id === 'e-exit') App.toggleEdit();
+  // Leaving with changes that aren't saved asks first: save them, throw them away, or stay.
+  else if (b.id === 'e-exit') { if (changed().length) { leaving = true; render(); } else App.toggleEdit(); }
+  else if (b.id === 'e-leave-stay') { leaving = false; render(); }
+  else if (b.id === 'e-leave-save') { leaving = false; save().then(() => { if (!changed().length) App.toggleEdit(); else render(); }); }
+  else if (b.id === 'e-leave-drop') {
+    leaving = false; discard(); say('');
+    if (App.word && !App.WORDS[App.word.slug] && App.INDEX[0]) App.pick(App.INDEX[0].slug, false);
+    App.toggleEdit();
+  }
   else if (b.id === 'e-mute') {
     silent = !silent; try { localStorage.setItem(SILENT, silent ? '1' : '0'); } catch (err) {}
     App.setSilent(silent); render();

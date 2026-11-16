@@ -20,7 +20,7 @@ try { token = localStorage.getItem(KEY) || ''; } catch (e) {}
 const SILENT = 'song-edit-mute';
 let silent = false;
 try { silent = localStorage.getItem(SILENT) === '1'; } catch (e) {}
-let msg = '', bad = false, askKey = false, sureT = 0, pop = null, selAt = 0;
+let msg = '', bad = false, askKey = false, sureT = 0, pop = null, selAt = 0, leaving = false;
 const r2 = (x) => Math.round(x * 100) / 100;
 const clean = (t) => t.replace(/\s+/g, ' ').trim();
 
@@ -159,6 +159,8 @@ function render(){
     </span>
     ${askKey && !token ? `<div class="keyrow"><input id="e-token" type="password" autocomplete="off" placeholder="GitHub key (github_pat_…)">
       <button class="btn" id="e-token-save">Keep it</button></div>` : ''}
+    ${leaving ? `<div class="keyrow"><b>Not saved yet.</b><button class="btn primary" id="e-leave-save">Save and leave</button>
+      <button class="btn" id="e-leave-drop">Throw the changes away</button><button class="btn" id="e-leave-stay">Keep editing</button></div>` : ''}
     <div class="msg${bad ? ' bad' : ''}" id="e-msg">${esc(msg)}</div>`;
 }
 // A line is at most 30 s and a part 3 minutes; Start stays before End. Anything else is refused, with the reason.
@@ -191,7 +193,31 @@ document.addEventListener('change', (e) => {
   if (!isNaN(v) && !raw.includes(':')) v += Math.floor(o[f] / 60) * 60;
   setTime(f, v, null);
 });
-document.addEventListener('keydown', (e) => { if (P.editing && e.key === 'Enter' && e.target.dataset && (e.target.dataset.t || e.target.id === 'ep-ua')) e.target.blur(); });
+document.addEventListener('keydown', (e) => { if (P.editing && e.key === 'Enter' && e.target.dataset && (e.target.dataset.t || e.target.id === 'ep-ua')) { e.preventDefault(); e.target.blur(); } });
+
+/* ---------- ↻ make again: Claude writes another version (remake.js, loaded the first time) ---------- */
+const rmkBtn = (kind, k, j) => `<button class="rmk-btn" data-rmk="${kind}"${k != null ? ` data-k="${k}"` : ''}${j != null ? ` data-j="${j}"` : ''} title="Make again with Claude" aria-label="Make again with Claude">↻</button>`;
+const remake = () => (window.Remake ? Promise.resolve(window.Remake) : new Promise((res, rej) => {
+  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=1';
+  sc.onload = () => res(window.Remake); sc.onerror = () => rej(new Error('load')); document.head.appendChild(sc);
+}));
+const lineText = (s) => P.lines().filter((l) => l.t >= s.start - 0.3 && l.t < s.end - 0.3).map((l) => l.text).join(' / ');
+const onlyEm = (t) => t.replace(/<(?!\/?em>)[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+function openRemake(b, s, o){
+  const kind = b.dataset.rmk, k = b.dataset.k != null ? +b.dataset.k : null, j = b.dataset.j != null ? +b.dataset.j : null;
+  const w = k != null ? o.words[k] : null;
+  const now = kind === 'ua' ? w[1] : kind === 'example' ? w[2 + j] : o[kind] || '';
+  remake().then((R) => R.open(b, {
+    page: 'song', kind, title: L.title, line: lineText(s), now,
+    label: {ua: 'Ukrainian', example: 'Example', note: 'Note', meaning: 'What the line means'}[kind],
+    en: w ? w[0] : o.words.map((x) => x[0]).join(', '), ua: w ? w[1] : '',
+    avoid: kind === 'example' ? w.slice(2).filter((x, n) => n !== j) : []
+  }, (t) => {
+    remember(null);
+    if (kind === 'ua') w[1] = t; else if (kind === 'example') w[2 + j] = onlyEm(t); else o[kind] = t;
+    P.quiet(); P.redraw(); touch(); say('Changed. Ctrl+Z brings the old one back.');
+  })).catch(() => say('The ↻ tool didn’t load. Reload the page.', true));
+}
 
 /* ---------- the card: type right in it ---------- */
 const ed = (el, ph, plain) => {
@@ -208,13 +234,16 @@ function decorate(s){
     const en = row.querySelector('.en'), ua = row.querySelector('.ua');
     Object.assign(en.dataset, {f: 'en', k}); ed(en, 'word', true);
     Object.assign(ua.dataset, {f: 'ua', k}); ed(ua, 'Українською', true);
+    ua.insertAdjacentHTML('afterend', rmkBtn('ua', k));
     row.querySelectorAll('.ex').forEach((p) => p.remove());
-    w.slice(2).forEach((x, j) => row.insertAdjacentHTML('beforeend', `<p class="ex" data-f="ex" data-k="${k}" data-j="${j}">${x}</p>`));
+    w.slice(2).forEach((x, j) => row.insertAdjacentHTML('beforeend', `<p class="ex" data-f="ex" data-k="${k}" data-j="${j}">${x}</p>${rmkBtn('example', k, j)}`));
     row.querySelectorAll('.ex').forEach((p) => ed(p, 'An example: select the word, then Ctrl+B', false));
     row.insertAdjacentHTML('beforeend', `<div class="wtools"><button data-wadd="${k}">+ Example</button><button data-wdel="${k}">✕ Don’t learn</button></div>`);
   });
   card.querySelectorAll('.tip').forEach((x) => x.remove());
-  card.insertAdjacentHTML('beforeend', `<div class="tip"><div class="note" id="note"><p data-f="note">${esc(line.note || '')}</p><p class="meaning" data-f="meaning">${esc(line.meaning || '')}</p></div></div>`);
+  card.insertAdjacentHTML('beforeend', `<div class="tip"><div class="note" id="note">
+    <div class="nrow"><p data-f="note">${esc(line.note || '')}</p>${rmkBtn('note')}</div>
+    <div class="nrow"><p class="meaning" data-f="meaning">${esc(line.meaning || '')}</p>${rmkBtn('meaning')}</div></div></div>`);
   ed(card.querySelector('[data-f="note"]'), '💡 Note: something easy to miss (optional)', true);
   ed(card.querySelector('[data-f="meaning"]'), 'What the line means (optional)', true);
 }
@@ -247,7 +276,8 @@ document.addEventListener('keydown', (e) => {
 const base = (t) => P.base(t);
 const enOf = (ph) => (/^I(\b|’)/.test(ph) ? ph : ph[0].toLowerCase() + ph.slice(1));
 const partAt = (T) => P.parts().find((p) => T >= p.start - 0.3 && T < p.end - 0.1);
-function stateOf(ph){
+// pl: where a single tapped word is in its line, so a grammar word gets the note for this line.
+function stateOf(ph, pl){
   const b = base(ph);
   for (const p of P.parts()) for (const l of p.lines) {
     const k = (l.hl || []).findIndex((h) => base(h) === b);
@@ -255,18 +285,20 @@ function stateOf(ph){
   }
   const lt = (L.later || []).find(([x]) => base(x) === b);
   if (lt) return {state: 'later', ua: lt[1]};
-  return {state: 'none', ua: /\s/.test(ph) ? '' : P.lookup(ph)};
+  if (/\s/.test(ph)) return {state: 'none', ua: ''};
+  const gi = P.glossInfo(ph, pl ? pl.line : null, pl ? pl.at : null);
+  return {state: 'none', ua: gi.value, gi};
 }
 function closePop(){ const x = $('epop'); if (x) x.remove(); pop = null; }
-function openPop(phrase, T, rect){
+function openPop(phrase, T, rect, pl){
   closePop();
   if (!phrase) return;
-  const st = stateOf(phrase);
+  const st = stateOf(phrase, pl);
   pop = {phrase, T, ...st};
   const hint = {learn: 'Learned: yellow, with its own screen and in My words.', later: 'Tapping it says “вивчимо пізніше”.', none: 'A plain word: a tap shows the Ukrainian above.'}[st.state];
   document.body.insertAdjacentHTML('beforeend', `<div class="epop" id="epop" role="dialog" aria-label="${esc(phrase)}">
     <b>${esc(phrase)}</b>
-    <input id="ep-ua" value="${esc(st.ua)}" placeholder="Українською" spellcheck="false" autocomplete="off">
+    <textarea id="ep-ua" rows="${st.ua.length > 40 ? 3 : 1}" placeholder="Українською (or why the word is there)" spellcheck="false">${esc(st.ua)}</textarea>
     <div class="seg" id="ep-state">${[['learn', '⭐ Learn'], ['later', 'Later'], ['none', '—']].map(([v, t]) => `<button data-st="${v}" aria-pressed="${st.state === v}">${t}</button>`).join('')}</div>
     <small>${hint}</small></div>`);
   const el = $('epop'), w = el.offsetWidth, h = el.offsetHeight;
@@ -303,7 +335,7 @@ document.addEventListener('click', (e) => {
   e.stopPropagation(); e.preventDefault();
   if (Date.now() - selAt < 400) return;   // the end of a drag across a phrase
   const box = w.closest('mark') || w.closest('.ph') || w, cap = w.closest('.cap');
-  openPop(clean(box.textContent), +cap.dataset.t, box.getBoundingClientRect());
+  openPop(clean(box.textContent), +cap.dataset.t, box.getBoundingClientRect(), box === w ? P.placeOf(w) : null);
 }, true);
 document.addEventListener('click', (e) => {
   if (!P.editing || !pop || Date.now() - selAt < 400) return;
@@ -351,7 +383,12 @@ function setUa(v){
   remember(null);
   if (pop.state === 'learn') P.parts().forEach((p) => p.lines.forEach((l) => (l.hl || []).forEach((h, k) => { if (base(h) === b && l.words[k]) l.words[k][1] = v; })));
   else if (pop.state === 'later') (L.later || []).forEach((x) => { if (base(x[0]) === b) x[1] = v; });
-  else if (!/\s/.test(pop.phrase)) { const key = b.replace(/^’+|’+$/g, ''); if (v) L.gloss[key] = v; else delete L.gloss[key]; }
+  else if (!/\s/.test(pop.phrase)) {
+    // A word with notes for different lines changes only the note for this line.
+    const gi = pop.gi || P.glossInfo(pop.phrase), g = L.gloss[gi.key];
+    if (g && typeof g === 'object') { if (v) g[gi.ctx || '*'] = v; else delete g[gi.ctx || '*']; }
+    else if (v) L.gloss[gi.key] = v; else delete L.gloss[gi.key];
+  }
   else { undo.pop(); pop.ua = v; return; }   // a plain phrase has no Ukrainian of its own: it's kept for Learn / Later
   pop.ua = v; P.quiet(); P.redraw(); touch(); say('Ukrainian changed.');
 }
@@ -364,8 +401,16 @@ document.addEventListener('click', (e) => {
   const s = P.step(), o = P.objOf(s);
   if (b.dataset.st) { const v = $('ep-ua'); if (v && pop && clean(v.value) !== pop.ua && pop.state !== 'none') setUa(clean(v.value)); setState(b.dataset.st); return; }
   if (!b.closest('#etools, #card')) return;
+  if (b.dataset.rmk && s.kind === 'line') { openRemake(b, s, o); return; }
   if (b.id === 'e-save') save();
-  else if (b.id === 'e-exit') P.toggleEdit();
+  // Leaving with changes that aren't saved asks first: save them, throw them away, or stay.
+  else if (b.id === 'e-exit') { if (changed()) { leaving = true; render(); } else P.toggleEdit(); }
+  else if (b.id === 'e-leave-stay') { leaving = false; render(); }
+  else if (b.id === 'e-leave-save') { leaving = false; save().then(() => { if (!changed()) P.toggleEdit(); else render(); }); }
+  else if (b.id === 'e-leave-drop') {
+    leaving = false; load(JSON.parse(saved)); undo.length = 0; redo.length = 0; closePop();
+    P.rebuild(); say(''); P.toggleEdit();
+  }
   else if (b.id === 'e-mute') {
     silent = !silent; try { localStorage.setItem(SILENT, silent ? '1' : '0'); } catch (err) {}
     P.setSilent(silent); render();

@@ -321,9 +321,27 @@ function learnWords(){
   if (s.kind === 'all') return PARTS[s.pn].lines.flatMap((l) => l.words);
   const d = dict[pr.n]; return d ? [[d.en, d.ua || '']] : [];
 }
-function lookup(w){
-  const k = base(w).replace(/^’+|’+$/g, '');
-  return GLOSS[k] || GLOSS[k.replace(/’s$/, '')] || '';
+// A word's Ukrainian. A word can say different things in different lines (above all grammar words: why "are" or
+// "the" is there): then its gloss is {"*": usual, "<words around it in a line>": for that line}, and the words
+// around the tapped one decide (line = the caption's text, at = where the tapped word starts in it).
+function glossInfo(w, line, at){
+  let key = base(w).replace(/^’+|’+$/g, '');
+  if (GLOSS[key] == null && GLOSS[key.replace(/’s$/, '')] != null) key = key.replace(/’s$/, '');
+  const v = GLOSS[key];
+  if (v == null || typeof v === 'string') return {key, ctx: null, value: v || ''};
+  if (line != null) {
+    for (const [ctx, t] of Object.entries(v)) {
+      if (ctx !== '*' && find(line, [ctx]).some(([a, b]) => at == null || (at >= a && at < b))) return {key, ctx, value: t};
+    }
+  }
+  return {key, ctx: '*', value: v['*'] || ''};
+}
+const lookup = (w, line, at) => glossInfo(w, line, at).value;
+// Where a tapped word starts in its caption line.
+function placeOf(el){
+  const cap = el.closest('.cap'); if (!cap) return {line: null, at: null};
+  const r = document.createRange(); r.selectNodeContents(cap); r.setEndBefore(el);
+  return {line: cap.textContent, at: r.toString().length};
 }
 // A tapped word: inside a key phrase → that phrase; inside a "later" phrase → it, marked for later; else the word.
 function glossOf(el){
@@ -341,7 +359,7 @@ function glossOf(el){
   };
   if (el.dataset.key != null) return phrase(KEYS[+el.dataset.key], false);
   if (el.dataset.later != null) return phrase(LATER[+el.dataset.later], true);
-  const ua = lookup(el.textContent);
+  const {line, at} = placeOf(el), ua = lookup(el.textContent, line, at);
   return ua ? {en: el.textContent, ua} : null;
 }
 function hidePop(){ $('pop').hidden = true; document.querySelectorAll('.cap .on').forEach((x) => x.classList.remove('on')); }
@@ -350,7 +368,10 @@ function showPop(el){
   hidePop();
   if (!g) return;
   const r = el.getBoundingClientRect(), p = $('pop');
-  p.innerHTML = `<b>${esc(g.en)}</b><span class="pua">${esc(g.ua)}</span>${g.later ? `<small>${esc(LATER_TEXT)}</small>` : ''}`;
+  // A short translation sits beside the word; a longer explanation (why a grammar word is there) goes under it.
+  const why = g.ua.length > 32;
+  p.innerHTML = `<b>${esc(g.en)}</b><span class="${why ? 'why' : 'pua'}">${esc(g.ua)}</span>${g.later ? `<small>${esc(LATER_TEXT)}</small>` : ''}`;
+  p.classList.toggle('long', why);
   p.hidden = false;
   const half = p.offsetWidth / 2 + 8;
   p.style.left = `${Math.min(innerWidth - half, Math.max(half, r.left + r.width / 2))}px`;
@@ -656,7 +677,7 @@ document.addEventListener('keyup', (e) => { if (!typing(e) && (e.code === 'Space
 // What a step is made from: its line (a line screen) or its part (All together).
 const objOf = (s) => (s.kind === 'line' ? PARTS[s.pn].lines[s.ln] : s.kind === 'all' ? PARTS[s.pn] : null);
 Object.assign(API, {
-  YTV, esc, base, find, lookup, objOf,
+  YTV, esc, base, find, lookup, glossInfo, placeOf, objOf,
   get i(){ return i; }, step: () => STEPS[i], steps: () => STEPS, parts: () => PARTS, lines: () => LINES,
   time: () => (media.canSeek() ? media.time() : 0),
   // After a change in the lesson's shape: build the steps again and show the step made from `keep` (else the same place).
@@ -681,7 +702,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (API.toggleEdit) { API.toggleEdit(); return; }
-  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=2'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
+  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=3'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
 };
 
 renderCard(); newRange(); loadCaptions();

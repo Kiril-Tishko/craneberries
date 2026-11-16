@@ -142,6 +142,16 @@ huggingface.co, about 15 min per hour of audio).
   overwrite her edits. A lesson.json keeps one line per screen (that is how the page saves it). Browsers keep
   player.js for up to 10 minutes: when a change needs the new player and the new pages together, bump `?v=` on
   player.js / player.css in every `docs/<lesson>/index.html`.
+  ✕ (leaving edit mode) with unsaved changes asks: save, throw them away, or keep editing (the clips page too).
+  **↻ Make again** (edit mode only, song pages and the clips page; `docs/video/remake.js`): beside each translation,
+  example, note and meaning; Claude (`claude-opus-5-5`, her own Anthropic API key, kept only in her browser) writes
+  another version; the current one and the new ones are listed, ↻ Another adds one more, a tap keeps one. Only that
+  short request is sent (the word, its Ukrainian, its line and the lines around it, the title, what to write): never
+  a chat, a student or a name.
+  **Grammar words** (a, the, is, are, do, did, to, of…): a tap says in short Ukrainian *why the word is there in that
+  line*, never "we don't translate it here". A word whose reason differs by line has a gloss object:
+  `"the": {"*": "usual note", "the Moskva": "note for this line", …}`: a key is words around it in a line, and the one
+  that contains the tapped word wins.
   Every word under the video is tappable for its Ukrainian; a tap on any word of a phrase (listen to, a key or
   `later` phrase) underlines and translates the whole phrase; words left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
@@ -182,7 +192,8 @@ huggingface.co, about 15 min per hour of audio).
     the 💡 note and types; a small bar under the video has Start / End (minutes:seconds; − / + 0.1 s, then that bit plays again; ⏱ =
     where the video is now), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
     that really changed) and ⋯ (move, delete, add a clip by pasting a YouTube link with a time, lines around with their
-    times, the note in the other language, other forms to highlight, the GitHub key). Ctrl+Z / Ctrl+Y undo and redo
+    times, the note in the other language, other forms to highlight, the GitHub key), ↻ beside the Ukrainian and the
+    note (Make again, above). Entering edit mode stays on the clip that was open. Ctrl+Z / Ctrl+Y undo and redo
     every change. "Save" commits to this branch with her own GitHub key (`?mute` plays without sound, for testing).
     Never test edit mode in a tab she might use: a test tab with unsaved changes can end up saved with her key. So `git pull --rebase` before touching the library, and
     never overwrite her edits.

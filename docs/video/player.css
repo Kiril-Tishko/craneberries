@@ -86,6 +86,8 @@ main.tall .video{aspect-ratio:auto;flex:1 1 0;min-height:240px}
   padding:8px 14px;font-size:17px;font-weight:600;max-width:min(360px,92vw);text-align:center;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .pop b{font-weight:800}
 .pop .pua{color:var(--word);margin-left:6px}
+.pop.long{text-align:left;width:min(340px,92vw)}
+.pop .why{display:block;margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:var(--word)}
 .pop small{display:block;font-size:13px;font-weight:400;opacity:.7;margin-top:2px}
 
 .tools{display:flex;align-items:center;gap:10px 12px;padding:10px 14px;background:var(--soft);border-top:1px solid var(--line)}
@@ -182,3 +184,11 @@ body.editing .w{position:relative}
 .epop .seg{display:flex}
 .epop .seg button{flex:1}
 .epop small{color:var(--muted);font-size:12px}
+.epop textarea{font:500 15px var(--font);line-height:1.4;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;resize:vertical}
+/* ↻ make again (remake.js): a small button beside each translation, example, note and meaning. */
+body.editing .w .ex{grid-column:1}
+.nrow{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px}
+.nrow p{flex:1;margin:0}
+/* ↻ make again: shown in edit mode only (remake.js opens the choices). */
+.rmk-btn{font-family:inherit;font-size:14px;font-weight:700;width:28px;height:28px;padding:0;border-radius:8px;border:1px dashed var(--line);background:transparent;color:var(--muted);cursor:pointer;align-self:center}
+.rmk-btn:hover{color:var(--accent);border-color:var(--accent)}
