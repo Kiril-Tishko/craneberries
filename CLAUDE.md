@@ -319,6 +319,9 @@ huggingface.co, about 15 min per hour of audio).
   - Kids' pages: tiny stories as one sentence per screen with a big picture (`P('story', en, ua, '', pic)`), then the
     whole story (`{t:'email', icon:'📖', label, lines}`) and yes / no questions about it; `P('draw', …)` gives a
     "🎨 Draw it!" screen. No wrong forms on kids' pages.
+    Moving pictures: `anim` on a screen with `pic` (hop, swim, fly, run, climb, dance, crawl). Games: `{t:'game', words:
+    [[word, emoji]…], rounds}` (listen, tap the word) and `{t:'quiz', q, pic, anim, opts:[[text, emoji]…], ans}` (tap
+    the answer: stars when right, a shake when wrong). Check them with `node tools/lesson-page/qa-play.js <work-dir>`.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
     (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`). When an emoji doesn't show the thing (🛒 is not a
     checkout), draw an SVG (`pic` and card `svg` take one; keep it on one line in content.js). Reusable drawings: `tools/pics/`.

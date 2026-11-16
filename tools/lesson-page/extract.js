@@ -16,5 +16,6 @@ for (const sec of SECTIONS) for (const s of sec.slides) {
   if (s.t === 'sound') { add(s.say, 'me'); s.words.forEach(([w]) => add(w, 'me')); }
   if (s.t === 'pair') { add(s.a.w, 'me'); add(s.b.w, 'me'); }
   if (s.t === 'game') s.words.forEach(([w]) => add(w, 'me'));
+  if (s.t === 'quiz') { add(s.q, 'them'); s.opts.forEach(([t]) => add(t, 'me')); }
 }
 console.log(JSON.stringify([...out.entries()]));

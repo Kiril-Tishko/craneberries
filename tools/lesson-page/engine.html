@@ -164,6 +164,27 @@ s.no{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-
   .sp{width:40px;height:40px;font-size:18px}
   .btn{padding:8px 14px}
 }
+/* Moving pictures for kids' pages: pic + anim on a screen */
+.pic.anim{display:inline-block}
+.anim-hop{animation:hop 1s ease-in-out infinite}
+.anim-swim{animation:swim 2.6s ease-in-out infinite alternate}
+.anim-fly{animation:fly 2.2s ease-in-out infinite alternate}
+.anim-run{animation:run 1.1s ease-in-out infinite alternate}
+.anim-climb{animation:climb 2.4s ease-in-out infinite alternate}
+.anim-dance{animation:dance .7s ease-in-out infinite alternate}
+.anim-crawl{animation:crawl 5s ease-in-out infinite alternate}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-30%) scale(.95,1.05)}55%{transform:translateY(-30%)}90%{transform:translateY(0) scale(1.08,.92)}}
+@keyframes swim{from{transform:translateX(-30%) rotate(-6deg)}to{transform:translateX(30%) rotate(6deg)}}
+@keyframes fly{0%{transform:translate(-30%,12%)}50%{transform:translate(0,-18%)}100%{transform:translate(30%,10%)}}
+@keyframes run{from{transform:translateX(-35%)}to{transform:translateX(35%)}}
+@keyframes climb{from{transform:translateY(18%) rotate(-4deg)}to{transform:translateY(-18%) rotate(4deg)}}
+@keyframes dance{from{transform:rotate(-14deg) scale(.95)}to{transform:rotate(14deg) scale(1.08)}}
+@keyframes crawl{from{transform:translateX(-25%)}to{transform:translateX(25%)}}
+/* Games: a star burst on a right answer, a shake on a wrong one */
+.burst{position:fixed;pointer-events:none;font-size:28px;z-index:9;animation:burst .9s ease-out forwards}
+@keyframes burst{from{transform:translate(-50%,0) scale(.6);opacity:1}to{transform:translate(calc(-50% + var(--dx)),-110px) scale(1.25);opacity:0}}
+.word.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -222,6 +243,15 @@ function play(text, done){
   if (done) setTimeout(done, 1800);
 }
 function say(text){ stopAll(); play(text); }
+function burst(el){   // a few stars fly up from a right answer (fixed position: nothing on the card moves)
+  const r = el.getBoundingClientRect();
+  ['⭐', '🎉', '✨', '⭐', '✨'].forEach((t, n) => {
+    const b = document.createElement('span'); b.className = 'burst'; b.textContent = t;
+    b.style.left = (r.left + r.width / 2) + 'px'; b.style.top = (r.top - 10) + 'px';
+    b.style.setProperty('--dx', ((n - 2) * 34) + 'px'); b.style.animationDelay = (n * 60) + 'ms';
+    document.body.appendChild(b); setTimeout(() => b.remove(), 1300);
+  });
+}
 function playAll(lines){
   stopAll(); queue = lines.slice();
   const next = () => { const t = queue.shift(); if (t) setTimeout(() => play(t, next), 350); };
@@ -241,7 +271,7 @@ const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in 
 function view(s){
   if (s.t === 'phrase') return `
     <div class="who ${s.who === 'hear' || s.who === 'read' ? 'hear' : ''}">${{hear:'👂 You hear', read:'📩 You read', write:'✍️ You write', story:'📖 Story', draw:'🎨 Draw it!'}[s.who] || '💬 You say'}</div>
-    ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
+    ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="big">${esc(s.en)}</div>
     <div class="when">${esc(s.when)}</div>
     <div class="row">${spk(s.en)}<button class="btn" data-show="ua">${T_('Переклад', 'Перевод')}</button></div>
@@ -320,7 +350,7 @@ function view(s){
   }
   if (s.t === 'word') return `
     <div class="who">${esc(s.label || '📖 New phrase')}</div>
-    ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
+    ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="big">${esc(s.en)}</div>
     <div class="ua">${esc(s.ua)}</div>
     ${s.ex ? `<div class="row" style="align-items:center"><span class="ex">${esc(s.ex)}</span>${spk(s.ex)}</div>` : ''}`;
@@ -338,7 +368,7 @@ function view(s){
     const hinted = /\[/.test(s.en);
     return `
     <div class="who">🧠 Say it in English</div>
-    ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
+    ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="recall-ua">${esc(s.ua)}</div>
     <div class="stack">${hinted ? `<div class="cueline" data-cue="1" hidden>${line(gap)}</div><div class="cueline" data-cue="2" hidden>${line(first)}</div>` : ''}
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(plain)}</span></div></div>
@@ -354,6 +384,11 @@ function view(s){
     ${MOUTH}
     <div class="row">${[s.a, s.b].map((x, i) => `<button class="word" data-pair="${i}">${x.emoji} ${esc(x.w)}</button>`).join('')}</div>
     <div class="ua" id="ptip">${T_('Натисніть на слово 👆', 'Нажмите на слово 👆')}</div>`;
+  if (s.t === 'quiz') return `
+    <div class="who swapw">🎮 ${esc(s.who || 'Tap the answer!')}</div>
+    ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
+    <div class="row" style="align-items:center"><div class="big">${esc(s.q)}</div>${spk(s.q)}</div>
+    <div class="row">${s.opts.map(([t, e], i) => `<button class="word" data-quiz="${i}">${e} ${esc(t)}</button>`).join('')}</div>`;
   if (s.t === 'game') return `
     <div class="who hear">👂 Which word do you hear?</div>
     <button class="btn main" data-gplay>▶ Listen</button>
@@ -372,7 +407,7 @@ function view(s){
     const hl = esc(s.ans).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>');
     return `
     <div class="who swapw">🔁 ${esc(s.who || 'Now say it about someone else')}</div>
-    ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
+    ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     ${s.hear ? `<div class="them"><div class="t"><span class="lbl">You hear</span>${esc(s.hear)}</div>${spk(s.hear)}</div>` : ''}
     ${s.from ? `<div class="when" style="font-size:clamp(18px,3vh,24px)">${xs(s.from)}</div>` : ''}
     ${inPlace ? `<div class="stack">
@@ -488,13 +523,20 @@ card.addEventListener('click', (e) => {
     card.querySelectorAll('[data-gans]').forEach((b) => b.classList.remove('right', 'wrong'));
     say(G.cur); return;
   }
+  const qz = e.target.closest('[data-quiz]');
+  if (qz){
+    const s = SECTIONS[sec].slides[idx], i = Number(qz.dataset.quiz), ok = i === s.ans;
+    qz.classList.remove('right', 'wrong', 'shake'); void qz.offsetWidth;
+    qz.classList.add(ok ? 'right' : 'wrong'); if (ok){ burst(qz); say(s.opts[i][0]); } else qz.classList.add('shake');
+    return;
+  }
   const ga = e.target.closest('[data-gans]');
   if (ga){
     const s = SECTIONS[sec].slides[idx], sc = document.getElementById('gscore');
     if (!G.cur){ sc.textContent = T_('Спершу натисніть ▶', 'Сначала нажмите ▶'); return; }
     const ok = ga.dataset.gans === G.cur;
     G.total++; if (ok) G.right++;
-    ga.classList.add(ok ? 'right' : 'wrong');
+    ga.classList.add(ok ? 'right' : 'wrong'); if (ok) burst(ga);
     if (!ok) card.querySelector(`[data-gans="${G.cur}"]`).classList.add('right');
     G.cur = null;
     sc.textContent = `${ok ? '✓' : '✗'}  ${G.right} / ${G.total}` + (G.total >= s.rounds ? (G.right >= s.rounds - 1 ? '  🎉' : T_('  · ще раз?', '  · ещё раз?')) : '');
