@@ -148,11 +148,11 @@ huggingface.co, about 15 min per hour of audio).
   ready-made versions, and a tap keeps one. No API key and no API call (she has a Claude plan, which web pages can't
   use): the versions are written in a chat and stored as `"versions"`, groups of texts that can replace each other
   (`[text, version, version, version]`, one group per line), in lesson.json or in the clip word's file; ↻ finds the
-  group that contains the text there now. **Whenever you write or change a translation, example, note or meaning (a
-  new song page, new clip words, words she adds), add a group with 3 more versions**: same rules as the original
-  (natural Ukrainian, never Russian; everyday A2 American-English examples of at most 12 words with the word in
-  `<em>` in the same form; notes and meanings with the same facts, reworded). When she asks for "↻ versions for …",
-  add the missing groups the same way. The savers keep `"versions"`; `git pull --rebase` first, never overwrite her edits.
+  group that contains the text there now. **Write versions only when she asks** ("↻ versions for …"; she chose this to
+  save tokens): then add a group with 3 more versions for each text she named, same rules as the original (natural
+  Ukrainian, never Russian; everyday A2 American-English examples of at most 12 words with the word in `<em>` in the
+  same form; notes and meanings with the same facts, reworded). The savers keep `"versions"`; `git pull --rebase`
+  first, never overwrite her edits.
   **Grammar words** (a, the, is, are, do, did, to, of…): a tap says in short Ukrainian *why the word is there in that
   line*, never "we don't translate it here". A word whose reason differs by line has a gloss object:
   `"the": {"*": "usual note", "the Moskva": "note for this line", …}`: a key is words around it in a line, and the one
@@ -162,6 +162,9 @@ huggingface.co, about 15 min per hour of audio).
   `together` (`{"phrase as in the captions": "its Ukrainian, or empty for the learn / later one"}`) stay whole: phrasal
   verbs (listen to, pass by, pick up) and set phrases whose words alone mislead (after all, take a look, out of luck);
   splitting "I'm only human" or "make mistakes" is fine. In edit mode a dragged phrase has a Keep together switch.
+  The tap bubble is solid (not click-through) and its text can be selected; tapping the same word again closes it.
+  A video from her device in portrait (Threads, Reels) still uses the wide layout (`"tall": false`) when she wants the
+  subtitles wide and easy to read (The Bridge).
   Phrases left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
   lyrics are sometimes from another version of the song: check them against the video before building (YouTube's
@@ -188,10 +191,14 @@ huggingface.co, about 15 min per hour of audio).
   before the next line.
   **The clip library** (one place for every lesson and student; a word is picked once and reused):
   - One file per word: `docs/real-video/words/<slug>.json` (slug: lowercase, letters and digits joined by "-";
-    "Is that a thing?" → `is-that-a-thing`) = `{en, ua, pic, hl?, clips: [{v, s, e, line, note, noteUa?, around?,
-    hidden?}]}`: v = YouTube id, s/e = where the line starts/ends (seconds; exact decimals when known), note = the 💡
-    note in English, noteUa in Ukrainian, around = `[[start, end, line], …]` 1–2 lines before and after (for "With
-    context"), hidden = kept but not shown, hl = a regex for other forms of the word ("rip[- ]?off").
+    "Is that a thing?" → `is-that-a-thing`) = `{en, ua, pic, hl?, versions?, together?, gloss?, clips: [{v, s, e, line,
+    note, noteUa?, around?, hidden?}]}`: v = YouTube id, s/e = where the line starts/ends (seconds; exact decimals when
+    known), note = the 💡 note in English, noteUa in Ukrainian, around = `[[start, end, line], …]` 1–2 lines before and
+    after (for "With context"), hidden = kept but not shown, hl = a regex for other forms of the word ("rip[- ]?off").
+    **Every word under a clip is tappable** like on the song pages: one word at a time (its Ukrainian; a grammar word
+    says why it's there), the yellow word whole (its `ua`), `together` phrases whole. `gloss` covers every word of every
+    clip's line and lines around (same shape as the song pages' gloss, context keys for grammar words), so **when you
+    add a clip or its lines around, add glosses for its new words** (and `together` for phrasal verbs / set phrases).
     `words/index.json` lists them for the search: after changing word files run `python3 tools/real-video/build_index.py`.
   - The player reads them: `https://kiril-tishko.github.io/craneberries/real-video/?words=rip-off,excuse` (a lesson's
     words; `&title=…`, `&notes=ua` for Ukrainian notes, `&from=lesson` adds "← Lesson", which closes the tab). Without

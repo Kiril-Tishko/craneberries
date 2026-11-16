@@ -649,8 +649,13 @@ $('next').onclick = () => { if (STEPS[i].kind === 'practice') nextWord(1); else 
 $('prev').onclick = () => { if (STEPS[i].kind === 'practice' && pr.n > 0) nextWord(-1); else go(i - 1); };
 $('about').onclick = () => { $('credits').hidden = !$('credits').hidden; $('about').setAttribute('aria-expanded', !$('credits').hidden); };
 document.addEventListener('click', (e) => {
+  if (e.target.closest('#pop')) return;   // the bubble is solid: a click (or selecting its text) inside it keeps it
   const w = e.target.closest('.tw');
-  if (w) { if (w.classList.contains('on')) hidePop(); else showPop(w); return; }
+  if (w) {
+    const on = w.classList.contains('on') || !!w.closest('.cap .on');   // tapping the same word or phrase again closes it
+    if (on) hidePop(); else showPop(w);
+    return;
+  }
   hidePop();
   const b = e.target.closest('button');
   if (b && e.detail > 0) b.blur();      // a mouse click or tap doesn't leave a ring around the button

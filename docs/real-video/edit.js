@@ -65,7 +65,11 @@ function wordText(w){
   });
   // ↻ versions (groups of texts that can replace each other), kept as they are, one group per line.
   const ver = (w.versions || []).length ? `  "versions": [\n${w.versions.map((g) => `    ${JSON.stringify(g)}`).join(',\n')}\n  ],\n` : '';
-  return `${JSON.stringify(head, null, 2).slice(0, -2)},\n${ver}  "clips": [${clips.length ? `\n${clips.join(',\n')}\n  ` : ''}]\n}\n`;
+  // The tap dictionary (set phrases that stay whole, and every word of the lines), kept as it is.
+  const tog = w.together && Object.keys(w.together).length ? `  "together": ${JSON.stringify(w.together)},\n` : '';
+  const gl = w.gloss && Object.keys(w.gloss).length
+    ? `  "gloss": {\n${Object.entries(w.gloss).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n  },\n` : '';
+  return `${JSON.stringify(head, null, 2).slice(0, -2)},\n${ver}${tog}${gl}  "clips": [${clips.length ? `\n${clips.join(',\n')}\n  ` : ''}]\n}\n`;
 }
 const indexText = (list) => `[\n${list.map((x) => `  ${JSON.stringify(x)}`).join(',\n')}\n]\n`;
 

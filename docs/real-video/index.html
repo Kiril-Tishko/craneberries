@@ -148,6 +148,19 @@ body.editing .capbar [contenteditable]{display:inline-block;padding:0 4px}
 /* ↻ make again (../video/remake.js): edit mode only. */
 .rmk-btn{font-family:inherit;font-size:14px;font-weight:700;width:28px;height:28px;padding:0;border-radius:8px;border:1px dashed var(--line);background:transparent;color:var(--muted);cursor:pointer;align-self:center}
 .rmk-btn:hover{color:var(--accent);border-color:var(--accent)}
+/* Tap a word under the video: its Ukrainian, or why a grammar word is there (one word; a set phrase or the yellow word stays whole). */
+.capbar .tw{cursor:pointer;border-radius:3px}
+.capbar .tw:hover,.capbar .tw.on,.capbar .ph:hover,.capbar .ph.on{text-decoration:underline dotted var(--accent);text-underline-offset:4px}
+.capbar mark:hover,.capbar mark.on{text-decoration:underline 2px currentColor;text-underline-offset:3px}
+.capbar mark .tw:hover,.capbar .ph .tw:hover{text-decoration:none}
+body.editing .capbar .tw{cursor:text}
+/* The bubble: solid (not click-through), its text can be selected. */
+.pop{position:fixed;z-index:40;transform:translate(-50%,-100%);background:#141B24;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:12px;
+  padding:8px 14px;font-size:17px;font-weight:600;max-width:min(360px,92vw);text-align:center;user-select:text;-webkit-user-select:text;cursor:text;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.pop b{font-weight:800}
+.pop .pua{color:var(--word);margin-left:6px}
+.pop.long{text-align:left;width:min(340px,92vw)}
+.pop .why{display:block;margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:var(--word)}
 </style>
 </head>
 <body>
@@ -206,6 +219,7 @@ body.editing .capbar [contenteditable]{display:inline-block;padding:0 4px}
     </section>
   </main>
   <section class="edit" id="edit" hidden></section>
+  <div class="pop" id="pop" hidden></div>
   <!-- The YouTube player's rules want links to YouTube's Terms and Google's Privacy Policy: they stay, behind a quiet ⓘ. -->
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>

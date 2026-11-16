@@ -154,12 +154,92 @@ function setNote(text){
   $('tip').style.visibility = text || App.editing ? 'visible' : 'hidden';
 }
 function showLine(text, plain, ref){
-  lineRef = ref || null;
+  lineRef = ref || null; hidePop();
   const ed = App.editing && !plain ? ' contenteditable="plaintext-only" spellcheck="false"' : '';
   $('capbar').innerHTML = plain
     ? `<span class="err">${esc(plain)}</span>`
-    : `<span${ed}>${esc(text).replace(word.re, (m) => `<mark>${m}</mark>`)}</span>`;
+    : App.editing ? `<span${ed}>${esc(text).replace(word.re, (m) => `<mark>${m}</mark>`)}</span>`
+    : `<span>${tapLine(text)}</span>`;
 }
+
+/* ---------- Tap a word under the video: its Ukrainian, or why a grammar word is there ---------- */
+// Each word file has its own small dictionary: gloss = {word: Ukrainian, or {"*": usual, "<words around it in a
+// line>": for that line}}, together = {"phrasal verb or set phrase": Ukrainian} (a tap on any of its words takes the
+// whole phrase). The lesson word itself (yellow) is always taken whole, with the word's Ukrainian.
+const wbase = (t) => t.toLowerCase().replace(/'/g, '’').replace(/\s+/g, ' ').trim();
+function findIn(text, phrases){              // → [[from, to, index]] where each phrase is in the text (whole words only)
+  const out = [];
+  phrases.forEach((w, k) => {
+    const pat = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[’']/g, '[’\']').replace(/\s+/g, '\\s+');
+    const re = new RegExp(`(^|[^\\w’'])(${pat})(?![\\w’'])`, 'gi');
+    let m; while ((m = re.exec(text))) { const a = m.index + m[1].length; out.push([a, a + m[2].length, k]); }
+  });
+  return out;
+}
+function glossFor(w, line, at){
+  const G = (word && word.gloss) || {};
+  let key = wbase(w).replace(/^’+|’+$/g, '');
+  if (G[key] == null && G[key.replace(/’s$/, '')] != null) key = key.replace(/’s$/, '');
+  const v = G[key];
+  if (v == null || typeof v === 'string') return v || '';
+  for (const [ctx, t] of Object.entries(v)) if (ctx !== '*' && findIn(line, [ctx]).some(([a, b]) => at >= a && at < b)) return t;
+  return v['*'] || '';
+}
+let phraseN = 0;
+function tapLine(text){
+  const n = text.length, mk = new Array(n).fill(false), gp = new Array(n).fill(0);
+  text.replace(word.re, (m, ...r) => { const a = r[r.length - 2]; for (let c = a; c < a + m.length; c++) mk[c] = true; return m; });
+  findIn(text, Object.keys(word.together || {})).forEach(([a, b]) => {
+    for (let c = a; c < b; c++) if (mk[c] || gp[c]) return;   // never inside the yellow word or another phrase
+    const g = ++phraseN; for (let c = a; c < b; c++) gp[c] = g;
+  });
+  const re = /[A-Za-z0-9’']+|[^A-Za-z0-9’']+/g;
+  let h = '', open = false, og = 0, m;
+  while ((m = re.exec(text))) {
+    const a = m.index, t = m[0], g = gp[a];
+    if (og && g !== og) { h += '</span>'; og = 0; }
+    if (mk[a] !== open) { h += open ? '</mark>' : '<mark>'; open = mk[a]; }
+    if (g && g !== og) { h += '<span class="ph">'; og = g; }
+    h += /[A-Za-z0-9]/.test(t) ? `<span class="tw">${esc(t)}</span>` : esc(t);
+  }
+  return h + (og ? '</span>' : '') + (open ? '</mark>' : '');
+}
+function tapGloss(el){
+  const mk = el.closest('mark');
+  if (mk) return word.ua ? {en: mk.textContent, ua: word.ua, box: mk} : null;
+  const ph = el.closest('.ph');
+  if (ph) {
+    const k = Object.keys(word.together || {}).find((x) => wbase(x) === wbase(ph.textContent));
+    if (k && word.together[k]) return {en: ph.textContent, ua: word.together[k], box: ph};
+  }
+  const cap = el.closest('#capbar > span'), r = document.createRange();
+  r.selectNodeContents(cap); r.setEndBefore(el);
+  const ua = glossFor(el.textContent, cap.textContent, r.toString().length);
+  return ua ? {en: el.textContent, ua, box: el} : null;
+}
+function hidePop(){ const p = $('pop'); if (p) p.hidden = true; document.querySelectorAll('#capbar .on').forEach((x) => x.classList.remove('on')); }
+function showPop(el){
+  const g = tapGloss(el);
+  hidePop();
+  if (!g) return;
+  const p = $('pop'), r = el.getBoundingClientRect(), why = g.ua.length > 32;
+  // A short translation sits beside the word; a longer explanation (why a grammar word is there) goes under it.
+  p.innerHTML = `<b>${esc(g.en)}</b><span class="${why ? 'why' : 'pua'}">${esc(g.ua)}</span>`;
+  p.classList.toggle('long', why); p.hidden = false;
+  const half = p.offsetWidth / 2 + 8;
+  p.style.left = `${Math.min(innerWidth - half, Math.max(half, r.left + r.width / 2))}px`;
+  p.style.top = `${r.top - 8}px`;
+  g.box.classList.add('on');
+}
+// The bubble is solid: a click (or selecting its text) inside it keeps it open; tapping the same word again closes it.
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#pop')) return;
+  const w = !App.editing && e.target.closest('#capbar .tw');
+  if (w) { if (w.classList.contains('on') || w.closest('#capbar .on')) hidePop(); else showPop(w); return; }
+  hidePop();
+});
+addEventListener('scroll', hidePop, {passive: true});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePop(); });
 // Edit mode: what is typed in the caption bar goes to the line that is shown there.
 App.setShownLine = (text) => {
   const c = clip(); if (!c) return;
@@ -461,10 +541,10 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (App.toggleEdit) { App.toggleEdit(); return; }
-  const s = document.createElement('script'); s.src = 'edit.js?v=2'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
+  const s = document.createElement('script'); s.src = 'edit.js?v=3'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
 };
 let resizeT = null;
-window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });
+window.addEventListener('resize', () => { hidePop(); clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });
 if (document.fonts) document.fonts.ready.then(sizeCaption);
 
 const tag = document.createElement('script');
