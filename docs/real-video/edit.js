@@ -319,12 +319,23 @@ document.addEventListener('input', (e) => {
     App.refresh(); touch();
   }
 });
-// A typed time counts when she leaves the box or presses Enter (48:54.3, or seconds).
+// Start must stay before End, and a clip is at most 30 s long: anything else is refused (and says why).
+function badTime(c, f, v){
+  const s = f === 's' ? v : c.s, e = f === 'e' ? v : c.e;
+  if (isNaN(v) || v < 0) return 'Type the time like 21:58.3 (or just 58.3 for :58.3 in the same minute).';
+  if (e <= s) return `End has to be after Start (${fmt(c.s)}).`;
+  if (e - s > 30) return 'That makes the clip longer than 30 seconds: check the minutes.';
+  return '';
+}
+// A typed time counts when she leaves the box or presses Enter: 21:58.3, or just 58.3 = :58.3 in the same minute.
 document.addEventListener('change', (e) => {
   const t = e.target, c = App.clip(); if (!App.editing || !t.dataset || !t.dataset.t || !c) return;
-  const v = parseT(t.value), f = t.dataset.t;
-  if (isNaN(v) || v < 0) { say('Type the time like 48:54.3', true); t.value = fmt(c[f]); return; }
-  remember(null); c[f] = r2(v); t.value = fmt(c[f]); touch(); App.refresh(); replay(f);
+  const f = t.dataset.t, raw = t.value.trim();
+  let v = parseT(raw);
+  if (!isNaN(v) && !raw.includes(':')) v += Math.floor(c[f] / 60) * 60;
+  const why = badTime(c, f, v);
+  if (why) { say(why, true); t.value = fmt(c[f]); return; }
+  remember(null); c[f] = r2(v); t.value = fmt(c[f]); touch(); say(''); App.refresh(); replay(f);
 });
 document.addEventListener('keydown', (e) => { if (App.editing && e.key === 'Enter' && e.target.dataset && e.target.dataset.t) e.target.blur(); });
 document.addEventListener('click', (e) => {
@@ -375,12 +386,15 @@ document.addEventListener('click', (e) => {
       App.showClip(false);
     }
   } else if (b.dataset.now && c) {
+    const f = b.dataset.now, v = r2(App.now()), why = badTime(c, f, v);
+    if (why) { say(why, true); return; }
     remember(null);
-    c[b.dataset.now] = r2(App.now()); touch(); App.refresh(); render();
+    c[f] = v; touch(); App.refresh(); render();
   } else if (b.dataset.nudge && c) {
-    const [f, d] = b.dataset.nudge.split(':');
+    const [f, d] = b.dataset.nudge.split(':'), v = r2(c[f] + parseFloat(d)), why = badTime(c, f, v);
+    if (why) { say(why, true); return; }
     remember(`nudge-${f}`);
-    c[f] = r2(c[f] + parseFloat(d)); touch(); App.refresh();
+    c[f] = v; touch(); App.refresh();
     const inp = $('etools').querySelector(`[data-t="${f}"]`); if (inp) inp.value = fmt(c[f]);
     replay(f);
   }

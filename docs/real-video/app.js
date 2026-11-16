@@ -191,7 +191,8 @@ function rangeOf(c, longer){
   }
   if (longer) return {from: Math.max(0, c.s - LONGER_BEFORE), to: c.e + LONGER_AFTER, lines: null, c, longer};
   let to = c.e + (exact ? EXACT_AFTER : PAD_AFTER);
-  if (after.length) to = Math.min(to, after[0][0]);
+  // Stop before the next line starts, unless the clip's end was set past it on purpose (edit mode).
+  if (after.length && c.e <= after[0][0]) to = Math.min(to, after[0][0]);
   return {from: Math.max(0, c.s - (exact ? EXACT_BEFORE : PAD_BEFORE)), to: Math.max(to, c.s + 0.3), lines: null, c, longer};
 }
 
