@@ -15,6 +15,8 @@ const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt
 const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const slugify = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const Q = new URLSearchParams(location.search);
+// ?embed: inside a lesson slide (the student site): only the word row, the video and its controls (index.html CSS).
+if (Q.has('embed')) document.body.classList.add('embed');
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 // The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.

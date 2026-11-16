@@ -52,6 +52,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .card{width:100%;max-height:100%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:26px;
   padding:clamp(18px,4vh,34px) clamp(16px,4vw,32px);display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.2vh,18px);text-align:center}
 .card.in{animation:in .25s ease-out}
+.card.full{height:100%;padding:10px}
+.clipframe{width:100%;flex:1;min-height:0;border:0;border-radius:18px;background:transparent}
 @keyframes in{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 .who{font-size:14px;font-weight:600;letter-spacing:.04em;padding:5px 12px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
@@ -264,13 +266,18 @@ function view(s){
     <a class="ylink" href="${full}" target="_blank" rel="noopener">Doesn’t play? Open it on YouTube at ${esc(s.from)}</a>`;
   }
   if (s.t === 'clips'){
-    // Real video clips of the lesson's words, from the shared clip library (docs/real-video/words/). YouTube can't
-    // play inside an artifact, so ▶ opens the clip player in a new tab; its "← Lesson" button closes it again.
+    // Real video clips of the lesson's words, from the shared clip library (docs/real-video/words/). On the student
+    // site they play right in this screen (the site's /clips/ page in its compact ?embed form). YouTube can't play
+    // inside a Claude artifact, so there ▶ opens the clip player in a new tab; its "← Lesson" button closes it again.
     const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
     if (s.notes === 'ua') q.set('notes', 'ua');
-    // On the student site the clip page opens from the site itself (/clips/), elsewhere from GitHub Pages.
-    const url = window.LESSON_KEY ? `/clips/?${q}` : `https://kiril-tishko.github.io/craneberries/real-video/?${q}`;
+    if (window.LESSON_KEY){
+      q.delete('from'); q.delete('title'); q.set('embed', '1');
+      return `<iframe class="clipframe" src="/clips/?${esc(q.toString())}" title="Real video clips"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>`;
+    }
+    const url = `https://kiril-tishko.github.io/craneberries/real-video/?${q}`;
     return `
     <div class="who hear">🎬 ${esc(s.label || 'Real people say it')}</div>
     <div class="big">${s.words.map(esc).join(' · ')}</div>
@@ -372,6 +379,7 @@ function render(){
   document.getElementById('dots').innerHTML = slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '';
   jawDeg = 0; G = { cur: null, right: 0, total: 0 };
   card.innerHTML = view(slides[idx]);
+  card.classList.toggle('full', !!(window.LESSON_KEY && slides[idx].t === 'clips'));   // the clips fill the screen
   card.classList.remove('in'); void card.offsetWidth; card.classList.add('in');
   document.getElementById('back').disabled = sec === 0 && idx === 0;
   const last = sec === SECTIONS.length - 1 && idx === slides.length - 1;
