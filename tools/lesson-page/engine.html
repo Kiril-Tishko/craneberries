@@ -324,6 +324,7 @@ function view(s){
     const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
     if (s.notes === 'ua') q.set('notes', 'ua');
+    if (s.listen) q.set('listen', '1');   // listen first: no caption until the clip has played once
     if (window.LESSON_KEY){
       q.delete('from'); q.delete('title'); q.set('embed', '1');
       // Grey shapes hold the screen until the clip page says it is ready, so nothing jumps while it loads.

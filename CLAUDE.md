@@ -217,13 +217,18 @@ huggingface.co, about 15 min per hour of audio).
     Never test edit mode in a tab he might use: a test tab with unsaved changes can end up saved with his key. So `git pull --rebase` before touching the library, and
     never overwrite his edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
-    screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian). It
+    screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian;
+    `listen: true` = listen first: each clip plays without its caption, which shows when it ends or on a tap on 🎧). It
     opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
     file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),
     and otherwise say in the reply which words still need clips (picked on his PC with Claude in Chrome, or he pastes
     links in edit mode). Never put student names or personal details in the library (the repo is public).
   - **A YouTube link with a time from him** (youtu.be/…?t=83): open it in Chrome, read the lines around that second
     (YouTube's "Show transcript"), and add the clip with exact times, the lines around it and a note.
+  **How he wants clips in a lesson** (Nov 16): the word or phrase on its own screen as usual, then right after it one
+  clips screen with `listen: true` (first no subtitles, then subtitles), 💡 notes in Ukrainian for A2 students, about
+  3 clips a word. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
+  you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
     or calling its API. Their developer replied (Nov 16): they are building exactly his workflow (search once while

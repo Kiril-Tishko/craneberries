@@ -7,6 +7,8 @@
 //     &from=lesson                         a "← Lesson" button that closes this tab, back to the lesson page
 //   #w=excuse                              open this word first
 //   ?mute                                  plays without sound (for testing)
+//   &listen                                listen first: each clip plays without its caption, which shows when the
+//                                          clip ends (or on a tap on the 🎧 in its place)
 // Tapping the top-left corner 5 times opens edit mode (edit.js): click the text on the page and type, times and Save
 // in a small bar under the video.
 'use strict';
@@ -35,6 +37,10 @@ function fitEmbed(){
 if (EMBED) { addEventListener('resize', fitEmbed); if (document.fonts) document.fonts.ready.then(fitEmbed); }
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
+// ?listen: a clip's caption is hidden until the clip has played to its end (a quiet 🎧 keeps its place; a tap on it
+// shows the caption at once). Every clip starts hidden again. Edit mode always shows it.
+const LISTEN = Q.has('listen');
+let capHidden = false;
 // The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.
 const LIB = new URL('words/', document.baseURI);
 
@@ -152,6 +158,7 @@ function showClip(play){
   clipN = Math.min(Math.max(clipN, 0), L.length - 1);
   const c = L[clipN];
   setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || '');
+  capHidden = LISTEN && !App.editing;
   showLine(c.line);
   range = rangeOf(c, longerMode); drawTimeline(range.from);
   // The next clip may already be waiting in the hidden player: then it simply comes to the front.
@@ -183,6 +190,10 @@ function setNote(text){
 }
 function showLine(text, plain, ref){
   lineRef = ref || null; hidePop();
+  if (capHidden && !plain && !App.editing) {
+    $('capbar').innerHTML = '<span class="listen" role="button" tabindex="0" aria-label="Show the caption">🎧</span>';
+    return;
+  }
   const ed = App.editing && !plain ? ' contenteditable="plaintext-only" spellcheck="false"' : '';
   $('capbar').innerHTML = plain
     ? `<span class="err">${esc(plain)}</span>`
@@ -245,6 +256,13 @@ function tapGloss(el){
   const ua = glossFor(el.textContent, cap.textContent, r.toString().length);
   return ua ? {en: el.textContent, ua, box: el} : null;
 }
+// Listen first (?listen): show the caption that belongs to this moment (with context, the line being said).
+function showCaption(){
+  if (!capHidden) return;
+  capHidden = false;
+  const l = range && range.lines && started && !ended ? shown : null;
+  if (l) showLine(l[2], null, l); else if (clip()) showLine(clip().line);
+}
 function hidePop(){ const p = $('pop'); if (p) p.hidden = true; document.querySelectorAll('#capbar .on').forEach((x) => x.classList.remove('on')); }
 function showPop(el){
   const g = tapGloss(el);
@@ -262,12 +280,16 @@ function showPop(el){
 // The bubble is solid: a click (or selecting its text) inside it keeps it open; tapping the same word again closes it.
 document.addEventListener('click', (e) => {
   if (e.target.closest('#pop')) return;
+  if (capHidden && e.target.closest('#capbar')) { showCaption(); return; }
   const w = !App.editing && e.target.closest('#capbar .tw');
   if (w) { if (w.classList.contains('on') || w.closest('#capbar .on')) hidePop(); else showPop(w); return; }
   hidePop();
 });
 addEventListener('scroll', hidePop, {passive: true});
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePop(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') hidePop();
+  if (e.key === 'Enter' && capHidden && e.target.closest && e.target.closest('#capbar')) showCaption();
+});
 // Edit mode: what is typed in the caption bar goes to the line that is shown there.
 App.setShownLine = (text) => {
   const c = clip(); if (!c) return;
@@ -391,7 +413,8 @@ setInterval(() => {
   if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { P().seekTo(range.from, true); return; }
   if (playing && t >= range.to - 0.06) {
     P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
-    if (range.lines) { showLine(range.c.line); shown = null; }
+    const wasHidden = capHidden; capHidden = false;   // listen first: the caption comes once the clip has played
+    if (range.lines || wasHidden) { showLine(range.c.line); shown = null; }
     drawTimeline(range.to); setCover(); return;
   }
   if (!ended && !dragging) drawTimeline(t);

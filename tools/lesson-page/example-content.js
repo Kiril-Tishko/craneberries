@@ -49,7 +49,7 @@ const SECTIONS = [
   //   (YouTube can't be embedded in an artifact: ▶ opens just that clip in a new tab, with captions on).
   //   Never put song lyrics on a page (copyright): teach short phrases with {t:'word', en, ua, ex, pic} and your own example.
   // Real video clips of the lesson's words: {t:'clips', words:['rip-off', 'Is that a thing?']} (optional: label, when,
-  //   notes:'ua' for 💡 notes in Ukrainian). ▶ opens …/real-video/?words=… in a new tab. Every word must be in the clip
+  //   notes:'ua' for 💡 notes in Ukrainian, listen:true for no caption until a clip has played once). ▶ opens …/real-video/?words=… in a new tab. Every word must be in the clip
   //   library (docs/real-video/words/<slug>.json); see CLAUDE.md, "Real video clips".
   // A song page of the lesson (docs/<song>/, e.g. song-human): {t:'song', song:'song-human', title:'Human'} (optional:
   //   label, when). ▶ opens it in a new tab: on the student site from the site itself, on a Claude page from GitHub Pages.
