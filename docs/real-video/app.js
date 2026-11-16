@@ -15,8 +15,10 @@ const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt
 const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const slugify = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const Q = new URLSearchParams(location.search);
-// ?embed: inside a lesson slide (the student site): only the word row, the video and its controls (index.html CSS).
-if (Q.has('embed')) document.body.classList.add('embed');
+// ?embed: inside a lesson slide (the student site): only the word row (one word: the word and its Ukrainian, big),
+// the video and its controls (index.html CSS).
+const EMBED = Q.has('embed');
+if (EMBED) document.body.classList.add('embed');
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 // The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.
@@ -77,6 +79,12 @@ async function init(){
   else showLine('', 'No words yet.');
 }
 function renderChips(){
+  // In a lesson screen (?embed) with one word: the word and its Ukrainian in big letters instead of the row of words.
+  if (EMBED && ORDER.length === 1) {
+    const w = WORDS[ORDER[0]] || INDEX.find((x) => x.slug === ORDER[0]);
+    $('words').innerHTML = w ? `<div class="bigword">${w.pic ? `${esc(w.pic)} ` : ''}<b>${esc(w.en)}</b>${w.ua ? ` <span>— ${esc(w.ua)}</span>` : ''}</div>` : '';
+    return;
+  }
   $('words').innerHTML = ORDER.map((s) => `<button data-w="${esc(s)}" aria-current="${s === cur}">${esc(label(s))}</button>`).join('');
 }
 App.renderChips = renderChips;
@@ -343,11 +351,25 @@ function seekBy(d){
 function flash(id){
   const f = $(id); f.classList.add('on'); clearTimeout(f.t); f.t = setTimeout(() => f.classList.remove('on'), 350);
 }
+// A clip that should be playing but hangs while loading (YouTube sometimes stalls after a jump, mostly with context):
+// after 2.5 s it gets the nudge a ← → gives (a jump to where it is), and after two nudges it loads again from there.
+let stallSince = 0, nudges = 0;
+function nudge(t){
+  const s = S(), c = range.c, from = Math.min(range.to - 0.2, Math.max(range.from, t || range.from));
+  if (++nudges <= 2) { s.p.seekTo(from, true); s.p.playVideo(); }
+  else { nudges = 0; s.vid = c.v; s.loaded = false; s.p.loadVideoById({videoId: c.v, startSeconds: from}); }
+  s.p.setPlaybackRate(rate);
+}
 // One clock for everything: stop at the end, move the timeline, and with context follow the lines.
 setInterval(() => {
   // Right after a load the player can still report the old clip's time for a moment: wait for the new one.
   if (!ready() || !range || !started || performance.now() - loadedAt < 300) return;
   const playing = P().getPlayerState() === YT.PlayerState.PLAYING, t = P().getCurrentTime();
+  if (intent && !ended && !playing && !dragging) {
+    const now = performance.now();
+    if (!stallSince) stallSince = now;
+    else if (now - stallSince > 2500) { stallSince = now; nudge(t); return; }
+  } else { stallSince = 0; if (playing) nudges = 0; }
   // Safety net: if the video ever plays outside the clip (YouTube started it somewhere else), bring it back.
   if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { P().seekTo(range.from, true); return; }
   if (playing && t >= range.to - 0.06) {

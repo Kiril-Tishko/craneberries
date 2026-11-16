@@ -161,6 +161,11 @@ s.no{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-
 <script>
 /* ---------- content ---------- */
 /*CONTENT*/
+// On the student site a clips screen plays its clips right there, one word to a screen (the word and its Ukrainian in
+// big letters, then its clips): a screen with several words becomes one screen per word.
+if (window.LESSON_KEY) SECTIONS.forEach((x) => {
+  x.slides = x.slides.flatMap((s) => (s.t === 'clips' && s.words.length > 1 ? s.words.map((w) => ({...s, words: [w]})) : [s]));
+});
 const MOUTH = '';
 let jawDeg = 0;
 function setJaw(to){

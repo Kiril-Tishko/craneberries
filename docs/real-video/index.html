@@ -117,8 +117,10 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 body.embed{padding:0;background:transparent}
 body.embed .search,body.embed #back,body.embed .ltitle,body.embed main>.card{display:none!important}
 body.embed main{grid-template-columns:minmax(0,1fr)}
-body.embed .app{gap:8px;max-width:min(1100px,calc((100vh - 310px) * 16 / 9))}
+body.embed .app{gap:8px;max-width:min(1100px,calc((100vh - 330px) * 16 / 9))}
 body.embed .words{justify-content:center}
+body.embed .bigword{font-size:clamp(24px,5.4vw,40px);font-weight:800;line-height:1.15;text-align:center;width:100%}
+body.embed .bigword span{font-weight:600;opacity:.75}
 /* The invisible corner for edit mode. */
 .corner{position:fixed;left:0;top:0;width:44px;height:44px;border:0;padding:0;background:transparent;z-index:30;cursor:default}
 body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 4px,transparent 4px 8px);opacity:.35}
@@ -232,6 +234,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
