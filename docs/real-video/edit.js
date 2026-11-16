@@ -63,7 +63,9 @@ function wordText(w){
     if (c.hidden) o.hidden = true;
     return `    ${JSON.stringify(o)}`;
   });
-  return `${JSON.stringify(head, null, 2).slice(0, -2)},\n  "clips": [${clips.length ? `\n${clips.join(',\n')}\n  ` : ''}]\n}\n`;
+  // ↻ versions (groups of texts that can replace each other), kept as they are, one group per line.
+  const ver = (w.versions || []).length ? `  "versions": [\n${w.versions.map((g) => `    ${JSON.stringify(g)}`).join(',\n')}\n  ],\n` : '';
+  return `${JSON.stringify(head, null, 2).slice(0, -2)},\n${ver}  "clips": [${clips.length ? `\n${clips.join(',\n')}\n  ` : ''}]\n}\n`;
 }
 const indexText = (list) => `[\n${list.map((x) => `  ${JSON.stringify(x)}`).join(',\n')}\n]\n`;
 
@@ -93,19 +95,17 @@ async function save(){
   render();
 }
 
-/* ---------- ↻ make again (../video/remake.js, loaded the first time) ---------- */
-const rmkBtn = (kind) => `<button class="rmk-btn" data-rmk="${kind}" title="Make again with Claude" aria-label="Make again with Claude">↻</button>`;
+/* ---------- ↻ make again: the ready-made versions in the word file (../video/remake.js, loaded the first time) ---------- */
+const rmkBtn = (kind) => `<button class="rmk-btn" data-rmk="${kind}" title="Other versions" aria-label="Other versions">↻</button>`;
 const remake = () => (window.Remake ? Promise.resolve(window.Remake) : new Promise((res, rej) => {
-  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=1';
+  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=2';
   sc.onload = () => res(window.Remake); sc.onerror = () => rej(new Error('load')); document.head.appendChild(sc);
 }));
 function openRemake(b){
   const w = App.word, c = App.clip(), kind = b.dataset.rmk, nf = App.NOTES === 'ua' ? 'noteUa' : 'note';
   if (!w || (kind === 'note' && !c)) return;
   remake().then((R) => R.open(b, {
-    page: 'clip', kind, lang: App.NOTES, label: kind === 'ua' ? 'Ukrainian' : 'Note',
-    en: w.en || '', ua: w.ua || '', line: c ? c.line || '' : '',
-    around: c && c.around ? c.around.map((l) => l[2]).join(' / ') : '',
+    label: kind === 'ua' ? 'Ukrainian' : 'Note', groups: w.versions,
     now: kind === 'ua' ? w.ua || '' : c[nf] || ''
   }, (t) => {
     remember(null);

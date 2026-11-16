@@ -2,6 +2,14 @@
   "en": "excuse",
   "ua": "відмовка, виправдання",
   "pic": "🙈",
+  "versions": [
+    ["відмовка, виправдання", "виправдання, причина", "привід, відмовка", "відговірка, виправдання"],
+    ["A boy explains what happened: “I was just standing there.” Ellen jokes that it is a good reason.", "A boy says: “I was just standing there.” Ellen makes a joke: that is a good reason.", "The boy tells what happened: he was “just standing there.” Ellen jokes and calls it a good reason.", "“I was just standing there,” the boy explains. As a joke, Ellen says it’s a good reason."],
+    ["Someone told him about some books. He still hasn’t read them, and he has no good reason why.", "People told him about some books. He hasn’t read them yet, and he can’t give a good reason.", "He hears some books are really good. He still hasn’t read them, and he doesn’t have a good reason for that.", "He knows about some books, but he still hasn’t read them. He has no good reason why not."],
+    ["He says he always looks for a reason not to do something.", "He always tries to find a reason not to do something.", "He says that he always looks for a reason so he doesn’t have to do something.", "He tells us he always searches for a reason not to do something."],
+    ["She says this reason is too easy: people use it all the time, so it isn’t a real reason.", "She thinks this reason is too easy. People use it all the time, so it’s not a real reason.", "This reason is too easy, she says. People give it all the time, so it isn’t really a reason.", "She says it’s the easiest reason in the world: people use it all the time, so it isn’t a real one."],
+    ["He says these things are not really hard, so there is no good reason not to do them.", "These things aren’t really difficult, he says, so there is no good reason not to do them.", "He thinks these things are not that hard. That’s why there is no good reason not to do them.", "It isn’t really hard to do these things, he says. So nobody has a good reason not to do them."]
+  ],
   "clips": [
     {"v":"5doVqBQ8A0M","s":1730.32,"e":1731.76,"line":"It’s a good, good excuse.","note":"A boy explains what happened: “I was just standing there.” Ellen jokes that it is a good reason.","around":[[1727.48,1728.88,"Cuz I was just standing there."],[1729,1730.32,"Just standing there."],[1731.76,1732.56,"All right."],[1732.56,1734.32,"So, you’ve been dancing for a long time."]]},
     {"v":"fh-sBZdxiqs","s":1383.36,"e":1385.04,"line":"I don’t really have a good excuse.","note":"Someone told him about some books. He still hasn’t read them, and he has no good reason why.","around":[[1377.04,1382.24,"and, uh, it’s such a great concept and I should read them."],[1382.24,1383.36,"I hear they’re really good."],[1385.04,1389.84,"Um, yeah, I might just order copies after I finish shooting this."]]},

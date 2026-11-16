@@ -28,7 +28,7 @@ const clean = (t) => t.replace(/\s+/g, ' ').trim();
 // Easy to read in GitHub: one line per screen, one translation per line. Empty examples are left out.
 function lessonText(o){
   const j = (x) => JSON.stringify(x), out = ['{'];
-  Object.keys(o).filter((k) => !['parts', 'later', 'gloss'].includes(k)).forEach((k) => out.push(`  ${j(k)}: ${j(o[k])},`));
+  Object.keys(o).filter((k) => !['parts', 'later', 'versions', 'gloss'].includes(k)).forEach((k) => out.push(`  ${j(k)}: ${j(o[k])},`));
   out.push('  "parts": [');
   o.parts.forEach((p, pi) => {
     const head = {...p}; delete head.lines;
@@ -41,6 +41,12 @@ function lessonText(o){
   });
   out.push('  ],');
   out.push(`  "later": [${(o.later || []).map(j).join(', ')}],`);
+  // ↻ versions: groups of texts that can replace each other, one group per line.
+  if (o.versions && o.versions.length) {
+    out.push('  "versions": [');
+    o.versions.forEach((v, n) => out.push(`    ${j(v)}${n < o.versions.length - 1 ? ',' : ''}`));
+    out.push('  ],');
+  }
   const g = Object.entries(o.gloss || {});
   out.push('  "gloss": {');
   g.forEach(([k, v], n) => out.push(`    ${j(k)}: ${j(v)}${n < g.length - 1 ? ',' : ''}`));
@@ -195,23 +201,20 @@ document.addEventListener('change', (e) => {
 });
 document.addEventListener('keydown', (e) => { if (P.editing && e.key === 'Enter' && e.target.dataset && (e.target.dataset.t || e.target.id === 'ep-ua')) { e.preventDefault(); e.target.blur(); } });
 
-/* ---------- ↻ make again: Claude writes another version (remake.js, loaded the first time) ---------- */
-const rmkBtn = (kind, k, j) => `<button class="rmk-btn" data-rmk="${kind}"${k != null ? ` data-k="${k}"` : ''}${j != null ? ` data-j="${j}"` : ''} title="Make again with Claude" aria-label="Make again with Claude">↻</button>`;
+/* ---------- ↻ make again: the ready-made versions in lesson.json "versions" (remake.js, loaded the first time) ---------- */
+const rmkBtn = (kind, k, j) => `<button class="rmk-btn" data-rmk="${kind}"${k != null ? ` data-k="${k}"` : ''}${j != null ? ` data-j="${j}"` : ''} title="Other versions" aria-label="Other versions">↻</button>`;
 const remake = () => (window.Remake ? Promise.resolve(window.Remake) : new Promise((res, rej) => {
-  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=1';
+  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=2';
   sc.onload = () => res(window.Remake); sc.onerror = () => rej(new Error('load')); document.head.appendChild(sc);
 }));
-const lineText = (s) => P.lines().filter((l) => l.t >= s.start - 0.3 && l.t < s.end - 0.3).map((l) => l.text).join(' / ');
 const onlyEm = (t) => t.replace(/<(?!\/?em>)[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 function openRemake(b, s, o){
   const kind = b.dataset.rmk, k = b.dataset.k != null ? +b.dataset.k : null, j = b.dataset.j != null ? +b.dataset.j : null;
   const w = k != null ? o.words[k] : null;
   const now = kind === 'ua' ? w[1] : kind === 'example' ? w[2 + j] : o[kind] || '';
   remake().then((R) => R.open(b, {
-    page: 'song', kind, title: L.title, line: lineText(s), now,
-    label: {ua: 'Ukrainian', example: 'Example', note: 'Note', meaning: 'What the line means'}[kind],
-    en: w ? w[0] : o.words.map((x) => x[0]).join(', '), ua: w ? w[1] : '',
-    avoid: kind === 'example' ? w.slice(2).filter((x, n) => n !== j) : []
+    now, groups: L.versions,
+    label: {ua: 'Ukrainian', example: 'Example', note: 'Note', meaning: 'What the line means'}[kind]
   }, (t) => {
     remember(null);
     if (kind === 'ua') w[1] = t; else if (kind === 'example') w[2 + j] = onlyEm(t); else o[kind] = t;

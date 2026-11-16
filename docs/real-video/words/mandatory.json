@@ -2,6 +2,14 @@
   "en": "mandatory",
   "ua": "обов’язковий",
   "pic": "📋",
+  "versions": [
+    ["обов’язковий", "обов’язковий для всіх", "примусовий, обов’язковий", "обов’язково (без вибору)"],
+    ["He wanted to go to a museum (the Met) in New York tonight. He can’t: everyone has to go to Angela’s party.", "He planned to visit a museum in New York tonight (the Met). But he can’t, because everyone has to go to Angela’s party.", "Tonight he was going to go to the Met, a museum in New York. He had to cancel: everyone must go to Angela’s party.", "He can’t go to the Met, a New York museum, tonight. Angela’s party is a must: everyone has to be there."],
+    ["He talks about school: all children have to go, and public school costs nothing.", "He is talking about school. All children must go, and public school is free.", "He says all children have to go to school, and public school doesn’t cost anything.", "About school, he says: every child has to go, and public school costs no money."],
+    ["A company leader says the workers don’t have to do it, but the company hopes they will.", "A leader of a company says workers don’t have to do it. But the company hopes they will.", "A company leader explains: it’s the workers’ choice, but the company hopes they will do it.", "The workers don’t have to do it, a company leader says. Still, the company hopes they will."],
+    ["She says students don’t have to go to summer school. They can choose.", "Summer school is not a must, she says. Students can choose to go or not.", "She explains that students can choose: they don’t have to go to summer school.", "Students don’t need to go to summer school, she says. It’s their choice."],
+    ["He had to go to some classes. He had no choice.", "He had to attend some classes. He couldn’t say no.", "He had no choice: he had to go to some classes.", "Some classes were a must for him. He had to go."]
+  ],
   "clips": [
     {"v":"DkR4Ksuifo0","s":2934.32,"e":2938.96,"line":"But I had to cancel because Angela’s party is mandatory.","note":"He wanted to go to a museum (the Met) in New York tonight. He can’t: everyone has to go to Angela’s party.","around":[[2931.2,2934.32,"I was going to be in New York tonight to go to the Met,"]]},
     {"v":"kj2fpM57Z7A","s":439,"e":443,"line":"And public school is mandatory and public school is free.","note":"He talks about school: all children have to go, and public school costs nothing."},

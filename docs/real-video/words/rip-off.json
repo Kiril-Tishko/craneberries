@@ -3,6 +3,14 @@
   "ua": "грабіж, завищена ціна",
   "pic": "💸",
   "hl": "rip[- ]?off",
+  "versions": [
+    ["грабіж, завищена ціна", "грабунок, надто висока ціна", "переплата, обман", "захмарна ціна, грабіж"],
+    ["They are tasting bottled water and he sees the price. He thinks it costs far too much for water.", "They taste bottled water, and he looks at the price. For water, he thinks, it costs way too much.", "He sees the price of the bottled water they are tasting. It is far too much money for water, he thinks.", "While they taste bottled water, he sees how much it costs. He thinks that is much too expensive for water."],
+    ["He paid $40 for one pizza. He thinks it wasn’t worth that much money.", "He spent $40 on one pizza. He thinks it wasn’t worth so much money.", "One pizza cost him $40. In his opinion, it wasn’t worth that much.", "He paid $40 for a pizza, and he thinks that was too much for what it was."],
+    ["He thinks the price is much too high. “Total” makes it stronger: completely a rip-off.", "For him, the price is far too high. “Total” makes the word stronger: a complete rip-off.", "He thinks it costs much too much. The word “total” makes it stronger: 100% a rip-off.", "The price is much too high, he thinks. With “total” it sounds stronger: completely a rip-off."],
+    ["He explains the word: you paid much more than something is worth. “I got ripped off” = someone took too much money from me.", "He explains what the word means: you paid a lot more than the thing is worth. “I got ripped off” = someone took too much money from me.", "He tells us the meaning: you pay much more than something is really worth. “I got ripped off” means someone took too much of my money.", "Here he explains “rip-off”: you pay far more than something is worth. And “I got ripped off” = someone took too much money from me."],
+    ["He talks about people who ask for a lot of money. He thinks they aren’t worth it. “A bit of” makes it softer.", "He is talking about people who charge a lot. In his opinion, they aren’t worth it. “A bit of” makes it softer.", "Some people ask for a lot of money, he says, and he thinks they aren’t worth it. “A bit of” makes it sound softer.", "He thinks some people ask for a lot of money but aren’t worth it. The words “a bit of” make it softer."]
+  ],
   "clips": [
     {"v": "2jIC6MBkjjs", "s": 39, "e": 40, "line": "It is such a rip-off.",
       "note": "They are tasting bottled water and he sees the price. He thinks it costs far too much for water."},

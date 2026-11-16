@@ -702,7 +702,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (API.toggleEdit) { API.toggleEdit(); return; }
-  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=3'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
+  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=4'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
 };
 
 renderCard(); newRange(); loadCaptions();
