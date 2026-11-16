@@ -19,7 +19,8 @@ errors of Ukrainian, never Russian or Polish. Some lessons are
 recorded on the teacher's phone and catch mostly the teacher's voice: say so and keep the student's
 mistakes list short. The teacher sometimes sends the lesson materials (slides) too.
 
-**Students.** All learn American English. Their notes are **not in this repo, because it is public**: each
+**Students.** English: American for a student whose `brief` says so; for everyone else international English is a
+bit better, but American is fine too (words and spelling). Their notes are **not in this repo, because it is public**: each
 student's level, schedule, billing rule, goals, preferences and what they have covered are in the site
 database, in the `brief` field of `students/<slug>` (list the `students` collection to see who there is).
 - Read the student's `brief` before any work for them. When the teacher tells you something new about a
@@ -82,18 +83,16 @@ huggingface.co, about 15 min per hour of audio).
   When the options are words or phrases to teach, put a short example sentence under each one (the option's
   description: "solve" → "Can you help me solve this problem?"). At most 4 options a question: ask part by part.
 
-- **American English** everywhere: spelling, vocabulary and IPA (/wɝk/, not /wɜːk/). IPA goes on the
-  teacher site only: **no phonetic transcription on student cards**.
+- **American or international English**: per student, see **Students** above. IPA is American (/wɝk/, not
+  /wɜːk/) and goes on the teacher site only: **no phonetic transcription on student cards**.
 - **Student cards**: readable on a phone, no student name, no page count, no "lesson notes" caption
-  (only a small, quiet date beside the kicker), no homework or mini-task. Usual set:
-  words they looked for (split by theme if long), "Say it like this" phrases, the grammar point, the
-  **3 most important fixes** only, and **pronunciation as its own card**.
-- The teacher usually sends only **2–3 cards**: the words cards and one visual cheat sheet (table or
-  comparison with emojis) for the lesson's main topic, sometimes "Say it like this" and pronunciation.
-  Put those first; keep subtitles short or leave them out.
+  (only a small, quiet date beside the kicker), no homework or mini-task.
+- **Which cards** (a general guide, not a hard rule): after she chooses (step 2), make a "Don't forget" words card,
+  "Say it like this", 3 pronunciation cards (she sends one) and anything else the lesson calls for (e.g. a picture
+  cheat sheet for the main topic). She decides what to send; often just one card. Keep subtitles short or leave
+  them out. Cards for her too: what to do next lesson, which words to teach, what the student got wrong.
 - **Pictures first, for every student**: a card should be understood at a glance: big pictures, almost nothing
-  to read (picture tiles with `grid: true`; picture rows when the words are long). Give about 3 cards to choose
-  from; she usually sends one.
+  to read (picture tiles with `grid: true`; picture rows when the words are long).
 - **Review cards and review sheets: ask first**, every time, with multiple-choice questions (several answers
   allowed) about what goes on them. Never pick the content on your own.
 - **Cards are a quick recap of what was said, never something the student sees for the first time.**
@@ -101,7 +100,7 @@ huggingface.co, about 15 min per hour of audio).
   - "Say it like this": the phrases that were corrected in the lesson.
   - Brand-new words and mistakes nobody corrected go to the next lesson: a "Next lesson · Words to review" card
     for the teacher, and a short list of phrases to talk about in the chat reply (teacher only).
-  - Pronunciation: give 2–3 card options so she can pick one.
+  - Pronunciation: give 3 card options so she can pick one.
   (Rule from Nov 11 on; earlier cards stay as they are.)
   For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
@@ -223,8 +222,9 @@ huggingface.co, about 15 min per hour of audio).
     (YouTube's "Show transcript"), and add the clip with exact times, the lines around it and a note.
   Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
-    or calling its API; she has emailed them asking to allow light automated use, so check for their answer before
-    automating anything): quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
+    or calling its API; she has emailed them asking to allow light automated use; they replied with a question and
+    she expects a yes, so check for their final answer before automating anything):
+    quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
     times and the lines around it. No accent filter: check the channel is American (sitcom clips like The Office work well).
   - **YouGlish** is the backup (`tools/real-video/pick.js`, US filter, search phrases that give the meaning: "a
     rip-off|what a rip-off"; `--meta` gives the rows): only 20 searches a day per browser (paging with next is free);
@@ -318,7 +318,6 @@ huggingface.co, about 15 min per hour of audio).
   - **No role-play** for now: she didn't like how it worked. Leave it out unless she asks for it.
   - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
   - **Never draw faces, mouths or body diagrams**: she found the drawn mouth creepy.
-  - "Go ahead" and "After you" both mean «Проходьте»; accept either.
 - **Site text is short and practical**: summary 1–2 short sentences; max 3 "went well" bullets; mistake
   notes a few words or empty; plan details one short line; teacher "worked" 3 bullets, "try next time"
   3–4 bullets, `why` a few words; no `talk`, `note` or `habits` text. Student `about` one line, `focus`
@@ -375,7 +374,7 @@ people, less, everyday, phrases, city, weather, food, home, event, grammar, soun
 `words`, so keep `words` accurate. The teacher's "reviewed" taps live in `state/bank-<slug>`.
 `materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
 with a short quality note (British usage, errors, overload). Her "reviewed again" ticks live in
-`state/mat-<slug>`. Materials must be American English; flag British forms when you see them.
+`state/mat-<slug>`. Materials follow the student's English (see **Students**); flag British forms when you see them.
 
 **Course.** `course/plan` (Claude writes) = the 30-unit backbone, same order for every student:
 `units[{n, grammar, cando, words, sound, materials[{title, url}], fix, extra}]`, `phases[{name, from, to, sum}]`,
