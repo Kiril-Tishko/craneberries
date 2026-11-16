@@ -91,6 +91,8 @@ async function init(){
   const h = slugify(decodeURIComponent(location.hash.replace(/^#w=/, '')));
   if (ORDER.length) await pick(ORDER.includes(h) ? h : ORDER[0], false);
   else showLine('', 'No words yet.');
+  // Inside a lesson screen: tell the lesson the clips are laid out, so it swaps its grey placeholders for them.
+  if (EMBED && parent !== window) setTimeout(() => parent.postMessage({clipsReady: true}, '*'), 150);
 }
 function renderChips(){
   // In a lesson screen (?embed) with one word: the word and its Ukrainian in big letters instead of the row of words.
