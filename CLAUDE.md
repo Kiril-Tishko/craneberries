@@ -320,6 +320,10 @@ huggingface.co, about 15 min per hour of audio).
     Only what was taught. **Before making it, ask him with multiple-choice questions (AskUserQuestion, multiSelect)
     which of the week's words go in**: he picks them; a word that only came up in a lesson is often not taught yet.
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
+  - **A page used in a lesson stays exactly as it is**: never edit it or take anything out of it afterwards (students
+    notice, and a missing word feels like "you don't think I can"). Changes go into the next page.
+  - **Never drop a word on your own** (too rare, too hard to say): ask him. Work words a student brings herself
+    (mothballed, subsidiary) are worth keeping: one or two a lesson, as a chunk, a few minutes, then recall.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
   - Kids' pages: tiny stories as one sentence per screen with a big picture (`P('story', en, ua, '', pic)`), then the
