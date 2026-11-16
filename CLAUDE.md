@@ -269,6 +269,8 @@ huggingface.co, about 15 min per hour of audio).
   - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`.
     The screen shows only the Ukrainian; one button gives three steps: 💡 Hint (the sentence with a blank, "Is it ____?"),
     💡 First letter ("Is it m________?"), Answer. Natural, everyday Ukrainian prompts (no odd words like «здирство»).
+    The brackets cover the whole phrase being practiced, so the Hint line never gives away its main word ("The bank
+    [won the lawsuit].", not "The bank [won] the lawsuit."; "He was [excited to meet] him.").
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
