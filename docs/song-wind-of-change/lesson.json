@@ -14,8 +14,8 @@
       {"words":[["change","зміни, зміна","A new job is a big <em>change</em>."]],"hl":["change"],"start":42.5,"end":50.2}
     ]},
     {"name":"Part 2","start":70.9,"end":99.7, "lines": [
-      {"words":[["did you ever think","ви колись думали…?","<em>Did you ever think</em> about learning to play the guitar?"]],"hl":["did you ever think"],"meaning":"“The world is closing in” here = the world is getting closer: countries that were enemies are coming together.","start":70.9,"end":77.5},
-      {"words":[["so close","такі близькі","My sister and I are <em>so close</em>."],["like brothers","як брати","Mark and Dave are <em>like brothers</em>."]],"hl":["so close","like brothers"],"note":"Here “close” ends with an “s” sound, not a “z” like in “close the door”.","meaning":"People from the East and the West can be friends, like brothers.","start":77.3,"end":85.3},
+      {"words":[["did you ever think","ви колись думали…?"]],"hl":["did you ever think"],"meaning":"“The world is closing in” here = the world is getting closer: countries that were enemies are coming together.","start":70.9,"end":77.5},
+      {"words":[["so close","такі близькі","My sister and I are <em>so close</em>."],["could","могли б"]],"hl":["so close","could"],"note":"Here “close” ends with an “s” sound, not a “z” like in “close the door”.","meaning":"People from the East and the West can be friends, like brothers.","start":77.3,"end":85.3},
       {"words":[["in the air","витає в повітрі","Spring is <em>in the air</em>."],["everywhere","всюди","I looked <em>everywhere</em> for my keys."]],"hl":["in the air","everywhere"],"note":"“In the air” = you can feel that it’s coming.","start":85.1,"end":91.75}
     ]},
     {"name":"Part 3","start":99.6,"end":119.5, "lines": [
@@ -36,20 +36,20 @@
       {"words":[["want to say","хотіти сказати","I just <em>want to say</em> thank you."]],"hl":["wants to say"],"note":"Let + someone + verb: let me help, let him talk.","meaning":"The balalaika (from the East) and the guitar (from the West) say the same thing: let’s live in peace.","start":187.8,"end":195.5}
     ]}
   ],
-  "later": [["closing in","зближується, стає ближчим"], ["glory night","славна ніч"], ["distant","далекі"], ["buried","поховані"], ["face of time","обличчя часу"], ["storm wind","буревій"], ["peace of mind","душевний спокій"]],
+  "later": [["glory night","славна ніч"], ["distant","далекі"], ["buried","поховані"], ["face of time","обличчя часу"], ["storm wind","буревій"], ["peace of mind","душевний спокій"], ["closing in","зближується, стає ближчим"]],
   "gloss": {
     "i": "я",
-    "i’m": {"*": "я (I’m = I am)", "I’m blowing": "I’m blowing = I am blowing: am + дієслово з -ing = дія триває зараз: «я несуся (з вітром)»."},
+    "i’m": {"*":"я (I’m = I am)","I’m blowing":"I’m blowing = I am blowing: am + дієслово з -ing = дія триває зараз: «я несуся (з вітром)»."},
     "follow": "іду вздовж (річки)",
-    "the": {"*": "the — означений артикль: про щось конкретне, відоме («той самий», «саме цей»). В українській його немає.", "the Moskva": "the — бо Moskva тут річка: перед назвами річок завжди the (the Dnipro, the Thames).", "the wind of change": "the wind of change — саме цей вітер змін, про який пісня, тому the.", "The world": "the world — світ один, тому the (так само the sun, the sky).", "The future": "the future — майбутнє одне, тому the.", "the air": "in the air — «у повітрі»: повітря навколо нас одне, тому the.", "the magic of the moment": "the magic of the moment — саме та магія, саме тієї миті (конкретної), тому the.", "the children of tomorrow": "the children of tomorrow — саме ці діти, «діти майбутнього», тому the.", "the street": "the street — вулиця, якою він іде (конкретна), тому the.", "the past": "the past — минуле одне, тому the.", "the face of time": "the face of time — «обличчя часу»: час один, тому the.", "the freedom bell": "the freedom bell — той самий дзвін свободи (один, особливий), тому the."},
+    "the": {"*":"the — означений артикль: про щось конкретне, відоме («той самий», «саме цей»). В українській його немає.","the Moskva":"the — бо Moskva тут річка: перед назвами річок завжди the (the Dnipro, the Thames).","the wind of change":"the wind of change — саме цей вітер змін, про який пісня, тому the.","The world":"the world — світ один, тому the (так само the sun, the sky).","The future":"the future — майбутнє одне, тому the.","the air":"in the air — «у повітрі»: повітря навколо нас одне, тому the.","the magic of the moment":"the magic of the moment — саме та магія, саме тієї миті (конкретної), тому the.","the children of tomorrow":"the children of tomorrow — саме ці діти, «діти майбутнього», тому the.","the street":"the street — вулиця, якою він іде (конкретна), тому the.","the past":"the past — минуле одне, тому the.","the face of time":"the face of time — «обличчя часу»: час один, тому the.","the freedom bell":"the freedom bell — той самий дзвін свободи (один, особливий), тому the."},
     "moskva": "Москва (річка)",
     "down": "униз, далі (до)",
-    "to": {"*": "до", "down to": "to = «до» (куди?): down to Gorky Park = (далі) до парку Горького."},
+    "to": {"*":"до","down to":"to = «до» (куди?): down to Gorky Park = (далі) до парку Горького."},
     "gorky": "Горького (парк)",
     "park": "парк",
     "listening": "слухаючи",
     "wind": "вітер",
-    "of": {"*": "of = «чого?»: зв’язує два слова, як наш родовий відмінок.", "wind of change": "of = «чого?»: wind of change = вітер (чого?) змін.", "magic of the moment": "of = «чого?»: magic of the moment = магія (чого?) миті.", "children of tomorrow": "of: children of tomorrow = діти (чого?) завтрашнього дня = діти майбутнього."},
+    "of": {"*":"of = «чого?»: зв’язує два слова, як наш родовий відмінок.","wind of change":"of = «чого?»: wind of change = вітер (чого?) змін.","magic of the moment":"of = «чого?»: magic of the moment = магія (чого?) миті.","children of tomorrow":"of: children of tomorrow = діти (чого?) завтрашнього дня = діти майбутнього."},
     "change": "зміни",
     "an": "an — неозначений артикль («одна, якась»). an замість a, бо далі голосний звук: an August night.",
     "august": "серпневий",
@@ -67,7 +67,7 @@
     "you": "ти, ви",
     "ever": "колись",
     "think": "думати",
-    "that": {"*": "що", "wind that": "that = «який»: a storm wind that will ring… = буревій, який задзвонить…"},
+    "that": {"*":"що","wind that":"that = «який»: a storm wind that will ring… = буревій, який задзвонить…"},
     "we": "ми",
     "could": "могли б",
     "be": "бути",
@@ -89,7 +89,7 @@
     "magic": "магія, чари",
     "moment": "мить, момент",
     "on": "у, на",
-    "a": {"*": "a — неозначений артикль: «один, якийсь». Ставимо перед одним предметом, коли не уточнюємо, який саме. В українській його немає.", "a glory night": "a glory night — одна славна ніч (якась, не уточнюємо яка), тому a.", "a storm wind": "a storm wind — якийсь сильний вітер (один, не конкретний), тому a."},
+    "a": {"*":"a — неозначений артикль: «один, якийсь». Ставимо перед одним предметом, коли не уточнюємо, який саме. В українській його немає.","a glory night":"a glory night — одна славна ніч (якась, не уточнюємо яка), тому a.","a storm wind":"a storm wind — якийсь сильний вітер (один, не конкретний), тому a."},
     "glory": "слава",
     "where": "де",
     "children": "діти",
