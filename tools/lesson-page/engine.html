@@ -444,8 +444,10 @@ card.addEventListener('click', (e) => {
 });
 /* ---------- "My sentences": kept as they are typed, so a reload or a closed tab loses nothing ----------
    Two places: this browser (localStorage, at once) and, for a signed-in viewer of the published page, that
-   person's private rows in the page database (publish with capabilities db + user). Either one is enough. */
-const MINE_KEY = 'lesson-mine';
+   person's private rows in the page database (publish with capabilities db + user). Either one is enough.
+   A Claude page has its own address, so one key is enough there. On the student site (kiril-tishko/lessons) every
+   lesson shares one address: its page sets window.LESSON_KEY so each lesson keeps its own sentences. */
+const MINE_KEY = window.LESSON_KEY || 'lesson-mine';
 let mineMem = null, mineDoc = null, mineTimer = 0;
 function mineLoad(){
   if (mineMem) return mineMem;
