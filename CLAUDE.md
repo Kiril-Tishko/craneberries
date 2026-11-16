@@ -144,10 +144,15 @@ huggingface.co, about 15 min per hour of audio).
   player.js / player.css in every `docs/<lesson>/index.html`.
   ✕ (leaving edit mode) with unsaved changes asks: save, throw them away, or keep editing (the clips page too).
   **↻ Make again** (edit mode only, song pages and the clips page; `docs/video/remake.js`): beside each translation,
-  example, note and meaning; Claude (`claude-opus-5-5`, her own Anthropic API key, kept only in her browser) writes
-  another version; the current one and the new ones are listed, ↻ Another adds one more, a tap keeps one. Only that
-  short request is sent (the word, its Ukrainian, its line and the lines around it, the title, what to write): never
-  a chat, a student or a name.
+  example, note and meaning (clips page: the word's Ukrainian and each clip's note). It shows the text there now plus
+  ready-made versions, and a tap keeps one. No API key and no API call (she has a Claude plan, which web pages can't
+  use): the versions are written in a chat and stored as `"versions"`, groups of texts that can replace each other
+  (`[text, version, version, version]`, one group per line), in lesson.json or in the clip word's file; ↻ finds the
+  group that contains the text there now. **Whenever you write or change a translation, example, note or meaning (a
+  new song page, new clip words, words she adds), add a group with 3 more versions**: same rules as the original
+  (natural Ukrainian, never Russian; everyday A2 American-English examples of at most 12 words with the word in
+  `<em>` in the same form; notes and meanings with the same facts, reworded). When she asks for "↻ versions for …",
+  add the missing groups the same way. The savers keep `"versions"`; `git pull --rebase` first, never overwrite her edits.
   **Grammar words** (a, the, is, are, do, did, to, of…): a tap says in short Ukrainian *why the word is there in that
   line*, never "we don't translate it here". A word whose reason differs by line has a gloss object:
   `"the": {"*": "usual note", "the Moskva": "note for this line", …}`: a key is words around it in a line, and the one
