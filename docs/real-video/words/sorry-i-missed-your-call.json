@@ -1,0 +1,50 @@
+{
+ "en": "Sorry, I missed your call.",
+ "ua": "Вибачте, я пропустила ваш дзвінок.",
+ "pic": "📲",
+ "hl": "(I[’']m )?sorry,? I missed your call",
+ "together": {},
+ "gloss": {
+  "hey": "привіт, слухай",
+  "number": "номер",
+  "five": "п’ять",
+  "can": "можеш",
+  "you": "ти",
+  "text": "написати повідомлення"
+ },
+ "clips": [
+  {
+   "v": "GyHeh3S2gpM",
+   "s": 106,
+   "e": 107,
+   "line": "Hey, sorry I missed your call.",
+   "note": "She calls back: she couldn’t answer the phone before.",
+   "noteUa": "Людина передзвонює: раніше не змогла відповісти на дзвінок."
+  },
+  {
+   "v": "bjwQcMOL2ug",
+   "s": 305,
+   "e": 305,
+   "line": "sorry I missed your call,",
+   "note": "He calls back and says sorry for not answering.",
+   "noteUa": "Він передзвонює і вибачається, що пропустив дзвінок."
+  },
+  {
+   "v": "pL2zIMqxfbI",
+   "s": 821,
+   "e": 822,
+   "line": "I’m sorry I missed your call.",
+   "note": "A polite start when you call someone back.",
+   "noteUa": "Ввічливий початок, коли ви передзвонюєте."
+  },
+  {
+   "v": "N6TANjt5NAY",
+   "s": 193,
+   "e": 197,
+   "line": "Number five: “Sorry, I missed your call; can you text?”",
+   "note": "A short reply: sorry I missed it, can you write to me?",
+   "noteUa": "Коротка відповідь: «Вибач, я пропустила дзвінок. Можеш написати?»",
+   "hidden": true
+  }
+ ]
+}
