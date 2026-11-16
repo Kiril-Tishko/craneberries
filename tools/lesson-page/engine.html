@@ -183,6 +183,7 @@ s.no{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-
 /* Games: a star burst on a right answer, a shake on a wrong one */
 .burst{position:fixed;pointer-events:none;font-size:28px;z-index:9;animation:burst .9s ease-out forwards}
 @keyframes burst{from{transform:translate(-50%,0) scale(.6);opacity:1}to{transform:translate(calc(-50% + var(--dx)),-110px) scale(1.25);opacity:0}}
+.quiz .word{font-size:clamp(20px,3.4vh,28px);padding:8px 16px}
 .word.shake{animation:shake .4s}
 @keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
@@ -355,7 +356,7 @@ function view(s){
     <div class="ua">${esc(s.ua)}</div>
     ${s.ex ? `<div class="row" style="align-items:center"><span class="ex">${esc(s.ex)}</span>${spk(s.ex)}</div>` : ''}`;
   if (s.t === 'convo') return `
-    <button class="btn playall" data-playall>▶ Play the whole call</button>
+    <button class="btn playall" data-playall>${esc(s.play || '▶ Play the whole call')}</button>
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
   if (s.t === 'recall'){
     // en may mark the key word: 'Is it [mandatory]?'. Then one 💡 button gives three steps:
@@ -388,7 +389,8 @@ function view(s){
     <div class="who swapw">🎮 ${esc(s.who || 'Tap the answer!')}</div>
     ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="row" style="align-items:center"><div class="big">${esc(s.q)}</div>${spk(s.q)}</div>
-    <div class="row">${s.opts.map(([t, e], i) => `<button class="word" data-quiz="${i}">${e} ${esc(t)}</button>`).join('')}</div>`;
+    ${s.note ? `<div class="when">${esc(s.note)}</div>` : ''}
+    <div class="row quiz">${s.opts.map(([t, e], i) => `<button class="word" data-quiz="${i}">${e} ${esc(t)}</button>`).join('')}</div>`;
   if (s.t === 'game') return `
     <div class="who hear">👂 Which word do you hear?</div>
     <button class="btn main" data-gplay>▶ Listen</button>
