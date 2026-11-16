@@ -1,5 +1,7 @@
-// Shared player for song and video lessons. A lesson page sets window.LESSON and loads this file:
+// Shared player for song and video lessons. A lesson page loads this file; the lesson is lesson.json next to the page
+// (or window.LESSON). 5 quick taps in the top-left corner open edit mode (edit.js), which saves lesson.json to GitHub.
 //   id        short name, used for what this browser remembers (My words, captions, the video file)
+//   about, skipped   notes for whoever edits the lesson (what it is for, which bits of the video are left out)
 //   title, sub
 //   video     {type:'youtube', id} or {type:'file', duration}: a file she opens from her device (never put in the repo)
 //   captions  {type:'lrc', url}: timed lyrics loaded live (lrclib.net), never stored in the repo
@@ -14,9 +16,16 @@
 // Steps: every line of a part (its key words first, then just that line plays), then the whole part, "All together".
 // At the end, My words: the words she added with +, as gap sentences.
 // The player follows docs/real-video: our own panel, no YouTube UI, steady layout, presses count even while loading.
-(function(){
+(async function(){
 'use strict';
-const L = window.LESSON, YTV = L.video.type === 'youtube';
+let L = window.LESSON;
+if (!L) {
+  try { L = await fetch('lesson.json', {cache: 'no-cache'}).then((r) => (r.ok ? r.json() : Promise.reject(r.status))); }
+  catch (e) { document.body.textContent = 'The lesson didn’t load. Reload the page.'; return; }
+}
+// Shared with the edit mode (edit.js).
+const API = window.Player = {L, editing: false, silent: false};
+const YTV = L.video.type === 'youtube';
 const tall = !YTV && L.video.tall !== false;
 const STEP = 1;                                   // ← → and double-tap move this many seconds
 const MUTE = /[?&]mute\b/.test(location.search);  // …?mute plays without sound (for testing)
@@ -30,6 +39,7 @@ document.body.innerHTML = `<svg hidden xmlns="http://www.w3.org/2000/svg">
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="m8.6 5.4 6.6 6.6-6.6 6.6L10 20l8-8-8-8z"/></symbol>
 </svg>
+<button class="corner" id="corner" tabindex="-1" aria-hidden="true"></button>
 <div class="app">
   <header>
     <h1>${esc(L.title)}${L.sub ? ` <span>${esc(L.sub)}</span>` : ''}</h1>
@@ -41,6 +51,7 @@ document.body.innerHTML = `<svg hidden xmlns="http://www.w3.org/2000/svg">
         <button class="cover" id="cover" tabindex="-1" aria-label="Play"><span class="big" id="big"><svg><use id="bigicon" href="#i-play"/></svg></span><span class="open" id="open" hidden>📂 Open the video</span></button>
         <div class="flash l" id="flashl">− 1 s</div><div class="flash r" id="flashr">+ 1 s</div>
       </div>
+      <div class="etools" id="etools" hidden></div>
       <div class="bar">
         <button class="pp" id="pp" aria-label="Play"><svg><use id="ppicon" href="#i-play"/></svg></button>
         <div class="tlhit" id="tlhit"><div class="tl" id="tl"><div class="tl-fill" id="tlfill"></div><div class="tl-dot" id="tldot"></div></div></div>
@@ -71,13 +82,28 @@ const store = {
   set(k, v){ try { localStorage.setItem(`${L.id}-${k}`, JSON.stringify(v)); return true; } catch (e) { return false; } }
 };
 
-const PARTS = L.parts, GLOSS = L.gloss || {}, LATER = (L.later || []).map(([p, ua]) => ({p, ua}));
-const STEPS = [];
-PARTS.forEach((p, pn) => {
-  p.lines.forEach((l, ln) => STEPS.push(Object.assign({kind: 'line', pn, ln}, l)));
-  STEPS.push({kind: 'all', pn, start: p.start, end: p.end});
-});
-STEPS.push({kind: 'practice'});
+// The steps come from the lesson; edit mode changes the lesson and builds them again (rebuild).
+let PARTS, GLOSS, LATER;
+const STEPS = [], KEYS = [];
+let heard = [];
+function rebuild(){
+  PARTS = L.parts; GLOSS = L.gloss || (L.gloss = {}); LATER = (L.later || []).map(([p, ua]) => ({p, ua}));
+  STEPS.length = 0;
+  PARTS.forEach((p, pn) => {
+    p.lines.forEach((l, ln) => STEPS.push(Object.assign({kind: 'line', pn, ln}, l)));
+    STEPS.push({kind: 'all', pn, start: p.start, end: p.end});
+  });
+  STEPS.push({kind: 'practice'});
+  // Every key phrase of the lesson as it is sung (hl[k] belongs to words[k]), so a tap gives the phrase's Ukrainian
+  // in any part, also where it isn't yellow.
+  KEYS.length = 0;
+  PARTS.forEach((p) => p.lines.forEach((l) => (l.hl || []).forEach((h, k) => {
+    const w = l.words[k] || l.words[0];
+    if (w && w[1] && !KEYS.some((x) => base(x.p) === base(h))) KEYS.push({p: h, ua: w[1]});
+  })));
+  heard = STEPS.map((s, n) => heard[n] || false);
+}
+rebuild();
 
 let i = 0, range = null, rate = 1, wantPlay = null;
 let started = false, ended = false, endedAt = 0, loadedAt = 0, dragging = false;
@@ -87,7 +113,6 @@ let moved = false;
 // `intent` is what she last asked for (play or pause). The buttons follow it, not the player's state, so a press
 // counts even while the video is still loading.
 let intent = false;
-const heard = STEPS.map(() => false);
 let LINES = [], capsNote = '', capSig = '';
 let dict = store.get('dict', []), pr = {n: 0, show: false};
 if (!Array.isArray(dict)) dict = [];
@@ -135,12 +160,13 @@ function youTube(){
     // While the video is still loading, YouTube ignores a jump and may start from 0:00: then it is loaded again at
     // the right second instead.
     play(from){
-      m.warming = false; if (!MUTE) m.p.unMute();
+      m.warming = false; if (MUTE || API.silent) m.p.mute(); else m.p.unMute();
       if (m.loaded) { m.p.seekTo(from, true); m.p.playVideo(); } else load(from);
       m.p.setPlaybackRate(rate);
     },
     resume: () => m.p.playVideo(),
     pause: () => m.p.pauseVideo(),
+    mute: (on) => { if (on) m.p.mute(); else m.p.unMute(); },
     seek: (t) => m.p.seekTo(t, true),
     rate: (r) => m.p.setPlaybackRate(r),
     // Stand ready (stopped) where the next step starts.
@@ -166,9 +192,10 @@ function localFile(){
     canSeek: () => v.readyState >= 1 && !!v.currentSrc,
     time: () => v.currentTime,
     playing: () => !v.paused && !v.ended,
-    play(from){ v.playbackRate = rate; v.currentTime = from; v.play().catch(() => {}); },
+    play(from){ v.muted = MUTE || API.silent; v.playbackRate = rate; v.currentTime = from; v.play().catch(() => {}); },
     resume: () => { v.play().catch(() => {}); },
     pause: () => v.pause(),
+    mute: (on) => { v.muted = on; },
     seek: (t) => { v.currentTime = t; },
     rate: (r) => { v.playbackRate = r; },
     prepare(from){ if (m.ready()) v.currentTime = from; },
@@ -287,14 +314,7 @@ function marked(text, hls){
   }
   return h + (og ? '</span>' : '') + (open ? '</mark>' : '');
 }
-const base = (t) => t.toLowerCase().replace(/'/g, '’').replace(/\(.*?\)|…/g, '').replace(/\s+/g, ' ').trim();
-// Every key phrase of the lesson as it is sung (hl[k] belongs to words[k]), so a tap gives the phrase's Ukrainian
-// in any part, also where it isn't yellow.
-const KEYS = [];
-PARTS.forEach((p) => p.lines.forEach((l) => (l.hl || []).forEach((h, k) => {
-  const w = l.words[k] || l.words[0];
-  if (w && w[1] && !KEYS.some((x) => base(x.p) === base(h))) KEYS.push({p: h, ua: w[1]});
-})));
+function base(t){ return t.toLowerCase().replace(/'/g, '’').replace(/\(.*?\)|…/g, '').replace(/\s+/g, ' ').trim(); }
 function learnWords(){
   const s = STEPS[i];
   if (s.kind === 'line') return s.words;
@@ -347,6 +367,7 @@ function stepRange(){
 }
 const captionShown = () => {
   const s = STEPS[i];
+  if (API.editing && s.kind !== 'practice') return true;   // edit mode: the lines are always there to tap
   return s.kind === 'line' ? heard[i] : s.kind === 'all' ? started : pr.show;
 };
 // A line step shows all its lines (the one being sung in full colour); "All together" shows the line being sung.
@@ -365,13 +386,13 @@ function drawCaption(force){
     if (!force && sig === capSig) return;
     capSig = sig; hidePop();
     const l = lines[Math.max(0, cur)];
-    bar.innerHTML = `<p class="cap${show ? '' : ' off'}">${l ? marked(l.text, range.hl) : ''}</p>`;
+    bar.innerHTML = `<p class="cap${show ? '' : ' off'}" data-t="${l ? l.t : ''}">${l ? marked(l.text, range.hl) : ''}</p>`;
     return;
   }
   const sig = `${i}|${pr.n}|${range.from}|${range.to}`;
   if (force || sig !== capSig) {
     capSig = sig; hidePop();
-    bar.innerHTML = lines.map((l) => `<p class="cap">${marked(l.text, range.hl)}</p>`).join('');
+    bar.innerHTML = lines.map((l) => `<p class="cap" data-t="${l.t}">${marked(l.text, range.hl)}</p>`).join('');
   }
   const live = started && !ended;
   bar.querySelectorAll('.cap').forEach((p, n) => {
@@ -466,6 +487,7 @@ function renderCard(){
       <button class="btn primary${pr.show ? ' off' : ''}" id="reveal">Answer</button>`;
   }
   $('card').innerHTML = h;
+  if (API.onCard) API.onCard(s);   // edit mode makes the card's text editable
 }
 
 /* ---------- Steps ---------- */
@@ -629,6 +651,38 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'Escape') hidePop();
 }, true);
 document.addEventListener('keyup', (e) => { if (!typing(e) && (e.code === 'Space' || e.key === ' ')) e.preventDefault(); }, true);
+
+/* ---------- Shared with edit mode (edit.js) ---------- */
+// What a step is made from: its line (a line screen) or its part (All together).
+const objOf = (s) => (s.kind === 'line' ? PARTS[s.pn].lines[s.ln] : s.kind === 'all' ? PARTS[s.pn] : null);
+Object.assign(API, {
+  YTV, esc, base, find, lookup, objOf,
+  get i(){ return i; }, step: () => STEPS[i], steps: () => STEPS, parts: () => PARTS, lines: () => LINES,
+  time: () => (media.canSeek() ? media.time() : 0),
+  // After a change in the lesson's shape: build the steps again and show the step made from `keep` (else the same place).
+  rebuild(keep){
+    rebuild();
+    let n = keep ? STEPS.findIndex((s) => objOf(s) === keep) : -1;
+    if (n < 0) n = Math.min(i, STEPS.length - 1);
+    go(n); sizeCaption();
+  },
+  // After a text change (a translation, a note): the same screen stays as it is.
+  quiet(){ rebuild(); range = stepRange(); },
+  redraw(){ renderCard(); drawCaption(true); drawNav(); },
+  sizeCaption: () => sizeCaption(),
+  play: (at) => playRange(at),
+  pause(){ if (isPlaying()) { intent = false; media.pause(); setCover(); drawCaption(); } },
+  setSilent(on){ API.silent = on; if (media.ready() && started) media.mute(on || MUTE); }
+});
+// 5 quick taps in the top-left corner: edit mode on or off.
+let corner = [];
+$('corner').onclick = () => {
+  const t = Date.now(); corner = corner.filter((x) => t - x < 3000); corner.push(t);
+  if (corner.length < 5) return;
+  corner = [];
+  if (API.toggleEdit) { API.toggleEdit(); return; }
+  const sc = document.createElement('script'); sc.src = '../video/edit.js'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
+};
 
 renderCard(); newRange(); loadCaptions();
 })();

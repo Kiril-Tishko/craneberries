@@ -145,3 +145,40 @@ main.tall .video{aspect-ratio:auto;flex:1 1 0;min-height:240px}
 .foot a{color:var(--muted)}
 .foot .btn{font-size:13px;padding:4px 10px;margin-left:6px}
 @media (prefers-reduced-motion:reduce){.cap,.cover,.flash{transition:none}}
+
+/* ---------- Edit mode (edit.js): 5 quick taps in the top-left corner ---------- */
+.corner{position:fixed;left:0;top:0;width:44px;height:44px;border:0;padding:0;background:transparent;z-index:30;cursor:default}
+body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 4px,transparent 4px 8px);opacity:.35}
+/* Click any dashed text and type. */
+body.editing [contenteditable]{outline:1.5px dashed var(--accent);outline-offset:3px;border-radius:6px;cursor:text;min-width:2ch}
+body.editing [contenteditable]:focus{outline-style:solid}
+body.editing [contenteditable]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.7;font-style:italic}
+body.editing .note{visibility:visible}
+body.editing .note p{margin:0 0 8px}
+body.editing .w{position:relative}
+.wtools{grid-column:1/-1;display:flex;gap:6px;margin-top:2px}
+.wtools button{font:600 13px var(--font);padding:4px 9px;border-radius:8px;border:1px dashed var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.wtools button:hover{color:var(--accent);border-color:var(--accent)}
+/* The small bar under the video: the screen's times, remove, sound, save. */
+.etools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 14px;background:var(--ua-bg);border-bottom:1px solid var(--line);font-size:13px}
+.etime{display:inline-flex;align-items:center;gap:3px}
+.etime .lbl{font-weight:700;color:var(--muted);margin-right:3px}
+.etime button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700;font-size:15px;cursor:pointer;padding:0}
+.etime input{width:84px;font:600 14px var(--font);font-variant-numeric:tabular-nums;color:var(--ink);padding:5px 4px;border-radius:8px;border:1px solid var(--line);background:var(--surface);text-align:center}
+.etools .btn{font-size:14px;padding:6px 10px}
+.etools .primary{font-size:14px;padding:6px 12px;min-width:0}
+.etools .right{margin-left:auto;display:inline-flex;gap:6px}
+.etools .what{font-weight:800;font-size:13px;color:var(--ua)}
+.etools .msg{flex:1 1 100%;color:var(--muted);font-size:13px}
+.etools .msg:empty{display:none}
+.etools .msg.bad{color:var(--accent);font-weight:600}
+.etools .keyrow{flex:1 1 100%;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.etools .keyrow input{flex:1 1 200px;font:500 14px var(--font);padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+/* Tapping a word or phrase in the lyrics: its Ukrainian, and Learn / Later / plain. */
+.epop{position:fixed;z-index:40;transform:translate(-50%,-100%);display:grid;gap:8px;padding:12px;border-radius:12px;width:min(320px,92vw);
+  background:var(--surface);color:var(--ink);border:2px solid var(--accent);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.epop b{font-size:18px}
+.epop input{font:500 16px var(--font);padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.epop .seg{display:flex}
+.epop .seg button{flex:1}
+.epop small{color:var(--muted);font-size:12px}
