@@ -51,5 +51,7 @@ const SECTIONS = [
   // Real video clips of the lesson's words: {t:'clips', words:['rip-off', 'Is that a thing?']} (optional: label, when,
   //   notes:'ua' for 💡 notes in Ukrainian). ▶ opens …/real-video/?words=… in a new tab. Every word must be in the clip
   //   library (docs/real-video/words/<slug>.json); see CLAUDE.md, "Real video clips".
+  // A song page of the lesson (docs/<song>/, e.g. song-human): {t:'song', song:'song-human', title:'Human'} (optional:
+  //   label, when). ▶ opens it in a new tab: on the student site from the site itself, on a Claude page from GitHub Pages.
   {label:'My sentences', slides:[{t:'mine'}]}
 ];

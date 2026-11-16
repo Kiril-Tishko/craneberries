@@ -12,7 +12,8 @@
 'use strict';
 const P = window.Player, L = P.L, esc = P.esc;
 const REPO = 'kiril-tishko/craneberries', BRANCH = 'claude/vigilant-ptolemy-ltawsa', KEY = 'rv-github-token';
-const FOLDER = location.pathname.split('/').filter((x) => x && x !== 'index.html').pop();
+// The lesson's folder in docs/: from the address lesson.json came from (on the student site it comes from here too).
+const FOLDER = new URL(P.src || 'lesson.json', location.href).pathname.split('/').filter((x) => x && x !== 'index.html' && x !== 'lesson.json').pop();
 const PATH = `docs/${FOLDER}/lesson.json`;
 const $ = (id) => document.getElementById(id);
 let token = '';
@@ -204,7 +205,7 @@ document.addEventListener('keydown', (e) => { if (P.editing && e.key === 'Enter'
 /* ---------- ↻ make again: the ready-made versions in lesson.json "versions" (remake.js, loaded the first time) ---------- */
 const rmkBtn = (kind, k, j) => `<button class="rmk-btn" data-rmk="${kind}"${k != null ? ` data-k="${k}"` : ''}${j != null ? ` data-j="${j}"` : ''} title="Other versions" aria-label="Other versions">↻</button>`;
 const remake = () => (window.Remake ? Promise.resolve(window.Remake) : new Promise((res, rej) => {
-  const sc = document.createElement('script'); sc.src = '../video/remake.js?v=2';
+  const sc = document.createElement('script'); sc.src = (P.home || '../video/') + 'remake.js?v=2';
   sc.onload = () => res(window.Remake); sc.onerror = () => rej(new Error('load')); document.head.appendChild(sc);
 }));
 const onlyEm = (t) => t.replace(/<(?!\/?em>)[^>]*>/g, '').replace(/\s+/g, ' ').trim();

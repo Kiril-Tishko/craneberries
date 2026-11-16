@@ -276,6 +276,17 @@ function view(s){
     <a class="btn main" href="${esc(url)}" target="_blank" rel="noopener">▶ Watch the clips</a>
     <div class="when">${esc(s.when || 'Short clips from real videos')}</div>`;
   }
+  if (s.t === 'song'){
+    // A song page (docs/<song>/ in craneberries) opens in a new tab: on the student site from the site itself
+    // (/song/?s=…), on a Claude page from GitHub Pages. Its "← Lesson" button closes the tab again.
+    const url = window.LESSON_KEY ? `/song/?s=${encodeURIComponent(s.song)}&from=lesson`
+      : `https://kiril-tishko.github.io/craneberries/${encodeURIComponent(s.song)}/?from=lesson`;
+    return `
+    <div class="who hear">🎵 ${esc(s.label || 'Song')}</div>
+    <div class="big">${esc(s.title || '')}</div>
+    <a class="btn main" href="${esc(url)}" target="_blank" rel="noopener">▶ Open the song</a>
+    <div class="when">${esc(s.when || 'Line by line, with the words')}</div>`;
+  }
   if (s.t === 'word') return `
     <div class="who">${esc(s.label || '📖 New phrase')}</div>
     ${s.pic ? `<div class="pic" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}

@@ -1,5 +1,7 @@
 // Shared player for song and video lessons. A lesson page loads this file; the lesson is lesson.json next to the page
-// (or window.LESSON). 5 quick taps in the top-left corner open edit mode (edit.js), which saves lesson.json to GitHub.
+// (or window.LESSON, or the address in window.LESSON_URL: the student site, kiril-tishko/lessons site/song/, loads a
+// song from here that way). 5 quick taps in the top-left corner open edit mode (edit.js), which saves lesson.json to GitHub.
+// ?from=lesson adds a "← Lesson" button that closes the tab again (the lesson page opened it).
 //   id        short name, used for what this browser remembers (My words, captions, the video file)
 //   about, skipped   notes for whoever edits the lesson (what it is for, which bits of the video are left out)
 //   title, sub
@@ -18,13 +20,17 @@
 // The player follows docs/real-video: our own panel, no YouTube UI, steady layout, presses count even while loading.
 (async function(){
 'use strict';
+// Where this player lives: edit.js and remake.js load from the same folder, whichever site the page is on.
+const HOME = document.currentScript && document.currentScript.src ? new URL('.', document.currentScript.src).href : '../video/';
+const SRC = window.LESSON_URL || 'lesson.json';
 let L = window.LESSON;
 if (!L) {
-  try { L = await fetch('lesson.json', {cache: 'no-cache'}).then((r) => (r.ok ? r.json() : Promise.reject(r.status))); }
+  try { L = await fetch(SRC, {cache: 'no-cache'}).then((r) => (r.ok ? r.json() : Promise.reject(r.status))); }
   catch (e) { document.body.textContent = 'The lesson didn’t load. Reload the page.'; return; }
 }
 // Shared with the edit mode (edit.js).
-const API = window.Player = {L, editing: false, silent: false};
+const API = window.Player = {L, editing: false, silent: false, home: HOME, src: SRC};
+const FROM_LESSON = new URLSearchParams(location.search).get('from') === 'lesson';
 const YTV = L.video.type === 'youtube';
 const tall = !YTV && L.video.tall !== false;
 const STEP = 1;                                   // ← → and double-tap move this many seconds
@@ -44,6 +50,7 @@ document.body.innerHTML = `<svg hidden xmlns="http://www.w3.org/2000/svg">
   <header>
     <h1>${esc(L.title)}${L.sub ? ` <span>${esc(L.sub)}</span>` : ''}</h1>
     <div class="where"><span id="warn" class="warn"></span><span id="mywords"></span><span id="where"></span></div>
+    ${FROM_LESSON ? '<button class="btn tolesson" id="tolesson"><svg><use href="#i-prev"/></svg>Lesson</button>' : ''}
   </header>
   <main class="${tall ? 'tall' : 'wide'}">
     <section class="player" aria-label="Video">
@@ -719,8 +726,9 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (API.toggleEdit) { API.toggleEdit(); return; }
-  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=5'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
+  const sc = document.createElement('script'); sc.src = HOME + 'edit.js?v=6'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
 };
+if (FROM_LESSON) $('tolesson').onclick = () => { window.close(); setTimeout(() => history.back(), 300); };
 
 renderCard(); newRange(); loadCaptions();
 })();

@@ -18,8 +18,9 @@ svg{width:18px;height:18px;flex:none;fill:currentColor}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
 h1{margin:0;font-size:clamp(19px,2.6vw,24px);font-weight:800;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 h1 span{color:var(--muted);font-weight:600;font-size:.7em}
-.where{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted);font-weight:600;white-space:nowrap;flex:0 1 auto;min-width:0}
+.where{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted);font-weight:600;white-space:nowrap;flex:0 1 auto;min-width:0}
 .where .warn{color:var(--accent);min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tolesson{flex:none;padding:6px 12px 6px 8px}
 
 /* Grid: the player panel, and the card with what to learn. */
 main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16px;align-items:start}
