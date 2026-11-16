@@ -6,7 +6,6 @@
   "skipped": "1:54–2:18 repeats Part 4, so it’s left out.",
   "video": {"type":"youtube","id":"L3wKzyIN1yk"},
   "captions": {"type":"lrc","url":"https://lrclib.net/api/get/7918608"},
-  "together": {"after all":"","take a look":"","That’s all it takes":"","see through":"","put your blame on":"","put the blame on":"","out of luck":"","beg for forgiveness":"","go looking":"піти шукати","Lord heavens above":"Господи небесний! (вигук)"},
   "parts": [
     {"name":"Part 1","start":2.3,"end":24.5, "lines": [
       {"words":[["I’m only human","я лише людина","Sorry, I forgot. <em>I’m only human</em>."]],"hl":["I’m only human"],"start":2.4,"end":12.9},
@@ -18,8 +17,8 @@
       {"words":[["after all","зрештою, усе-таки","Don’t be angry with him. He’s only a kid, <em>after all</em>."]],"hl":["after all"],"note":"Here it means “don’t forget that…”. It doesn’t mean “finally”.","start":24.5,"end":30.7}
     ]},
     {"name":"Part 3","start":38.6,"end":63.3, "lines": [
-      {"words":[["take a look","подивитися, поглянути","<em>Take a look</em> at this chart."]],"hl":["take a look"],"note":"After take a look, we usually say at something. In the song, it’s in the mirror.","start":38.6,"end":42.1},
-      {"words":[["after all","зрештою, усе-таки","Let’s help him. He’s our friend, <em>after all</em>."]],"hl":["after all"],"start":50.4,"end":56.4}
+      {"words":[["take a look","подивитися, поглянути","<em>Take a look</em> at this chart."]],"hl":["take a look"],"note":"Usually: take a look at something. In the song: in the mirror.","start":38.6,"end":42.1},
+      {"words":[["after all","зрештою, усе-таки","Let’s help him. He’s our friend, <em>after all</em>."],["’Cause","бо (because)"]],"hl":["after all","’Cause"],"start":50.4,"end":56.4}
     ]},
     {"name":"Part 4","start":64.15,"end":89, "lines": [
       {"words":[["solve","вирішити (проблему)","Can you help me <em>solve</em> this problem?"]],"hl":["solve"],"start":70.75,"end":73.9}
@@ -36,7 +35,7 @@
       {"words":[["I do what I can","роблю, що можу","It’s not easy, but <em>I do what I can</em>."]],"hl":["I do what I can"],"start":181.75,"end":184.75}
     ]}
   ],
-  "later": [["see through","бачити наскрізь"], ["put your blame on","звинувачувати"], ["put the blame on","звинувачувати"], ["deceived","обдурений"], ["out of luck","не щастить"], ["beg for forgiveness","благати про прощення"]],
+  "later": [["see through","бачити наскрізь"], ["put the blame on","звинувачувати"], ["deceived","обдурений"], ["out of luck","не щастить"], ["beg for forgiveness","благати про прощення"]],
   "versions": [
     ["я лише людина","я всього лише людина","я ж тільки людина","я просто людина"],
     ["Sorry, I forgot. <em>I’m only human</em>.","I make mistakes sometimes. <em>I’m only human</em>.","I can’t do everything. <em>I’m only human</em>.","I need some sleep too. <em>I’m only human</em>."],
@@ -91,7 +90,7 @@
     "got": {"*":"мають (got = have got: «мати»; у пісні have пропущено)","Got no way":"Got = I’ve got (I have got): «у мене є». У пісні I’ve пропущено, як у розмовній мові: «у мене немає способу довести»."},
     "no": {"*":"немає, жодного","no way":"no перед іменником = «жодного»: no way = жодного способу.","no prophet":"I’m no prophet = я не пророк: no перед іменником означає «ніякий не…»."},
     "way": "спосіб",
-    "to": {"*":"щоб","me to lie":"ask me to lie: після ask + хтось іде to + дієслово: «просити мене збрехати».","way to prove":"to + дієслово: no way to prove it = немає способу (як) довести це. Так після слова way часто йде to.","To put":"To put… = щоб звинуватити мене: to + дієслово показує мету («щоб»)."},
+    "to": {"*":"щоб","way to prove":"to + дієслово: no way to prove it = немає способу (як) довести це. Так після слова way часто йде to.","To put":"To put… = щоб звинуватити мене: to + дієслово показує мету («щоб»)."},
     "prove": "довести",
     "it": "це, його",
     "so": "тож",
@@ -111,7 +110,7 @@
     "the": {"*":"the — означений артикль: про щось конкретне, відоме («той самий», «саме цей»). В українській його немає.","the mirror":"the mirror — те дзеркало, про яке йдеться (твоє дзеркало), тому the.","the blame":"the blame — саме ця провина, про яку пісня. Put the blame on = звинувачувати.","the real problems":"the real problems — саме справжні, серйозні проблеми (не будь-які): the уточнює, які саме."},
     "mirror": "дзеркало",
     "what": "що",
-    "do": {"*":"do — допоміжне слово для питань і заперечень (Do you…? / don’t), або «робити».","I do what":"do тут — звичайне дієслово «робити»: I do what I can = я роблю, що можу.","what do you see":"do тут потрібне, щоб поставити питання: What do you see? = Що ти бачиш? Саме do не перекладаємо.","Do you see":"Do на початку робить із речення питання: Do you see it…? = Чи бачиш ти це…?"},
+    "do": {"*":"do — допоміжне слово для питань і заперечень (Do you…? / don’t), або «робити».","what do you see":"do тут потрібне, щоб поставити питання: What do you see? = Що ти бачиш? Саме do не перекладаємо.","Do you see":"Do на початку робить із речення питання: Do you see it…? = Чи бачиш ти це…?"},
     "you": "ти, ви",
     "clearer": "ясніше, чіткіше",
     "or": "чи, або",
