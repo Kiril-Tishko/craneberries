@@ -34,9 +34,9 @@ database, in the `brief` field of `students/<slug>` (list the `students` collect
   with an emoji each, no "not X" notes and no wrong forms.
 
 1. Write the lesson JSON (shape below) in the scratchpad, not in the repo.
-2. **Ask her first** which words, phrases and sound go on the cards: AskUserQuestion, multiple choice, several
+2. **Ask him first** which words, phrases and sound go on the cards: AskUserQuestion, multiple choice, several
    answers allowed, your picks first (forgotten words, corrected phrases, the sound pair). The site report doesn't
-   wait for her answer; the cards do. Then render only what she chose: `node tools/render-cards.js <lesson.json>
+   wait for his answer; the cards do. Then render only what he chose: `node tools/render-cards.js <lesson.json>
    <out-dir>`, and look at them.
 3. Upload the PNGs to the artifact: Artifact tool, `asset: true`, `url`, `file_paths`. Put the returned
    ids into `cards[].asset`.
@@ -44,20 +44,20 @@ database, in the `brief` field of `students/<slug>` (list the `students` collect
    - `billing/<slug>`: add `{date, kind: "lesson", n: -1}` for the lesson date unless an entry of kind
      "lesson" for that date is already there (the teacher may have tapped "− Lesson"), or the student's `brief`
      says not to log their billing. Payments come only from the teacher: add `{date, kind: "paid", n: perPayment}`
-     when she tells you.
+     when he tells you.
    - `students/<slug>`: create the student, or update `focus` (bump `seen`, set `status` to recurring,
      improving or fixed).
    - `lessons/<slug>-<YYYY-MM-DD>`: the lesson JSON without `studentCards`, plus `cards`.
    - `teacher/profile`: refresh `englishFocus`, `teachingFocus`, `lessonsReviewed`, `updated`.
    - `progress/<slug>`: the teacher moves units with the buttons. Read it; only if the lesson clearly
-     finished the current unit and she hasn't moved it, mention it in the reply (don't move it yourself).
+     finished the current unit and he hasn't moved it, mention it in the reply (don't move it yourself).
 5. Send the cards to the user with SendUserFile and give them the site link.
 
 **Text the teacher might forward to a student** (answers to a student's question, a message, a reading text)
 goes in its own fenced block that contains only what the student should read: no name or label inside it
 (put "Text for <name>" as a line above the block), no comments to the teacher, no "your student", no feedback.
 Everything outside the block is for the teacher.
-She once forwarded a whole reply to a student by mistake.
+He once forwarded a whole reply to a student by mistake.
 
 ## When the user sends audio
 
@@ -66,7 +66,7 @@ huggingface.co, about 15 min per hour of audio).
 - **PC + phone recordings of the same lesson**: `python3 tools/audio/lesson-audio.py <work-dir> --pc <file> --phone <file>`
   (add `--pc-is-student` when the PC recorded only the student). It lines the two up and labels every word: the teacher
   is loud on the phone, the student is almost silent there. Work from `transcript.txt` (one turn per line, S = student,
-  T = teacher, PC times; ⁽NN⁾ = recognizer unsure) and tell her in one line how good it was (`quality.txt`).
+  T = teacher, PC times; ⁽NN⁾ = recognizer unsure) and tell him in one line how good it was (`quality.txt`).
 - **One recording only**: `python3 tools/audio/transcribe.py <file> <scratchpad prefix>`. A phone recording catches
   mostly the teacher; a PC recording is one mixed track. No speaker labels: infer who spoke from context and say so
   in the summary. Don't guess what can't be told.
@@ -78,7 +78,7 @@ huggingface.co, about 15 min per hour of audio).
 ## What the teacher asked for
 
 - **Replies in chat are short**: say briefly what you did and give the links; don't list the lesson content.
-- **Questions to her are multiple choice** (AskUserQuestion, recommended option first), never open questions in chat.
+- **Questions to him are multiple choice** (AskUserQuestion, recommended option first), never open questions in chat.
   When a request is unclear ("a review sheet": page, picture or text?), ask that way before building.
   When the options are words or phrases to teach, put a short example sentence under each one (the option's
   description: "solve" → "Can you help me solve this problem?"). At most 4 options a question: ask part by part.
@@ -87,10 +87,10 @@ huggingface.co, about 15 min per hour of audio).
   /wɜːk/) and goes on the teacher site only: **no phonetic transcription on student cards**.
 - **Student cards**: readable on a phone, no student name, no page count, no "lesson notes" caption
   (only a small, quiet date beside the kicker), no homework or mini-task.
-- **Which cards** (a general guide, not a hard rule): after she chooses (step 2), make a "Don't forget" words card,
-  "Say it like this", 3 pronunciation cards (she sends one) and anything else the lesson calls for (e.g. a picture
-  cheat sheet for the main topic). She decides what to send; often just one card. Keep subtitles short or leave
-  them out. Cards for her too: what to do next lesson, which words to teach, what the student got wrong.
+- **Which cards** (a general guide, not a hard rule): after he chooses (step 2), make a "Don't forget" words card,
+  "Say it like this", 3 pronunciation cards (he sends one) and anything else the lesson calls for (e.g. a picture
+  cheat sheet for the main topic). He decides what to send; often just one card. Keep subtitles short or leave
+  them out. Cards for him too: what to do next lesson, which words to teach, what the student got wrong.
 - **Pictures first, for every student**: a card should be understood at a glance: big pictures, almost nothing
   to read (picture tiles with `grid: true`; picture rows when the words are long).
 - **Review cards and review sheets: ask first**, every time, with multiple-choice questions (several answers
@@ -100,11 +100,11 @@ huggingface.co, about 15 min per hour of audio).
   - "Say it like this": the phrases that were corrected in the lesson.
   - Brand-new words and mistakes nobody corrected go to the next lesson: a "Next lesson · Words to review" card
     for the teacher, and a short list of phrases to talk about in the chat reply (teacher only).
-  - Pronunciation: give 3 card options so she can pick one.
+  - Pronunciation: give 3 card options so he can pick one.
   (Rule from Nov 11 on; earlier cards stay as they are.)
   For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
-  (she removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
+  (he removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
   For A2 and below, write the mouth tips in the student's language ("Опустіть щелепу", not "Drop your jaw").
@@ -114,10 +114,10 @@ huggingface.co, about 15 min per hour of audio).
 - A **report on the teacher**: their own English (quote, better version, why) and their teaching
   (what worked, what to try next time). **Be as blunt as possible**: only the teacher reads it. Keep
   tracking the teacher's pronunciation (e.g. pan sounding like pen).
-- **Reading texts**: only when she asks. Give plain text in chat, not pictures, no questions at the end.
+- **Reading texts**: only when he asks. Give plain text in chat, not pictures, no questions at the end.
   Stories must not describe the student's own life or retell what she told the teacher (her appointment,
   her order, a compliment she got): change the people, places and events. Use the student's target words and mostly the
-  structure from their last lesson. ~80–120 words for A2 (she asked for shorter texts); shorter, or none, when the student's `brief` says so.
+  structure from their last lesson. ~80–120 words for A2 (he asked for shorter texts); shorter, or none, when the student's `brief` says so.
   Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
   emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
   she asked about but never got taught (e.g. "interrupt") stays out until it has been taught.
@@ -129,29 +129,29 @@ huggingface.co, about 15 min per hour of audio).
   one short line, its 1–2 key words with Ukrainian first, then ▶ plays just that line (the lyrics show under it, key
   words in yellow). A line with nothing to learn now gets no screen. After each part, "All together" (the lyrics
   follow the line being sung); at the end, My words (+ on a word → gap sentences with first letters).
-  Choose the words to learn from the student's level and `brief`, then ask her which to teach (multiple choice,
+  Choose the words to learn from the student's level and `brief`, then ask him which to teach (multiple choice,
   several answers allowed, a short example under each word); leave out words the student already knows (moment).
-  More examples on a word card only when she asks (`[en, ua, ex, ex, …]`). Only the sung parts: intros, whistling,
+  More examples on a word card only when he asks (`[en, ua, ex, ex, …]`). Only the sung parts: intros, whistling,
   solos and exact repeats are left out (`skipped` in lesson.json says which).
-  **She edits song pages herself** (`docs/video/edit.js`): 5 quick taps in the top-left corner; she taps a word or drags
+  **He edits song pages himself** (`docs/video/edit.js`): 5 quick taps in the top-left corner; he taps a word or drags
   across a phrase in the lyrics for its Ukrainian and ⭐ Learn / Later / plain (Learn adds it to that line's screen, or
   makes a new screen), types right on the card (word, Ukrainian, examples with Ctrl+B for the gap word, note, meaning),
   ✕ a word, 🗑 a screen, sets Start / End of a line or part under the video, 🔇, Ctrl+Z / Ctrl+Y, and Save commits
-  lesson.json to this branch with her GitHub key. So `git pull --rebase` before touching a lesson.json, and never
-  overwrite her edits. A lesson.json keeps one line per screen (that is how the page saves it). Browsers keep
+  lesson.json to this branch with his GitHub key. So `git pull --rebase` before touching a lesson.json, and never
+  overwrite his edits. A lesson.json keeps one line per screen (that is how the page saves it). Browsers keep
   player.js for up to 10 minutes: when a change needs the new player and the new pages together, bump `?v=` on
   player.js / player.css in every `docs/<lesson>/index.html`.
   ✕ (leaving edit mode) with unsaved changes asks: save, throw them away, or keep editing (the clips page too).
   **↻ Make again** (edit mode only, song pages and the clips page; `docs/video/remake.js`): beside each translation,
   example, note and meaning (clips page: the word's Ukrainian and each clip's note). It shows the text there now plus
-  ready-made versions, and a tap keeps one. No API key and no API call (she has a Claude plan, which web pages can't
+  ready-made versions, and a tap keeps one. No API key and no API call (he has a Claude plan, which web pages can't
   use): the versions are written in a chat and stored as `"versions"`, groups of texts that can replace each other
   (`[text, version, version, version]`, one group per line), in lesson.json or in the clip word's file; ↻ finds the
-  group that contains the text there now. **Write versions only when she asks** ("↻ versions for …"; she chose this to
-  save tokens): then add a group with 3 more versions for each text she named, same rules as the original (natural
+  group that contains the text there now. **Write versions only when he asks** ("↻ versions for …"; he chose this to
+  save tokens): then add a group with 3 more versions for each text he named, same rules as the original (natural
   Ukrainian, never Russian; everyday A2 American-English examples of at most 12 words with the word in `<em>` in the
   same form; notes and meanings with the same facts, reworded). The savers keep `"versions"`; `git pull --rebase`
-  first, never overwrite her edits.
+  first, never overwrite his edits.
   **Grammar words** (a, the, is, are, do, did, to, of…): a tap says in short Ukrainian *why the word is there in that
   line*, never "we don't translate it here". A word whose reason differs by line has a gloss object:
   `"the": {"*": "usual note", "the Moskva": "note for this line", …}`: a key is words around it in a line, and the one
@@ -162,7 +162,7 @@ huggingface.co, about 15 min per hour of audio).
   verbs (listen to, pass by, pick up) and set phrases whose words alone mislead (after all, take a look, out of luck);
   splitting "I'm only human" or "make mistakes" is fine. In edit mode a dragged phrase has a Keep together switch.
   The tap bubble is solid (not click-through) and its text can be selected; tapping the same word again closes it.
-  A video from her device in portrait (Threads, Reels) still uses the wide layout (`"tall": false`) when she wants the
+  A video from his device in portrait (Threads, Reels) still uses the wide layout (`"tall": false`) when he wants the
   subtitles wide and easy to read (The Bridge).
   Phrases left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
@@ -173,8 +173,8 @@ huggingface.co, about 15 min per hour of audio).
   its `meaning` says in one simple sentence what the author meant (not a translation, not deep); it shows under the
   note, set apart in italics. **Every tap gives the
   word's meaning in that line**: check each word against its lines, above all words with two meanings (to, in, down,
-  take); a key or `later` phrase gives a word its line's meaning. Keep a translation that fits; don't polish it. A video from her
-  device (`video: {type: 'file'}`) stays in her browser and its captions come in the link. `?mute` plays silently
+  take); a key or `later` phrase gives a word its line's meaning. Keep a translation that fits; don't polish it. A video from his
+  device (`video: {type: 'file'}`) stays in his browser and its captions come in the link. `?mute` plays silently
   (for testing).
 - **Real video clips** (docs/real-video/, GitHub Pages): a native speaker says the word in a real video. Our own
   YouTube player in one panel (no YouTube buttons, title or timeline; play/pause, a timeline to tap or drag, our caption
@@ -183,7 +183,7 @@ huggingface.co, about 15 min per hour of audio).
   the next clips, a small dot on the button, until tapped off); 1× / 0.75× / 0.5×; a big "Next clip" with a small ‹ back arrow; no "Again" button: at the
   end the play button turns into ↻). A hidden second player preloads the next clip so Next starts at once; replays
   jump back instead of reloading. The caption bar keeps the height of the word's longest line, so nothing below it
-  moves. No text explaining the controls and no "Speed" label: she wants it quiet; the
+  moves. No text explaining the controls and no "Speed" label: he wants it quiet; the
   YouTube Terms / Google Privacy links stay behind a faint ⓘ at the bottom. Space = play/pause wherever the focus is,
   ← → and double-tap = 1 s; pause goes on from where it stopped (a press just as the clip ends never restarts it);
   the picture is dark only before the clip starts, a paused clip is only dimmed. The clip stops when its line ends,
@@ -202,28 +202,28 @@ huggingface.co, about 15 min per hour of audio).
   - The player reads them: `https://kiril-tishko.github.io/craneberries/real-video/?words=rip-off,excuse` (a lesson's
     words; `&title=…`, `&notes=ua` for Ukrainian notes, `&from=lesson` adds "← Lesson", which closes the tab). Without
     `?words` it shows the whole library; the search box finds any word in it.
-  - **She edits it herself** on the page: 5 quick taps in the top-left corner open edit mode, where everything is
-    edited where it is: she clicks the caption (with context: the line shown), the word, its Ukrainian, its emoji or
+  - **He edits it himself** on the page: 5 quick taps in the top-left corner open edit mode, where everything is
+    edited where it is: he clicks the caption (with context: the line shown), the word, its Ukrainian, its emoji or
     the 💡 note and types; a small bar under the video has Start / End (minutes:seconds; − / + 0.1 s, then that bit plays again; ⏱ =
     where the video is now), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
     that really changed) and ⋯ (move, delete, add a clip by pasting a YouTube link with a time, lines around with their
     times, the note in the other language, other forms to highlight, the GitHub key), ↻ beside the Ukrainian and the
     note (Make again, above). Entering edit mode stays on the clip that was open. Ctrl+Z / Ctrl+Y undo and redo
-    every change. "Save" commits to this branch with her own GitHub key (`?mute` plays without sound, for testing).
-    Never test edit mode in a tab she might use: a test tab with unsaved changes can end up saved with her key. So `git pull --rebase` before touching the library, and
-    never overwrite her edits.
+    every change. "Save" commits to this branch with his own GitHub key (`?mute` plays without sound, for testing).
+    Never test edit mode in a tab he might use: a test tab with unsaved changes can end up saved with his key. So `git pull --rebase` before touching the library, and
+    never overwrite his edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian). It
     opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
     file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),
-    and otherwise say in the reply which words still need clips (picked on her PC with Claude in Chrome, or she pastes
+    and otherwise say in the reply which words still need clips (picked on his PC with Claude in Chrome, or he pastes
     links in edit mode). Never put student names or personal details in the library (the repo is public).
-  - **A YouTube link with a time from her** (youtu.be/…?t=83): open it in Chrome, read the lines around that second
+  - **A YouTube link with a time from him** (youtu.be/…?t=83): open it in Chrome, read the lines around that second
     (YouTube's "Show transcript"), and add the clip with exact times, the lines around it and a note.
   Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
-    or calling its API; she has emailed them asking to allow light automated use; they replied with a question and
-    she expects a yes, so check for their final answer before automating anything):
+    or calling its API; he has emailed them asking to allow light automated use; they replied with a question and
+    he expects a yes, so check for their final answer before automating anything):
     quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
     times and the lines around it. No accent filter: check the channel is American (sitcom clips like The Office work well).
   - **YouGlish** is the backup (`tools/real-video/pick.js`, US filter, search phrases that give the meaning: "a
@@ -232,31 +232,31 @@ huggingface.co, about 15 min per hour of audio).
   **Read the context before choosing a clip and before writing its note**: the lines before and after it (Caption
   Search shows two; open the result's transcript for more; on YouGlish play from a few seconds earlier), who is
   talking and about what. Never guess the situation from the one line.
-  Choose 4–5 where the word has the lesson's meaning (another meaning is the one thing she doesn't want; swearing,
+  Choose 4–5 where the word has the lesson's meaning (another meaning is the one thing he doesn't want; swearing,
   politics and so on are fine) and watch each one in the page: a clear picture (the speaker's face or the thing, not
   a back or a far-away hall), no subtitles burned into the video, no "Video unavailable". The 💡 note (hidden until
   tapped) says in one or two very simple sentences what is happening and why the word fits; English or Ukrainian
-  depending on the student (ask her). Only these few lines are stored, never transcripts (she chose this over the YouGlish
+  depending on the student (ask him). Only these few lines are stored, never transcripts (he chose this over the YouGlish
   window, knowing YouGlish's rules don't allow saving their results). Nothing skips on its own.
-- **Lesson pages** (an interactive page she screen-shares; build with `tools/lesson-page/`: write a
+- **Lesson pages** (an interactive page he screen-shares; build with `tools/lesson-page/`: write a
   content file like `example-content.js` in the scratchpad; `prep.py <content.js> "<Title>" <work-dir>` records
   the lines and builds `<work-dir>/page.html`; `qa.js <work-dir>` checks every screen at phone and laptop size
   (no scrolling, nothing jumps, every line has sound) and must say "no problems"; look at a few screens yourself;
   publish as a new artifact with `root: <work-dir>` and the mp3s listed in `files.json`; add the link to
   `materials/<slug>`):
-  - **Ask her first, for every student**: before building a lesson page, ask what to include with AskUserQuestion
+  - **Ask him first, for every student**: before building a lesson page, ask what to include with AskUserQuestion
     (multiple choice, several answers allowed): offer the parts you would pick from the student's last lessons
     (forgotten words, corrected phrases, uncorrected mistakes, one sound, saved topics, her real situations), with
-    your pick first. Build only what she chose.
-  - **One topic per lesson** by default (e.g. "At the dentist"). When she lists the parts she wants, follow her
+    your pick first. Build only what he chose.
+  - **One topic per lesson** by default (e.g. "At the dentist"). When he lists the parts he wants, follow his
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
   - One thing per screen, an "All together" screen at the end of each part, no scrolling.
-  - No "change one word" drills that only swap numbers or days: she finds them pointless. Use **change the time**
+  - No "change one word" drills that only swap numbers or days: he finds them pointless. Use **change the time**
     instead (`flip`: every day → now / yesterday / tomorrow) with the tenses the student has had.
   - When the student knows a rule but forgets it in speech (he/she + s), don't explain it: use
     `flip` screens (`{t:'flip', from, subj, ans}` with the changed part in [brackets]) so she says it herself.
-  - Keep each drill set short (about 4 items). A rule she asks for gets one `rule` screen
+  - Keep each drill set short (about 4 items). A rule he asks for gets one `rule` screen
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
     Say it directly (✅ where it goes, ❌ where it doesn't); don't build up from theory.
   - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`.
@@ -302,8 +302,8 @@ huggingface.co, about 15 min per hour of audio).
     the week's words in theme groups split by `{break: true}` (no group names), in a new order, each in a slightly
     changed example sentence (same word, a new short everyday sentence) with the key word in [brackets] and its
     Ukrainian meaning as the note, plus 4–6 older words the student forgot, and the week as `period` at the top.
-    Only what was taught. **Before making it, ask her with multiple-choice questions (AskUserQuestion, multiSelect)
-    which of the week's words go in**: she picks them; a word that only came up in a lesson is often not taught yet.
+    Only what was taught. **Before making it, ask him with multiple-choice questions (AskUserQuestion, multiSelect)
+    which of the week's words go in**: he picks them; a word that only came up in a lesson is often not taught yet.
   - Leave out what the student obviously knows ("Thank you!"): drilling it looks silly.
   - Every wrong sentence or structure shown on a page is crossed out: write it as `~~He said to me~~` (rule rows,
     flip `from`/`subj`, "All together" hints). One structure per part: don't put two (it depends · I guess) on one screen.
@@ -315,9 +315,9 @@ huggingface.co, about 15 min per hour of audio).
     checkout), draw an SVG (`pic` and card `svg` take one; keep it on one line in content.js). Reusable drawings: `tools/pics/`.
   - **Never put personal data on a page**: no student names (sign emails with a made-up name), no real
     details of their work or life (company deals, customers, places, dates of birth). Use made-up, general examples.
-  - **No role-play** for now: she didn't like how it worked. Leave it out unless she asks for it.
+  - **No role-play** for now: he didn't like how it worked. Leave it out unless he asks for it.
   - Explain a word only in the meaning the topic needs (treat = лікувати at the dentist; no list of meanings).
-  - **Never draw faces, mouths or body diagrams**: she found the drawn mouth creepy.
+  - **Never draw faces, mouths or body diagrams**: he found the drawn mouth creepy.
 - **Site text is short and practical**: summary 1–2 short sentences; max 3 "went well" bullets; mistake
   notes a few words or empty; plan details one short line; teacher "worked" 3 bullets, "try next time"
   3–4 bullets, `why` a few words; no `talk`, `note` or `habits` text. Student `about` one line, `focus`
@@ -373,7 +373,7 @@ reports: `{words[{en, theme, n, sent}]}`, n = position, 1 = newest; themes: work
 people, less, everyday, phrases, city, weather, food, home, event, grammar, sounds, health) with every lesson's
 `words`, so keep `words` accurate. The teacher's "reviewed" taps live in `state/bank-<slug>`.
 `materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
-with a short quality note (British usage, errors, overload). Her "reviewed again" ticks live in
+with a short quality note (British usage, errors, overload). His "reviewed again" ticks live in
 `state/mat-<slug>`. Materials follow the student's English (see **Students**); flag British forms when you see them.
 
 **Course.** `course/plan` (Claude writes) = the 30-unit backbone, same order for every student:
