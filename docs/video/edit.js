@@ -279,6 +279,8 @@ document.addEventListener('keydown', (e) => {
 const base = (t) => P.base(t);
 const enOf = (ph) => (/^I(\b|’)/.test(ph) ? ph : ph[0].toLowerCase() + ph.slice(1));
 const partAt = (T) => P.parts().find((p) => T >= p.start - 0.3 && T < p.end - 0.1);
+// The phrase's entry in "together" (phrases a tap keeps whole), if it has one.
+const togetherKey = (ph) => Object.keys(L.together || {}).find((k) => base(k) === base(ph)) || null;
 // pl: where a single tapped word is in its line, so a grammar word gets the note for this line.
 function stateOf(ph, pl){
   const b = base(ph);
@@ -288,7 +290,7 @@ function stateOf(ph, pl){
   }
   const lt = (L.later || []).find(([x]) => base(x) === b);
   if (lt) return {state: 'later', ua: lt[1]};
-  if (/\s/.test(ph)) return {state: 'none', ua: ''};
+  if (/\s/.test(ph)) { const tg = togetherKey(ph); return {state: 'none', ua: tg ? L.together[tg] : ''}; }
   const gi = P.glossInfo(ph, pl ? pl.line : null, pl ? pl.at : null);
   return {state: 'none', ua: gi.value, gi};
 }
@@ -303,6 +305,7 @@ function openPop(phrase, T, rect, pl){
     <b>${esc(phrase)}</b>
     <textarea id="ep-ua" rows="${st.ua.length > 40 ? 3 : 1}" placeholder="Українською (or why the word is there)" spellcheck="false">${esc(st.ua)}</textarea>
     <div class="seg" id="ep-state">${[['learn', '⭐ Learn'], ['later', 'Later'], ['none', '—']].map(([v, t]) => `<button data-st="${v}" aria-pressed="${st.state === v}">${t}</button>`).join('')}</div>
+    ${/\s/.test(phrase) ? `<label class="eptg"><input type="checkbox" id="ep-tg"${togetherKey(phrase) ? ' checked' : ''}> Keep together: a tap on any of its words shows the whole phrase (phrasal verbs, set phrases)</label>` : ''}
     <small>${hint}</small></div>`);
   const el = $('epop'), w = el.offsetWidth, h = el.offsetHeight;
   el.style.left = `${Math.min(innerWidth - w / 2 - 8, Math.max(w / 2 + 8, rect.left + rect.width / 2))}px`;
@@ -337,7 +340,8 @@ document.addEventListener('click', (e) => {
   if (!w) return;
   e.stopPropagation(); e.preventDefault();
   if (Date.now() - selAt < 400) return;   // the end of a drag across a phrase
-  const box = w.closest('mark') || w.closest('.ph') || w, cap = w.closest('.cap');
+  // One word, or the whole phrase when it stays together (a yellow phrase: drag across it to change it).
+  const box = w.closest('.ph, mark.whole') || w, cap = w.closest('.cap');
   openPop(clean(box.textContent), +cap.dataset.t, box.getBoundingClientRect(), box === w ? P.placeOf(w) : null);
 }, true);
 document.addEventListener('click', (e) => {
@@ -392,10 +396,23 @@ function setUa(v){
     if (g && typeof g === 'object') { if (v) g[gi.ctx || '*'] = v; else delete g[gi.ctx || '*']; }
     else if (v) L.gloss[gi.key] = v; else delete L.gloss[gi.key];
   }
+  else if (togetherKey(pop.phrase)) L.together[togetherKey(pop.phrase)] = v;   // a phrase kept together has its own
   else { undo.pop(); pop.ua = v; return; }   // a plain phrase has no Ukrainian of its own: it's kept for Learn / Later
   pop.ua = v; P.quiet(); P.redraw(); touch(); say('Ukrainian changed.');
 }
-document.addEventListener('change', (e) => { if (P.editing && e.target.id === 'ep-ua') setUa(clean(e.target.value)); });
+document.addEventListener('change', (e) => {
+  if (!P.editing) return;
+  if (e.target.id === 'ep-ua') setUa(clean(e.target.value));
+  else if (e.target.id === 'ep-tg' && pop) {
+    // Keep together (or not): a tap on any word of this phrase shows the whole phrase.
+    remember(null);
+    const k = togetherKey(pop.phrase);
+    if (e.target.checked && !k) { L.together = L.together || {}; L.together[pop.phrase] = pop.state === 'none' ? clean($('ep-ua').value) : ''; }
+    else if (!e.target.checked && k) delete L.together[k];
+    P.quiet(); P.redraw(); touch();
+    say(e.target.checked ? `“${pop.phrase}” stays together: a tap on any of its words shows the whole phrase.` : `“${pop.phrase}”: a tap shows each word on its own.`);
+  }
+});
 
 /* ---------- buttons ---------- */
 document.addEventListener('click', (e) => {

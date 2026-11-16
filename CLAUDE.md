@@ -157,8 +157,12 @@ huggingface.co, about 15 min per hour of audio).
   line*, never "we don't translate it here". A word whose reason differs by line has a gloss object:
   `"the": {"*": "usual note", "the Moskva": "note for this line", …}`: a key is words around it in a line, and the one
   that contains the tapped word wins.
-  Every word under the video is tappable for its Ukrainian; a tap on any word of a phrase (listen to, a key or
-  `later` phrase) underlines and translates the whole phrase; words left for later (`later`) also say
+  Every word under the video is tappable: **a tap underlines and translates just that word** (or says why a grammar
+  word is there), also inside a yellow phrase, so every word needs a gloss (or a line note). Only phrases in
+  `together` (`{"phrase as in the captions": "its Ukrainian, or empty for the learn / later one"}`) stay whole: phrasal
+  verbs (listen to, pass by, pick up) and set phrases whose words alone mislead (after all, take a look, out of luck);
+  splitting "I'm only human" or "make mistakes" is fine. In edit mode a dragged phrase has a Keep together switch.
+  Phrases left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
   lyrics are sometimes from another version of the song: check them against the video before building (YouTube's
   "Show transcript", the video's length); when the video is cut differently, `captions.keep` moves the lines to the

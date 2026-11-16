@@ -5,6 +5,7 @@
   "about": "A short video (Threads) she opens from her device; the captions come in the link from the chat. No transcript here: only the key words, their times and the words for tap-to-translate.",
   "video": {"type":"file","duration":67.5},
   "captions": {"type":"link"},
+  "together": {"It feels like":"","a scene out of":"","trying to":"","a bunch of":"","nearly as big as":"","to and from work":"","to and from hospitals":"","pick up":"","turn on":"увімкнути","instead of":"","take a look at":""},
   "parts": [
     {"name":"Part 1","start":0,"end":13.9, "lines": [
       {"words":[["one of the busiest","один із найжвавіших","It’s <em>one of the busiest</em> streets in town."]],"hl":["one of the busiest"],"start":0,"end":3.65},

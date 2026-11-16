@@ -78,10 +78,10 @@ main.tall .video{aspect-ratio:auto;flex:1 1 0;min-height:240px}
 .cap.note{color:var(--muted);font-weight:400;font-size:16px}
 .capbar mark{background:var(--word);color:#141B24;border-radius:4px;padding:0 3px}
 .tw{cursor:pointer;border-radius:3px}
-/* A tap underlines the whole phrase (all its words and the spaces between them), not just the word. */
+/* A tap underlines just the word; a phrase that stays together (.ph, mark.whole) is underlined as one, spaces too. */
 .tw:hover,.tw.on,.cap .ph:hover,.cap .ph.on{text-decoration:underline dotted var(--accent);text-underline-offset:4px}
-.cap mark:hover,.cap mark.on{text-decoration:underline 2px currentColor;text-underline-offset:3px}
-.cap mark .tw:hover,.cap mark .tw.on{text-decoration:none}
+.cap mark .tw:hover,.cap mark .tw.on,.cap mark.whole:hover,.cap mark.whole.on{text-decoration:underline 2px currentColor;text-underline-offset:3px}
+.cap .ph .tw:hover,.cap mark.whole .tw:hover{text-decoration:none}
 .pop{position:fixed;z-index:9;transform:translate(-50%,-100%);background:#141B24;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:12px;
   padding:8px 14px;font-size:17px;font-weight:600;max-width:min(360px,92vw);text-align:center;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .pop b{font-weight:800}
@@ -192,3 +192,4 @@ body.editing .w .ex{grid-column:1}
 /* ↻ make again: shown in edit mode only (remake.js opens the choices). */
 .rmk-btn{font-family:inherit;font-size:14px;font-weight:700;width:28px;height:28px;padding:0;border-radius:8px;border:1px dashed var(--line);background:transparent;color:var(--muted);cursor:pointer;align-self:center}
 .rmk-btn:hover{color:var(--accent);border-color:var(--accent)}
+.epop .eptg{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.35}

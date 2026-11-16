@@ -6,6 +6,7 @@
   "skipped": "1:54–2:18 repeats Part 4, so it’s left out.",
   "video": {"type":"youtube","id":"L3wKzyIN1yk"},
   "captions": {"type":"lrc","url":"https://lrclib.net/api/get/7918608"},
+  "together": {"after all":"","take a look":"","That’s all it takes":"","see through":"","put your blame on":"","put the blame on":"","out of luck":"","beg for forgiveness":"","go looking":"піти шукати","Lord heavens above":"Господи небесний! (вигук)"},
   "parts": [
     {"name":"Part 1","start":2.3,"end":24.5, "lines": [
       {"words":[["I’m only human","я лише людина","Sorry, I forgot. <em>I’m only human</em>."]],"hl":["I’m only human"],"start":2.4,"end":12.9},
@@ -90,7 +91,7 @@
     "got": {"*": "мають (got = have got: «мати»; у пісні have пропущено)", "Got no way": "Got = I’ve got (I have got): «у мене є». У пісні I’ve пропущено, як у розмовній мові: «у мене немає способу довести»."},
     "no": {"*": "немає, жодного", "no way": "no перед іменником = «жодного»: no way = жодного способу.", "no prophet": "I’m no prophet = я не пророк: no перед іменником означає «ніякий не…»."},
     "way": "спосіб",
-    "to": {"*": "щоб", "way to prove": "to + дієслово: no way to prove it = немає способу (як) довести це. Так після слова way часто йде to.", "To put": "To put… = щоб звинуватити мене: to + дієслово показує мету («щоб»)."},
+    "to": {"*": "щоб", "me to lie": "ask me to lie: після ask + хтось іде to + дієслово: «просити мене збрехати».", "way to prove": "to + дієслово: no way to prove it = немає способу (як) довести це. Так після слова way часто йде to.", "To put": "To put… = щоб звинуватити мене: to + дієслово показує мету («щоб»)."},
     "prove": "довести",
     "it": "це, його",
     "so": "тож",
@@ -110,7 +111,7 @@
     "the": {"*": "the — означений артикль: про щось конкретне, відоме («той самий», «саме цей»). В українській його немає.", "the mirror": "the mirror — те дзеркало, про яке йдеться (твоє дзеркало), тому the.", "the blame": "the blame — саме ця провина, про яку пісня. Put the blame on = звинувачувати.", "the real problems": "the real problems — саме справжні, серйозні проблеми (не будь-які): the уточнює, які саме."},
     "mirror": "дзеркало",
     "what": "що",
-    "do": {"*": "do — допоміжне слово для питань і заперечень (Do you…? / don’t), або «робити».", "what do you see": "do тут потрібне, щоб поставити питання: What do you see? = Що ти бачиш? Саме do не перекладаємо.", "Do you see": "Do на початку робить із речення питання: Do you see it…? = Чи бачиш ти це…?"},
+    "do": {"*": "do — допоміжне слово для питань і заперечень (Do you…? / don’t), або «робити».", "I do what": "do тут — звичайне дієслово «робити»: I do what I can = я роблю, що можу.", "what do you see": "do тут потрібне, щоб поставити питання: What do you see? = Що ти бачиш? Саме do не перекладаємо.", "Do you see": "Do на початку робить із речення питання: Do you see it…? = Чи бачиш ти це…?"},
     "you": "ти, ви",
     "clearer": "ясніше, чіткіше",
     "or": "чи, або",

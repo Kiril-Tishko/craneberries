@@ -83,11 +83,13 @@ const store = {
 };
 
 // The steps come from the lesson; edit mode changes the lesson and builds them again (rebuild).
-let PARTS, GLOSS, LATER;
+let PARTS, GLOSS, LATER, TOGETHER;
 const STEPS = [], KEYS = [];
 let heard = [];
 function rebuild(){
   PARTS = L.parts; GLOSS = L.gloss || (L.gloss = {}); LATER = (L.later || []).map(([p, ua]) => ({p, ua}));
+  // Phrases a tap keeps whole: {"phrase as in the captions": "its Ukrainian, or empty for the learn / later one"}.
+  TOGETHER = Object.entries(L.together || {}).map(([p, ua]) => ({p, ua}));
   STEPS.length = 0;
   PARTS.forEach((p, pn) => {
     p.lines.forEach((l, ln) => STEPS.push(Object.assign({kind: 'line', pn, ln}, l)));
@@ -289,27 +291,30 @@ function find(text, phrases){              // → [[from, to, index]] where each
   });
   return out;
 }
-// Each tappable word may sit in a key phrase from another part (data-key) or in a phrase for later (data-later).
-// A phrase is one box (<mark> or <span class="ph">), so a tap on any of its words underlines all of it.
+// A tap underlines just the tapped word, except inside a phrase that stays whole (lesson "together": phrasal verbs
+// and set phrases whose words alone would mislead, like "after all"). Such a phrase is one box (<span class="ph">, or
+// a <mark class="whole"> when it is the whole yellow phrase), so a tap on any of its words takes all of it.
+// data-key / data-later on a word remember the key or later phrase it is in, for a word with no translation of its own.
 let phraseN = 0;
 function marked(text, hls){
   const n = text.length, mk = new Array(n).fill(false), kk = new Array(n).fill(-1), lt = new Array(n).fill(-1);
-  const gp = new Array(n).fill(0);
-  find(text, hls).forEach(([a, b]) => { for (let c = a; c < b; c++) mk[c] = true; });
-  find(text, KEYS.map((x) => x.p)).forEach(([a, b, k]) => {
-    const g = ++phraseN; for (let c = a; c < b; c++) if (kk[c] < 0) { kk[c] = k; gp[c] = g; }
-  });
-  find(text, LATER.map((x) => x.p)).forEach(([a, b, k]) => {
-    const g = ++phraseN; for (let c = a; c < b; c++) if (lt[c] < 0) { lt[c] = k; if (kk[c] < 0) gp[c] = g; }
+  const gp = new Array(n).fill(0), marks = find(text, hls), whole = new Set();
+  marks.forEach(([a, b]) => { for (let c = a; c < b; c++) mk[c] = true; });
+  find(text, KEYS.map((x) => x.p)).forEach(([a, b, k]) => { for (let c = a; c < b; c++) if (kk[c] < 0) kk[c] = k; });
+  find(text, LATER.map((x) => x.p)).forEach(([a, b, k]) => { for (let c = a; c < b; c++) if (lt[c] < 0) lt[c] = k; });
+  find(text, TOGETHER.map((x) => x.p)).forEach(([a, b]) => {
+    if (marks.some(([x, y]) => x === a && y === b)) { whole.add(a); return; }
+    for (let c = a; c < b; c++) if (mk[c] !== mk[a] || gp[c]) return;   // never across the edge of a yellow phrase
+    const g = ++phraseN; for (let c = a; c < b; c++) gp[c] = g;
   });
   const re = /[A-Za-z0-9’']+|[^A-Za-z0-9’']+/g;
   let h = '', open = false, og = 0, m;
   while ((m = re.exec(text))) {
-    const a = m.index, t = m[0], word = /[A-Za-z0-9]/.test(t), g = mk[a] ? 0 : gp[a];
+    const a = m.index, t = m[0], word = /[A-Za-z0-9]/.test(t), g = gp[a];
     if (og && g !== og) { h += '</span>'; og = 0; }
-    if (mk[a] !== open) { h += open ? '</mark>' : '<mark>'; open = mk[a]; }
+    if (mk[a] !== open) { h += open ? '</mark>' : whole.has(a) ? '<mark class="whole">' : '<mark>'; open = mk[a]; }
     if (g && g !== og) { h += '<span class="ph">'; og = g; }
-    const tag = mk[a] ? '' : kk[a] >= 0 ? ` data-key="${kk[a]}"` : lt[a] >= 0 ? ` data-later="${lt[a]}"` : '';
+    const tag = kk[a] >= 0 ? ` data-key="${kk[a]}"` : lt[a] >= 0 ? ` data-later="${lt[a]}"` : '';
     h += word ? `<span class="tw"${tag}>${esc(t)}</span>` : esc(t);
   }
   return h + (og ? '</span>' : '') + (open ? '</mark>' : '');
@@ -343,24 +348,31 @@ function placeOf(el){
   const r = document.createRange(); r.selectNodeContents(cap); r.setEndBefore(el);
   return {line: cap.textContent, at: r.toString().length};
 }
-// A tapped word: inside a key phrase → that phrase; inside a "later" phrase → it, marked for later; else the word.
+// The Ukrainian of a phrase: its own (lesson "together"), else the learn word's, else the later phrase's.
+function phraseUa(t){
+  const b = base(t), tg = TOGETHER.find((x) => base(x.p) === b), key = KEYS.find((x) => base(x.p) === b);
+  const w = learnWords().find((x) => base(x[0]) === b), lt = LATER.find((x) => base(x.p) === b);
+  return {ua: (tg && tg.ua) || (w && w[1]) || (key && key.ua) || (lt && lt.ua) || '', later: !!lt && !key && !w};
+}
+// A tapped word: inside a phrase kept together → that phrase; otherwise just the word (its Ukrainian, or why a
+// grammar word is there, in this line). A word with no translation of its own falls back to its phrase's.
 function glossOf(el){
+  const box = el.closest('.ph, mark.whole');
+  if (box) {
+    const t = box.textContent.trim(), p = phraseUa(t);
+    if (p.ua) return {en: t, ua: p.ua, later: p.later, box};
+  }
+  const {line, at} = placeOf(el), ua = lookup(el.textContent, line, at);
+  if (ua) return {en: el.textContent, ua, box: el};
   const mk = el.closest('mark');
   if (mk) {
-    const p = base(mk.textContent), ws = learnWords();
-    const w = ws.find((x) => base(x[0]) === p) || ws.find((x) => p.includes(base(x[0])) || base(x[0]).includes(p));
-    if (w && w[1]) return {en: mk.textContent, ua: w[1]};
-    const key = KEYS.find((x) => base(x.p) === p);
-    if (key) return {en: mk.textContent, ua: key.ua};
+    const t = mk.textContent.trim(), p = phraseUa(t), ws = learnWords();
+    const w = ws.find((x) => base(t).includes(base(x[0])) || base(x[0]).includes(base(t)));
+    if (p.ua || (w && w[1])) return {en: t, ua: p.ua || w[1], box: mk};
   }
-  const phrase = (x, later) => {
-    const line = el.parentNode.textContent, hit = find(line, [x.p])[0];
-    return {en: hit ? line.slice(hit[0], hit[1]) : x.p, ua: x.ua, later};
-  };
-  if (el.dataset.key != null) return phrase(KEYS[+el.dataset.key], false);
-  if (el.dataset.later != null) return phrase(LATER[+el.dataset.later], true);
-  const {line, at} = placeOf(el), ua = lookup(el.textContent, line, at);
-  return ua ? {en: el.textContent, ua} : null;
+  if (el.dataset.key != null) { const x = KEYS[+el.dataset.key]; return {en: x.p, ua: x.ua, box: el}; }
+  if (el.dataset.later != null) { const x = LATER[+el.dataset.later]; return {en: x.p, ua: x.ua, later: true, box: el}; }
+  return null;
 }
 function hidePop(){ $('pop').hidden = true; document.querySelectorAll('.cap .on').forEach((x) => x.classList.remove('on')); }
 function showPop(el){
@@ -376,7 +388,7 @@ function showPop(el){
   const half = p.offsetWidth / 2 + 8;
   p.style.left = `${Math.min(innerWidth - half, Math.max(half, r.left + r.width / 2))}px`;
   p.style.top = `${r.top - 8}px`;
-  (el.closest('mark') || el.closest('.ph') || el).classList.add('on');   // the whole phrase, not just the word
+  (g.box || el).classList.add('on');   // the word, or the whole phrase when it stays together
 }
 
 /* ---------- Drawing ---------- */
@@ -702,7 +714,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (API.toggleEdit) { API.toggleEdit(); return; }
-  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=4'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
+  const sc = document.createElement('script'); sc.src = '../video/edit.js?v=5'; sc.onload = () => API.toggleEdit(); document.head.appendChild(sc);
 };
 
 renderCard(); newRange(); loadCaptions();
