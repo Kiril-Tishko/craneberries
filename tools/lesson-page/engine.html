@@ -269,7 +269,8 @@ function view(s){
     const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
     if (s.notes === 'ua') q.set('notes', 'ua');
-    const url = `https://kiril-tishko.github.io/craneberries/real-video/?${q}`;
+    // On the student site the clip page opens from the site itself (/clips/), elsewhere from GitHub Pages.
+    const url = window.LESSON_KEY ? `/clips/?${q}` : `https://kiril-tishko.github.io/craneberries/real-video/?${q}`;
     return `
     <div class="who hear">🎬 ${esc(s.label || 'Real people say it')}</div>
     <div class="big">${s.words.map(esc).join(' · ')}</div>

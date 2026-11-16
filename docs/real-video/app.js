@@ -17,7 +17,8 @@ const slugify = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[
 const Q = new URLSearchParams(location.search);
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
-const LIB = new URL('words/', location.href);
+// The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.
+const LIB = new URL('words/', document.baseURI);
 
 // Exact times (with decimals, from Caption Search or set in edit mode): start just before the line and stop when it
 // ends, before the next line. Whole-second times (YouGlish): start a bit early, stop about a second later (or at the
@@ -101,7 +102,7 @@ async function pick(slug, play){
   cur = slug; word = w; clipN = 0; resetContext();
   if (!ORDER.includes(slug)) ORDER.push(slug); // a word found with the search joins the row
   renderChips(); renderCard(); sizeCaption();
-  history.replaceState(null, '', `${location.search}#w=${slug}`);
+  const u = new URL(location.href); u.hash = `w=${slug}`; history.replaceState(null, '', u.href);
   showClip(play);
 }
 App.pick = pick;
