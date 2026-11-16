@@ -23,12 +23,13 @@ if (EMBED) document.body.classList.add('embed');
 // wrap differently at each width, so it measures a few times).
 function fitEmbed(){
   if (!EMBED) return;
-  const app = document.querySelector('.app'), video = document.querySelector('.video');
+  // The title keeps the whole width; only the player (main) gets narrower.
+  const app = document.querySelector('.app'), box = document.querySelector('main'), video = document.querySelector('.video');
   for (let k = 0; k < 4; k++) {
     const others = app.getBoundingClientRect().height - video.getBoundingClientRect().height;
     const w = Math.max(220, Math.min(1100, Math.floor((innerHeight - others - 6) * 16 / 9)));
-    if (app.style.maxWidth === `${w}px`) break;
-    app.style.maxWidth = `${w}px`;
+    if (box.style.maxWidth === `${w}px`) break;
+    box.style.maxWidth = `${w}px`;
   }
 }
 if (EMBED) { addEventListener('resize', fitEmbed); if (document.fonts) document.fonts.ready.then(fitEmbed); }
