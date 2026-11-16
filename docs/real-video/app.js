@@ -19,6 +19,19 @@ const Q = new URLSearchParams(location.search);
 // the video and its controls (index.html CSS).
 const EMBED = Q.has('embed');
 if (EMBED) document.body.classList.add('embed');
+// ?embed: the video is as big as the screen's height allows once the title and the controls have their room (they
+// wrap differently at each width, so it measures a few times).
+function fitEmbed(){
+  if (!EMBED) return;
+  const app = document.querySelector('.app'), video = document.querySelector('.video');
+  for (let k = 0; k < 4; k++) {
+    const others = app.getBoundingClientRect().height - video.getBoundingClientRect().height;
+    const w = Math.max(220, Math.min(1100, Math.floor((innerHeight - others - 6) * 16 / 9)));
+    if (app.style.maxWidth === `${w}px`) break;
+    app.style.maxWidth = `${w}px`;
+  }
+}
+if (EMBED) { addEventListener('resize', fitEmbed); if (document.fonts) document.fonts.ready.then(fitEmbed); }
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 // The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.
@@ -83,6 +96,7 @@ function renderChips(){
   if (EMBED && ORDER.length === 1) {
     const w = WORDS[ORDER[0]] || INDEX.find((x) => x.slug === ORDER[0]);
     $('words').innerHTML = w ? `<div class="bigword">${w.pic ? `${esc(w.pic)} ` : ''}<b>${esc(w.en)}</b>${w.ua ? ` <span>— ${esc(w.ua)}</span>` : ''}</div>` : '';
+    fitEmbed();
     return;
   }
   $('words').innerHTML = ORDER.map((s) => `<button data-w="${esc(s)}" aria-current="${s === cur}">${esc(label(s))}</button>`).join('');
@@ -111,7 +125,7 @@ async function pick(slug, play){
   }
   cur = slug; word = w; clipN = 0; resetContext();
   if (!ORDER.includes(slug)) ORDER.push(slug); // a word found with the search joins the row
-  renderChips(); renderCard(); sizeCaption();
+  renderChips(); renderCard(); sizeCaption(); fitEmbed();
   const u = new URL(location.href); u.hash = `w=${slug}`; history.replaceState(null, '', u.href);
   showClip(play);
 }
