@@ -123,7 +123,7 @@ huggingface.co, about 15 min per hour of audio).
   emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
   she asked about but never got taught (e.g. "interrupt") stays out until it has been taught.
 - **Song and video lessons** (e.g. "Human", "The Bridge") need the video on the page, which Claude pages can't
-  embed: they live in `docs/<lesson>/` (only a `window.LESSON` config) and share one player, `docs/video/player.js`
+  embed: they live in `docs/<lesson>/` (the lesson is `lesson.json`; `index.html` only loads the player) and share one player, `docs/video/player.js`
   + `player.css`, served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). The player follows the real
   video clips rules below (one quiet panel, no YouTube UI, steady layout, Space / ← → / double-tap, presses count
   while loading, 1× / 0.75× / 0.5×, ⓘ for the YouTube links). Calm for A2, one small part at a time: each screen is
@@ -133,7 +133,13 @@ huggingface.co, about 15 min per hour of audio).
   Choose the words to learn from the student's level and `brief`, then ask her which to teach (multiple choice,
   several answers allowed, a short example under each word); leave out words the student already knows (moment).
   More examples on a word card only when she asks (`[en, ua, ex, ex, …]`). Only the sung parts: intros, whistling,
-  solos and exact repeats are left out (a comment in the config says which).
+  solos and exact repeats are left out (`skipped` in lesson.json says which).
+  **She edits song pages herself** (`docs/video/edit.js`): 5 quick taps in the top-left corner; she taps a word or drags
+  across a phrase in the lyrics for its Ukrainian and ⭐ Learn / Later / plain (Learn adds it to that line's screen, or
+  makes a new screen), types right on the card (word, Ukrainian, examples with Ctrl+B for the gap word, note, meaning),
+  ✕ a word, 🗑 a screen, sets Start / End of a line or part under the video, 🔇, Ctrl+Z / Ctrl+Y, and Save commits
+  lesson.json to this branch with her GitHub key. So `git pull --rebase` before touching a lesson.json, and never
+  overwrite her edits. A lesson.json keeps one line per screen (that is how the page saves it).
   Every word under the video is tappable for its Ukrainian; a tap on any word of a phrase (listen to, a key or
   `later` phrase) underlines and translates the whole phrase; words left for later (`later`) also say
   "вивчимо пізніше". Lyrics load live from lrclib.net when the page opens; never store lyrics in the repo. lrclib's
