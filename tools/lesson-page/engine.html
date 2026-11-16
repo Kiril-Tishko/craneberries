@@ -377,6 +377,7 @@ function render(){
   document.getElementById('next').disabled = last;
   document.getElementById('next').textContent = idx === slides.length - 1 && !last ? `${SECTIONS[sec + 1].label} →` : 'Next →';
   stopAll();
+  if (window.Lesson && window.Lesson.onMove) window.Lesson.onMove(sec, idx);
 }
 function go(d){
   const slides = SECTIONS[sec].slides;
@@ -384,6 +385,13 @@ function go(d){
   else { if (idx > 0) idx--; else if (sec > 0){ sec--; idx = SECTIONS[sec].slides.length - 1; } }
   render();
 }
+/* ---------- for the student site's live helper (kiril-tishko/lessons site/assets/live.js) ----------
+   Lesson.at() = [part, screen]; Lesson.jump(part, screen) shows that screen; Lesson.onMove(part, screen), set by the
+   helper, hears every change of screen. Nothing uses these on a Claude page. */
+window.Lesson = Object.assign(window.Lesson || {}, {
+  at: () => [sec, idx],
+  jump(s, i){ if ((s === sec && i === idx) || !SECTIONS[s] || !SECTIONS[s].slides[i]) return; sec = s; idx = i; render(); },
+});
 
 /* ---------- events ---------- */
 document.getElementById('next').addEventListener('click', () => go(1));
@@ -457,7 +465,8 @@ card.addEventListener('click', (e) => {
    Two places: this browser (localStorage, at once) and, for a signed-in viewer of the published page, that
    person's private rows in the page database (publish with capabilities db + user). Either one is enough.
    A Claude page has its own address, so one key is enough there. On the student site (kiril-tishko/lessons) every
-   lesson shares one address: its page sets window.LESSON_KEY so each lesson keeps its own sentences. */
+   lesson shares one address: its page sets window.LESSON_KEY so each lesson keeps its own sentences, and the site's
+   helper sets window.LessonStore ({get, set} like a database document) to keep them in the student's account too. */
 const MINE_KEY = window.LESSON_KEY || 'lesson-mine';
 let mineMem = null, mineDoc = null, mineTimer = 0;
 function mineLoad(){
@@ -481,10 +490,13 @@ card.addEventListener('input', (e) => {
 });
 (async () => {
   try {
-    if (!window.claude || !window.claude.use) return;
-    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-    const id = db && user ? await user.id() : null; if (!id) return;
-    mineDoc = db.collection('data/users/' + id).doc('mine');
+    if (window.LessonStore) mineDoc = window.LessonStore;
+    else {
+      if (!window.claude || !window.claude.use) return;
+      const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+      const id = db && user ? await user.id() : null; if (!id) return;
+      mineDoc = db.collection('data/users/' + id).doc('mine');
+    }
     const snap = await mineDoc.get(), remote = snap.exists ? (snap.data().s || []) : [];
     const local = mineLoad();
     if (local.some(Boolean)){ if (JSON.stringify(local) !== JSON.stringify(remote)) mineSave(local); return; }
