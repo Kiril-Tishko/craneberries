@@ -222,8 +222,10 @@ huggingface.co, about 15 min per hour of audio).
     (YouTube's "Show transcript"), and add the clip with exact times, the lines around it and a note.
   Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
-    or calling its API; he has emailed them asking to allow light automated use; they replied with a question and
-    he expects a yes, so check for their final answer before automating anything):
+    or calling its API. Their developer replied (Nov 16): they are building exactly his workflow (search once while
+    preparing a lesson, get back the video id, start time and approximate end time; results may be saved for students)
+    and will let him try it free. It isn't live yet and there is no key: stay by hand until he has a key, then use
+    their new endpoint):
     quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
     times and the lines around it. No accent filter: check the channel is American (sitcom clips like The Office work well).
   - **YouGlish** is the backup (`tools/real-video/pick.js`, US filter, search phrases that give the meaning: "a
