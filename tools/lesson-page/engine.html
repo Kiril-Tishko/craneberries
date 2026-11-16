@@ -40,7 +40,12 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .app{height:100%;display:flex;flex-direction:column;max-width:760px;margin:0 auto;
   padding:max(10px, env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-right,0px)) max(12px, env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-left,0px))}
-.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:none;padding-bottom:6px}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:none;padding-bottom:6px;position:relative;cursor:grab;user-select:none;-webkit-user-select:none}
+/* More tabs than fit: the bar scrolls (drag it, or the mouse wheel); a soft fade shows there is more on that side. */
+.tabs.drag{cursor:grabbing}
+.tabs.more-r{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent)}
+.tabs.more-l{-webkit-mask-image:linear-gradient(to left,#000 82%,transparent);mask-image:linear-gradient(to left,#000 82%,transparent)}
+.tabs.more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent)}
 .tabs::-webkit-scrollbar{display:none}
 .tab{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;padding:7px 11px;border-radius:99px;white-space:nowrap}
 .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
@@ -392,8 +397,14 @@ function view(s){
 
 function render(){
   const slides = SECTIONS[sec].slides;
-  document.getElementById('tabs').innerHTML = SECTIONS.map((s, n) =>
+  const tabsEl = document.getElementById('tabs'), keepX = tabsEl.scrollLeft;   // the bar keeps where it was scrolled
+  tabsEl.innerHTML = SECTIONS.map((s, n) =>
     `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}</button>`).join('');
+  tabsEl.scrollLeft = keepX;
+  const onTab = tabsEl.querySelector('[aria-selected="true"]');   // and always shows the part that is open
+  if (onTab && (onTab.offsetLeft < tabsEl.scrollLeft + 28 || onTab.offsetLeft + onTab.offsetWidth > tabsEl.scrollLeft + tabsEl.clientWidth - 28))
+    tabsEl.scrollLeft = onTab.offsetLeft - (tabsEl.clientWidth - onTab.offsetWidth) / 2;
+  tabFades();
   document.getElementById('dots').innerHTML = slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '';
   jawDeg = 0; G = { cur: null, right: 0, total: 0 };
   card.innerHTML = view(slides[idx]);
@@ -429,7 +440,37 @@ window.Lesson = Object.assign(window.Lesson || {}, {
 /* ---------- events ---------- */
 document.getElementById('next').addEventListener('click', () => go(1));
 document.getElementById('back').addEventListener('click', () => go(-1));
-document.getElementById('tabs').addEventListener('click', (e) => {
+/* The part tabs: drag the bar with the mouse (touch scrolls by itself) or turn the wheel to reach far tabs. */
+const tabBar = document.getElementById('tabs');
+function tabFades(){
+  const max = tabBar.scrollWidth - tabBar.clientWidth;
+  tabBar.classList.toggle('more-l', tabBar.scrollLeft > 2);
+  tabBar.classList.toggle('more-r', tabBar.scrollLeft < max - 2);
+}
+tabBar.addEventListener('scroll', tabFades, {passive: true});
+addEventListener('resize', tabFades);
+tabBar.addEventListener('wheel', (e) => {
+  if (tabBar.scrollWidth <= tabBar.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  tabBar.scrollLeft += e.deltaY; e.preventDefault();
+}, {passive: false});
+let tabDrag = null, tabDragged = false;
+tabBar.addEventListener('pointerdown', (e) => {
+  if (e.pointerType !== 'mouse' || e.button !== 0) return;
+  tabDrag = {x: e.clientX, left: tabBar.scrollLeft, id: e.pointerId}; tabDragged = false;
+});
+tabBar.addEventListener('pointermove', (e) => {
+  if (!tabDrag || e.pointerId !== tabDrag.id) return;
+  const dx = e.clientX - tabDrag.x;
+  if (!tabDragged && Math.abs(dx) > 5){ tabDragged = true; tabBar.classList.add('drag'); tabBar.setPointerCapture(e.pointerId); }
+  if (tabDragged) tabBar.scrollLeft = tabDrag.left - dx;
+});
+const tabDragEnd = () => { tabDrag = null; tabBar.classList.remove('drag'); };
+tabBar.addEventListener('pointerup', tabDragEnd);
+tabBar.addEventListener('pointercancel', tabDragEnd);
+tabBar.addEventListener('click', (e) => {
+  if (tabDragged){ tabDragged = false; e.stopImmediatePropagation(); e.preventDefault(); }   // a drag is not a tap
+}, true);
+tabBar.addEventListener('click', (e) => {
   const b = e.target.closest('[data-sec]'); if (!b) return;
   sec = Number(b.dataset.sec); idx = 0; render();
 });
