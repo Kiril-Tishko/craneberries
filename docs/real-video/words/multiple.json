@@ -1,0 +1,72 @@
+{
+ "en": "multiple",
+ "ua": "кілька, багато",
+ "pic": "🌪️",
+ "hl": "multiple",
+ "together": {
+  "touched down": "торкнулися землі (про торнадо)",
+  "the United States": "Сполучені Штати (США)",
+  "times a day": "разів на день"
+ },
+ "gloss": {
+  "tornadoes": "торнадо (багато)",
+  "touched": "торкнулися",
+  "down": "вниз",
+  "in": "у, в",
+  "the": {
+   "*": "the — бо це конкретна річ, про яку йдеться",
+   "the supercell": "the — бо це та сама гроза, про яку розповідають"
+  },
+  "united": "Сполучені",
+  "states": "Штати",
+  "500": "п’ятсот",
+  "supercell": "суперкомірка (дуже сильна гроза)",
+  "thunderstorm": "гроза",
+  "spawned": "породила, дала",
+  "not": "не",
+  "just": "просто, лише",
+  "someone": "хтось (одна людина)",
+  "but": "а, але",
+  "people": "людей",
+  "of": "of — після слова перед ним: (the idea) of asking = (думка) про те, щоб питати",
+  "asking": "питати, просити",
+  "me": "мене",
+  "times": "разів",
+  "a": "a — один: times a day = разів на день",
+  "day": "день"
+ },
+ "clips": [
+  {
+   "v": "ZBKPWrrbchM",
+   "s": 1127,
+   "e": 1131,
+   "line": "multiple tornadoes touched down in the United States, 500",
+   "note": "About the weather in the US: there were many tornadoes, not one.",
+   "noteUa": "Про погоду в США: торнадо було не одне, а кілька."
+  },
+  {
+   "v": "z9aMYd4brXo",
+   "s": 1245,
+   "e": 1248,
+   "line": "The supercell thunderstorm spawned multiple tornadoes",
+   "note": "A film about weather: one big storm made several tornadoes.",
+   "noteUa": "Фільм про погоду: одна велика гроза дала кілька торнадо."
+  },
+  {
+   "v": "AYXuk8OvhBM",
+   "s": 199,
+   "e": 202,
+   "line": "Not just someone, but multiple people.",
+   "note": "Not one person, but several people.",
+   "noteUa": "Не одна людина, а кілька людей."
+  },
+  {
+   "v": "h-TIRIxhq6E",
+   "s": 180,
+   "e": 182,
+   "line": "of asking me multiple times a day,",
+   "note": "Someone asks her again and again, several times a day.",
+   "noteUa": "Хтось питає її знову і знову, кілька разів на день."
+  }
+ ]
+}

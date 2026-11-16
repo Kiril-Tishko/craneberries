@@ -1,0 +1,70 @@
+{
+ "en": "Can I call you back?",
+ "ua": "Можна я вам передзвоню?",
+ "pic": "📞",
+ "hl": "can I call you back",
+ "together": {
+  "about to": "ось-ось, зараз (щось зроблю)",
+  "in 10 minutes": "через 10 хвилин"
+ },
+ "gloss": {
+  "alright": "гаразд, добре",
+  "baby": "люба, кохана (ласкаво)",
+  "later": "пізніше",
+  "yeah": "так, ага",
+  "i": "я",
+  "uh": "е-е (пауза, думає)",
+  "listen": "слухай",
+  "i’m": "I’m = I am: я (є)",
+  "start": "почати",
+  "a": {
+   "*": "a — бо одна якась річ (не конкретна)",
+   "a session": "a — одна якась сесія (зустріч)",
+   "a problem": "a — одна якась проблема"
+  },
+  "session": "сесія, зустріч (з клієнтом)",
+  "if": "якщо",
+  "it’s": "it’s = it is: це (є)",
+  "not": "не",
+  "problem": "проблема",
+  "fine": "в порядку, добре",
+  "to": "to — перед дієсловом: about to start = ось-ось почну",
+  "in": "через (in 10 minutes = через 10 хвилин)",
+  "10": "десять",
+  "minutes": "хвилин"
+ },
+ "clips": [
+  {
+   "v": "h4WLhHhRzes",
+   "s": 31,
+   "e": 32,
+   "line": "Alright baby, can I call you back later?",
+   "note": "She is on the phone and asks to talk later.",
+   "noteUa": "Вона говорить по телефону і просить передзвонити пізніше."
+  },
+  {
+   "v": "XX-zZSiwzpc",
+   "s": 139,
+   "e": 143,
+   "line": "Yeah I uh, listen, I’m about to start a session, can I call you back?",
+   "note": "He is busy: he is about to start a session, so he asks to call back.",
+   "noteUa": "Він зайнятий: зараз почне сесію, тому просить передзвонити."
+  },
+  {
+   "v": "6kCTDhW9rqQ",
+   "s": 218,
+   "e": 221,
+   "line": "“If it’s not a problem, can I call you back in 10 minutes?”",
+   "note": "A polite way to say it: if it is OK, I will call you in 10 minutes.",
+   "noteUa": "Ввічливо: «Якщо це не проблема, можна я передзвоню через 10 хвилин?»"
+  },
+  {
+   "v": "SR38a-m2p5I",
+   "s": 48,
+   "e": 49,
+   "line": "I’m fine, can I call you back?",
+   "note": "He says he is fine and wants to talk later.",
+   "noteUa": "Каже, що в нього все добре, і просить передзвонити пізніше."
+  }
+ ]
+}

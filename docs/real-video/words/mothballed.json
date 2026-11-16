@@ -1,0 +1,82 @@
+{
+ "en": "mothballed",
+ "ua": "законсервований (закритий на час)",
+ "pic": "🏭",
+ "hl": "mothball(ed|ing|s)?",
+ "together": {
+  "for a while": "на якийсь час",
+  "gets to": "доходить до"
+ },
+ "gloss": {
+  "a": {
+   "*": "a — бо одна якась річ (не конкретна)",
+   "a 12,000 seat": "a — одна (якась) арена",
+   "a certain": "a — якийсь певний (рівень)"
+  },
+  "12": "дванадцять (12,000 = дванадцять тисяч)",
+  "000": "тисяч (12,000 = 12 тисяч)",
+  "seat": "місце (12,000 seat = на 12 000 місць)",
+  "arena": "арена, стадіон",
+  "that’s": "that’s = that has: яку вже",
+  "been": {
+   "*": "been — частина had been / has been: її (вже) законсервували",
+   "that’s been": "been — that’s been mothballed = яку (вже) законсервували",
+   "had been": "been — had been mothballed = її (раніше) законсервували"
+  },
+  "in": "у, в (in 2010 = у 2010 році)",
+  "2010": "дві тисячі десятий (рік)",
+  "before": "до того, як",
+  "the": {
+   "*": "the — бо це конкретна річ, про яку йдеться",
+   "the shuttle": "the — бо це відомий флот шатлів (NASA)",
+   "the price": "the — бо це ціна того, про що говорять"
+  },
+  "shuttle": "шатл (космічний корабель)",
+  "fleet": "флот, усі кораблі разом",
+  "was": "was — минулий час: was mothballed = його законсервували",
+  "are": "are — are mothballed = їх консервують",
+  "for": "на",
+  "while": "якийсь час",
+  "when": "коли",
+  "price": "ціна",
+  "gets": "доходить",
+  "to": "до",
+  "certain": "певний",
+  "it": "це, воно",
+  "had": "had — had been = (вже) було зроблено раніше"
+ },
+ "clips": [
+  {
+   "v": "ErahJe2qJJY",
+   "s": 696,
+   "e": 700,
+   "line": "a 12,000 seat arena that’s been mothballed,",
+   "note": "A big arena for 12,000 people is closed for now, but not torn down.",
+   "noteUa": "Велику арену на 12 000 місць закрили на час, але не знесли."
+  },
+  {
+   "v": "3XH4h3F7zss",
+   "s": 89,
+   "e": 91,
+   "line": "In 2010, before the shuttle fleet was mothballed,",
+   "note": "About the space shuttles: later they stopped flying and were put away.",
+   "noteUa": "Про космічні шатли: згодом вони перестали літати, і їх законсервували."
+  },
+  {
+   "v": "KF_4OQqw3og",
+   "s": 997,
+   "e": 999,
+   "line": "are mothballed for a while when the price gets to a certain",
+   "note": "When the price falls, some sites are closed for a while.",
+   "noteUa": "Коли ціна падає, деякі виробництва на час закривають (консервують)."
+  },
+  {
+   "v": "qydRiaGscE0",
+   "s": 69,
+   "e": 69,
+   "line": "It had been mothballed.",
+   "note": "A NASA project: it had been stopped and put away for a while.",
+   "noteUa": "Проєкт NASA: його колись зупинили й законсервували."
+  }
+ ]
+}
