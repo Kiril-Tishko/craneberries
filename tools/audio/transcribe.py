@@ -11,7 +11,7 @@ into <out-prefix's folder>/models). Keep recordings and transcripts in the scrat
 
 Limits, say them in the report: one mixed track, so no speaker labels (infer from context); a word the
 recognizer got wrong or was unsure of is a hint about pronunciation, not proof (`confidence: check`);
-Ukrainian stretches come out garbled or as Russian-looking text."""
+Ukrainian stretches come out TRANSLATED into English (language=en): never quote them as anyone's English."""
 import json, pathlib, subprocess, sys, tempfile, time
 import soundfile as sf
 from faster_whisper import WhisperModel

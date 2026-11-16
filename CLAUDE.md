@@ -70,6 +70,10 @@ huggingface.co, about 15 min per hour of audio).
 - **One recording only**: `python3 tools/audio/transcribe.py <file> <scratchpad prefix>`. A phone recording catches
   mostly the teacher; a PC recording is one mixed track. No speaker labels: infer who spoke from context and say so
   in the summary. Don't guess what can't be told.
+- **Whisper turns Ukrainian speech into English** (it runs with `language=en`): an English line where they spoke
+  Ukrainian is the recognizer's translation, never someone's English, so never quote it as a mistake. A **Meetily
+  transcript** (Parakeet) keeps the Ukrainian and catches more small slips ("she go"): when he sends one, use it for
+  what was said and in which language, and Whisper's file for times.
 - Then the same steps as for a transcript, with `source: "audio"`.
 - Pronunciation notes for the student and the teacher: a word the recognizer got wrong or was unsure of is a hint,
   not proof. Mark it `confidence: check`.
