@@ -242,8 +242,15 @@ huggingface.co, about 15 min per hour of audio).
   content file like `example-content.js` in the scratchpad; `prep.py <content.js> "<Title>" <work-dir>` records
   the lines and builds `<work-dir>/page.html`; `qa.js <work-dir>` checks every screen at phone and laptop size
   (no scrolling, nothing jumps, every line has sound) and must say "no problems"; look at a few screens yourself;
-  publish as a new artifact with `root: <work-dir>` and the mp3s listed in `files.json`; add the link to
-  `materials/<slug>`):
+  put it on the student site (next bullet); add its address to `materials/<slug>`):
+  - **Lesson pages go on the student site** (https://lessons.ukrainglish.com, private repo kiril-tishko/lessons), from
+    any chat, start to finish: attach the repo (`add_repo`, push access), clone it next to this one and follow its
+    `CLAUDE.md` (`perl tools/add-lesson.pl <work-dir> <siteCode> <YYYY-MM-DD>-<short-name>`; the code is `siteCode` in
+    the Notebook's `students/<slug>`). Push straight to its `main`: that is his standing OK, and the push publishes the
+    site. Then check the live page: the new title shows and one mp3 loads as audio (a missing page also returns 200).
+    Voice: `pip install kokoro-onnx soundfile` and the two model files from the kokoro-onnx GitHub release
+    `model-files-v1.0` (a few seconds). **Only when he asks for a Claude page** (he may, the first days): publish it
+    as a new artifact instead, with `root: <work-dir>`, the mp3s listed in `files.json` and `capabilities` below.
   - **Ask him first, for every student**: before building a lesson page, ask what to include with AskUserQuestion
     (multiple choice, several answers allowed): offer the parts you would pick from the student's last lessons
     (forgotten words, corrected phrases, uncorrected mistakes, one sound, saved topics, her real situations), with
@@ -266,8 +273,8 @@ huggingface.co, about 15 min per hour of audio).
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
     What is typed there must survive a reload or a closed tab: the engine saves on every keystroke, in the browser
-    and in the viewer's private rows of the page database. So publish every lesson page with
-    `capabilities: {db: {}, user: {}}` (test: type, reload, the text is still there, "✓ Saved" shows).
+    and in the student's account (the student site does this by itself; a Claude page needs
+    `capabilities: {db: {}, user: {}}`). Test: type, reload, the text is still there, "✓ Saved" shows.
   - A brand-new word is practiced in one form only. "Change the time" and "every day or now" drills use verbs the
     student already owns (send, call, work); a new word in a tense drill confuses (interrupt → interrupting did).
   - **More drilling than new material**: few new words or phrases on a page (about 8 at most). Each one comes
