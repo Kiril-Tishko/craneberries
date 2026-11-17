@@ -108,7 +108,8 @@ huggingface.co, about 15 min per hour of audio).
   (Rule from Nov 11 on; earlier cards stay as they are.)
   For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
-  (he removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake").
+  (he removed "I was swamped", "pipe dream", "Good for him!", "I could go for some cake"). Nothing that reminds the
+  student of her mistakes ("There are a lot of mistakes in my email"): keep card and page sentences positive.
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
   For A2 and below, write the mouth tips in the student's language ("Опустіть щелепу", not "Drop your jaw").
