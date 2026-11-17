@@ -395,7 +395,7 @@ function view(s){
   if (s.t === 'game') return `
     <div class="who hear">👂 Which word do you hear?</div>
     <button class="btn main" data-gplay>▶ Listen</button>
-    <div class="row">${s.words.map(([w, e]) => `<button class="word" data-gans="${esc(w)}">${e} ${esc(w)}</button>`).join('')}</div>
+    <div class="row${s.words.some(([w]) => w.length > 12) ? ' quiz' : ''}">${s.words.map(([w, e]) => `<button class="word" data-gans="${esc(w)}">${e} ${esc(w)}</button>`).join('')}</div>
     <div class="score" id="gscore">${T_('Натисніть ▶, потім виберіть слово', 'Нажмите ▶, потом выберите слово')}</div>`;
   if (s.t === 'rule') return `
     <div class="who">${esc(s.label || '📌 How it works')}</div>
