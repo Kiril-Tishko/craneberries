@@ -1,8 +1,9 @@
 #!/usr/bin/env perl
 # Find real video clips for a word with Caption Search's API (captionsearch.app, his free trial key):
 #   perl tools/real-video/captionsearch.pl "is mandatory" [how many, 1-20, default 10] [--raw] [--fresh]
-# One match per line: the YouTube id, start and end in seconds (end is approximate, "?" when unknown), the link to that
-# moment (Looplines), and any caption text the match has. --raw prints the whole answer.
+# One match per line: the YouTube id, the start as m:ss, start and end in seconds (start in whole seconds, end
+# approximate, "?" when unknown), a YouTube link with the time (paste it in the clip page's "add a clip"), the link to
+# that moment on Looplines, and any caption text the match has (the API sends none so far). --raw prints the whole answer.
 #
 # The key is his, from Caption Search: the CAPTIONSEARCH_API_KEY environment variable, or the file
 # ~/.captionsearch-key (on his PC: C:\Users\TKS\.captionsearch-key, one line). In a cloud chat, the cloud environment's
@@ -76,8 +77,11 @@ my $find; $find = sub {
 my $m = $find->($d) || [];
 print "No matches for \"$phrase\".\n" unless @$m;
 my $num = sub { my $v = shift; defined $v && $v =~ /^-?[\d.]+$/ ? sprintf('%.2f', $v) : '?' };
+my $mmss = sub { my $v = shift; defined $v && $v =~ /^[\d.]+$/ ? sprintf('%d:%02d', int($v / 60), int($v) % 60) : '?' };
 for my $x (@$m) {
   my ($text) = grep { defined && !ref && /\S/ } map { $x->{$_} } qw(text line caption snippet transcript);
-  printf "%s  %s–%s  %s%s\n", $x->{videoId}, $num->($x->{startSeconds}), $num->($x->{endSeconds}), $x->{url} // '',
-    defined $text ? "  | $text" : '';
+  my $s = $x->{startSeconds};
+  my $yt = "https://youtu.be/$x->{videoId}" . (defined $s && $s =~ /^[\d.]+$/ ? '?t=' . int($s) : '');
+  printf "%s  %s  %s-%s  %s  %s%s\n", $x->{videoId}, $mmss->($s), $num->($s), $num->($x->{endSeconds}), $yt,
+    $x->{url} // '', defined $text ? "  | $text" : '';
 }
