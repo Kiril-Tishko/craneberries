@@ -36,7 +36,7 @@ const total = cards.length;
 function header(c) {
   return `
   <div class="top"><span class="kicker">${esc(c.kicker || '')}</span><span class="date">${dateLabel}</span></div>
-  <h1>${esc(c.title)}</h1>
+  ${c.title ? `<h1>${esc(c.title)}</h1>` : ''}
   ${c.sub ? `<p class="sub">${esc(c.sub)}</p>` : ''}`;
 }
 
@@ -124,7 +124,7 @@ const body = {
         <div class="ptip">${esc(p.tip)}</div></div>`).join('')}</div>
     ${c.family ? `<p class="family">${esc(c.family)}</p>` : ''}
     ${c.also ? `<div class="also"><div class="flabel">${esc(c.also.label)}</div>${c.also.lines.map((l) => `<div>${mark(l)}</div>`).join('')}</div>` : ''}
-    ${c.practice ? `<div class="practice"><div class="flabel">Say each one 5 times</div>
+    ${c.practice ? `<div class="practice">${c.practiceLabel === '' ? '' : `<div class="flabel">${esc(c.practiceLabel || 'Say each one 5 times')}</div>`}
       ${c.practice.map((s) => `<div class="say">${mark(s)}</div>`).join('')}</div>` : ''}`,
 };
 
