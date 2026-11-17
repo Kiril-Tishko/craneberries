@@ -42,8 +42,8 @@ function header(c) {
 
 const body = {
   // Items with an emoji get big picture rows (for children): emoji, the English word, the Ukrainian below.
-  // kid, or grid: true → picture tiles (big emoji, the word, Ukrainian only if given)
-  words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}">${c.items.map((w, i) => `
+  // kid, or grid: true → picture tiles (big emoji, the word, Ukrainian only if given); cols: 3 → three smaller tiles a row (for 6+ items)
+  words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}${c.cols === 3 ? ' c3' : ''}">${c.items.map((w, i) => `
     <div class="ktile t${i % 6}">${w.svg ? `<span class="kemo ksvg">${w.svg}</span>` : `<span class="kemo">${esc(w.emoji || '')}</span>`}
       <span class="kword"><span class="hl">${esc(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
     : c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
@@ -259,6 +259,11 @@ const html = `<!doctype html>
   .flat .ktile{transform:none!important;padding:22px 10px 18px;background:#fff!important;border:1px solid #e3e7ef;box-shadow:0 1px 2px rgba(20,30,54,.05),0 10px 26px rgba(20,30,54,.08)}
   .flat .kemo{font-size:84px}
   .flat .kword{font-size:30px}
+  .kgrid.c3{grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .c3 .ktile,.flat.c3 .ktile{padding:14px 4px 12px;border-radius:22px}
+  .c3 .kemo,.flat.c3 .kemo{font-size:56px}
+  .c3 .kword,.flat.c3 .kword{font-size:20px}
+  .c3 .ua{font-size:13px}
   .ksvg{display:block;height:104px;line-height:0}
   .ksvg svg{height:104px;width:auto}
   .kph{margin-top:18px;display:grid;gap:12px}

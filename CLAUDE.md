@@ -377,7 +377,7 @@ teacher        {note, english[{t, said, better, why}], habits[], strengths[], im
 studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex, emoji?}]}
                     items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles;
-                    `grid: true` gives the tile grid in the adult look (no reading needed); an item's `svg` replaces
+                    `grid: true` gives the tile grid in the adult look (no reading needed; `cols: 3` for 6+ items keeps it phone-sized); an item's `svg` replaces
                     the emoji when no emoji fits (🍴 shows a fork AND a knife, 🍽️ a plate with cutlery)
   {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   emoji shows in front of each phrase
                     `{break: true}` between items leaves a gap: unlabeled groups (weekly review sheet)
