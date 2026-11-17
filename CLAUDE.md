@@ -232,19 +232,20 @@ huggingface.co, about 15 min per hour of audio).
   you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app). Its search API is open to him with a free trial key
-    (Nov 17; 5 searches a minute, 30 a day; saving the results for students is fine):
-    `perl tools/real-video/captionsearch.pl "is mandatory" [how many]` gives each match's YouTube id, start (whole
-    seconds), approximate end, a YouTube link and a Looplines link to that moment, and keeps every answer (the same
-    phrase again costs nothing; `--fresh` asks again). It works (tested Nov 17), but the answer has **times only**: no
-    caption text, channel or lines around, and its first matches are often no good (for "is mandatory": a British
-    politician, a K-pop show). So ask for 20 and look at them on the site (it lists the channel and line of each) or
-    each Looplines link (the transcript around that moment), then pick.
+    (Nov 17; 5 searches a minute, 30 a day, at most 5 results a search and no next page; saving the results for
+    students is fine): `perl tools/real-video/captionsearch.pl "what do you mean" [1-5]` gives each match's channel and
+    video title, a YouTube link with the time, the exact start and end, and the line with up to two lines before and
+    after it, with times (Dunqing, who runs Caption Search, added this for him on Nov 18), and keeps every answer (the
+    same phrase again costs nothing; `--fresh` asks again). The first 5 are often no good (for "what do you mean": an
+    audiobook, MrBeast), so search a few other phrasings that give the meaning ("what do you mean by that", "wait,
+    what do you mean") rather than one phrase again.
     **The key** is in `CAPTIONSEARCH_API_KEY` or the file `~/.captionsearch-key.txt` on his PC (in a cloud chat: a
     Network secret for api.captionsearch.app in the cloud environment's settings, which the chat never sees): never in
     this repo (public), a page, a commit or a chat, never printed, never in anything a student loads. If it may have
     leaked, he asks Caption Search to revoke it.
-    **From his phone**: Remote Control on his PC's session does all of it (the PC stays on). A cloud chat can search
-    but has no browser for the channel and the lines around, so it can't pick clips yet (until the API sends the text).
+    **From his phone**: a cloud chat does all of it (the key is a Network secret there) except watching the clips:
+    say in the reply that they are unwatched, and he checks them on his phone (🙈 Hide for a bad one). Remote Control on
+    his PC's session also works (the PC stays on) and can watch them.
     Without the key (or past the day's 30):
     search by hand on the site in Chrome (no scripts there): quote the phrase ("is mandatory"), `&offset=20` for the next
     page; each result has exact times and the lines around it. No accent filter either way: check the channel is
@@ -253,8 +254,7 @@ huggingface.co, about 15 min per hour of audio).
     rip-off|what a rip-off"; `--meta` gives the rows): only 20 searches a day per browser (paging with next is free);
     its times are whole seconds.
   **Read the context before choosing a clip and before writing its note**: the lines before and after it (Caption
-  Search's site shows two; the API gives times only, so open the match's link or the video's transcript; on YouGlish
-  play from a few seconds earlier), who is
+  Search's site and the tool show two; on YouGlish play from a few seconds earlier), who is
   talking and about what. Never guess the situation from the one line.
   Choose 4–5 where the word has the lesson's meaning (another meaning is the one thing he doesn't want; swearing,
   politics and so on are fine) and watch each one in the page: a clear picture (the speaker's face or the thing, not
