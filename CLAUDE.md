@@ -230,18 +230,22 @@ huggingface.co, about 15 min per hour of audio).
   3 clips a word. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
   you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
-  - **Caption Search is the main tool** (captionsearch.app; free; **by hand in Chrome only**, its terms forbid scripts
-    or calling its API. Their developer replied (Nov 16): they are building exactly his workflow (search once while
-    preparing a lesson, get back the video id, start time and approximate end time; results may be saved for students)
-    and will let him try it free. It isn't live yet and there is no key: stay by hand until he has a key, then use
-    their new endpoint):
-    quote the phrase ("is mandatory"), `&offset=20` for the next page. Each result has exact
-    times and the lines around it. No accent filter: check the channel is American (sitcom clips like The Office work well).
+  - **Caption Search is the main tool** (captionsearch.app). Its search API is open to him with a free trial key
+    (Nov 17; 5 searches a minute, 30 a day; saving the results for students is fine):
+    `perl tools/real-video/captionsearch.pl "is mandatory" [how many]` gives each match's YouTube id, start, approximate
+    end and a link to that moment, and keeps every answer (the same phrase again costs nothing; `--fresh` asks again).
+    **The key** is in `CAPTIONSEARCH_API_KEY` or the file `~/.captionsearch-key` on his PC (in a cloud chat: the cloud
+    environment's variables): never in this repo (public), a page, a commit or a chat, never printed, never in anything a
+    student loads. If it may have leaked, he asks Caption Search to revoke it. Without the key (or past the day's 30):
+    search by hand on the site in Chrome (no scripts there): quote the phrase ("is mandatory"), `&offset=20` for the next
+    page; each result has exact times and the lines around it. No accent filter either way: check the channel is
+    American (sitcom clips like The Office work well).
   - **YouGlish** is the backup (`tools/real-video/pick.js`, US filter, search phrases that give the meaning: "a
     rip-off|what a rip-off"; `--meta` gives the rows): only 20 searches a day per browser (paging with next is free);
     its times are whole seconds.
   **Read the context before choosing a clip and before writing its note**: the lines before and after it (Caption
-  Search shows two; open the result's transcript for more; on YouGlish play from a few seconds earlier), who is
+  Search's site shows two; the API gives times only, so open the match's link or the video's transcript; on YouGlish
+  play from a few seconds earlier), who is
   talking and about what. Never guess the situation from the one line.
   Choose 4–5 where the word has the lesson's meaning (another meaning is the one thing he doesn't want; swearing,
   politics and so on are fine) and watch each one in the page: a clear picture (the speaker's face or the thing, not
