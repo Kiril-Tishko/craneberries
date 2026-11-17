@@ -232,11 +232,19 @@ huggingface.co, about 15 min per hour of audio).
   Pick the clips before the lesson, never live:
   - **Caption Search is the main tool** (captionsearch.app). Its search API is open to him with a free trial key
     (Nov 17; 5 searches a minute, 30 a day; saving the results for students is fine):
-    `perl tools/real-video/captionsearch.pl "is mandatory" [how many]` gives each match's YouTube id, start, approximate
-    end and a link to that moment, and keeps every answer (the same phrase again costs nothing; `--fresh` asks again).
-    **The key** is in `CAPTIONSEARCH_API_KEY` or the file `~/.captionsearch-key` on his PC (in a cloud chat: the cloud
-    environment's variables): never in this repo (public), a page, a commit or a chat, never printed, never in anything a
-    student loads. If it may have leaked, he asks Caption Search to revoke it. Without the key (or past the day's 30):
+    `perl tools/real-video/captionsearch.pl "is mandatory" [how many]` gives each match's YouTube id, start (whole
+    seconds), approximate end, a YouTube link and a Looplines link to that moment, and keeps every answer (the same
+    phrase again costs nothing; `--fresh` asks again). It works (tested Nov 17), but the answer has **times only**: no
+    caption text, channel or lines around, and its first matches are often no good (for "is mandatory": a British
+    politician, a K-pop show). So ask for 20 and look at them on the site (it lists the channel and line of each) or
+    each Looplines link (the transcript around that moment), then pick.
+    **The key** is in `CAPTIONSEARCH_API_KEY` or the file `~/.captionsearch-key.txt` on his PC (in a cloud chat: a
+    Network secret for api.captionsearch.app in the cloud environment's settings, which the chat never sees): never in
+    this repo (public), a page, a commit or a chat, never printed, never in anything a student loads. If it may have
+    leaked, he asks Caption Search to revoke it.
+    **From his phone**: Remote Control on his PC's session does all of it (the PC stays on). A cloud chat can search
+    but has no browser for the channel and the lines around, so it can't pick clips yet (until the API sends the text).
+    Without the key (or past the day's 30):
     search by hand on the site in Chrome (no scripts there): quote the phrase ("is mandatory"), `&offset=20` for the next
     page; each result has exact times and the lines around it. No accent filter either way: check the channel is
     American (sitcom clips like The Office work well).

@@ -6,8 +6,10 @@
 # that moment on Looplines, and any caption text the match has (the API sends none so far). --raw prints the whole answer.
 #
 # The key is his, from Caption Search: the CAPTIONSEARCH_API_KEY environment variable, or the file
-# ~/.captionsearch-key (on his PC: C:\Users\TKS\.captionsearch-key, one line). In a cloud chat, the cloud environment's
-# variables. Never put it in this repo (public), a page, a commit or a chat, and never print it.
+# ~/.captionsearch-key (on his PC: C:\Users\TKS\.captionsearch-key.txt, one line). In a cloud chat, a Network secret
+# for api.captionsearch.app in the cloud environment's settings: the proxy adds it and the chat never sees it, so the
+# tool sends no key there. Never put it in this repo (public), a page, a commit or a chat, and never print it.
+# The answer has times only (no caption text, channel or lines around): the Caption Search website shows those.
 # Trial: 5 requests a minute, 30 a day. Every answer is kept in ~/.cache/captionsearch/, so the same phrase again costs
 # nothing (--fresh asks again). On "429 Too Many Requests" it says how long to wait (Retry-After) and stops.
 # The search gives times only: read the lines around each moment (the link, or YouTube's transcript) before choosing a
@@ -42,13 +44,15 @@ if (-e $file && !$opt{'--fresh'}) {
   }
   $key = '' unless defined $key;
   $key =~ s/^\s+|\s+$//g; $key =~ s/^\x{FEFF}//; $key =~ s/^\xEF\xBB\xBF//;
-  die "No Caption Search key: set CAPTIONSEARCH_API_KEY, or put the key alone in $home/.captionsearch-key\n" unless $key;
+  # In a cloud chat the key is a Network secret for api.captionsearch.app: the proxy adds it, the chat never sees it.
+  my $cloud = ($ENV{CLAUDE_CODE_REMOTE} // '') =~ /^(1|true)$/i;
+  die "No Caption Search key: set CAPTIONSEARCH_API_KEY, or put the key alone in $home/.captionsearch-key\n" unless $key || $cloud;
 
   # The key and the query go to curl on its standard input (a curl config), never on the command line or in a file.
   my $data = JSON::PP->new->utf8->canonical->encode({phrase => $phrase, limit => $limit + 0});
   my $q = sub { my $s = shift; $s =~ s/(["\\])/\\$1/g; "\"$s\"" };
   my $config = join '', map { "$_\n" } 'silent', 'show-error', 'request = "POST"',
-    'header = ' . $q->("Authorization: Bearer $key"), 'header = "Content-Type: application/json"',
+    ($key ? 'header = ' . $q->("Authorization: Bearer $key") : ()), 'header = "Content-Type: application/json"',
     'data-binary = ' . $q->($data), 'write-out = "\n@@%{http_code} %header{retry-after}"', 'url = "https://api.captionsearch.app/v1/search"';
   my $pid = open2(my $from, my $to, 'curl', '--config', '-');
   binmode $to; print $to $config; close $to;
@@ -59,6 +63,8 @@ if (-e $file && !$opt{'--fresh'}) {
   ($body = $out) =~ s/\n\@\@\d{3}.*\z//s;
   die "Caption Search: too many requests (5 a minute, 30 a day). Wait " . ($wait ? "$wait seconds" : 'a minute')
     . " and try again.\n" if $code == 429;
+  die "Caption Search didn't take the key (401)." . ($cloud ? " In a cloud chat it must be a Network secret for"
+    . " api.captionsearch.app in the environment's settings." : '') . "\n" if $code == 401;
   die "Caption Search answered " . ($code || 'nothing') . ": " . substr($body, 0, 300) . "\n" unless $code == 200;
   make_path($cache);
   open my $w, '>:raw', $file or die "can't write $file: $!\n"; print $w $body; close $w;
