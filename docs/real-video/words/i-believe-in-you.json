@@ -1,60 +1,41 @@
 {
- "en": "I believe in you.",
- "ua": "Я в тебе вірю.",
- "pic": "💪",
- "hl": "(I )?believe in you",
- "together": {
-  "what about if": "а що, як…",
-  "let’s go": "вперед, погнали"
- },
- "gloss": {
-  "what": "що",
-  "about": "про",
-  "if": "якщо",
-  "we": "ми",
-  "did": "зробили (минулий час від do)",
-  "all": "усе",
-  "this": "це",
-  "and": "і, а",
-  "she": "вона",
-  "didn’t": "didn’t = did not: не (у минулому)",
-  "even": "навіть",
-  "pass": "скласти (іспит), пройти",
-  "let’s": "let’s = let us: давай(те)",
-  "go": "йти; let’s go = вперед!",
-  "you": "ти, ви",
-  "just": "щойно",
-  "blessed": "благословив",
-  "that": "цей, той",
-  "ball": "м’яч",
-  "i": "я",
-  "think": "думаю",
-  "ronaldo": "Роналду (футболіст)",
-  "wants": "хоче (he → wants, з -s)",
-  "me": "мене, мені",
-  "to": "to — перед дієсловом: wants me to lose = хоче, щоб я програв",
-  "lose": "програти, втратити",
-  "1": "один ($1 million = мільйон доларів)",
-  "million": "мільйон"
- },
- "clips": [
-  {
-   "v": "ItDnz_hW9Sw",
-   "s": 348.56,
-   "e": 349.36,
-   "line": "I believe in you.",
-   "note": "Someone worries she won’t pass. Then she hears: I believe in you.",
-   "noteUa": "Хтось боїться, що вона не впорається (didn’t pass), а їй кажуть: «Я в тебе вірю».",
-   "around": [[345.0, 348.4, "What about if we did all this and she didn’t even pass?"], [350.0, 351.0, "Let’s go."]]
+  "en": "I believe in you.",
+  "ua": "Я в тебе вірю.",
+  "pic": "💪",
+  "hl": "(I )?believe in you",
+  "together": {"what about if":"а що, як…","let’s go":"вперед, погнали"},
+  "gloss": {
+    "1": "один ($1 million = мільйон доларів)",
+    "what": "що",
+    "about": "про",
+    "if": "якщо",
+    "we": "ми",
+    "did": "зробили (минулий час від do)",
+    "all": "усе",
+    "this": "це",
+    "and": "і, а",
+    "she": "вона",
+    "didn’t": "didn’t = did not: не (у минулому)",
+    "even": "навіть",
+    "pass": "скласти (іспит), пройти",
+    "let’s": "let’s = let us: давай(те)",
+    "go": "йти; let’s go = вперед!",
+    "you": "ти, ви",
+    "just": "щойно",
+    "blessed": "благословив",
+    "that": "цей, той",
+    "ball": "м’яч",
+    "i": "я",
+    "think": "думаю",
+    "ronaldo": "Роналду (футболіст)",
+    "wants": "хоче (he → wants, з -s)",
+    "me": "мене, мені",
+    "to": "to — перед дієсловом: wants me to lose = хоче, щоб я програв",
+    "lose": "програти, втратити",
+    "million": "мільйон"
   },
-  {
-   "v": "0BjlBnfHcHM",
-   "s": 1195.69,
-   "e": 1196.3,
-   "line": "I believe in you.",
-   "note": "Before the kick he cheers the player on: I believe in you = you can do it.",
-   "noteUa": "Перед ударом по м’ячу він підтримує гравця: «Я в тебе вірю», тобто «у тебе вийде».",
-   "around": [[1194.0, 1195.6, "You just blessed that ball."], [1196.3, 1199.0, "I think Ronaldo wants me to lose $1 million."]]
-  }
- ]
+  "clips": [
+    {"v":"ItDnz_hW9Sw","s":348.56,"e":349.16,"line":"I believe in you.","note":"Someone worries she won’t pass. Then she hears: I believe in you.","noteUa":"Хтось боїться, що вона не впорається (didn’t pass), а їй кажуть: «Я в тебе вірю».","around":[[345,348.4,"What about if we did all this and she didn’t even pass?"],[350,351,"Let’s go."]]},
+    {"v":"0BjlBnfHcHM","s":1195.69,"e":1196.3,"line":"I believe in you.","note":"Before the kick he cheers the player on: I believe in you = you can do it.","noteUa":"Перед ударом по м’ячу він підтримує гравця: «Я в тебе вірю», тобто «у тебе вийде».","around":[[1194,1195.6,"You just blessed that ball."],[1196.3,1199,"I think Ronaldo wants me to lose $1 million."]]}
+  ]
 }
