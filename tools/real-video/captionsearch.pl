@@ -14,7 +14,7 @@
 # Trial: 5 requests a minute, 30 a day, at most 5 results a search and no next page (a bigger "limit" or an "offset"
 # gets 400). For more choice, search other phrases that give the meaning ("what do you mean by that", "wait, what do
 # you mean"). Every answer is kept in ~/.cache/captionsearch/, so the same phrase again costs nothing (--fresh asks
-# again). On "429 Too Many Requests" it says how long to wait (Retry-After) and stops.
+# again). Over 5 a minute it answers 503 "temporarily unavailable" (Nov 18), not 429: on either it says to wait and stops.
 # Then watch each clip in the clip page before choosing it, as CLAUDE.md says.
 use strict; use warnings; use utf8;
 use JSON::PP; use File::Path qw(make_path); use IPC::Open2 qw(open2); use Digest::MD5 qw(md5_hex);
@@ -26,7 +26,7 @@ my ($phrase, $limit) = @args;
 die "usage: perl tools/real-video/captionsearch.pl \"phrase\" [how many, 1-5] [--raw] [--fresh]\n" unless defined $phrase && $phrase =~ /\S/;
 utf8::decode($phrase);
 # The API answers 400 to commas, periods and the like ("don't worry, I believe in you", Nov 18), and that still costs
-# a search: send the words only. Captions have no reliable punctuation anyway.
+# a search: send the words only. Captions have no reliable punctuation anyway. Apostrophes (' and ’) are fine.
 (my $sent = $phrase) =~ s/[.,!?;:"“”…()]+/ /g;
 $sent =~ s/\s+/ /g; $sent =~ s/^ | $//g;
 print "(searching \"$sent\")\n" if $sent ne $phrase;
@@ -71,6 +71,10 @@ if (-e $file && !$opt{'--fresh'}) {
   ($body = $out) =~ s/\n\@\@\d{3}.*\z//s;
   die "Caption Search: too many requests (5 a minute, 30 a day). Wait " . ($wait ? "$wait seconds" : 'a minute')
     . " and try again.\n" if $code == 429;
+  die "Caption Search answered 503 (temporarily unavailable): it says this after 5 searches in a minute too. Wait a"
+    . " minute and try again; if it says it again, the service is down.\n" if $code == 503;
+  die "Caption Search refused the phrase (400). Leave out punctuation other than apostrophes and try again.\n"
+    if $code == 400;
   die "Caption Search didn't take the key (401)." . ($cloud ? " In a cloud chat it must be a Network secret for"
     . " api.captionsearch.app in the environment's settings." : '') . "\n" if $code == 401;
   die "Caption Search answered " . ($code || 'nothing') . ": " . substr($body, 0, 300) . "\n" unless $code == 200;
