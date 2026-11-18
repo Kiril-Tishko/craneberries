@@ -237,8 +237,8 @@ huggingface.co, about 15 min per hour of audio).
     students is fine): `perl tools/real-video/captionsearch.pl "what do you mean" [1-5]` gives each match's channel and
     video title, a YouTube link with the time, the exact start and end, and the line with up to two lines before and
     after it, with times (Dunqing, who runs Caption Search, added this for him on Nov 18), and keeps every answer (the
-    same phrase again costs nothing; `--fresh` asks again; commas, periods and the like are left out because the API
-    answers 400 to them, Nov 18, apostrophes are fine; more than 5 a minute gets 503 "temporarily unavailable"). The first 5 are often no good (for "what do you mean": an
+    same phrase again costs nothing; `--fresh` asks again; punctuation is left out because the API
+    answers 400 to a comma, Nov 18; more than 5 a minute gets 503 "temporarily unavailable"). The first 5 are often no good (for "what do you mean": an
     audiobook, MrBeast), so search a few other phrasings that give the meaning ("what do you mean by that", "wait,
     what do you mean") rather than one phrase again.
     **The key** is in `CAPTIONSEARCH_API_KEY` or the file `~/.captionsearch-key.txt` on his PC (in a cloud chat: a

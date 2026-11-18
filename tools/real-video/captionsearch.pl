@@ -25,8 +25,8 @@ my %opt = map { $_ => 1 } grep { /^--/ } @ARGV;
 my ($phrase, $limit) = @args;
 die "usage: perl tools/real-video/captionsearch.pl \"phrase\" [how many, 1-5] [--raw] [--fresh]\n" unless defined $phrase && $phrase =~ /\S/;
 utf8::decode($phrase);
-# The API answers 400 to commas, periods and the like ("don't worry, I believe in you", Nov 18), and that still costs
-# a search: send the words only. Captions have no reliable punctuation anyway. Apostrophes (' and ’) are fine.
+# The API answers 400 to a comma ("don't worry, I believe in you", Nov 18; periods and apostrophes, ' and ’, are
+# fine), and that still costs a search: send the words only. Captions have no reliable punctuation anyway.
 (my $sent = $phrase) =~ s/[.,!?;:"“”…()]+/ /g;
 $sent =~ s/\s+/ /g; $sent =~ s/^ | $//g;
 print "(searching \"$sent\")\n" if $sent ne $phrase;
