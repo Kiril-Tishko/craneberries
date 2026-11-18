@@ -24,6 +24,8 @@ const esc = (s = '') => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // [text] in a string marks a highlighted span.
 const mark = (s = '') => esc(s).replace(/\[([^\]]+)\]/g, '<span class="hl">$1</span>');
+// A word card's `en` may hold "\n": the rest starts on a new line ("It takes me …\nIt took me …").
+const brk = (s = '') => esc(s).replace(/\n/g, '<br>');
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const [y, m, d] = lesson.date.split('-').map(Number);
@@ -45,13 +47,13 @@ const body = {
   // kid, or grid: true → picture tiles (big emoji, the word, Ukrainian only if given); cols: 3 → three smaller tiles a row (for 6+ items)
   words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}${c.cols === 3 ? ' c3' : ''}">${c.items.map((w, i) => `
     <div class="ktile t${i % 6}">${w.svg ? `<span class="kemo ksvg">${w.svg}</span>` : `<span class="kemo">${esc(w.emoji || '')}</span>`}
-      <span class="kword"><span class="hl">${esc(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
+      <span class="kword"><span class="hl">${brk(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
     : c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
     <div class="prow"><span class="pemo">${esc(w.emoji || '')}</span>
-      <div class="wk"><span class="en big"><span class="hl">${esc(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
+      <div class="wk"><span class="en big"><span class="hl">${brk(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</div></div>`).join('')}</div>` : `<ol class="words">${c.items.map((w) => `
     <li><span class="ua">${esc(w.ua)}</span>
-      <span class="en"><span class="hl">${esc(w.en)}</span></span>
+      <span class="en"><span class="hl">${brk(w.en)}</span></span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</li>`).join('')}</ol>`,
 
   phrases: (c) => kid ? `<div class="kph">${c.items.map((p, i) => `

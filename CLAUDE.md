@@ -90,7 +90,8 @@ huggingface.co, about 15 min per hour of audio).
 - **American or international English**: per student, see **Students** above. IPA is American (/wɝk/, not
   /wɜːk/) and goes on the teacher site only: **no phonetic transcription on student cards**.
 - **Student cards**: readable on a phone, no student name, no page count, no "lesson notes" caption
-  (only a small, quiet date beside the kicker), no homework or mini-task.
+  (only a small, quiet date beside the kicker), no homework or mini-task. No big title that only repeats the kicker
+  ("Don't forget" twice): leave `title` empty (he crossed it out, Nov 17).
 - **Which cards** (a general guide, not a hard rule): after he chooses (step 2), make a "Don't forget" words card,
   "Say it like this", 3 pronunciation cards (he sends one) and anything else the lesson calls for (e.g. a picture
   cheat sheet for the main topic). He decides what to send; often just one card. Keep subtitles short or leave
@@ -379,7 +380,8 @@ studentCards[] one of:
   {type: "words",   kicker, title, sub, items[{ua, en, ex, emoji?}]}
                     items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles;
                     `grid: true` gives the tile grid in the adult look (no reading needed; `cols: 3` for 6+ items keeps it phone-sized); an item's `svg` replaces
-                    the emoji when no emoji fits (🍴 shows a fork AND a knife, 🍽️ a plate with cutlery)
+                    the emoji when no emoji fits (🍴 shows a fork AND a knife, 🍽️ a plate with cutlery);
+                    "\n" in `en` starts a new line ("It takes me …\nIt took me …": each form on its own line)
   {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   emoji shows in front of each phrase
                     `{break: true}` between items leaves a gap: unlabeled groups (weekly review sheet)
                     (with `kid`: colored bubbles, big emoji)
