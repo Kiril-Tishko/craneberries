@@ -643,4 +643,32 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') go(-1);
 });
 render();
+/* A screen that doesn't fit gets smaller instead of scrolling (no scrollbars, his choice, Nov 18): its parts are
+   zoomed down step by step until the whole card fits, so no button is ever out of reach. A new screen starts at full
+   size; a tap that opens more (a translation) only shrinks it further if it must. */
+(() => {
+  if (window.__cardFit) return; window.__cardFit = true;
+  const over = (c) => c.scrollHeight > c.clientHeight + 1;
+  const fit = (fresh) => {
+    const c = document.getElementById('card'); if (!c) return;
+    const kids = [...c.children];
+    let z = fresh ? 1 : Number(c.dataset.fit || 1);
+    if (fresh) kids.forEach((k) => { k.style.zoom = ''; });
+    while (over(c) && z > 0.5) { z = Math.round((z - 0.05) * 100) / 100; kids.forEach((k) => { k.style.zoom = z; }); }
+    c.dataset.fit = z;
+  };
+  const start = () => {
+    const c = document.getElementById('card'); if (!c) return;
+    new MutationObserver((ms) => {
+      const fresh = ms.some((m) => m.type === 'childList' && m.target === c);
+      requestAnimationFrame(() => fit(fresh));
+    }).observe(c, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class']});
+    const again = () => requestAnimationFrame(() => fit(true));
+    addEventListener('resize', again);
+    if (window.ResizeObserver && c.parentElement) new ResizeObserver(again).observe(c.parentElement);
+    if (document.fonts) document.fonts.ready.then(again);
+    fit(true);
+  };
+  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', start); else start();
+})();
 </script>
