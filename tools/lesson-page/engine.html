@@ -47,6 +47,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tabs.more-l{-webkit-mask-image:linear-gradient(to left,#000 82%,transparent);mask-image:linear-gradient(to left,#000 82%,transparent)}
 .tabs.more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent)}
 .tabs::-webkit-scrollbar{display:none}
+.card::-webkit-scrollbar{display:none}
 .tab{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;padding:7px 11px;border-radius:99px;white-space:nowrap}
 .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .dots{display:flex;gap:5px;justify-content:center;flex:none;padding:4px 0 2px}
@@ -54,7 +55,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .dots i.on{background:var(--accent);width:22px;border-radius:99px}
 
 .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:10px 0}
-.card{width:100%;max-height:100%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:26px;
+.card{width:100%;max-height:100%;overflow:auto;scrollbar-width:none;background:var(--surface);border:1px solid var(--line);border-radius:26px;
   padding:clamp(18px,4vh,34px) clamp(16px,4vw,32px);display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.2vh,18px);text-align:center}
 .card.in{animation:in .25s ease-out}
 .card.full{height:100%;padding:10px}
