@@ -10,8 +10,8 @@
 //   &listen                                listen first: each clip plays with its caption hidden (blurred), which
 //                                          shows when the clip ends (or on a tap on it)
 //   &embed                                 inside a lesson screen (below)
-// CC beside the timeline hides the subtitles (blurred, for every clip until it is tapped again); a tap on the blurred
-// line shows just that one.
+// CC beside the timeline hides the subtitles (blurred) everywhere: every clip, every lesson, after a reload too, until
+// CC is tapped again (kept in this browser). A tap on the blurred line shows just that one.
 // Tapping the top-left corner 5 times opens edit mode (edit.js): click the text on the page and type, times and Save
 // in a small bar under the video.
 'use strict';
@@ -26,15 +26,18 @@ const EMBED = Q.has('embed');
 if (EMBED) document.body.classList.add('embed');
 // ?embed: the video is as big as the screen's height allows once the timeline, the caption and the buttons have their
 // room. Those keep the slide's whole width, so their height doesn't change with the video's width: one measure fits.
+// A low, wide screen (a phone on its side) puts the caption and the buttons beside the video instead ('short').
 function fitEmbed(){
   if (!EMBED) return;
-  const app = document.querySelector('.app'), video = document.querySelector('.video');
-  const W = document.documentElement.clientWidth;
+  const app = document.querySelector('.app'), video = document.querySelector('.video'), B = document.body.classList;
+  const W = document.documentElement.clientWidth, H = innerHeight, short = H < 340 && W > H * 1.6;
+  B.toggle('short', short);
+  // The clip arrows: beside the video when there is room, otherwise on its edges ('ovl').
+  B.toggle('ovl', short || W < 560);
   for (let k = 0; k < 3; k++) {
     const others = app.getBoundingClientRect().height - video.getBoundingClientRect().height;
-    // Room for the clip arrows beside the video (a narrow screen puts them on its edges instead).
-    const side = W >= 560 && !document.body.classList.contains('single') ? 2 * (46 + 8) : 0;
-    const w = Math.max(200, Math.min(W - side, 1100, Math.floor((innerHeight - others - 4) * 16 / 9)));
+    const side = !B.contains('ovl') && !B.contains('single') ? 2 * (46 + 8) : 0;
+    const w = Math.max(160, Math.min(short ? Math.floor(W * 0.58) : W - side, 1100, Math.floor((H - others - 4) * 16 / 9)));
     if (app.style.getPropertyValue('--vw') === `${w}px`) break;
     app.style.setProperty('--vw', `${w}px`);
   }
@@ -47,7 +50,10 @@ const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 // CC: hides them for this clip and the next ones (they stay hidden at the end), until CC is tapped again.
 // capHidden = the caption shown now is blurred; subsOff = CC is on, so each new clip starts blurred. Edit mode always shows it.
 const LISTEN = Q.has('listen');
-let capHidden = false, subsOff = false;
+const SUBS = 'clips-subs-off';
+const subsSaved = () => { try { return localStorage.getItem(SUBS) === '1'; } catch (e) { return false; } };
+let capHidden = false, subsOff = subsSaved();
+function saveSubs(){ try { if (subsOff) localStorage.setItem(SUBS, '1'); else localStorage.removeItem(SUBS); } catch (e) {} }
 // The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.
 const LIB = new URL('words/', document.baseURI);
 
@@ -281,16 +287,20 @@ function showCaption(){
   capHidden = false; drawCC(); redrawLine();
 }
 function drawCC(){
-  const off = capHidden && !App.editing;
+  const off = (capHidden || subsOff) && !App.editing;
   $('cc').setAttribute('aria-pressed', String(off));
   $('ccicon').setAttribute('href', off ? '#i-ccoff' : '#i-cc');
   const t = off ? 'Show subtitles' : 'Hide subtitles';
   $('cc').setAttribute('aria-label', t); $('cc').title = t;
 }
-$('cc').onclick = () => {
-  if (capHidden) { subsOff = false; showCaption(); return; }
-  subsOff = true; capHidden = true; drawCC(); if (clip()) redrawLine();
-};
+function setSubs(off){
+  subsOff = off; capHidden = off && !App.editing; drawCC(); if (clip()) redrawLine();
+}
+$('cc').onclick = () => { setSubs(!(capHidden || subsOff)); saveSubs(); };
+// CC changed in another clip page (another screen of the lesson, already loaded): this one follows.
+addEventListener('storage', (e) => { if (e.key === SUBS && (e.newValue === '1') !== subsOff) setSubs(e.newValue === '1'); });
+// The lesson moved on to another screen: a clip left playing here stops.
+addEventListener('message', (e) => { if (e.data && e.data.clipsPause) App.pause(); });
 function hidePop(){ const p = $('pop'); if (p) p.hidden = true; document.querySelectorAll('#capbar .on').forEach((x) => x.classList.remove('on')); }
 function showPop(el){
   const g = tapGloss(el);
@@ -392,7 +402,7 @@ function playClip(at){
 }
 App.playClip = playClip;
 const isPlaying = () => started && !ended && intent;
-App.pause = () => { if (isPlaying()) { intent = false; P().pauseVideo(); setCover(); } };
+App.pause = () => { wantPlay = null; if (isPlaying()) { intent = false; P().pauseVideo(); setCover(); } };
 // Edit mode's 🔇: no sound while she edits (students always have sound).
 App.silent = false;
 App.setSilent = (on) => {

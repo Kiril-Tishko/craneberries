@@ -221,12 +221,16 @@ huggingface.co, about 15 min per hour of audio).
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian;
     `listen: true` = listen first: each clip starts with its caption blurred, which shows when it ends or on a tap;
-    CC beside the timeline blurs the subtitles (a "censored" look) for the next clips too until tapped again;
+    CC beside the timeline blurs the subtitles (a "censored" look) everywhere, every clip, screen and lesson, after a
+    reload too, until it is tapped again (his rule, Nov 19; kept in the browser);
     inside a lesson the clip page takes the lesson's look: its colors, rounded buttons, progress dots, no box inside
     the card, and **no heading** (he crossed out the label, the phrase and its Ukrainian, Nov 19: the video takes that
     room, as big as the screen allows, and everything, "With context" included, stays in view with no scrolling;
     the clips change with big ‹ › arrows beside the video, on its edges on a phone, and none back on the first or
     forward on the last; no "Next clip" button there, his choice, so it isn't confused with the lesson's Next;
+    a low, wide screen (a phone on its side) puts the caption and buttons beside the video; **smart loading**: the
+    engine loads the next clips screen ahead in the background (its first clip waits on its first frame) and keeps
+    the last three, so a clips screen opens at once (`Clips` in `engine.html`; pages built before Nov 19 lack it);
     `body.embed` in `docs/real-video/index.html`). It
     opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
     file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),

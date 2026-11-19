@@ -60,9 +60,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .card.in{animation:in .25s ease-out}
 .card.full{height:100%;padding:10px}
 .clipbox{position:relative;width:100%;flex:1;min-height:0}
-.clipframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:18px;background:transparent;opacity:0;transition:opacity .3s}
+/* Clip pages (student site) lie over the page, not in the card: the one on show exactly over its .clipbox, the ones
+   loading ahead unseen under the card (Clips, below). */
+.clipframe{position:fixed;border:0;border-radius:18px;background:transparent;opacity:0;pointer-events:none;z-index:-1;transition:opacity .3s}
+.clipframe.on{opacity:1;pointer-events:auto;z-index:2}
 .clipskel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .3s}
-.clipbox.ready .clipframe{opacity:1}
 .clipbox.ready .clipskel{opacity:0;pointer-events:none}
 .sk{display:block;flex:none;background:var(--line);border-radius:12px;animation:skp 1.1s ease-in-out infinite alternate}
 .sk.v{flex:0 1 auto;min-height:0;height:calc(100% - 170px);aspect-ratio:16/9;max-width:100%;border-radius:18px}
@@ -280,6 +282,19 @@ function fallback(text){
 const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in window)) ? `<button class="sp" data-say="${esc(text)}" aria-label="Listen">🔊</button>` : '';
 
 /* ---------- screens ---------- */
+// A clips screen's clip page: on the student site its compact form right in the screen (/clips/…&embed=1), on a
+// Claude page the clip player on GitHub Pages in a new tab.
+function clipQuery(s){
+  const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
+  if (s.notes === 'ua') q.set('notes', 'ua');
+  if (s.listen) q.set('listen', '1');   // listen first: no caption until the clip has played once
+  return q;
+}
+function clipSrc(s){
+  const q = clipQuery(s); q.delete('from'); q.delete('title'); q.set('embed', '1');
+  return `/clips/?${q}`;
+}
 function view(s){
   if (s.t === 'phrase') return `
     <div class="who ${s.who === 'hear' || s.who === 'read' ? 'hear' : ''}">${{hear:'👂 You hear', read:'📩 You read', write:'✍️ You write', story:'📖 Story', draw:'🎨 Draw it!'}[s.who] || '💬 You say'}</div>
@@ -332,18 +347,12 @@ function view(s){
     // Real video clips of the lesson's words, from the shared clip library (docs/real-video/words/). On the student
     // site they play right in this screen (the site's /clips/ page in its compact ?embed form). YouTube can't play
     // inside a Claude artifact, so there ▶ opens the clip player in a new tab; its "← Lesson" button closes it again.
-    const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
-    if (s.notes === 'ua') q.set('notes', 'ua');
-    if (s.listen) q.set('listen', '1');   // listen first: no caption until the clip has played once
     if (window.LESSON_KEY){
-      q.delete('from'); q.delete('title'); q.set('embed', '1');
-      // Grey shapes hold the screen until the clip page says it is ready, so nothing jumps while it loads.
-      return `<div class="clipbox"><div class="clipskel" aria-hidden="true">`
-        + `<i class="sk v"></i><i class="sk b"></i><i class="sk c"></i><i class="sk n"></i></div><iframe class="clipframe" src="/clips/?${esc(q.toString())}" title="Real video clips"
-        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe></div>`;
+      // Grey shapes hold the screen until the clip page (Clips, below: often loaded ahead) lies over them.
+      return `<div class="clipbox" data-src="${esc(clipSrc(s))}"><div class="clipskel" aria-hidden="true">`
+        + `<i class="sk v"></i><i class="sk b"></i><i class="sk c"></i><i class="sk n"></i></div></div>`;
     }
-    const url = `https://kiril-tishko.github.io/craneberries/real-video/?${q}`;
+    const url = `https://kiril-tishko.github.io/craneberries/real-video/?${clipQuery(s)}`;
     return `
     <div class="who hear">🎬 ${esc(s.label || 'Real people say it')}</div>
     <div class="big">${s.words.map(esc).join(' · ')}</div>
@@ -458,8 +467,8 @@ function render(){
   jawDeg = 0; G = { cur: null, right: 0, total: 0 };
   card.innerHTML = view(slides[idx]);
   card.classList.toggle('full', !!(window.LESSON_KEY && slides[idx].t === 'clips'));   // the clips fill the screen
-  const cb = card.querySelector('.clipbox'); if (cb) setTimeout(() => cb.classList.add('ready'), 8000);   // at the latest
   card.classList.remove('in'); void card.offsetWidth; card.classList.add('in');
+  Clips.render();
   document.getElementById('back').disabled = sec === 0 && idx === 0;
   const last = sec === SECTIONS.length - 1 && idx === slides.length - 1;
   document.getElementById('next').disabled = last;
@@ -467,11 +476,79 @@ function render(){
   stopAll();
   if (window.Lesson && window.Lesson.onMove) window.Lesson.onMove(sec, idx);
 }
-// A clips screen's page says when it is laid out: its grey placeholders give way to it.
-addEventListener('message', (e) => {
-  if (!e.data || !e.data.clipsReady) return;
-  document.querySelectorAll('.clipframe').forEach((f) => { if (f.contentWindow === e.source) f.parentNode.classList.add('ready'); });
-});
+/* ---------- clips screens load ahead (student site) ----------
+   A clips screen's page (/clips/…&embed=1, with YouTube players) takes a few seconds to load, so it loads before the
+   screen comes: the next clips screen ahead always loads in the background (its first clip ready on its first frame,
+   the second one loading too), and pages already loaded stay (the last three), so going back is instant as well.
+   The pages lie over the lesson, never inside the card (moving a frame reloads it): the one on show exactly over its
+   box in the card, the others unseen under the card at the same size, paused. */
+const Clips = (() => {
+  if (!window.LESSON_KEY) return {render(){}};
+  const frames = new Map(), KEEP = 3;   // src → its frame
+  let box = null, shown = null, aheadT = 0, showT = 0;
+  // Where a clips screen's box is, or would be (the card's inside: the stage less its padding, the card's border and padding).
+  function spot(){
+    if (box && box.isConnected) return box.getBoundingClientRect();
+    const r = document.querySelector('.stage').getBoundingClientRect();
+    return {left: r.left + 11, top: r.top + 21, width: r.width - 22, height: r.height - 42};
+  }
+  function place(f){
+    const r = f === shown ? box.getBoundingClientRect() : spot();
+    Object.assign(f.style, {left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`});
+  }
+  const layout = () => frames.forEach(place);
+  function frame(src){
+    let f = frames.get(src);
+    if (!f){
+      f = document.createElement('iframe');
+      f.className = 'clipframe'; f.title = 'Real video clips'; f.tabIndex = -1;
+      f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+      frames.set(src, f); place(f); f.src = src; document.body.appendChild(f);
+    }
+    f.used = performance.now();
+    return f;
+  }
+  function reveal(){
+    if (!shown || !box) return;
+    place(shown);
+    if (shown.ready){ box.classList.add('ready'); shown.classList.add('on'); }
+  }
+  function render(){
+    clearTimeout(aheadT); clearTimeout(showT);
+    box = card.querySelector('.clipbox');
+    const now = box ? frame(box.dataset.src) : null;
+    frames.forEach((f) => {
+      if (f === now) return;
+      f.classList.remove('on');
+      if (document.activeElement === f) f.blur();
+      try { f.contentWindow.postMessage({clipsPause: true}, '*'); } catch (e) {}   // a clip left playing stops
+    });
+    shown = now; layout();
+    if (shown){
+      const f = shown, b = box;
+      showT = setTimeout(reveal, 260);   // once the card has slid in
+      setTimeout(() => { if (shown === f && box === b){ f.ready = true; reveal(); } }, 8000);   // at the latest
+    }
+    // The next clips screen ahead starts loading once this screen has settled; the oldest pages go.
+    let next = null;
+    SECTIONS.forEach((x, n) => x.slides.forEach((s, i) => {
+      if (!next && s.t === 'clips' && (n > sec || (n === sec && i > idx))) next = clipSrc(s);
+    }));
+    aheadT = setTimeout(() => {
+      if (next) frame(next);
+      const old = [...frames].filter(([, f]) => f !== shown && f !== frames.get(next)).sort((a, b) => a[1].used - b[1].used);
+      while (frames.size > KEEP && old.length){ const [src, f] = old.shift(); f.remove(); frames.delete(src); }
+    }, shown ? 2500 : 1200);
+  }
+  addEventListener('resize', layout);
+  if (window.ResizeObserver) new ResizeObserver(layout).observe(document.querySelector('.stage'));
+  // A clip page says when it is laid out: the grey shapes give way to it.
+  addEventListener('message', (e) => {
+    if (!e.data || !e.data.clipsReady) return;
+    frames.forEach((f) => { if (f.contentWindow === e.source){ f.ready = true; if (f === shown) reveal(); } });
+  });
+  return {render};
+})();
 function go(d){
   const slides = SECTIONS[sec].slides;
   if (d > 0){ if (idx < slides.length - 1) idx++; else if (sec < SECTIONS.length - 1){ sec++; idx = 0; } }
