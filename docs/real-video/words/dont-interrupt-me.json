@@ -1,0 +1,30 @@
+{
+  "en": "Don’t interrupt me.",
+  "ua": "Не перебивай мене.",
+  "pic": "🤫",
+  "hl": "(don[’']t )?interrupt(ing)? me",
+  "together": {"talking to":"розмовляю з"},
+  "gloss": {
+    "everybody": "усі (до всіх людей у студії)",
+    "don’t": "don’t = do not: не (Don’t …! = Не …!)",
+    "interrupt": "перебивати",
+    "me": "мене",
+    "when": "коли",
+    "i’m": "I’m = I am: я (I’m talking = я розмовляю)",
+    "talking": "розмовляю (talking to = розмовляю з)",
+    "to": "з (talk to = розмовляти з)",
+    "somebody": "кимось (з кимось)",
+    "it’s": "it’s = it is: це",
+    "just": "просто",
+    "a": "a — один якийсь (a joke = жарт)",
+    "joke": "жарт",
+    "relax": "розслабтеся, спокійно",
+    "mr": "містер, пан (Mr. = Mister)",
+    "harvey": "Гарві (прізвище)",
+    "yes": "так",
+    "sir": "сер (ввічливо до чоловіка)"
+  },
+  "clips": [
+    {"v":"AGRWXR6B6OM","s":287.24,"e":293,"line":"Everybody, don’t interrupt me when I’m talking to somebody.","note":"Steve Harvey makes a joke and talks to the people in the studio. A 3-year-old boy wants to talk to Steve, so he says: Everybody, don’t interrupt me!","noteUa":"Стів Гарві жартує і говорить до людей у студії. Трирічний хлопчик хоче поговорити зі Стівом, тож каже: «Усі, не перебивайте мене!»","around":[[283.84,285.4,"It’s just a joke. Relax."],[301.26,302.5,"Mr. Harvey?"],[302.58,303.8,"Yes, sir."]]}
+  ]
+}
