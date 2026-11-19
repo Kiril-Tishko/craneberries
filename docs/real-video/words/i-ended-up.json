@@ -1,0 +1,41 @@
+{
+  "en": "I ended up …",
+  "ua": "Зрештою я… (опинився, зробив)",
+  "pic": "🧭",
+  "hl": "ended up",
+  "together": {"for a while":"на якийсь час","coffee shop":"кав’ярня"},
+  "gloss": {
+    "ended": "(ended up = зрештою опинився, у підсумку)",
+    "up": "(ended up = зрештою опинився)",
+    "i": "я",
+    "so": "тож, отже",
+    "at": "в (at Paper Coffee = у Paper Coffee)",
+    "paper": "Paper Coffee — назва кав’ярні",
+    "coffee": "кава",
+    "and": "і",
+    "was": "(was asking = питала)",
+    "asking": "питала",
+    "her": "її",
+    "for": "про (asking for = просила, питала про)",
+    "shop": "магазин, заклад",
+    "recommendations": "поради, рекомендації",
+    "in": "в",
+    "croatia": "Хорватія",
+    "a": "a — якийсь (a while = якийсь час)",
+    "while": "час, деякий час",
+    "originally": "взагалі-то, родом",
+    "i’m": "I’m = I am: я",
+    "from": "з (I’m from LA = я з Лос-Анджелеса)",
+    "la": "Лос-Анджелес (L.A.)",
+    "went": "пішов (від go)",
+    "to": "до (went to school = навчався)",
+    "school": "школа, університет (в Америці)",
+    "santa": "Санта-Крус (місто в Каліфорнії)",
+    "cruz": "Санта-Крус (місто в Каліфорнії)",
+    "then": "потім"
+  },
+  "clips": [
+    {"v":"ZVkIjPrVcl0","s":143.12,"e":145,"line":"So I ended up at Paper Coffee.","note":"She asked a new friend where to get coffee. In the end she went to Paper Coffee.","noteUa":"Вона спитала нову знайому, куди піти на каву. Зрештою опинилася в Paper Coffee.","around":[[139,142.9,"and I was asking her for coffee shop recommendations."]]},
+    {"v":"FMMRzFFCKJ0","s":3233.32,"e":3235.5,"line":"I ended up in Croatia for a while.","note":"A game developer tells his story: he is from LA, studied in California, and then ended up in Croatia.","noteUa":"Розробник ігор розповідає: він з Лос-Анджелеса, вчився в Каліфорнії, а потім опинився в Хорватії.","around":[[3225,3227.8,"So originally, I’m from LA."],[3228,3233.2,"I went to school at Santa Cruz, and then"]]}
+  ]
+}

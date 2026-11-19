@@ -1,0 +1,18 @@
+{
+  "en": "It could have been worse.",
+  "ua": "Могло бути й гірше.",
+  "pic": "😅",
+  "hl": "could have been (a lot |so much )?worse",
+  "gloss": {
+    "it": "it — тут не перекладається: it could have been worse = могло бути гірше",
+    "could": "могло (б)",
+    "have": "(could have been = могло бути)",
+    "been": "бути (could have been = могло бути)",
+    "worse": "гірше",
+    "so": "тож, отже",
+    "doug": "Даг (ім’я ведучого)"
+  },
+  "clips": [
+    {"v":"gH-p-DTABCY","s":339.4,"e":342,"line":"So, it could have been worse, Doug.","note":"A man talks about his years in prison. It was bad, but it could have been worse.","noteUa":"Чоловік розповідає про роки у в’язниці. Було погано, але могло бути й гірше."}
+  ]
+}

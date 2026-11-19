@@ -1,0 +1,38 @@
+{
+  "en": "I owe you one.",
+  "ua": "Я твій боржник.",
+  "pic": "🙏",
+  "hl": "I owe you one",
+  "together": {"cashing in the favor":"прошу повернути послугу","you and me both":"я теж, ми обидва"},
+  "gloss": {
+    "i": "я",
+    "owe": "винен (owe you one = я тобі винен послугу)",
+    "you": "тобі, ти",
+    "one": "одну (послугу)",
+    "she’s": "she’s = she is: вона",
+    "my": "моя",
+    "girlfriend": "дівчина (кохана)",
+    "now": "тепер",
+    "yeah": "так, ага",
+    "do": "так і є (Yeah, you do = Так, винен)",
+    "dwight": "Двайт (ім’я)",
+    "oh": "о",
+    "thank": "дякую (thank you)",
+    "fire": "звільни (з роботи)",
+    "jim": "Джим (ім’я)",
+    "i’m": "I’m = I am: я",
+    "cashing": "(cash in a favor = попросити повернути послугу)",
+    "in": "(cash in = скористатися, отримати)",
+    "the": "the — та сама послуга",
+    "favor": "послуга, ласка",
+    "man": "друже, чувак",
+    "and": "і",
+    "me": "я",
+    "both": "обидва"
+  },
+  "clips": [
+    {"v":"glUkYb-t9a8","s":72.16,"e":73.4,"line":"I owe you one.","note":"His friend introduced him to a girl. Now she is his girlfriend, so he says: I owe you one.","noteUa":"Друг познайомив його з дівчиною. Тепер вона його дівчина, тож він каже: «Я твій боржник».","around":[[70.4,72,"She’s my girlfriend now."],[73.4,74.4,"Yeah, you do."]]},
+    {"v":"dcDU-qxrxm0","s":1697.44,"e":1700.6,"line":"I owe you one, Dwight.","note":"Dwight helps Michael, and Michael says: I owe you one. Dwight wants the favor right away: Fire Jim!","noteUa":"Двайт допомагає Майклу, і той каже: «Я твій боржник». Двайт одразу хоче борг назад: «Звільни Джима!»","around":[[1695,1696.2,"Oh, thank you."],[1701,1702,"Fire Jim."],[1703,1705,"I’m cashing in the favor."]]},
+    {"v":"kv1_mPQ1MBA","s":1620.04,"e":1621.3,"line":"I owe you one, man.","note":"One man helped another. He says thanks: I owe you one, man.","noteUa":"Один чоловік допоміг іншому. Той дякує: «Я твій боржник, друже».","around":[[1617,1619.5,"You and me both."],[1621.4,1622.2,"You do?"]]}
+  ]
+}
