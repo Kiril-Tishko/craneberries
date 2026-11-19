@@ -1,0 +1,35 @@
+{
+  "en": "Sorry I’m late.",
+  "ua": "Вибачте, я запізнилася.",
+  "pic": "⏰",
+  "hl": "sorry I[’']m late",
+  "together": {"no problem":"нічого страшного","what’s going on":"що відбувається?","all about":"про що (взагалі)"},
+  "gloss": {
+    "sorry": "вибачте",
+    "i’m": "I’m = I am: я",
+    "late": "запізнився (I’m late = я запізнився)",
+    "hi": "привіт",
+    "oh": "о",
+    "no": "ніякої (no problem = нічого страшного)",
+    "problem": "проблема",
+    "hey": "привіт, гей",
+    "everyone": "усім",
+    "so": "отже, ну",
+    "what’s": "what’s = what is: що",
+    "this": "ця",
+    "secret": "таємна",
+    "meeting": "зустріч, нарада",
+    "all": "(all about = про що)",
+    "about": "про (what’s it all about? = про що це все?)",
+    "boss": "шеф, бос",
+    "let’s": "let’s = let us: давайте",
+    "start": "почнемо",
+    "going": "(what’s going on = що відбувається)",
+    "on": "(what’s going on = що відбувається)"
+  },
+  "clips": [
+    {"v":"P-se2KQhQik","s":73.76,"e":75.1,"line":"Sorry I’m late.","note":"Someone comes to a date a bit late: Sorry I'm late. The answer: Oh, no problem.","noteUa":"Хтось трохи запізнюється на побачення: «Вибач, я запізнився». Відповідь: «Нічого страшного».","around":[[72.4,73.6,"Hi."],[75.1,76.4,"Oh, no problem."]]},
+    {"v":"zFvs8WSz0ic","s":1000.64,"e":1001.8,"line":"Sorry I’m late.","note":"Jake comes on crutches to a secret meeting: Sorry I'm late.","noteUa":"Джейк приходить на милицях на таємну зустріч: «Вибачте, я запізнився».","around":[[999,1000.5,"Hey, everyone."],[1001.8,1004,"So, what’s this secret meeting all about?"]]},
+    {"v":"3URyLOjWlPM","s":1123.78,"e":1125,"line":"Sorry I’m late, boss.","note":"The meeting is starting. He comes in: Sorry I'm late, boss.","noteUa":"Нарада вже починається. Він заходить: «Вибачте, я запізнився, шефе».","around":[[1121.5,1123.6,"Let’s start."],[1125,1126.4,"What’s going on?"]]}
+  ]
+}

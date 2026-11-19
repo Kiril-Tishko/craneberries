@@ -1,0 +1,42 @@
+{
+  "en": "Not yet.",
+  "ua": "Ще ні.",
+  "pic": "⏳",
+  "hl": "not yet",
+  "gloss": {
+    "not": "не, ні",
+    "yet": "ще (у запереченні: not yet = ще ні)",
+    "no": "ні",
+    "does": "does — допоміжне слово для питання (Donna → does)",
+    "donna": "Донна (ім’я)",
+    "know": "знати (Does Donna know? = Донна знає?)",
+    "this": "це",
+    "she’s": "she’s = she is: вона",
+    "going": "(is going to be = буде)",
+    "to": "(going to = буде, збирається)",
+    "be": "бути",
+    "heartbroken": "з розбитим серцем, дуже засмучена",
+    "that": "що (heartbroken that … = засмучена, що …)",
+    "you’re": "you’re = you are: ти",
+    "leaving": "їдеш (I’m leaving = я їду, йду)",
+    "wait": "чекай",
+    "hold": "(hold on = зачекай)",
+    "on": "(hold on = зачекай)",
+    "did": "did — допоміжне слово для питання в минулому",
+    "you": "ти",
+    "tell": "сказати (комусь)",
+    "stefa": "Стефа (ім’я)",
+    "he’s": "he’s = he is: він",
+    "wondering": "дивується, думає (he’s not wondering why = він не питає себе, чому)",
+    "why": "чому",
+    "everyone": "усі",
+    "is": "is — дієслово be: everyone is gone = усіх нема",
+    "gone": "пішов, зник (is gone = нема)"
+  },
+  "together": {"hold on":"зачекай","is going to be":"буде"},
+  "clips": [
+    {"v":"fYwUjcmwz9E","s":202.54,"e":203.9,"line":"Not yet.","note":"He has big news. His friend asks: Does Donna know this? He hasn't told her: Not yet.","noteUa":"У нього важлива новина. Друг питає: «Донна знає?» Він ще їй не сказав: «Ще ні».","around":[[200,202.4,"Does Donna know this?"],[204,206.5,"She’s going to be heartbroken that you’re leaving."]]},
+    {"v":"gNl9ttEzlQs","s":180.46,"e":181.4,"line":"Not yet.","note":"A game on a TV show. Someone must wait: Wait. Hold on. Not yet.","noteUa":"Гра на телешоу. Треба трохи почекати: «Чекай. Ще ні».","around":[[178,178.9,"Wait."],[179,180.4,"Hold on."]]},
+    {"v":"O021eXJ7qfE","s":297.51,"e":298.9,"line":"No, not yet.","note":"At the airport. Did you tell Stefa? No, not yet: he still doesn't know.","noteUa":"В аеропорту. «Ти сказав Стефі?» — «Ні, ще ні»: він ще не знає.","around":[[295.5,297.4,"Did you tell Stefa?"],[299,301.5,"He’s not wondering why everyone is gone."]]}
+  ]
+}

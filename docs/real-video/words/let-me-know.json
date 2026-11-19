@@ -1,0 +1,28 @@
+{
+  "en": "Let me know.",
+  "ua": "Дай знати.",
+  "pic": "💬",
+  "hl": "let me know",
+  "together": {"here we go":"ну, починаємо","keep me in the know":"тримай мене в курсі"},
+  "gloss": {
+    "let": "дай (let me know = дай знати)",
+    "me": "мені",
+    "know": "знати",
+    "if": "якщо",
+    "you": "ти, ви",
+    "need": "треба, потрібно",
+    "anything": "щось, будь-що",
+    "just": "просто",
+    "how": "як",
+    "you’re": "you’re = you are: ти",
+    "feeling": "почуваєшся",
+    "what": "що",
+    "think": "думаєте",
+    "keep": "тримай"
+  },
+  "clips": [
+    {"v":"6gj7rc9Vda8","s":1452.52,"e":1454,"line":"Let me know if you need anything.","note":"She wants to help him: Let me know if you need anything.","noteUa":"Вона хоче йому допомогти: «Дай знати, якщо щось буде потрібно»."},
+    {"v":"uLAkcZ9Glq8","s":106.88,"e":108.5,"line":"Just let me know how you’re feeling.","note":"A tattoo artist starts work: Just let me know how you're feeling (if it hurts).","noteUa":"Тату-майстер починає роботу: «Просто дай знати, як ти почуваєшся» (якщо буде боляче).","around":[[105,106.8,"Here we go."],[108.5,111,"Anything, you just keep me in the know."]]},
+    {"v":"_oRgdlJUD18","s":753.24,"e":754.6,"line":"Let me know what you think.","note":"At the end of his video about a new phone, he asks the viewers: Let me know what you think.","noteUa":"Наприкінці відео про новий телефон він просить глядачів: «Напишіть, що ви думаєте»."}
+  ]
+}

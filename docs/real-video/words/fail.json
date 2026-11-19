@@ -1,0 +1,34 @@
+{
+  "en": "fail",
+  "ua": "провалитися, не вдатися",
+  "pic": "❌",
+  "hl": "\\bfail(ed|s|ing)?\\b",
+  "gloss": {
+    "fail": "провалитися, не вдатися",
+    "failed": "провалився, не вийшло (минулий час від fail)",
+    "i": "я",
+    "already": "вже",
+    "tried": "пробував (від try)",
+    "but": "але",
+    "you": "ти",
+    "have": "(have to = мусиш)",
+    "to": {"*": "to — перед дієсловом: have to do = мусиш зробити", "$4 to $8": "до (з 4 до 8 доларів)", "to $16": "до (з 8 до 16 доларів)"},
+    "do": "зробити",
+    "this": "це",
+    "okay": "добре? (наприкінці речення: так?)",
+    "the": "the — тут не перекладається: the point is = суть у тому, що",
+    "point": "суть (the point is = суть у тому, що)",
+    "is": "is — дієслово be: the point is = суть у тому, що",
+    "4": "чотири",
+    "8": "вісім",
+    "16": "шістнадцять",
+    "on": "на (on day ten = на десятий день)",
+    "day": "день",
+    "ten": "десять"
+  },
+  "together": {"have to":"мусиш, треба","the point is":"суть у тому, що"},
+  "clips": [
+    {"v":"HAw412b4zd4","s":1239.64,"e":1241,"line":"I already tried, but I failed.","note":"He tried to do something important, and it didn't work: I already tried, but I failed.","noteUa":"Він уже пробував зробити щось важливе, але не вийшло: «Я вже пробував, але провалився».","around":[[1237,1239.5,"You have to do this, okay?"]]},
+    {"v":"S0OHw58IjJk","s":4352.42,"e":4353.6,"line":"The point is, I failed.","note":"Ryan tried to double $1 every day. It didn't work: he failed on day ten.","noteUa":"Райан намагався щодня подвоювати 1 долар. Не вийшло: він провалився на десятий день.","around":[[4349.5,4352.3,"$4 to $8, $8 to $16."],[4355,4357,"But I failed on day ten."]]}
+  ]
+}

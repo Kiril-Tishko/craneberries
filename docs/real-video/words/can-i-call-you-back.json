@@ -31,7 +31,24 @@
   "to": "to — перед дієсловом: about to start = ось-ось почну",
   "in": "через (in 10 minutes = через 10 хвилин)",
   "10": "десять",
-  "minutes": "хвилин"
+  "minutes": "хвилин",
+  "anyway": "у будь-якому разі, коротше",
+  "um": "е-е (пауза)",
+  "you": "ти",
+  "know": "знати (you know = знаєш)",
+  "late": "запізнююся (I’m late for = я запізнююся на)",
+  "for": "на (late for a meeting = запізнююся на зустріч)",
+  "meeting": "зустріч, нарада",
+  "so": "тож, тому",
+  "let": "дай (let me know = дай знати)",
+  "me": "мені",
+  "how": "як",
+  "it": "it — тут не перекладається: how it goes = як усе пройде",
+  "goes": "іде, проходить (how it goes = як усе пройде)",
+  "with": "з",
+  "nick": "Нік (ім’я)",
+  "okay": "гаразд",
+  "love": "люблю"
  },
  "clips": [
   {
@@ -65,6 +82,15 @@
    "line": "I’m fine, can I call you back?",
    "note": "He says he is fine and wants to talk later.",
    "noteUa": "Каже, що в нього все добре, і просить передзвонити пізніше."
+  },
+  {
+   "v": "xenAsUxZSa0",
+   "s": 22.12,
+   "e": 26,
+   "line": "Anyway, um, you know, I’m late for a meeting, so can I call you back?",
+   "note": "She is on the phone, but she is late for a meeting, so she asks to talk later.",
+   "noteUa": "Вона говорить по телефону, але запізнюється на зустріч, тому просить передзвонити пізніше.",
+   "around": [[26, 28, "You let me know how it goes with Nick."], [28, 29.5, "Okay, I love you."]]
   }
  ]
 }

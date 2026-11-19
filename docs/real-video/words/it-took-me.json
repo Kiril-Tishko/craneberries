@@ -1,0 +1,42 @@
+{
+  "en": "It took me …",
+  "ua": "У мене пішло (… часу)",
+  "pic": "⏱️",
+  "hl": "it took me",
+  "together": {"get upstairs":"піднятися нагору","get down here":"дістатися сюди (вниз)"},
+  "gloss": {
+    "it": "it — тут не перекладається: It took me forever = У мене пішла вічність",
+    "took": "took (від take) — тут про час: пішло, зайняло",
+    "me": "мене, мені (it took me = у мене пішло)",
+    "forever": "вічність, дуже довго",
+    "so": "так",
+    "long": "довго",
+    "i": "я",
+    "couldn’t": "couldn’t = could not: не могла",
+    "to": "to — перед дієсловом: to start = почати",
+    "get": "дістатися (get upstairs = піднятися нагору)",
+    "upstairs": "нагору",
+    "cause": "’cause = because: бо",
+    "don’t": "don’t = do not: не",
+    "have": "мати (I don’t have = у мене немає)",
+    "a": "a — одна якась (a pass = перепустка)",
+    "pass": "перепустка",
+    "anymore": "більше (not … anymore = вже не)",
+    "sorry": "вибачте",
+    "down": "вниз, сюди вниз",
+    "here": "сюди",
+    "i’m": "I’m = I am: я",
+    "dr": "доктор (Dr. = Doctor)",
+    "wilson": "Вілсон (прізвище)",
+    "know": "знати (I don’t know = не знаю)",
+    "why": "чому",
+    "start": "почати",
+    "this": "цю",
+    "book": "книжку"
+  },
+  "clips": [
+    {"v":"EZd6jBKLr0c","s":85.85,"e":90.3,"line":"I couldn’t— It took me forever to get upstairs, ’cause I don’t have a pass anymore.","note":"Kelly Clarkson used to work in this building. Now she has no pass, so it took her a long time to get upstairs.","noteUa":"Келлі Кларксон колись працювала в цій будівлі. Тепер у неї немає перепустки, тож вона дуже довго добиралася нагору."},
+    {"v":"DF1RImm7pSE","s":440.64,"e":441.9,"line":"Sorry it took me so long to get down here.","note":"A doctor comes in late. He says sorry: it took him a long time to get here.","noteUa":"Лікар приходить пізно і вибачається: у нього пішло багато часу, щоб сюди дістатися.","around":[[441.9,443.3,"I’m Dr. Wilson."]]},
+    {"v":"Q0qvxaKZr-0","s":42.48,"e":45.6,"line":"I don’t know why it took me so long to start this book.","note":"She shows a book. She wanted to read it for a long time and only started now.","noteUa":"Вона показує книжку: довго збиралася, а почала читати тільки зараз."}
+  ]
+}

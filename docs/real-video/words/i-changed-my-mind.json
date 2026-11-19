@@ -1,0 +1,38 @@
+{
+  "en": "I changed my mind.",
+  "ua": "Я передумала.",
+  "pic": "🔄",
+  "hl": "I changed my mind",
+  "together": {"get out of":"звільни, вийди з"},
+  "gloss": {
+    "i": "я",
+    "changed": "змінив (від change)",
+    "my": "мою, мій",
+    "mind": "думка (change my mind = передумати)",
+    "get": "(get out of = звільни, вийди з)",
+    "out": "(get out of = звільни, вийди з)",
+    "of": "(get out of = звільни, вийди з)",
+    "spot": "місце",
+    "there’s": "there’s = there is: є",
+    "more": "більше",
+    "than": "ніж",
+    "one": "один",
+    "right": "правильний",
+    "way": "спосіб",
+    "to": "to — перед дієсловом: to make = приготувати",
+    "make": "приготувати",
+    "paella": "паелья (іспанська страва)",
+    "jake": "Джейк (ім’я)",
+    "can": "можна (Can I have …? = Можна мені …?)",
+    "have": "отримати (Can I have …? = Можна мені …?)",
+    "your": "твоєї",
+    "friend": "подруги, друга",
+    "katie’s": "Katie’s = Кеті (чий? — Кеті)",
+    "phone": "телефон",
+    "number": "номер"
+  },
+  "clips": [
+    {"v":"RoyEqN1nKME","s":546.56,"e":547.8,"line":"I changed my mind.","note":"Sheldon let his friend sit in his spot. Now he says: I changed my mind. Get out of my spot.","noteUa":"Шелдон дозволив другу сісти на своє місце. А тепер: «Я передумав. Звільни моє місце».","around":[[547.8,549,"Get out of my spot."]]},
+    {"v":"C6OH9l-lDFE","s":537.28,"e":538.6,"line":"I changed my mind.","note":"Jake changes his decision: I changed my mind. Can I have your friend's phone number?","noteUa":"Джейк змінює рішення: «Я передумав. Можна номер твоєї подруги Кеті?»","around":[[530,532.6,"There’s more than one right way to make paella, Jake."],[543,545,"Can I have your friend Katie’s phone number?"]]}
+  ]
+}

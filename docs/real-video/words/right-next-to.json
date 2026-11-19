@@ -1,0 +1,36 @@
+{
+  "en": "right next to",
+  "ua": "прямо поруч із",
+  "pic": "📍",
+  "hl": "right next to",
+  "together": {"hockey puck":"хокейна шайба"},
+  "gloss": {
+    "right": "прямо, якраз",
+    "next": "(next to = поруч із)",
+    "to": "(next to = поруч із)",
+    "it’s": "it’s = it is: це, воно",
+    "the": {"*": "the — та сама, про яку говорять", "the dent": "the — та сама вм’ятина, про яку говорили", "the water": "the — вода біля будинку (конкретна)"},
+    "dent": "вм’ятина",
+    "well": "ну",
+    "just": "просто",
+    "a": "a — один якийсь (a golf ball = м’ячик для гольфу)",
+    "golf": "гольф",
+    "ball": "м’яч",
+    "that": "який",
+    "my": "мій",
+    "brother": "брат",
+    "threw": "кинув (від throw)",
+    "at": "в (threw at my head = кинув мені в голову)",
+    "head": "голова",
+    "you": "ти, ви",
+    "can": "можеш",
+    "still": "досі, ще",
+    "feel": "відчути, намацати",
+    "and": "і",
+    "water": "вода"
+  },
+  "clips": [
+    {"v":"tkZTFh3XXTY","s":1425.76,"e":1427.6,"line":"It’s right next to the hockey puck dent.","note":"Sheldon shows a small dent on his head. Another dent is right next to it.","noteUa":"Шелдон показує вм’ятинку на голові. А прямо поруч — ще одна.","around":[[1418.6,1421.8,"Well, it’s just a golf ball that my brother threw at my head."],[1421.9,1425.6,"You can still feel the dent."]]},
+    {"v":"XipcupFilFE","s":272.88,"e":274.3,"line":"And it’s right next to the water,","note":"Oscar Isaac talks about his summer house: it is right next to the water.","noteUa":"Оскар Айзек розповідає про свій літній будинок: він стоїть прямо біля води."}
+  ]
+}

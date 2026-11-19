@@ -1,0 +1,21 @@
+{
+  "en": "What’s for dessert?",
+  "ua": "Що на десерт?",
+  "pic": "🍰",
+  "hl": "what[’']s for dessert",
+  "gloss": {
+    "what’s": "what’s = what is: що",
+    "for": "на (for dessert = на десерт)",
+    "dessert": "десерт",
+    "i": "я",
+    "don’t": "don’t = do not: не",
+    "know": "знаю",
+    "how": "як",
+    "you": "ти",
+    "feeling": "почуваєшся (How you feeling? = Як ти?)"
+  },
+  "clips": [
+    {"v":"MD4S84OSMsc","s":268,"e":270.5,"line":"I don’t know, what’s for dessert?","note":"He just ate a huge plate of food. They ask how he feels. He jokes: I don't know, what's for dessert?","noteUa":"Він щойно з’їв величезну порцію. Його питають, як він. Він жартує: «Не знаю. А що на десерт?»","around":[[262,266,"How you feeling?"]]},
+    {"v":"wQ-RbWAwnx8","s":84,"e":87,"line":"What’s for dessert?","note":"A family dinner on Sesame Street. Someone asks: What's for dessert?","noteUa":"Сімейна вечеря на «Вулиці Сезам». Хтось питає: «Що на десерт?»"}
+  ]
+}

@@ -3,7 +3,7 @@
   "ua": "Я в тебе вірю.",
   "pic": "💪",
   "hl": "(I )?believe in you",
-  "together": {"what about if":"а що, як…","let’s go":"вперед, погнали"},
+  "together": {"what about if":"а що, як…","let’s go":"вперед, погнали","you got this":"у тебе вийде","all right":"добре?"},
   "gloss": {
     "1": "один ($1 million = мільйон доларів)",
     "what": "що",
@@ -32,10 +32,15 @@
     "me": "мене, мені",
     "to": "to — перед дієсловом: wants me to lose = хоче, щоб я програв",
     "lose": "програти, втратити",
-    "million": "мільйон"
+    "million": "мільйон",
+    "hey": "гей, слухай",
+    "got": "(you got this = у тебе вийде)",
+    "right": "(all right? = добре?)",
+    "okay": "добре? (наприкінці речення: так?)"
   },
   "clips": [
     {"v":"ItDnz_hW9Sw","s":348.56,"e":349.16,"line":"I believe in you.","note":"Someone worries she won’t pass. Then she hears: I believe in you.","noteUa":"Хтось боїться, що вона не впорається (didn’t pass), а їй кажуть: «Я в тебе вірю».","around":[[345,348.4,"What about if we did all this and she didn’t even pass?"],[350,351,"Let’s go."]]},
-    {"v":"0BjlBnfHcHM","s":1195.69,"e":1196.3,"line":"I believe in you.","note":"Before the kick he cheers the player on: I believe in you = you can do it.","noteUa":"Перед ударом по м’ячу він підтримує гравця: «Я в тебе вірю», тобто «у тебе вийде».","around":[[1194,1195.6,"You just blessed that ball."],[1196.3,1199,"I think Ronaldo wants me to lose $1 million."]]}
+    {"v":"0BjlBnfHcHM","s":1195.69,"e":1196.3,"line":"I believe in you.","note":"Before the kick he cheers the player on: I believe in you = you can do it.","noteUa":"Перед ударом по м’ячу він підтримує гравця: «Я в тебе вірю», тобто «у тебе вийде».","around":[[1194,1195.6,"You just blessed that ball."],[1196.3,1199,"I think Ronaldo wants me to lose $1 million."]]},
+    {"v":"HAw412b4zd4","s":1271.2,"e":1272.6,"line":"I believe in you, okay?","note":"She is afraid to try. He tells her: You got this. I believe in you.","noteUa":"Вона боїться спробувати. Він каже їй: «У тебе вийде. Я в тебе вірю».","around":[[1268.5,1271,"Hey, you got this, all right?"]]}
   ]
 }
