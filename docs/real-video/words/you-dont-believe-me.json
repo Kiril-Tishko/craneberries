@@ -1,42 +1,20 @@
 {
- "en": "You don’t believe me?",
- "ua": "Ти мені не віриш?",
- "pic": "🤨",
- "hl": "(you )?don[’']t believe me",
- "together": {},
- "gloss": {
-  "here’s": "here’s = here is: ось",
-  "today": "сьогодні (today’s newspaper = сьогоднішня газета)",
-  "newspaper": "газета",
-  "if": "якщо",
-  "just": "просто",
-  "ask": "спитайте",
-  "them": "їх"
- },
- "clips": [
-  {
-   "v": "rokPqHc9iD0",
-   "s": 29,
-   "e": 30,
-   "line": "You don’t believe me?",
-   "note": "He says something surprising and asks the audience if they believe him.",
-   "noteUa": "Лектор каже щось несподіване і питає зал: «Не вірите мені?»"
+  "en": "You don’t believe me?",
+  "ua": "Ти мені не віриш?",
+  "pic": "🤨",
+  "hl": "(you )?don[’']t believe me",
+  "gloss": {
+    "here’s": "here’s = here is: ось",
+    "today": "сьогодні (today’s newspaper = сьогоднішня газета)",
+    "newspaper": "газета",
+    "if": "якщо",
+    "just": "просто",
+    "ask": "спитайте",
+    "them": "їх"
   },
-  {
-   "v": "0ohAeenGSXE",
-   "s": 35,
-   "e": 37,
-   "line": "You don’t believe me? Here’s today’s newspaper.",
-   "note": "He shows today’s newspaper to prove he is right.",
-   "noteUa": "Він показує сьогоднішню газету як доказ."
-  },
-  {
-   "v": "k_VNjOGmhzg",
-   "s": 300,
-   "e": 302,
-   "line": "If you don’t believe me, just ask them.",
-   "note": "If you don’t believe me, ask them: they will tell you.",
-   "noteUa": "«Якщо не вірите мені, просто спитайте їх». Після believe одразу me, без on."
-  }
- ]
+  "clips": [
+    {"v":"rokPqHc9iD0","s":29,"e":30,"line":"You don’t believe me?","note":"He says something surprising and asks the audience if they believe him.","noteUa":"Лектор каже щось несподіване і питає зал: «Не вірите мені?»"},
+    {"v":"0ohAeenGSXE","s":35,"e":37,"line":"You don’t believe me? Here’s today’s newspaper.","note":"He shows today’s newspaper to prove he is right.","noteUa":"Він показує сьогоднішню газету як доказ."},
+    {"v":"k_VNjOGmhzg","s":300,"e":302,"line":"If you don’t believe me, just ask them.","note":"If you don’t believe me, ask them: they will tell you.","noteUa":"«Якщо не вірите мені, просто спитайте їх». Після believe одразу me, без on.","hidden":true}
+  ]
 }
