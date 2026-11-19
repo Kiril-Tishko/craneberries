@@ -10,7 +10,7 @@
   {"slug":"i-believe-in-you","en":"I believe in you.","ua":"Я в тебе вірю.","pic":"💪","n":2},
   {"slug":"im-late","en":"I’m late!","ua":"Я опаздываю!","pic":"🏃","n":3},
   {"slug":"is-that-a-thing","en":"Is that a thing?","ua":"Таке буває? / Це щось відоме?","pic":"🤔","n":5},
-  {"slug":"it-depends","en":"It depends.","ua":"Зависит.","pic":"🤷","n":2},
+  {"slug":"it-depends","en":"It depends.","ua":"Зависит.","pic":"🤷","n":1},
   {"slug":"its-early","en":"It’s early.","ua":"Ещё рано.","pic":"🌅","n":3},
   {"slug":"its-late","en":"It’s late.","ua":"Уже поздно.","pic":"🌙","n":2},
   {"slug":"mandatory","en":"mandatory","ua":"обов’язковий","pic":"📋","n":5},
