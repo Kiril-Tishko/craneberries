@@ -101,10 +101,12 @@ async function init(){
   if (EMBED && parent !== window) setTimeout(() => parent.postMessage({clipsReady: true}, '*'), 150);
 }
 function renderChips(){
-  // In a lesson screen (?embed) with one word: the word and its Ukrainian in big letters instead of the row of words.
+  // In a lesson screen (?embed) with one word: the lesson's own heading (a small label, the phrase big, its Ukrainian
+  // in the lesson's yellow chip) instead of the row of words.
   if (EMBED && ORDER.length === 1) {
     const w = WORDS[ORDER[0]] || INDEX.find((x) => x.slug === ORDER[0]);
-    $('words').innerHTML = w ? `<div class="bigword">${w.pic ? `${esc(w.pic)} ` : ''}<b>${esc(w.en)}</b>${w.ua ? ` <span>— ${esc(w.ua)}</span>` : ''}</div>` : '';
+    $('words').innerHTML = w ? `<div class="bigword"><span class="who">🎬 Real people say it</span>`
+      + `<b>${w.pic ? `${esc(w.pic)} ` : ''}${esc(w.en)}</b>${w.ua ? `<span class="uachip">${esc(w.ua)}</span>` : ''}</div>` : '';
     fitEmbed();
     return;
   }
@@ -125,7 +127,7 @@ async function pick(slug, play){
       cur = slug; word = null; range = null; started = ended = intent = false;
       if (S().ready) P().pauseVideo();
       renderChips(); $('pic').textContent = ''; $('en').textContent = slug.replace(/-/g, ' '); $('ua').hidden = true;
-      setNote(''); drawTimeline(0); setCover(); $('count').textContent = '0 / 0';
+      setNote(''); drawTimeline(0); setCover(); drawCount(0, 0);
       showLine('', `“${slug.replace(/-/g, ' ')}” isn’t in the library yet.`);
       if (App.editing && App.missing) App.missing(slug);
       return;
@@ -146,9 +148,14 @@ function renderCard(){
 App.renderCard = renderCard;
 
 /* ---------- one clip ---------- */
+// Which clip of how many: "2 / 4", and inside a lesson the lesson's own progress dots instead.
+function drawCount(n, i){
+  $('count').textContent = n ? `${i + 1} / ${n}` : '0 / 0';
+  $('cdots').innerHTML = n > 1 ? Array.from({length: n}, (_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('') : '';
+}
 function showClip(play){
   const L = list();
-  $('count').textContent = L.length ? `${clipN + 1} / ${L.length}` : '0 / 0';
+  drawCount(L.length, clipN);
   started = false; ended = false; intent = false;
   if (!L.length) {
     range = null; showLine('', 'No clips for this word yet.'); setNote(''); drawTimeline(0); setCover();
@@ -180,7 +187,7 @@ App.refresh = () => {
   range = rangeOf(c, longerMode); shown = null;
   if (!started) drawTimeline(range.from);
   showLine(c.line); setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || ''); sizeCaption();
-  $('count').textContent = `${clipN + 1} / ${list().length}`;
+  drawCount(list().length, clipN);
 };
 // In edit mode the note is always open, so it can be clicked and typed in.
 function setNote(text){

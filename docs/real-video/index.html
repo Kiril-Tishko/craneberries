@@ -121,8 +121,45 @@ body.embed .search,body.embed #back,body.embed .ltitle,body.embed main>.card{dis
 body.embed main{grid-template-columns:minmax(0,1fr);width:100%;margin:0 auto}
 body.embed .app{gap:8px;max-width:none}
 body.embed .words{justify-content:center}
-body.embed .bigword{font-size:clamp(22px,4.6vw,36px);font-weight:800;line-height:1.15;text-align:center;width:100%}
-body.embed .bigword span{font-weight:600;opacity:.75}
+/* Inside a lesson it takes the lesson's own look (tools/lesson-page/engine.html): its colors, a small label, the
+   phrase big with its Ukrainian in the yellow chip, rounded buttons, progress dots, and no box inside the lesson's
+   card. "Next clip" is a soft button, so it doesn't compete with the lesson's own Next. */
+body.embed{--bg:#EDF2F0;--surface:#FFFFFF;--soft:#F4F8F6;--ink:#10241F;--muted:#4F635D;--line:#D2DDD9;--accent:#1E6B58;
+  --accent-ink:#FFFFFF;--tint:#DCEFE8;--mark:#FBE1EC;--mark-ink:#C42A6B;--hear:#2F5FB3;--hear-bg:#E2EBFB;--ua:#6B5A12;--ua-bg:#FFF4C9}
+@media (prefers-color-scheme:dark){body.embed{--bg:#0E1916;--surface:#16241F;--soft:#1B2B25;--ink:#E6F1ED;--muted:#9DB3AB;--line:#2A3B35;
+  --accent:#6FD1B4;--accent-ink:#0E1916;--tint:#163A31;--mark:#3B1B2A;--mark-ink:#FF8DBB;--hear:#9DBBFF;--hear-bg:#1B2A47;--ua:#F3DC85;--ua-bg:#3A3212}}
+body.embed .bigword{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;width:100%}
+body.embed .bigword .who{font-size:13px;font-weight:600;letter-spacing:.04em;padding:4px 12px;border-radius:99px;background:var(--hear-bg);color:var(--hear)}
+body.embed .bigword b{font-size:clamp(22px,4.4vw,34px);font-weight:800;line-height:1.15;text-wrap:balance}
+body.embed .bigword .uachip{font-size:clamp(15px,2.4vw,19px);font-weight:600;color:var(--ua);background:var(--ua-bg);border-radius:12px;padding:3px 12px}
+body.embed .player{border:0;border-radius:0;background:transparent;overflow:visible}
+body.embed .video{border-radius:18px}
+body.embed .bar{padding:12px 2px 0}
+body.embed .tl{height:6px;background:var(--line)}
+body.embed .cover{background:rgba(16,36,31,.9)}
+body.embed .cover.dim{background:rgba(16,36,31,.25)}
+body.embed .cover.playing{background:transparent}
+body.embed .capbar{padding:6px 8px 8px;font-size:clamp(18px,2.6vw,23px)}
+body.embed .capbar mark{background:var(--mark);color:var(--mark-ink);border-radius:6px;padding:0 4px}
+body.embed .tools{background:transparent;border-top:0;padding:6px 0 0;gap:10px;justify-content:center}
+body.embed .group{justify-content:center}
+body.embed .nav{margin-left:0}
+body.embed .btn{border:2px solid var(--line);border-radius:14px;padding:8px 14px;background:var(--surface);transition:border-color .15s}
+body.embed .btn:hover{border-color:var(--accent)}
+body.embed .mode[aria-pressed="true"]{background:var(--tint);color:var(--accent);border-color:var(--accent)}
+body.embed .seg{border:2px solid var(--line);border-radius:14px}
+body.embed .seg button{padding:7px 11px}
+body.embed .seg button+button{border-left:2px solid var(--line)}
+body.embed .seg button[aria-pressed="true"]{background:var(--tint);color:var(--accent)}
+body.embed .primary{background:var(--tint);color:var(--accent);border-color:var(--tint);font-size:16px;padding:8px 16px}
+body.embed .primary:hover{border-color:var(--accent)}
+body.embed .back{padding:8px 10px}
+body.embed .count{display:none}
+body.embed .cdots{display:flex}
+.cdots{display:none;gap:5px;align-items:center;margin-right:4px}
+.cdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.cdots i.on{background:var(--accent);width:20px;border-radius:99px}
+body.embed .foot{justify-content:flex-end;margin-top:-4px}
 /* The invisible corner for edit mode. */
 .corner{position:fixed;left:0;top:0;width:44px;height:44px;border:0;padding:0;background:transparent;z-index:30;cursor:default}
 body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 4px,transparent 4px 8px);opacity:.35}
@@ -214,7 +251,7 @@ body.editing .capbar .tw{cursor:text}
           <div class="seg" id="speed" title="Speed"><button data-r="1" aria-pressed="true">1×</button><button data-r="0.75" aria-pressed="false">0.75×</button><button data-r="0.5" aria-pressed="false">0.5×</button></div>
         </div>
         <div class="nav">
-          <span class="count" id="count"></span>
+          <span class="count" id="count"></span><span class="cdots" id="cdots" aria-hidden="true"></span>
           <button class="btn back" id="prev" aria-label="Previous clip" title="Previous clip"><svg><use href="#i-prev"/></svg></button>
           <button class="btn primary" id="next">Next clip<svg><use href="#i-next"/></svg></button>
         </div>
@@ -236,6 +273,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>

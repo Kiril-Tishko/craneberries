@@ -220,7 +220,9 @@ huggingface.co, about 15 min per hour of audio).
     never overwrite his edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian;
-    `listen: true` = listen first: each clip plays without its caption, which shows when it ends or on a tap on 🎧). It
+    `listen: true` = listen first: each clip plays without its caption, which shows when it ends or on a tap on 🎧;
+    inside a lesson the clip page takes the lesson's look: its colors, label, yellow Ukrainian chip, rounded buttons,
+    progress dots, no box inside the card, Nov 19, `body.embed` in `docs/real-video/index.html`). It
     opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
     file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),
     and otherwise say in the reply which words still need clips (picked on his PC with Claude in Chrome, or he pastes
