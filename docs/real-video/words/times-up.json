@@ -3,6 +3,7 @@
   "ua": "Час вийшов.",
   "pic": "⏱️",
   "hl": "time[’']s up|time is up",
+  "together": {"the question":"питання"},
   "gloss": {
     "time’s": "time’s = time is: час (time’s up = час вийшов)",
     "up": "(time’s up = час вийшов)",
@@ -14,9 +15,15 @@
     "oh": "о",
     "okay": "ну добре",
     "all": "(all right = гаразд)",
-    "right": "(all right = гаразд)"
+    "right": "(all right = гаразд)",
+    "could": "могли б (Could you…? = Чи не могли б ви…?)",
+    "you": "ви",
+    "repeat": "повторити",
+    "miss": "міс (звертання до жінки)",
+    "tiger": "Тайгер (ім’я)"
   },
   "clips": [
-    {"v":"Z7UBB41rF_o","s":1958.96,"e":1959.92,"line":"Time’s up.","note":"In a game, Ross tries to name all 50 US states in a set time. The time is over: Time's up!","noteUa":"У грі Росс намагається назвати всі 50 штатів США за певний час. Час закінчився: «Час вийшов!»","around":[[1954.56,1956.16,"Nobody cares about the Dakotas."],[1958.16,1958.96,"Oh, okay."],[1959.92,1960.24,"All right."]]}
+    {"v":"Z7UBB41rF_o","s":1958.96,"e":1959.92,"line":"Time’s up.","note":"In a game, Ross tries to name all 50 US states in a set time. The time is over: Time's up!","noteUa":"У грі Росс намагається назвати всі 50 штатів США за певний час. Час закінчився: «Час вийшов!»","around":[[1954.56,1956.16,"Nobody cares about the Dakotas."],[1958.16,1958.96,"Oh, okay."],[1959.92,1960.24,"All right."]]},
+    {"v":"DR9QSPYiKpM","s":2070.56,"e":2071.76,"line":"Time’s up.","note":"Someone asks to hear the question again, but there is no time left: Time's up.","noteUa":"Хтось просить повторити питання, але часу вже немає: «Час вийшов».","around":[[2067.4,2070.56,"Could you repeat the question, Miss Tiger?"]]}
   ]
 }

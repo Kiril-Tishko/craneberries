@@ -23,9 +23,17 @@
     "chair": "крісло",
     "for": "протягом (for months = кілька місяців)",
     "months": "місяці",
-    "so": "тож"
+    "so": "тож",
+    "you": "ти",
+    "shoved": "запхав",
+    "everything": "все",
+    "in": "у",
+    "the": "the — (the closet = шафа)",
+    "closet": "шафа",
+    "didn’t": "didn’t you? = так? (хіба ні?)"
   },
   "clips": [
-    {"v":"mvmYYLCXUPE","s":365.37,"e":366.3,"line":"Take a look at this.","note":"He shows a friend something on his phone: Take a look at this. It's a massage chair he wants to buy.","noteUa":"Він показує другові щось на телефоні: «Поглянь». Це масажне крісло, яке він хоче купити.","around":[[364,365.2,"Oh, that’s adorable."],[366.3,370.8,"I have had my eye on this massage chair for months, so…"]]}
+    {"v":"mvmYYLCXUPE","s":365.37,"e":366.3,"line":"Take a look at this.","note":"He shows a friend something on his phone: Take a look at this. It's a massage chair he wants to buy.","noteUa":"Він показує другові щось на телефоні: «Поглянь». Це масажне крісло, яке він хоче купити.","around":[[364,365.2,"Oh, that’s adorable."],[366.3,370.8,"I have had my eye on this massage chair for months, so…"]]},
+    {"v":"xnRYRUaezew","s":1504.8,"e":1506,"line":"Take a look.","note":"Mom doesn't believe the room is clean: You shoved everything in the closet, didn't you? — Take a look.","noteUa":"Мама не вірить, що в кімнаті прибрано: «Ти все запхав у шафу, так?» — «Подивись сама».","around":[[1502.8,1504.8,"You shoved everything in the closet, didn’t you?"]]}
   ]
 }

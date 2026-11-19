@@ -21,9 +21,27 @@
     "next": "в следующий",
     "time": "раз",
     "i’ll": "I’ll = I will: я буду",
-    "know": "знать"
+    "know": "знать",
+    "can’t": "can’t = cannot: не могу",
+    "believe": "поверить",
+    "i’m": "I’m = I am: я",
+    "going": "(going to = собираюсь)",
+    "to": "(going to = собираюсь)",
+    "say": "сказать",
+    "this": "это",
+    "but": "но",
+    "think": "думаю",
+    "with": "к (make an appointment with = записаться к)",
+    "a": "a — один (a shrink = к психотерапевту)",
+    "shrink": "психотерапевт (разговорное)",
+    "jake": "Джейк (имя)",
+    "that": "это",
+    "is": "is — глагол be: that is = это (есть)",
+    "so": "так",
+    "great": "здорово"
   },
   "clips": [
-    {"v":"KOLF41qlJhw","s":3752.92,"e":3757.6,"line":"All day? You should have made an appointment.","note":"Alan spent the whole day waiting at the DMV (where you get a driver's license). Charlie: You should have made an appointment.","noteUa":"Алан весь день прождал в DMV (там получают водительские права). Чарли: «Надо было записаться заранее».","around":[[3751,3752.92,"I told you, the DMV."],[3757.6,3759.6,"Yeah, next time I’ll know."]]}
+    {"v":"KOLF41qlJhw","s":3752.92,"e":3757.6,"line":"All day? You should have made an appointment.","note":"Alan spent the whole day waiting at the DMV (where you get a driver's license). Charlie: You should have made an appointment.","noteUa":"Алан весь день прождал в DMV (там получают водительские права). Чарли: «Надо было записаться заранее».","around":[[3751,3752.92,"I told you, the DMV."],[3757.6,3759.6,"Yeah, next time I’ll know."]]},
+    {"v":"tqrTN1ydrMk","s":3748.84,"e":3753,"line":"I can’t believe I’m going to say this, but I think I’m going to make an appointment with a shrink.","note":"Jake finally decides to get help: I think I'm going to make an appointment with a therapist. His friend is very happy.","noteUa":"Джейк наконец решается: «Кажется, я запишусь к психотерапевту». Друг очень рад.","around":[[3753,3754.4,"Jake, that is so great."]]}
   ]
 }

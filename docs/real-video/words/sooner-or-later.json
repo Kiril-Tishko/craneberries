@@ -3,7 +3,7 @@
   "ua": "рано чи пізно",
   "pic": "⏳",
   "hl": "sooner or later",
-  "together": {"go ahead":"давай, кажи","gets dumped":"кидають (дівчина кидає)","get dumped":"кидають (дівчина кидає)"},
+  "together": {"go ahead":"давай, кажи","gets dumped":"кидають (дівчина кидає)","get dumped":"кидають (дівчина кидає)","deal with":"розібратися з"},
   "gloss": {
     "sooner": {"*": "раніше (sooner or later = рано чи пізно)", "sooner and later": "(жарт: і рано, і пізно)"},
     "or": "чи",
@@ -18,9 +18,36 @@
     "guys": "хлопців",
     "and": "і",
     "right": "так? (right, Alan? = правда ж, Алане?)",
-    "alan": "Алан (ім’я)"
+    "alan": "Алан (ім’я)",
+    "look": "слухай",
+    "this": "ця",
+    "little": "маленька",
+    "reunion": "зустріч (після довгої розлуки)",
+    "was": "була",
+    "bound": "(was bound to = мала, неминуче)",
+    "to": {"*":"to — перед дієсловом","bound to":"(bound to happen = мала статися)","going to":"(going to = буде, доведеться)","have to":"(have to = мусиш)"},
+    "happen": "статися",
+    "anyway": "все одно",
+    "but": "але",
+    "you’re": "you’re = you are: ти",
+    "going": "(going to have to = доведеться)",
+    "have": "(have to = мусиш)",
+    "what": "з тим, що",
+    "happened": "сталося",
+    "with": "з",
+    "stan": "Стен (ім’я)",
+    "karen": "Карен (ім’я)",
+    "she": "вона",
+    "can": "може",
+    "stay": "пожити, залишитися",
+    "for": "(for a few days = на кілька днів)",
+    "a": "(a few = кілька)",
+    "few": "кілька",
+    "days": "днів"
   },
   "clips": [
-    {"v":"DZBBSQbNgw8","s":428.6,"e":432.04,"line":"Jake, sooner or later, every guy gets dumped.","note":"Jake's girlfriend left him. Alan tries to comfort him: sooner or later, it happens to every guy.","noteUa":"Від Джейка пішла дівчина. Алан його втішає: рано чи пізно це трапляється з кожним хлопцем.","around":[[425.96,428.5,"Oh, good idea. Go ahead."],[432.24,435,"Some guys get dumped sooner and later, right, Alan?"]]}
+    {"v":"DZBBSQbNgw8","s":428.6,"e":432.04,"line":"Jake, sooner or later, every guy gets dumped.","note":"Jake's girlfriend left him. Alan tries to comfort him: sooner or later, it happens to every guy.","noteUa":"Від Джейка пішла дівчина. Алан його втішає: рано чи пізно це трапляється з кожним хлопцем.","around":[[425.96,428.5,"Oh, good idea. Go ahead."],[432.24,435,"Some guys get dumped sooner and later, right, Alan?"]]},
+    {"v":"vyfFkyz2dys","s":301.84,"e":305.04,"line":"Look, this little reunion was bound to happen sooner or later anyway.","note":"A family meets again after a long time. Someone says this meeting had to happen sooner or later anyway.","noteUa":"Родина знову зустрічається після довгої перерви. Хтось каже, що ця зустріч рано чи пізно все одно мала статися."},
+    {"v":"88QRQppfBrU","s":627.8,"e":632.6,"line":"But sooner or later, you’re going to have to deal with what happened with Stan.","note":"Karen can stay with friends for a few days. But sooner or later, she has to deal with what happened with her husband Stan.","noteUa":"Карен може пожити в друзів кілька днів. Але рано чи пізно їй доведеться розібратися з тим, що сталося з її чоловіком Стеном.","around":[[623.04,627.6,"Karen, she can stay for a few days,"]]}
   ]
 }

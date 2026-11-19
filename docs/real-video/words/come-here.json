@@ -10,7 +10,7 @@
     "good": "хороший",
     "boy": "мальчик",
     "where": "куда",
-    "you": "ты",
+    "you": {"*": "ты", "tell you": "тебе"},
     "going": "идёшь (Where you going? = Куда ты идёшь?)",
     "what": "что",
     "is": "is — глагол be: What is it? = Что такое?",
@@ -25,11 +25,18 @@
     "found": "нашёл (прошедшее от find)",
     "your": "твой",
     "belt": "ремень",
-    "thank": "спасибо (thank you)"
+    "thank": "спасибо (thank you)",
+    "rosa": "Роза (имя)",
+    "gotta": "gotta = got to: надо",
+    "tell": "рассказать",
+    "something": "кое-что",
+    "a": "a — один (a secret = секрет)",
+    "secret": "секрет"
   },
   "clips": [
     {"v":"5PmEkNxwOs0","s":1721.36,"e":1722.6,"line":"Good boy, come here, come here.","note":"They call a little puppy: Come here!","noteUa":"Они зовут маленького щенка: «Иди сюда!»","around":[[1720.12,1721.36,"Good boy."],[1722.6,1724.32,"Where you going?"]],"hidden":true},
     {"v":"t74kQAPnuvA","s":813.85,"e":818.78,"line":"Come here, come here.","note":"A surprise guest is here. Jimmy calls him: Come here!","noteUa":"Пришёл гость-сюрприз. Джимми зовёт его: «Иди сюда!»","around":[[812.18,813.18,"What is it?"],[818.79,820.82,"It’s Kenan Thompson."]],"hidden":true},
-    {"v":"IabP-MhDIVA","s":7432.66,"e":7434.1,"line":"Big Mack, come here, come here.","note":"On a TV show, she calls a man to come to her: Come here!","noteUa":"На шоу она зовёт парня к себе: «Иди сюда!»","around":[[7430.64,7432.66,"Hey, Big Mack, come here."],[7434.1,7435.54,"I found your belt. Thank you."]]}
+    {"v":"IabP-MhDIVA","s":7432.66,"e":7434.1,"line":"Big Mack, come here, come here.","note":"On a TV show, she calls a man to come to her: Come here!","noteUa":"На шоу она зовёт парня к себе: «Иди сюда!»","around":[[7430.64,7432.66,"Hey, Big Mack, come here."],[7434.1,7435.54,"I found your belt. Thank you."]]},
+    {"v":"Cr8N3xwvonY","s":319.25,"e":320.99,"line":"Rosa, come here.","note":"Gina calls Rosa over: Come here. She wants to tell her a secret.","noteUa":"Джина подзывает Розу: «Иди сюда». Она хочет рассказать ей секрет.","around":[[320.99,323.2,"Gotta tell you something. It’s a secret."]]}
   ]
 }

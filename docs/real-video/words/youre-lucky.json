@@ -21,9 +21,20 @@
     "to": "to — перед глаголом: to work = работать",
     "work": "работать",
     "with": "с",
-    "him": "ним"
+    "him": "ним",
+    "it’s": "it’s = it is: (всё) это",
+    "not": "не",
+    "worse": "хуже",
+    "suspended": "отстранён (от работы)",
+    "the": "the — (the DA’s office = прокуратура)",
+    "da": "DA = прокурор (DA’s office = прокуратура)",
+    "office": "офис (DA’s office = прокуратура)",
+    "wanted": "хотели",
+    "you": "тебя",
+    "fired": "уволенным (wanted you fired = хотели уволить)"
   },
   "clips": [
-    {"v":"QYGa_CtWqQE","s":3154.56,"e":3156,"line":"Oh, well, you’re lucky.","note":"Two women talk about a man they both know. One says: You're lucky. He seems very talented.","noteUa":"Две девушки говорят о мужчине, которого обе знают. Одна говорит: «Тебе повезло». Он кажется очень талантливым.","around":[[3156,3159.6,"He seems very talented, and I’m sure a lot of people want to work with him."]]}
+    {"v":"QYGa_CtWqQE","s":3154.56,"e":3156,"line":"Oh, well, you’re lucky.","note":"Two women talk about a man they both know. One says: You're lucky. He seems very talented.","noteUa":"Две девушки говорят о мужчине, которого обе знают. Одна говорит: «Тебе повезло». Он кажется очень талантливым.","around":[[3156,3159.6,"He seems very talented, and I’m sure a lot of people want to work with him."]]},
+    {"v":"sIlIvGZbqyQ","s":72.96,"e":74.32,"line":"And you’re lucky it’s not worse.","note":"Jake is suspended from work. The captain says: You're lucky it's not worse. They wanted to fire you.","noteUa":"Джейка отстранили от работы. Капитан говорит: «Тебе ещё повезло, что не хуже: тебя хотели уволить».","around":[[72.08,72.96,"You’re suspended."],[74.32,75.92,"The DA’s office wanted you fired."]]}
   ]
 }

@@ -3,7 +3,7 @@
   "ua": "Ми щось придумаємо. / Розберемося.",
   "pic": "🧩",
   "hl": "(we[’']ll|I[’']ll|you[’']ll) figure (it|something) out",
-  "together": {"how about":"як щодо","you know what":"знаєш що"},
+  "together": {"how about":"як щодо","you know what":"знаєш що","you know":"знаєш","deal with":"впоратися з","an option":"варіант"},
   "gloss": {
     "we’ll": "we’ll = we will: ми (у майбутньому)",
     "figure": "(figure it out = знайти рішення, розібратися)",
@@ -12,9 +12,24 @@
     "when": "коли?",
     "tomorrow": "завтра",
     "come": "(come on = ну ж бо, ходімо)",
-    "on": "(come on = ну ж бо, ходімо)"
+    "on": "(come on = ну ж бо, ходімо)",
+    "but": "але",
+    "i": "я",
+    "still": "досі",
+    "don’t": "don’t = do not: не",
+    "know": "знаю",
+    "how": "як",
+    "we’re": "we’re = we are: ми",
+    "going": "(going to = будемо)",
+    "to": "(going to = будемо)",
+    "the": "the — ця (проблема)",
+    "murphy": "Мерфі (прізвище)",
+    "complication": "ускладнення, проблема",
+    "not": "не"
   },
   "clips": [
-    {"v":"xnRYRUaezew","s":2327.68,"e":2328.56,"line":"We’ll figure it out.","note":"Meemaw and Dr. Sturgis try to find a day to meet. When? Tomorrow? We'll figure it out.","noteUa":"Бабуся й доктор Стерджис шукають день для зустрічі. Коли? Завтра? «Розберемося».","around":[[2325.44,2326.64,"How about tomorrow?"],[2327.12,2327.68,"You know what?"],[2328.56,2329.2,"Come on."]]}
+    {"v":"xnRYRUaezew","s":2327.68,"e":2328.56,"line":"We’ll figure it out.","note":"Meemaw and Dr. Sturgis try to find a day to meet. When? Tomorrow? We'll figure it out.","noteUa":"Бабуся й доктор Стерджис шукають день для зустрічі. Коли? Завтра? «Розберемося».","around":[[2325.44,2326.64,"How about tomorrow?"],[2327.12,2327.68,"You know what?"],[2328.56,2329.2,"Come on."]]},
+    {"v":"tqrTN1ydrMk","s":179.88,"e":181.48,"line":"But, you know, we’ll figure it out.","note":"Jake still doesn't know how to deal with a problem. But, you know, we'll figure it out.","noteUa":"Джейк ще не знає, як упоратися з проблемою. «Але, знаєш, ми щось придумаємо».","around":[[172.4,176.8,"I still don’t know how we’re going to deal with the Murphy complication."]]},
+    {"v":"K7ZN4V2xxf0","s":2920.4,"e":2921.44,"line":"I’ll figure it out.","note":"Lorelai and Rory have a problem. One says: Not an option. The other: I'll figure it out (I'll find a way).","noteUa":"У Лорелай і Рорі проблема. Одна каже: «Це не варіант». Інша: «Я щось придумаю».","around":[[2919.6,2920.4,"Not an option."]]}
   ]
 }

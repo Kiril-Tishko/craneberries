@@ -3,6 +3,7 @@
   "ua": "Я не умею водить.",
   "pic": "🚗",
   "hl": "I can[’']t drive",
+  "together": {"get around":"передвигаться"},
   "gloss": {
     "i": "я",
     "can’t": "can’t = cannot: не могу, не умею",
@@ -13,9 +14,24 @@
     "to": {"*": "to — перед глаголом: to go = поехать", "to the hospital": "в (to the hospital = в больницу)"},
     "go": "поехать",
     "the": "the — та самая (больница)",
-    "hospital": "больница"
+    "hospital": "больница",
+    "but": "но",
+    "um": "э-э (пауза)",
+    "it’s": "it’s = it is: это",
+    "bad": "плохо",
+    "because": "потому что",
+    "don’t": "don’t = do not: не",
+    "know": "знаю",
+    "how": "как",
+    "yeah": "да",
+    "do": "do — слово для вопроса",
+    "you": "ты",
+    "uber": "Uber (такси через приложение)",
+    "and": "и",
+    "roommates": "соседи по квартире"
   },
   "clips": [
-    {"v":"i-BZPxIowdk","s":724.4,"e":725.6,"line":"Well, I can’t drive.","note":"Mandy needs to go to the hospital, but only young Sheldon is with her. He's a child: he can't drive.","noteUa":"Мэнди нужно в больницу, но рядом только маленький Шелдон. Он ребёнок и не умеет водить машину.","around":[[722.48,724.4,"Sheldon, I need to go to the hospital."]]}
+    {"v":"i-BZPxIowdk","s":724.4,"e":725.6,"line":"Well, I can’t drive.","note":"Mandy needs to go to the hospital, but only young Sheldon is with her. He's a child: he can't drive.","noteUa":"Мэнди нужно в больницу, но рядом только маленький Шелдон. Он ребёнок и не умеет водить машину.","around":[[722.48,724.4,"Sheldon, I need to go to the hospital."]]},
+    {"v":"0D5IMRvYKCg","s":3072.4,"e":3075.88,"line":"But, um, it’s bad because I can’t drive.","note":"A comedian on a podcast says he can't drive: he doesn't know how. How does he get around? By Uber and with his roommates.","noteUa":"Комик в подкасте рассказывает, что не умеет водить машину. Как же он передвигается? На такси и с соседями по квартире.","around":[[3075.88,3077.44,"Don’t know how to drive."],[3077.72,3079.32,"Yeah, how do you get around?"],[3079.68,3081.08,"Uber and roommates."]]}
   ]
 }

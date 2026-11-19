@@ -7,7 +7,7 @@
   "gloss": {
     "and": "і",
     "finally": "і насамкінець",
-    "a": "a — одна якась (жінка)",
+    "a": {"*": "a — одна якась (жінка)", "a lawsuit": "a — один (позов)"},
     "texas": "Техас (штат у США)",
     "woman": "жінка",
     "has": "(has filed = подала)",
@@ -17,9 +17,33 @@
     "this": "це",
     "is": "is — дієслово be: this is = це",
     "very": "дуже",
-    "exciting": "цікаве, захопливе"
+    "exciting": "цікаве, захопливе",
+    "case": {"*":"справа","case closed":"справа (case closed = справу закрито)"},
+    "closed": "закрита",
+    "if": "якщо",
+    "we": "ми",
+    "don’t": "don’t = do not: не",
+    "find": "знайдемо",
+    "something": "щось",
+    "conclusive": "переконливе (доказ)",
+    "it": "це",
+    "jeopardizes": "ставить під загрозу",
+    "the": {"*":"the — ця (справа)","the department":"the — наш (відділок)"},
+    "opens": "(opens … up to = робить вразливим до)",
+    "department": "відділок (поліції)",
+    "up": "(opens … up to = робить вразливим до)",
+    "to": "до",
+    "so": "тож",
+    "cancel": "скасуйте",
+    "your": "свої",
+    "plans": "плани",
+    "we’re": "we’re = we are: ми",
+    "here": "тут",
+    "until": "поки (не)",
+    "over": "скінчиться (is over = закінчиться)"
   },
   "clips": [
-    {"v":"Z_kf7WfJ5aE","s":172.67,"e":175,"line":"And finally, a Texas woman has filed a lawsuit.","note":"Seth Meyers tells a funny news story: a woman in Texas has gone to court with a lawsuit.","noteUa":"Сет Маєрс розповідає кумедну новину: жінка з Техасу подала позов до суду.","around":[[175,177,"You guys, this is very exciting."]]}
+    {"v":"Z_kf7WfJ5aE","s":172.67,"e":175,"line":"And finally, a Texas woman has filed a lawsuit.","note":"Seth Meyers tells a funny news story: a woman in Texas has gone to court with a lawsuit.","noteUa":"Сет Маєрс розповідає кумедну новину: жінка з Техасу подала позов до суду.","around":[[175,177,"You guys, this is very exciting."]]},
+    {"v":"B-E3MXbqHvA","s":306.32,"e":312.24,"line":"Case closed. If we don’t find something conclusive, it jeopardizes the case and opens the department up to a lawsuit.","note":"Captain Holt explains why the case isn't finished: without strong proof, someone could sue the police department.","noteUa":"Капітан Холт пояснює, чому справа не закрита: без вагомих доказів на відділок можуть подати позов до суду.","around":[[312.24,316.6,"So cancel your plans. We’re here until this is over."]]}
   ]
 }

@@ -3,5 +3,21 @@
   "ua": "маршрут",
   "pic": "🗺️",
   "hl": "\\broutes?\\b",
-  "clips": []
+  "gloss": {
+    "i": "я",
+    "checked": "перевірив",
+    "the": "the — (the route = маршрут)",
+    "route": "маршрут",
+    "adapt": "пристосуйся",
+    "there": "(there are = є)",
+    "are": "(there are no = немає)",
+    "no": "жодних (there are no = немає)",
+    "potholes": "ям, вибоїн",
+    "on": "на",
+    "my": "моєму",
+    "way": "шляху"
+  },
+  "clips": [
+    {"v":"2h6k6eg_RmM","s":499.12,"e":499.88,"line":"I checked the route.","note":"Dwight is ready for anything. What if his car breaks down? He checked the route in advance: there are no potholes on his way.","noteUa":"Дуайт готовий до всього. А якщо зламається машина? Він заздалегідь перевірив маршрут: ям на дорозі немає.","around":[[498.68,499.12,"Adapt."],[499.88,501.68,"There are no potholes on my way."]]}
+  ]
 }

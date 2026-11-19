@@ -3,7 +3,7 @@
   "ua": "довший, ніж",
   "pic": "📏",
   "hl": "longer than",
-  "together": {"never mind":"нічого, байдуже"},
+  "together": {"never mind":"нічого, байдуже","a little bit":"трохи","take it apart":"розібрати"},
   "gloss": {
     "longer": "довший",
     "than": "ніж",
@@ -20,9 +20,28 @@
     "on": "на",
     "very": "дуже",
     "long": "довгій",
-    "stick": "палиці"
+    "stick": "палиці",
+    "i": "я",
+    "think": "думаю",
+    "it’ll": "it’ll = it will: це (займе)",
+    "take": "займе (it’ll take you = у тебе займе)",
+    "you": "тебе",
+    "that": "те (longer than that = довше, ніж це)",
+    "well": "ну",
+    "hope": "сподіваюся",
+    "it": "це",
+    "was": "було",
+    "worth": "варте (worth it = того варте)",
+    "cause": "’cause = because: бо",
+    "i’m": "I’m = I am: я",
+    "gonna": "gonna = going to: збираюся",
+    "in": "за (in about 5 minutes = хвилин за 5)",
+    "about": "приблизно",
+    "5": "п’ять",
+    "minutes": "хвилин"
   },
   "clips": [
-    {"v":"hCZwH5CSlEY","s":86.56,"e":88.3,"line":"longer than mine, but never mind.","note":"Many people film with cameras on long sticks. Someone's stick is longer than his.","noteUa":"Багато хто знімає камерою на довгій палиці. В когось палиця довша, ніж у нього.","around":[[82,86.4,"maybe a small GoPro, maybe a 360 camera on a very long stick…"]]}
+    {"v":"hCZwH5CSlEY","s":86.56,"e":88.3,"line":"longer than mine, but never mind.","note":"Many people film with cameras on long sticks. Someone's stick is longer than his.","noteUa":"Багато хто знімає камерою на довгій палиці. В когось палиця довша, ніж у нього.","around":[[82,86.4,"maybe a small GoPro, maybe a 360 camera on a very long stick…"]]},
+    {"v":"Xnk4seEHmgw","s":27.86,"e":29.8,"line":"I think it’ll take you a little bit longer than that.","note":"Jim has played a trick on Dwight. Dwight says he'll take it apart in 5 minutes. Jim thinks it will take a bit longer.","noteUa":"Джим розіграв Дуайта. Дуайт каже, що розбере все за 5 хвилин. Джим думає, що це займе трохи більше часу.","around":[[23.74,27.86,"Well, I hope it was worth it, ’cause I’m gonna take it apart in about 5 minutes."]]}
   ]
 }

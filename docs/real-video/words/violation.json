@@ -5,12 +5,28 @@
   "hl": "\\bviolations?\\b",
   "gloss": {
     "that’s": "that’s = that is: це",
-    "a": "a — одне якесь (порушення)",
+    "a": {"*": "a — одне якесь (порушення)", "a licensed": "a — один (спеціаліст)"},
     "of": "(a violation of = порушення чогось)",
     "my": "мого, моєї",
-    "privacy": "приватність, особистий простір"
+    "privacy": "приватність, особистий простір",
+    "in": "у (in violation of = з порушенням)",
+    "clear": "явному, очевидному",
+    "federal": "федерального",
+    "law": "закону",
+    "so": "отже",
+    "you": "ви",
+    "accept": "приймаєте",
+    "payment": "оплату",
+    "even": "(even though = хоча)",
+    "though": "(even though = хоча)",
+    "you’re": "you’re = you are: ви (є)",
+    "not": "не",
+    "licensed": "з ліцензією",
+    "tax": "податковий",
+    "professional": "спеціаліст"
   },
   "clips": [
-    {"v":"3XyebxP8k48","s":1855.12,"e":1857.3,"line":"That’s a violation of my privacy.","note":"Someone looked at her private things. She is angry: That's a violation of my privacy.","noteUa":"Хтось подивився її особисті речі. Вона сердиться: «Це порушення моєї приватності»."}
+    {"v":"3XyebxP8k48","s":1855.12,"e":1857.3,"line":"That’s a violation of my privacy.","note":"Someone looked at her private things. She is angry: That's a violation of my privacy.","noteUa":"Хтось подивився її особисті речі. Вона сердиться: «Це порушення моєї приватності»."},
+    {"v":"728Imd_APlo","s":1313.68,"e":1315.92,"line":"In clear violation of federal law.","note":"Sheldon finds out a man takes money for doing people's taxes without a license. That breaks the law: in clear violation of federal law.","noteUa":"Шелдон з’ясовує, що чоловік бере гроші за підготовку податкових документів без ліцензії. Це явне порушення федерального закону.","around":[[1306.88,1310.4,"So, you accept payment even though you’re not a licensed tax professional."]]}
   ]
 }

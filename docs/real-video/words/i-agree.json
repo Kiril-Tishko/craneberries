@@ -10,7 +10,7 @@
     "like": "ну, типа",
     "we": "мы",
     "got": "(got to = надо)",
-    "to": "(got to = надо)",
+    "to": {"*": "(got to = надо)", "appear to": "(appear to have = похоже, что)"},
     "hurry": "спешить",
     "no": {"*":"нет","no limit":"no = никакого"},
     "there": "(there is = есть)",
@@ -22,11 +22,27 @@
     "completely": "совсем, полностью",
     "quiet": "тихо, тихий",
     "okay": "хорошо",
-    "yeah": "да"
+    "yeah": "да",
+    "she’s": "she’s = she is: она",
+    "a": "a — одна (a good one = хорошая)",
+    "good": "хорошая",
+    "one": "(a good one = хорошая девушка)",
+    "why": "почему",
+    "don’t": "don’t = do not: не",
+    "you": "ты (Why don’t you…? = Почему бы тебе не…?)",
+    "marry": "жениться на",
+    "her": "ней",
+    "appear": "кажется (we appear to have = похоже, мы)",
+    "have": "(have reached = дошли)",
+    "reached": "дошли, зашли",
+    "an": "an — один (an impasse = тупик)",
+    "impasse": "тупик"
   },
   "clips": [
     {"v":"912-R9SppzU","s":381.17,"e":381.66,"line":"I agree.","note":"The girls say they must hurry. Their dad says: I agree.","noteUa":"Девочки говорят, что надо спешить. Папа отвечает: «Согласен».","around":[[380.18,381.17,"Like, we got to hurry."]]},
     {"v":"AFWBb6jlBbU","s":236.1,"e":238.38,"line":"I agree, I agree.","note":"On a TV talk show, one man says something and another man says: I agree.","noteUa":"На телешоу один мужчина что-то говорит, а другой отвечает: «Согласен, согласен».","around":[[235.07,236.1,"No, there is no limit."]],"hidden":true},
-    {"v":"bKjfw77cxeQ","s":534.88,"e":536.21,"line":"I agree.","note":"He says: Let's be very quiet. She says: Okay, yeah. I agree.","noteUa":"Он говорит: «Давайте будем совсем тихо». Она отвечает: «Да, согласна».","around":[[529.27,533.16,"I think we should be completely quiet."],[533.16,534.88,"Okay, yeah."]],"hidden":true}
+    {"v":"bKjfw77cxeQ","s":534.88,"e":536.21,"line":"I agree.","note":"He says: Let's be very quiet. She says: Okay, yeah. I agree.","noteUa":"Он говорит: «Давайте будем совсем тихо». Она отвечает: «Да, согласна».","around":[[529.27,533.16,"I think we should be completely quiet."],[533.16,534.88,"Okay, yeah."]],"hidden":true},
+    {"v":"-ZVOwqJpuBY","s":1560.16,"e":1561.12,"line":"I agree.","note":"They talk about Georgie's girlfriend: She's a good one. — I agree. — Why don't you marry her?","noteUa":"Говорят о девушке Джорджи: «Она хорошая». — «Согласен». — «Почему бы тебе на ней не жениться?»","around":[[1558.8,1560.16,"She’s a good one."],[1561.36,1562.8,"Why don’t you marry her?"]]},
+    {"v":"tKetA9Rj-3Q","s":102.08,"e":103.12,"line":"I agree.","note":"Sheldon and Amy argue and can't agree on anything. Sheldon says: We appear to have reached an impasse. Amy: I agree.","noteUa":"Шелдон и Эми спорят и ни в чём не сходятся. Шелдон: «Похоже, мы зашли в тупик». Эми: «Согласна».","around":[[99.84,101.68,"We appear to have reached an impasse."]]}
   ]
 }

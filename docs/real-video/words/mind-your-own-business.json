@@ -3,6 +3,7 @@
   "ua": "Не лезь не в своё дело.",
   "pic": "🙅",
   "hl": "mind your (own )?business",
+  "together": {"do yourself a favor":"сделай себе одолжение (послушай меня)"},
   "gloss": {
     "mind": "занимайся (mind your own business = не лезь не в своё дело)",
     "your": "своим",
@@ -10,14 +11,28 @@
     "business": "делом",
     "hey": "эй",
     "frank": "Фрэнк (имя)",
-    "you": "ты",
+    "you": {"*": "ты", "seeing you": "тебя"},
     "are": "are — вспомогательное слово: you are ruining = ты портишь",
     "ruining": "портишь",
     "my": "мой",
     "birthday": "день рождения",
-    "party": "праздник"
+    "party": "праздник",
+    "go": "иди",
+    "to": "в",
+    "school": "школу",
+    "tomorrow": "завтра",
+    "and": "и",
+    "just": "просто",
+    "okay": "хорошо?",
+    "i": "я",
+    "hate": "терпеть не могу",
+    "seeing": "видеть",
+    "like": "(like this = таким)",
+    "this": "таким (like this = таким)"
   },
   "clips": [
-    {"v":"h3pnGaYXOnE","s":1223.28,"e":1224.4,"line":"Hey, mind your own business.","note":"At Marie's birthday party, Frank and Marie argue about a guest. One of them snaps: Mind your own business!","noteUa":"На дне рождения Мари она и Фрэнк спорят из-за гостя. Один из них резко отвечает: «Не лезь не в своё дело!»","around":[[1224.6,1227.8,"Frank, you are ruining my birthday party."]]}
+    {"v":"h3pnGaYXOnE","s":1223.28,"e":1224.4,"line":"Hey, mind your own business.","note":"At Marie's birthday party, Frank and Marie argue about a guest. One of them snaps: Mind your own business!","noteUa":"На дне рождения Мари она и Фрэнк спорят из-за гостя. Один из них резко отвечает: «Не лезь не в своё дело!»","around":[[1224.6,1227.8,"Frank, you are ruining my birthday party."]]},
+    {"v":"Mc_haZL1keg","s":59,"e":62.52,"line":"Go to school tomorrow and mind your own business.","note":"George gives young Sheldon advice: at school tomorrow, don't get involved in other people's problems.","noteUa":"Джордж советует маленькому Шелдону: завтра в школе не вмешивайся в чужие дела. «Не лезь не в своё дело».","around":[[56.84,59,"Just do yourself a favor, okay?"]]},
+    {"v":"XbQ5Vk4ltk4","s":994.6,"e":996.04,"line":"Mind your own business!","note":"Ray keeps telling his brother Robert how to live. Robert snaps: Mind your own business!","noteUa":"Рэй всё учит брата Роберта, как жить. Роберт резко отвечает: «Не лезь не в своё дело!»","around":[[996.2,998.2,"I just hate seeing you like this."]]}
   ]
 }

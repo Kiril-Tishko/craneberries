@@ -3,7 +3,7 @@
   "ua": "Я ніколи не був у …",
   "pic": "🗺️",
   "hl": "I[’']ve never been to",
-  "together": {"with God as my witness":"Бог мені свідок","dog track":"собачі перегони","had a few":"випила кілька чарок"},
+  "together": {"with God as my witness":"Бог мені свідок","dog track":"собачі перегони","had a few":"випила кілька чарок","the Good Place":"Добре місце (рай у серіалі)","the right way":"правильна дорога"},
   "gloss": {
     "i’ve": "I’ve = I have: я (I’ve been = я був)",
     "never": "ніколи (не)",
@@ -20,9 +20,21 @@
     "georgie": "Джорджі (ім’я)",
     "and": "і",
     "she": "вона",
-    "knows": "знає"
+    "knows": "знає",
+    "well": "ну",
+    "before": "раніше",
+    "but": "але",
+    "yes": "так",
+    "i’m": "I’m = I am: я",
+    "sure": "впевнена",
+    "are": "are — слово для питання: Are you sure? = Ти впевнена?",
+    "you": "ти",
+    "we’re": "we’re = we are: ми",
+    "going": "їдемо",
+    "janet": "Джанет (ім’я)"
   },
   "clips": [
-    {"v":"qe-VlhaZPgw","s":46.6,"e":50.16,"line":"With God as my witness, I’ve never been to the dog track in my life.","note":"Meemaw says she was at the dog races with Georgie. Georgie swears he has never been there (but he has).","noteUa":"Бабуся каже, що була з Джорджі на собачих перегонах. Джорджі клянеться, що ніколи там не був (хоча був).","around":[[41.44,44.72,"I was at the dog track with Georgie and I had a few."],[50.64,51.76,"She knows."]]}
+    {"v":"qe-VlhaZPgw","s":46.6,"e":50.16,"line":"With God as my witness, I’ve never been to the dog track in my life.","note":"Meemaw says she was at the dog races with Georgie. Georgie swears he has never been there (but he has).","noteUa":"Бабуся каже, що була з Джорджі на собачих перегонах. Джорджі клянеться, що ніколи там не був (хоча був).","around":[[41.44,44.72,"I was at the dog track with Georgie and I had a few."],[50.64,51.76,"She knows."]]},
+    {"v":"s5CrcNeuESE","s":1812.72,"e":1817.28,"line":"Well, I’ve never been to the Good Place before, but yes, I’m sure.","note":"The friends travel to the Good Place. Janet has never been there, but she is sure they are going the right way.","noteUa":"Друзі їдуть у Добре місце. Джанет ніколи там не була, але впевнена, що вони їдуть правильно.","around":[[1810.72,1812.72,"Are you sure we’re going the right way, Janet?"]]}
   ]
 }
