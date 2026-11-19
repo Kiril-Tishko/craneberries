@@ -64,6 +64,9 @@ const EXACT_BEFORE = 0.1, EXACT_AFTER = 0.12, PAD_BEFORE = 0.4, PAD_AFTER = 1.2,
 const STEP = 1; // ← → and double-tap move this many seconds
 
 let INDEX = [], ORDER = [], cur = '', word = null;
+// The whole library (no ?words, not in a lesson): its words come in topics, words/groups.json = [{name, pic, words}].
+const SHELF = !Q.get('words') && !Q.has('embed');
+let GROUPS = [], shelf = '', shelfFor = null;
 const WORDS = {};
 let clipN = 0, rate = 1, wantPlay = null, longerMode = false;
 // "With context" is for this clip only; press and hold it, and it stays on for the next clips too.
@@ -102,13 +105,16 @@ const label = (slug) => {
 async function init(){
   INDEX = await App.getJSON('index.json').catch(() => []);
   if (!Array.isArray(INDEX)) INDEX = [];
+  if (SHELF) { GROUPS = await App.getJSON('groups.json').catch(() => []); if (!Array.isArray(GROUPS)) GROUPS = []; }
   const want = Q.get('words');
   ORDER = want ? want.split(',').map(slugify).filter(Boolean) : INDEX.map((x) => x.slug);
   if (Q.get('title')) { $('ltitle').textContent = `🎬 ${Q.get('title')}`; $('ltitle').hidden = false; }
   if (Q.get('from') === 'lesson') $('back').hidden = false;
   renderChips();
   const h = slugify(decodeURIComponent(location.hash.replace(/^#w=/, '')));
-  if (ORDER.length) await pick(ORDER.includes(h) ? h : ORDER[0], false);
+  // The whole library opens on the first topic's first word.
+  const first = SHELF && GROUPS.length ? GROUPS.flatMap((g) => g.words || []).find((s) => ORDER.includes(s)) || ORDER[0] : ORDER[0];
+  if (ORDER.length) await pick(ORDER.includes(h) ? h : first, false);
   else showLine('', 'No words yet.');
   // Inside a lesson screen: tell the lesson the clips are laid out, so it swaps its grey placeholders for them.
   if (EMBED && parent !== window) setTimeout(() => parent.postMessage({clipsReady: true}, '*'), 150);
@@ -117,10 +123,32 @@ function renderChips(){
   // In a lesson screen (?embed) with one word: no heading at all (the lesson's screen before it shows the word), so
   // the video gets that room.
   if (EMBED && ORDER.length === 1) { document.body.classList.add('one'); $('words').innerHTML = ''; fitEmbed(); return; }
-  $('words').innerHTML = ORDER.map((s) => `<button data-w="${esc(s)}" aria-current="${s === cur}">${esc(label(s))}</button>`).join('');
+  const chip = (s) => `<button data-w="${esc(s)}" aria-current="${s === cur}">${esc(label(s))}</button>`;
+  if (!SHELF || !GROUPS.length) { $('words').innerHTML = ORDER.map(chip).join(''); return; }
+  // The whole library: a row of topics, and under it the words of one topic (the current word's, until another
+  // topic is tapped). Words in no topic yet (a new one, say) go under "More".
+  const shelves = GROUPS.map((g) => ({name: g.name, pic: g.pic, words: (g.words || []).filter((s) => ORDER.includes(s))}));
+  const more = ORDER.filter((s) => !shelves.some((g) => g.words.includes(s)));
+  if (more.length) shelves.push({name: 'More', pic: '✨', words: more});
+  const list = shelves.filter((g) => g.words.length);
+  if (cur !== shelfFor) { shelfFor = cur; shelf = (list.find((g) => g.words.includes(cur)) || list[0] || {}).name; }
+  const open = list.find((g) => g.name === shelf) || list[0];
+  $('words').classList.add('shelf');
+  $('words').innerHTML = `<div class="gtabs" role="tablist" aria-label="Topics">${list.map((g) => `<button role="tab" data-g="${esc(g.name)}"
+    aria-selected="${g === open}"><span aria-hidden="true">${esc(g.pic || '')}</span>${esc(g.name)}<small>${g.words.length}</small></button>`).join('')}</div>
+    <div class="gwords" role="tabpanel">${open.words.map(chip).join('')}</div>`;
+  // Where a row scrolls sideways (a phone), the open topic and the current word are brought into view (sideways only:
+  // the page itself never jumps).
+  const show = (row, el) => { if (row && el && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, el.offsetLeft - row.offsetLeft - 40); };
+  show($('words').querySelector('.gtabs'), $('words').querySelector('[aria-selected="true"]'));
+  show($('words').querySelector('.gwords'), $('words').querySelector('.gwords [aria-current="true"]'));
 }
 App.renderChips = renderChips;
-$('words').onclick = (e) => { const b = e.target.closest('button'); if (b) pick(b.dataset.w, true); };
+$('words').onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.g) { shelf = b.dataset.g; renderChips(); return; }
+  pick(b.dataset.w, true);
+};
 
 let pickSeq = 0;
 async function pick(slug, play){
