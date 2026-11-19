@@ -16,7 +16,7 @@
     "here": "здесь, отсюда",
     "it": "it — здесь не переводится: It is the first = Сегодня первое",
     "is": "is — глагол be: It is the first = Сегодня первое",
-    "the": {"*": "the — то самое, известное", "the first": "the first = первое (число)", "the month": "the month = этого месяца"},
+    "the": {"*":"the — то самое, известное","the first":"the first = первое (число)","the month":"the month = этого месяца"},
     "first": "первый, первое",
     "of": "(the first of the month = первое число месяца)",
     "month": "месяц",
@@ -26,7 +26,7 @@
   },
   "clips": [
     {"v":"DkR4Ksuifo0","s":4214.56,"e":4216,"line":"Michael, wake up.","note":"Michael is asleep in the car. They are there now: Wake up!","noteUa":"Майкл уснул в машине. Они приехали: «Просыпайся!»","around":[[4216.1,4217.3,"Wake up."]]},
-    {"v":"C-upU-cb8CY","s":886.84,"e":888.48,"line":"Scooby, wake up.","note":"Shaggy wants to run away, but Scooby is asleep: Wake up!","noteUa":"Шэгги хочет убежать, а Скуби спит: «Просыпайся!»","around":[[881.6,886.8,"Like, let’s get out of here."],[888.48,890.4,"Wake up."]]},
+    {"v":"C-upU-cb8CY","s":886.84,"e":890.38,"line":"Scooby, wake up.","note":"Shaggy wants to run away, but Scooby is asleep: Wake up!","noteUa":"Шэгги хочет убежать, а Скуби спит: «Просыпайся!»","around":[[881.6,886.8,"Like, let’s get out of here."],[888.48,890.4,"Wake up."]]},
     {"v":"tX6Om_7V9OM","s":11.56,"e":12.92,"line":"Wake up, wake up, wake up.","note":"A morning news show for students starts: Wake up!","noteUa":"Начинаются утренние новости для школьников: «Просыпайтесь!»","around":[[12.92,15.6,"It is the first of the month, Thursday, October 1st,"]]}
   ]
 }
