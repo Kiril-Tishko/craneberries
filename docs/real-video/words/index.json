@@ -1,9 +1,9 @@
 [
-  {"slug":"bless-you","en":"Bless you!","ua":"Будь здоров!","pic":"🤧","n":3},
+  {"slug":"bless-you","en":"Bless you!","ua":"Будь здоров!","pic":"🤧","n":1},
   {"slug":"can-i-call-you-back","en":"Can I call you back?","ua":"Можна я вам передзвоню?","pic":"📞","n":4},
-  {"slug":"come-here","en":"Come here!","ua":"Иди сюда!","pic":"👋","n":3},
+  {"slug":"come-here","en":"Come here!","ua":"Иди сюда!","pic":"👋","n":1},
   {"slug":"excuse","en":"excuse","ua":"відмовка, виправдання","pic":"🙈","n":5},
-  {"slug":"go-to-bed","en":"Go to bed!","ua":"Иди спать!","pic":"😴","n":3},
+  {"slug":"go-to-bed","en":"Go to bed!","ua":"Иди спать!","pic":"😴","n":2},
   {"slug":"good-morning","en":"Good morning!","ua":"Доброе утро!","pic":"☀️","n":3},
   {"slug":"good-night","en":"Good night!","ua":"Спокойной ночи!","pic":"🛌","n":2},
   {"slug":"i-agree","en":"I agree.","ua":"Я согласен.","pic":"🤝","n":3},
