@@ -232,7 +232,21 @@ huggingface.co, about 15 min per hour of audio).
   3 clips a word. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
   you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
-  - **Caption Search is the main tool** (captionsearch.app). Its search API is open to him with a free trial key
+  - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do
+    you mean" [how many, default 10]` prints results like the Caption Search tool (channel, title, youtu.be link with
+    the time, exact start and end, the line with two before and after; plus `words` times where YouTube gave them,
+    human or auto captions, and an online check that drops gone videos), with no daily limit. `--page 2`, `--human`
+    (uploaded captions only, exact text), `--channel office,friends`, `--not snl`, `"a | b"` (either), `"call ~3
+    back"` (near), `"tire*"`; `--channels` lists them. It holds only the 36 American channels he picked
+    (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
+    scheduled task runs `collect.pl` logged out (no cookies), about 250 videos an hour, and stops for hours when
+    YouTube pushes back. `perl tools/real-video/index/collect.pl --status` says how far it has got (`--stop`,
+    `--start`); after changing anything in `tools/real-video/index/`, run `collect.pl --install` so the task runs
+    the new copy. Downloading captions breaks YouTube's terms (he chose it for private use), so the index
+    (`~/.cache/caption-index/`) never goes in the repo, a page or a commit: only the clip lines saved in `words/`.
+    **Then Caption Search** when the index has too few good matches (a rare phrase, a channel it doesn't have) and in
+    a cloud chat, which can't reach the index; **YouGlish** last.
+  - **Caption Search** (captionsearch.app). Its search API is open to him with a free trial key
     (Nov 17; 5 searches a minute, 30 a day, at most 5 results a search and no next page; saving the results for
     students is fine): `perl tools/real-video/captionsearch.pl "what do you mean" [1-5]` gives each match's channel and
     video title, a YouTube link with the time, the exact start and end, and the line with up to two lines before and
