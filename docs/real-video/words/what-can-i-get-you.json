@@ -1,0 +1,36 @@
+{
+  "en": "What can I get you?",
+  "ua": "Что вам принести? / Что будете заказывать?",
+  "pic": "🍽️",
+  "hl": "what can I get (you|for you)",
+  "together": {"Thank the Lord":"слава Богу"},
+  "gloss": {
+    "what": "что",
+    "can": "можно (What can I get you? = Что вам принести?)",
+    "i": "я",
+    "get": "принести, взять",
+    "you": "вам",
+    "today": "сегодня",
+    "good": "добрый",
+    "afternoon": "день (Good afternoon = добрый день)",
+    "eleanor": "Элеанор (имя)",
+    "hey": "привет",
+    "folks": "ребята, народ",
+    "oh": "о",
+    "man": "друг, приятель",
+    "this": "этим (this evening = сегодня вечером)",
+    "evening": "вечером",
+    "i’d": "I’d = I would: я бы",
+    "like": "хотел (I’d like = я бы хотел)",
+    "to": "to — перед глаголом: to ask = спросить",
+    "ask": "спросить",
+    "about": "о, про",
+    "the": "the — эти (мидии из меню)",
+    "mussels": "мидиях"
+  },
+  "clips": [
+    {"v":"ghObqCnDfi0","s":1101.28,"e":1102.38,"line":"What can I get you today?","note":"Eleanor comes into a frozen yogurt shop. The worker greets her: What can I get you today?","noteUa":"Элеанор заходит в кафе с замороженным йогуртом. Продавец здоровается: «Что вам сегодня?»","around":[[1100.16,1101.28,"Good afternoon, Eleanor."]]},
+    {"v":"S6OmrCjmJuk","s":990.48,"e":992.28,"line":"Hey folks, what can I get you?","note":"People from the office sit at a bar. The bartender comes over: Hey folks, what can I get you?","noteUa":"Коллеги сидят в баре. Подходит бармен: «Привет, ребята, что вам принести?»","around":[[992.32,992.92,"Oh, hey, man."]]},
+    {"v":"MCpz8UuGndM","s":782.64,"e":784,"line":"What can I get you this evening?","note":"At a restaurant, the waiter finally comes: What can I get you this evening? The customer asks about the mussels.","noteUa":"В ресторане наконец подходит официант: «Что вам принести сегодня вечером?» Посетитель спрашивает про мидии.","around":[[781.92,782.64,"Thank the Lord."],[784,785.28,"I’d like to ask about the mussels."]]}
+  ]
+}

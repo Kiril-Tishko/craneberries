@@ -1,0 +1,38 @@
+{
+  "en": "I didn’t get much sleep.",
+  "ua": "Я мало спав.",
+  "pic": "😴",
+  "hl": "didn[’']t get (much|enough) sleep",
+  "together": {"on the phone":"по телефону","last night":"минулої ночі","uh-huh":"ага","me neither":"я теж ні"},
+  "gloss": {
+    "didn’t": "didn’t = did not: не (у минулому)",
+    "get": "(get sleep = поспати)",
+    "much": "багато (not much = мало)",
+    "enough": "достатньо",
+    "sleep": "сну",
+    "i": "я",
+    "sorry": "вибач",
+    "jack": "Джек (ім’я)",
+    "you": {"*": "ти", "you slept": "ти"},
+    "were": "був (минулий час від be)",
+    "till": "до",
+    "4": "четвертої",
+    "00": "(4:00 = четверта година)",
+    "a": "(a.m. = ранку)",
+    "m": "(a.m. = ранку)",
+    "yeah": "так",
+    "can": "можу",
+    "see": "бачу",
+    "that": "це",
+    "actually": "насправді",
+    "at": "(at all = зовсім)",
+    "all": "(not … at all = зовсім не)",
+    "slept": "спав (минулий час від sleep)",
+    "there": "там"
+  },
+  "clips": [
+    {"v":"KFZodo4Qweo","s":239.84,"e":240.84,"line":"I didn’t get much sleep.","note":"Will is tired. He didn't get much sleep because Jack was on the phone until 4 a.m.","noteUa":"Вілл утомлений: він мало спав, бо Джек до четвертої ранку говорив по телефону.","around":[[239.2,239.84,"Sorry, Jack."],[240.84,242.48,"You were on the phone till 4:00 a.m."]]},
+    {"v":"yG23JJT-Rms","s":2621.36,"e":2623.36,"line":"Didn’t get much sleep last night.","note":"Charlie comes home in the morning. He didn't get much sleep last night.","noteUa":"Чарлі повертається додому вранці. Минулої ночі він мало спав.","around":[[2619.92,2621.36,"Yeah, I can see that."],[2624.48,2625.28,"Uh-huh."]]},
+    {"v":"fvlXP34d8Fc","s":656.92,"e":659.04,"line":"Actually, I didn’t get much sleep at all.","note":"Two people talk on the phone. Neither of them slept well last night.","noteUa":"Двоє говорять по телефону. Минулої ночі жоден із них майже не спав.","around":[[652.08,653.96,"You slept there last night."],[661.4,663.36,"Yeah, me neither."]]}
+  ]
+}

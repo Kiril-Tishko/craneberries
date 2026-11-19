@@ -1,0 +1,31 @@
+{
+  "en": "out of stock",
+  "ua": "немає в наявності",
+  "pic": "📦",
+  "hl": "out of stock",
+  "gloss": {
+    "out": "(out of stock = немає в наявності)",
+    "of": {"*": "(out of stock = немає в наявності)", "question of": "(question of price = питання ціни)"},
+    "price": "ціни",
+    "stock": "запас (out of stock = немає в наявності)",
+    "many": "багато",
+    "drives": "дисків (жорстких)",
+    "are": "are — дієслово be: drives are = диски (є)",
+    "just": "просто",
+    "plumb": "зовсім, геть (розмовне)",
+    "and": "і",
+    "it’s": "it’s = it is: справа (it’s at the point = справа дійшла до того)",
+    "at": "на (at the point = на тому етапі)",
+    "the": "the — той (етап)",
+    "point": "етап, момент",
+    "now": "зараз",
+    "where": "коли (at the point where = на тому етапі, коли)",
+    "not": "не",
+    "even": "навіть",
+    "a": "a — якесь (питання)",
+    "question": "питання"
+  },
+  "clips": [
+    {"v":"QX6eefTta14","s":278.04,"e":280,"line":"Many drives are just plumb out of stock.","note":"A tech YouTuber is building a home server. Hard drives are hard to buy now: many are simply out of stock.","noteUa":"Техноблогер збирає домашній сервер. Жорсткі диски зараз важко купити: багатьох просто немає в наявності.","around":[[275.12,278.04,"And it’s at the point now where it’s not even a question of price."]]}
+  ]
+}

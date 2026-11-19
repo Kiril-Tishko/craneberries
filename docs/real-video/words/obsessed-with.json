@@ -1,0 +1,35 @@
+{
+  "en": "I’m obsessed with …",
+  "ua": "Я без розуму від … / Я фанатію від …",
+  "pic": "😍",
+  "hl": "obsessed with",
+  "gloss": {
+    "obsessed": "без розуму (obsessed with = без розуму від)",
+    "with": {"*": "з", "obsessed with": "від (obsessed with = без розуму від)"},
+    "i’m": "I’m = I am: я",
+    "so": "така",
+    "overbearing": "владна (всіма командує)",
+    "and": "і",
+    "controlling": "яка все контролює",
+    "my": "моїх",
+    "siblings": "братів і сестер",
+    "like": "ну, типу (слово-паразит)",
+    "always": "завжди",
+    "trying": "намагаюся",
+    "to": "to — перед дієсловом: to spend = проводити",
+    "spend": "проводити (час)",
+    "more": "більше",
+    "time": "часу",
+    "them": {"*": "ними", "obsessed with them": "них (obsessed with them = без розуму від них)"},
+    "no": "ні",
+    "but": "але",
+    "i": "я",
+    "think": "думаю",
+    "they’re": "they’re = they are: вони (є)",
+    "cool": "класні, круті"
+  },
+  "clips": [
+    {"v":"3qqcU0UXxU8","s":118.42,"e":123.49,"line":"I’m… I’m so overbearing and controlling, and I’m obsessed with my siblings.","note":"Comedian Taylor Tomlinson is the oldest sister. She loves her brothers and sisters and always wants to spend time with them.","noteUa":"Комікеса Тейлор Томлінсон — найстарша сестра. Вона без розуму від своїх братів і сестер і завжди хоче проводити з ними більше часу.","around":[[123.49,125.86,"Like, I’m always trying to spend more time with them."]]},
+    {"v":"3qqcU0UXxU8","s":190.42,"e":191.96,"line":"No, but I’m obsessed with them.","note":"Seth thought her siblings were crazy about her. No, she says, it's the other way: I'm obsessed with them. They're so cool.","noteUa":"Сет думав, що це брати й сестри від неї без розуму. Ні, каже вона, навпаки: це я без розуму від них. Вони такі круті.","around":[[191.96,193.03,"I think they’re so cool."]]}
+  ]
+}
