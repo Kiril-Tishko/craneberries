@@ -6,7 +6,7 @@
   {"slug":"go-to-bed","en":"Go to bed!","ua":"Иди спать!","pic":"😴","n":2},
   {"slug":"good-morning","en":"Good morning!","ua":"Доброе утро!","pic":"☀️","n":3},
   {"slug":"good-night","en":"Good night!","ua":"Спокойной ночи!","pic":"🛌","n":2},
-  {"slug":"i-agree","en":"I agree.","ua":"Я согласен.","pic":"🤝","n":2},
+  {"slug":"i-agree","en":"I agree.","ua":"Я согласен.","pic":"🤝","n":1},
   {"slug":"i-believe-in-you","en":"I believe in you.","ua":"Я в тебе вірю.","pic":"💪","n":2},
   {"slug":"im-late","en":"I’m late!","ua":"Я опаздываю!","pic":"🏃","n":3},
   {"slug":"im-tired","en":"I’m tired.","ua":"Я устал.","pic":"🥱","n":3},
