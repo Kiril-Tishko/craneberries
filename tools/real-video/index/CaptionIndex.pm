@@ -12,7 +12,9 @@ our @EXPORT = qw(win_path home_dir data_dir db_path tool sql sql_quote tokens fm
   write_state channel_key load_channels init_db now);
 
 sub now { time }
-sub win_path { my $p = shift; $p =~ s{\\}{/}g; $p }   # Windows programs and this Perl both take C:/x/y
+sub win_path {   # Windows programs and this Perl both take C:/x/y (Git Bash's /c/x/y would be C:\c\x\y to them)
+  my $p = shift; $p =~ s{\\}{/}g; $p =~ s{^/([a-zA-Z])(?=/|$)}{\U$1:}; $p;
+}
 sub home_dir { win_path($ENV{USERPROFILE} || $ENV{HOME} || '.') }
 sub data_dir {
   my $d = win_path($ENV{CAPTION_INDEX_DIR} || home_dir() . '/.cache/caption-index');

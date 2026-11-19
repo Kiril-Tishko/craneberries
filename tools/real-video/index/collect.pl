@@ -9,7 +9,7 @@
 #                                                        and (re)make the scheduled task that runs them
 #   perl tools/real-video/index/collect.pl               run in this window (what the scheduled task runs)
 #   perl tools/real-video/index/collect.pl --once <video id>   fetch one video now (a test)
-#   options: --per-channel 400 (most-viewed videos taken from each channel), --pause 5-10 (seconds between videos)
+#   options: --per-channel 400 (most-viewed videos taken from each channel), --gap 40 (seconds per video, at least)
 #
 # He chose this on Nov 19, knowing that automated caption download is against YouTube's terms: it is for his
 # private use only. So the index never goes in this repo (public), a page, a commit or anything a student loads;
@@ -17,11 +17,13 @@
 #
 # How it works: yt-dlp (logged out: no browser cookies, no Google account, its own config ignored) lists each
 # channel's videos once (most-viewed first; re-listed every 30 days), then fetches one video's captions at a time,
-# taking one video from each channel in turn, so the index is useful from the first hour. Uploaded (human) captions
-# are kept when there are any, otherwise YouTube's auto-captions with each word's time. Lines are cut into
-# sentences. About 130 videos an hour (~15 s in yt-dlp, with its own pauses, plus 5-10 s between videos, with
-# jitter); YouTube rate-limits logged-out users at about 300 an hour. On HTTP 429, a "confirm you're not a bot" page or a rate-limit
-# message it stops for 4 hours (8, 16, then 24 if it happens again within a day) and never retries sooner.
+# taking one video from each channel in turn (each channel's longest first), so the index is useful from the first
+# hour. Uploaded (human) captions are kept when there are any, otherwise YouTube's auto-captions with each word's
+# time. Lines are cut into sentences. A video costs YouTube 4 requests (the watch page, two player requests, one
+# caption file; see fetch_video) and takes 6-8 s; a new one starts every 30-50 s (--gap 40, with jitter), about 90
+# an hour. On Nov 19 YouTube's caption server said 429 after 160 videos in 95 minutes at about twice that pace. On
+# HTTP 429, a "confirm you're not a bot" page or a rate-limit message it stops for 4 hours (8, 16, then 24 if it
+# happens again within a day), never retries sooner, and then goes on half as slowly again (back down a day later).
 # yt-dlp updates itself (yt-dlp -U, from its GitHub releases) once a day, as YouTube keeps changing.
 # Everything is resumable: a video is either in the index or still in the queue.
 # Files: index.db, collector.log, state.json in ~/.cache/caption-index/ (C:\Users\<you>\.cache\caption-index).
@@ -34,18 +36,18 @@ use File::Copy qw(copy); use POSIX qw(strftime WNOHANG _exit); use List::Util qw
 binmode STDOUT, ':encoding(UTF-8)'; binmode STDERR, ':encoding(UTF-8)';
 $| = 1;
 
-my %opt = (per => 400, pause => '5-10');
+my %opt = (per => 400, gap => 40);
 my @args;
 while (@ARGV) {
   my $a = shift @ARGV;
   if ($a eq '--per-channel') { $opt{per} = shift @ARGV }
-  elsif ($a eq '--pause') { $opt{pause} = shift @ARGV }
+  elsif ($a eq '--gap') { $opt{gap} = shift @ARGV }
   elsif ($a =~ /^--(status|stop|start|install|once|list|help)$/) { $opt{$1} = 1 }
   elsif ($a eq '-v') { $opt{v} = 1 }
   else { push @args, $a }
 }
 die "usage: see the top of $0\n" if $opt{help};
-my ($pmin, $pmax) = $opt{pause} =~ /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/ ? ($1, $2) : (5, 10);
+$opt{gap} = 40 unless $opt{gap} =~ /^\d+(?:\.\d+)?$/ && $opt{gap} >= 10;
 
 my $DIR = data_dir();
 my $LOG = "$DIR/collector.log";
@@ -123,8 +125,27 @@ sub strike {
   my $s = read_state();
   my $n = ($s->{last_strike} // 0) > time - 86400 ? ($s->{strikes} // 0) + 1 : 1;
   my $hours = (4, 8, 16, 24)[min($n, 4) - 1];
-  state_set(strikes => $n, last_strike => int time, paused_until => int(time + $hours * 3600), pause_reason => $why);
-  logl("YouTube pushed back ($why): stopping for $hours hours");
+  my $gap = min(120, max($opt{gap}, $s->{gap} // $opt{gap}) * 1.5);
+  state_set(strikes => $n, last_strike => int time, paused_until => int(time + $hours * 3600), pause_reason => $why,
+    gap => $gap, gap_eased => int time);
+  logl("YouTube pushed back ($why): stopping for $hours hours, then one video every " . int($gap) . ' s');
+}
+
+# Seconds from the start of one video to the start of the next: --gap (40 s, about 90 videos an hour), half as long
+# again after each pushback (up to 120 s), and 15% shorter again after each day without one.
+sub gap {
+  my $s = read_state();
+  my $g = max($opt{gap}, $s->{gap} // $opt{gap});
+  if ($g > $opt{gap} && time - ($s->{last_strike} // 0) > 86400 && time - ($s->{gap_eased} // 0) > 86400) {
+    $g = max($opt{gap}, $g * 0.85);
+    state_set(gap => $g, gap_eased => int time);
+    logl('a day without pushback: one video every ' . int($g) . ' s');
+  }
+  $g;
+}
+sub pace {   # waits until the next video is due (jitter: 75-125% of the gap)
+  my $t0 = shift;
+  nap(max(3, $t0 + gap() * (0.75 + rand 0.5) - time));
 }
 
 # Runs a program with its output in files, killing it after $timeout seconds.
@@ -146,7 +167,7 @@ sub run_cmd {
 
 sub ytdlp_base {
   (tool('yt-dlp'), '--ignore-config', '--no-cookies', '--no-cookies-from-browser', '--no-playlist',
-   '--js-runtimes', 'deno:' . tool('deno'), '--extractor-args', 'youtube:skip=hls,dash,translated_subs',
+   '--js-runtimes', 'deno:' . tool('deno'), '--extractor-args', 'youtube:skip=hls,dash,translated_subs;player_skip=js',
    '--socket-timeout', '30', '--extractor-retries', '2', '--retry-sleep', 'extractor:20', '--no-progress');
 }
 
@@ -358,49 +379,64 @@ sub store_lines {
   sql(join "\n", @s);
 }
 
+sub errors { join "\n", grep { !/ffmpeg not found|Incomplete data received|re-fetching using API/ } split /\n/, slurp(shift) }
+sub first_error { my @l = split /\n/, shift; (grep { /ERROR/ } @l)[0] // (grep { /\S/ } @l)[0] }
+sub pushed_back {
+  my ($v, $err) = @_;
+  strike((grep { $_ =~ $RATE } split /\n/, $err)[0]);
+  set_video($v->{k}, tries => $v->{tries} + 1, note => 'pushed back on this one');
+  if ($v->{tries} + 1 >= 3) { set_video($v->{k}, status => 'gone', note => 'pushed back 3 times on this one') }
+  'rate';
+}
+sub failed {   # tried 3 times: left out
+  my ($v, $why) = @_;
+  my $t = $v->{tries} + 1;
+  set_video($v->{k}, tries => $t, note => substr($why, 0, 200), ($t >= 3 ? (status => 'error') : ()));
+  'error';
+}
+
+# One video in two steps, so YouTube's caption server gets exactly one request a video (none when there are no
+# English captions; it is the server that said 429 first, on Nov 19):
+#   1. the video's details and its list of caption tracks: the watch page and two player requests (YouTube's 2 MB
+#      player script is skipped: it is only needed for the video itself, not for captions; ytdlp_base);
+#   2. the one track we keep, downloaded from the details saved in step 1 (no other request).
 # Returns 'done', 'none' (no English captions), 'gone', 'error' or 'rate' (YouTube pushed back).
 sub fetch_video {
   my $v = shift;
   my $id = $v->{id};
   my $tmp = "$DIR/tmp/v"; remove_tree($tmp); make_path($tmp);
-  my $rc = run_cmd([ytdlp_base(), '--skip-download', '--no-simulate', '--write-subs', '--write-auto-subs',
-    '--sub-langs', 'en,en-US,en-GB,en-CA,en-AU', '--sub-format', 'json3', '--sleep-requests', '0.75', '--sleep-subtitles', '2',
-    '-o', "subtitle:$tmp/%(id)s", '-o', "$tmp/%(id)s",
-    '--print', 'INFO %(.{id,title,channel,channel_id,duration,upload_date,view_count,playable_in_embed,availability,language,live_status})j',
-    '--print', 'SUBS %(subtitles)j', "https://www.youtube.com/watch?v=$id"], 300, "$tmp/out.txt", "$tmp/err.txt");
-  my $out = slurp("$tmp/out.txt");
-  my $err = join "\n", grep { !/ffmpeg not found|Incomplete data received|re-fetching using API/ } split /\n/, slurp("$tmp/err.txt");
-  my ($first) = ((grep { /ERROR/ } split /\n/, $err), (grep { /\S/ } split /\n/, $err));
-  if ($err =~ $RATE) {
-    strike((grep { $_ =~ $RATE } split /\n/, $err)[0]);
-    set_video($v->{k}, tries => $v->{tries} + 1, note => 'pushed back on this one');
-    if ($v->{tries} + 1 >= 3) { set_video($v->{k}, status => 'gone', note => 'pushed back 3 times on this one') }
-    return 'rate';
-  }
-  my ($info) = $out =~ /^INFO (.*)$/m;
-  my $i = $info ? eval { JSON::PP->new->decode($info) } : undef;
+  my $json = "$tmp/$id.info.json";
+  my $rc = run_cmd([ytdlp_base(), '--skip-download', '--write-info-json', '--sleep-requests', '0.75',
+    '-o', "$tmp/%(id)s", "https://www.youtube.com/watch?v=$id"], 300, "$tmp/out.txt", "$tmp/err.txt");
+  my $err = errors("$tmp/err.txt");
+  return pushed_back($v, $err) if $err =~ $RATE;
+  my $i = -e $json ? eval { JSON::PP->new->decode(slurp($json)) } : undef;
   if (!$i) {
+    my $first = first_error($err);
     if ($err =~ $GONE) { set_video($v->{k}, status => 'gone', note => substr($first // 'unavailable', 0, 200)); return 'gone' }
-    my $t = $v->{tries} + 1;
-    set_video($v->{k}, tries => $t, note => substr($first // "yt-dlp exit $rc", 0, 200), ($t >= 3 ? (status => 'error') : ()));
-    return 'error';
+    return failed($v, $first // "yt-dlp exit $rc");
   }
   my %f = (title => $i->{title}, dur => int($i->{duration} // 0), views => int($i->{view_count} || $v->{views} || 0),
     uploaded => $i->{upload_date}, lang => $i->{language},
     embed => (ref $i->{playable_in_embed} ? ($i->{playable_in_embed} ? 1 : 0) : undef));
-  my ($subs) = $out =~ /^SUBS (.*)$/m;
-  my $manual = $subs && $subs ne 'NA' ? (eval { JSON::PP->new->decode($subs) } || {}) : {};
-  opendir(my $dh, $tmp); my %file = map { /^\Q$id\E\.(.+)\.json3$/ ? ($1 => "$tmp/$_") : () } readdir $dh; closedir $dh;
+  my $has = sub { my ($subs, $l) = @_; grep { ($_->{ext} // '') eq 'json3' } @{(ref $subs eq 'HASH' ? $subs : {})->{$l} || []} };
   my ($lang, $kind);
-  for my $l ('en', 'en-US', 'en-CA', 'en-GB', 'en-AU') { if ($manual->{$l} && $file{$l}) { ($lang, $kind) = ($l, 'human'); last } }
-  if (!$lang && $file{en} && !$manual->{en} && ($i->{language} // 'en') =~ /^en/) { ($lang, $kind) = ('en', 'auto') }
+  for my $l ('en', 'en-US', 'en-CA', 'en-GB', 'en-AU') { if ($has->($i->{subtitles}, $l)) { ($lang, $kind) = ($l, 'human'); last } }
+  if (!$lang && $has->($i->{automatic_captions}, 'en') && ($i->{language} // 'en') =~ /^en/) { ($lang, $kind) = ('en', 'auto') }
   if (!$lang) {
     set_video($v->{k}, %f, status => 'none', fetched_at => int time,
       note => ($i->{language} && $i->{language} !~ /^en/ ? "spoken language: $i->{language}" : 'no English captions'));
     return 'none';
   }
-  my $d = eval { JSON::PP->new->decode(slurp($file{$lang})) };
-  my $lines = $d ? ($kind eq 'auto' ? auto_lines($d) : human_lines($d)) : [];
+  $rc = run_cmd([ytdlp_base(), '--load-info-json', $json, '--skip-download',
+    ($kind eq 'human' ? '--write-subs' : '--write-auto-subs'), '--sub-langs', $lang, '--sub-format', 'json3',
+    '-o', "subtitle:$tmp/%(id)s", '-o', "$tmp/%(id)s"], 120, "$tmp/out2.txt", "$tmp/err2.txt");
+  $err = errors("$tmp/err2.txt");
+  return pushed_back($v, $err) if $err =~ $RATE;
+  my $file = "$tmp/$id.$lang.json3";
+  my $d = -e $file ? eval { JSON::PP->new->decode(slurp($file)) } : undef;
+  return failed($v, 'captions not downloaded: ' . (first_error($err) // "yt-dlp exit $rc")) unless $d;
+  my $lines = $kind eq 'auto' ? auto_lines($d) : human_lines($d);
   if (!@$lines) { set_video($v->{k}, %f, status => 'none', fetched_at => int time, note => 'empty captions'); return 'none' }
   store_lines($v, $lines, %f, kind => $kind);
   logl(sprintf '%s · %s · %s · %d lines · %s', $v->{channel}, $id, $kind, scalar @$lines, $i->{title} // '');
@@ -450,18 +486,21 @@ sub round {
   my $old = time - 30 * 86400;
   my @unlisted = grep { $known->{$_} } map { $_->[0] } sql("SELECT key FROM channels WHERE listed_at IS NULL OR listed_at < $old ORDER BY listed_at IS NOT NULL, listed_at, rowid;");
   my @batch = map { my %v; @v{qw(k id channel tries lines views)} = @$_; \%v }
-    grep { $known->{$_->[2]} } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY views DESC, k) r FROM videos WHERE status='todo') WHERE r=1;");
+    grep { $known->{$_->[2]} } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY dur IS NULL, dur DESC, views DESC, k) r FROM videos WHERE status='todo') WHERE r=1;");
+  # Longest videos first (of each channel's most-viewed): one caption request gives up to 3 hours of speech.
   if (@unlisted && ($run->{since_list} >= 12 || !@batch)) {   # a new channel after every 12 videos
     my ($c) = grep { $_->{key} eq $unlisted[0] } channels();
+    my $t0 = time;
     list_channel($c);
     $run->{since_list} = 0;
-    nap($pmin + rand($pmax - $pmin));
+    pace($t0);
     return;
   }
   if (!@batch) { logl('nothing left to fetch; looking again in 6 hours'); nap(6 * 3600); return }
   for my $v (shuffle @batch) {
     exit_if_stopped();
     wait_if_paused();
+    my $t0 = time;
     my $r = fetch_video($v);
     $run->{since_list}++;
     return if $r eq 'rate';
@@ -474,7 +513,7 @@ sub round {
       }
     } else { $run->{errors} = 0 }
     state_set(last_video => "$v->{channel} · $v->{id}", last_video_at => int time);
-    nap($pmin + rand($pmax - $pmin));
+    pace($t0);
     return if @unlisted && $run->{since_list} >= 12;
   }
 }
@@ -510,6 +549,10 @@ sub status {
   my ($last_hour) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE fetched_at > %d;", time - 3600);
   printf "Queue: %s to fetch (the %d most-viewed of each channel); %d of %d channels listed; %s fetched in the last hour\n",
     commas($n{todo}), $opt{per}, $listed, $all, commas($last_hour);
+  my $g = max($opt{gap}, $s->{gap} // $opt{gap});
+  my $left = ($n{todo} // 0) + ($all - $listed) * $opt{per} * 0.9;   # channels not listed yet: about 360 each
+  printf "Pace: a video every %d s on average, about %d an hour; about %.0f more days of running%s\n",
+    $g, 3600 / $g, $left * $g / 86400, $all > $listed ? ' (with the channels not listed yet)' : '';
   return unless $opt{v};
   print "\n";
   for (sql("SELECT c.name, c.listed, sum(v.status='done'), sum(v.kind='human' AND v.status='done'), sum(v.status='todo'), c.note FROM channels c LEFT JOIN videos v ON v.channel=c.key GROUP BY c.key ORDER BY c.rowid;")) {

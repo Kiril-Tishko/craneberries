@@ -18,8 +18,12 @@
 #   --all           also videos that can't be embedded or were found gone (the clip page can't play them)
 #   --no-check      skip the online check (YouTube oEmbed: 200 = online, 404 = gone, 401/403 = private or no embed)
 #   --channels      the channels in the index and how many of their videos are searchable
+#   --clip          under each result, its clip entry for docs/real-video/words/<word>.json (v, s, e, line, an empty
+#                   note, around = one line before and after), ready to paste once the clip is watched
 # One result per video (the best line; "+2 more" says how many others it has), channels taken in turn, short lines
-# first. Then watch each clip in the clip page before choosing it, as CLAUDE.md says.
+# first. A scene found in several videos (a compilation and its own clip) is shown once, human captions first, and
+# "same scene also in …" names the other videos (use one of them if this one goes offline).
+# Then watch each clip in the clip page before choosing it, as CLAUDE.md says.
 #
 # The index is private (YouTube's terms don't allow downloading captions; he chose this for his own use): never put
 # what it prints into this repo, a page or a commit, except the few clip lines saved in docs/real-video/words/.
@@ -27,7 +31,7 @@ use strict; use warnings; use utf8;
 # This script's folder, also when started as C:...llect.pl (FindBin gets that wrong in Git Bash's Perl).
 our $BIN; BEGIN { ($BIN = __FILE__) =~ tr{\\}{/}; $BIN =~ s{/[^/]*$}{} or $BIN = '.'; unshift @INC, $BIN }
 use CaptionIndex;
-use List::Util qw(min max first);
+use List::Util qw(min max first); use JSON::PP;
 binmode STDOUT, ':encoding(UTF-8)'; binmode STDERR, ':encoding(UTF-8)';
 
 my (%opt, @args);
@@ -36,7 +40,7 @@ while (@ARGV) {
   my $arg = shift @ARGV;
   if ($arg =~ /^--(page|channel|not)$/) { push @{$opt{$1}}, shift @ARGV }
   elsif ($arg =~ /^--(page|channel|not)=(.*)$/) { push @{$opt{$1}}, $2 }
-  elsif ($arg =~ /^--(human|all|no-check|channels|help)$/) { $opt{$1} = 1 }
+  elsif ($arg =~ /^--(human|all|no-check|channels|clip|help)$/) { $opt{$1} = 1 }
   elsif ($arg =~ /^--/) { die "unknown option $arg (see the top of $0)\n" }
   else { push @args, $arg }
 }
@@ -182,7 +186,14 @@ for my $r (@rows) {
       if (!$lw->[2]) { $we = defined $off1[$lw->[1] + 1] ? $s + $off1[$lw->[1] + 1] : $e }
       elsif (@off2 && $ns ne '') { $we = defined $off2[$lw->[1] + 1] ? $ns + $off2[$lw->[1] + 1] : $ne }
     }
-    my $x = {lid => $lid, s => $s, e => ($spans && $ne ne '' ? $ne : $e), ws => $ws, we => $we, spans => $spans, score => $score};
+    # The words around the match, to know the same scene in another video (a compilation and its own clip).
+    my $tok = sub { join ' ', map { $T[$_][0] } @_ };
+    my $mt = $tok->($m->[0] .. $m->[1]);
+    my @keys;
+    push @keys, 'b ' . $tok->(max(0, $m->[0] - 4) .. $m->[0] - 1) . " | $mt" if $m->[0] >= 3;
+    push @keys, "a $mt | " . $tok->($m->[1] + 1 .. min($#T, $m->[1] + 4)) if $#T - $m->[1] >= 3;
+    my $x = {lid => $lid, s => $s, e => ($spans && $ne ne '' ? $ne : $e), ws => $ws, we => $we, spans => $spans,
+      score => $score, keys => \@keys};
     my $v = $video{$vid} //= {id => $vid, k => $k, title => $title, views => $views, kind => $kind, alive => $alive,
       checked => $checked, ckey => $ckey, cname => $cname, m => []};
     push @{$v->{m}}, $x;
@@ -193,6 +204,18 @@ for my $v (@videos) {
   my @m = sort { $a->{score} <=> $b->{score} || $a->{lid} <=> $b->{lid} } @{$v->{m}};
   $v->{best} = $m[0]; $v->{more} = $#m; $v->{n} = @m;
 }
+my $total = 0; $total += $_->{n} for @videos;
+my $nvideos = @videos;
+# The same scene is often in a compilation and in its own clip (or in two compilations): it is shown once, from the
+# video with human captions if there is one, and the others are named under it ("same scene also in …").
+my %scene;
+for my $v (sort { ($b->{kind} eq 'human') <=> ($a->{kind} eq 'human') || $a->{best}{score} <=> $b->{best}{score}
+    || $b->{views} <=> $a->{views} || $a->{id} cmp $b->{id} } @videos) {
+  my $rep = first { defined } map { $scene{$_} } @{$v->{best}{keys}};
+  if ($rep) { push @{$rep->{same}}, $v; $v->{dup} = 1 } else { $rep = $v }
+  $scene{$_} //= $rep for @{$v->{best}{keys}};
+}
+@videos = grep { !$_->{dup} } @videos;
 # Channels in turn (the one with the best line first), each channel's videos best line first.
 my %by;
 push @{$by{$_->{ckey}}}, $_ for @videos;
@@ -201,12 +224,12 @@ my @order = sort { $by{$a}[0]{best}{score} <=> $by{$b}[0]{best}{score} || @{$by{
 my @list;
 while (grep { @{$by{$_}} } @order) { for (@order) { push @list, shift @{$by{$_}} if @{$by{$_}} } }
 
-my $total = 0; $total += $_->{n} for @videos;
 my $from = ($page - 1) * $limit;
 my @pagev = @list[$from .. min($from + $limit, scalar @list) - 1];
 my $s = state_note();
-printf "(index: %s videos%s; \"%s\": %d matches in %d videos from %d channels%s)\n", commas($indexed), $s, $shown,
-  $total, scalar @videos, scalar keys %by, @list ? sprintf('; showing %d-%d', $from + 1, $from + @pagev) : '';
+printf "(index: %s videos%s; \"%s\": %d matches in %d videos%s from %d channels%s)\n", commas($indexed), $s, $shown,
+  $total, $nvideos, ($nvideos > @videos ? sprintf(', %d scenes', scalar @videos) : ''), scalar keys %by,
+  @list ? sprintf('; showing %d-%d', $from + 1, $from + @pagev) : '';
 if (!@pagev) {
   print @list ? "No more results (there are " . @list . ").\n" : "No matches" . ($opt{human} ? ' with human captions' : '') . ".\n";
   exit;
@@ -228,14 +251,31 @@ for my $v (@pagev) {
   push @info, $v->{alive} eq '200' ? 'online' : $v->{alive} eq '404' ? 'GONE (404)' : $v->{alive} =~ /^40[13]$/ ? "private or no embed ($v->{alive})" : $v->{alive} ? "online check: $v->{alive}" : ()
     unless $opt{'no-check'} && !$v->{alive};
   push @info, "+$v->{more} more in this video" if $v->{more};
+  my @same = @{$v->{same} || []};
+  push @info, 'same scene also in ' . join(', ', map { $_->{id} } @same[0 .. min(2, $#same)]) . (@same > 3 ? ' +' . (@same - 3) : '') if @same;
   my $words = defined $bm->{ws} && defined $bm->{we} ? sprintf('; words %s-%s', fmt_sec($bm->{ws}), fmt_sec($bm->{we})) : '';
   printf "%d. %s · %s\n   %s   (%s, %s-%s%s)   %s\n", ++$n, $v->{cname}, $v->{title}, $yt, $v->{id}, fmt_sec($bm->{s}), fmt_sec($bm->{e}), $words, join(' · ', @info);
   my $base = $v->{k} * 100000;
-  for my $id (max($base, $bm->{lid} - 2) .. $bm->{lid} + 2 + ($bm->{spans} ? 1 : 0)) {
+  my $last = $bm->{lid} + ($bm->{spans} ? 1 : 0);
+  for my $id (max($base, $bm->{lid} - 2) .. $last + 2) {
     my $l = $ctx{$id} or next;
-    my $mark = $id == $bm->{lid} || ($bm->{spans} && $id == $bm->{lid} + 1) ? '>>' : ' ';
+    my $mark = $id >= $bm->{lid} && $id <= $last ? '>>' : ' ';
     printf "   %-2s %8s  %s\n", $mark, fmt_time($l->[1] / 1000), $l->[3];
   }
+  print '   clip: ', clip_json($v, $bm, $base, $last), "\n" if $opt{clip};
+}
+
+# A clip entry for docs/real-video/words/<word>.json (its note still to write): the line (both lines when the
+# phrase runs on), its exact start and end in seconds, and one line before and after for "With context".
+sub clip_json {
+  my ($v, $bm, $base, $last) = @_;
+  my $J = JSON::PP->new->allow_nonref;
+  my $sec = sub { 0 + sprintf('%.2f', $_[0] / 1000) };
+  my $line = join ' ', map { $ctx{$_} ? $ctx{$_}[3] : () } $bm->{lid} .. $last;
+  my @around = map { my $l = $ctx{$_}; $l ? [$sec->($l->[1]), $sec->($l->[2]), $l->[3]] : () }
+    ($bm->{lid} > $base ? $bm->{lid} - 1 : ()), $last + 1;
+  sprintf '{"v":%s,"s":%s,"e":%s,"line":%s,"note":"","around":%s}', $J->encode($v->{id}), $sec->($bm->{s}),
+    $sec->($bm->{e}), $J->encode($line), $J->encode(\@around);
 }
 print "(more: --page " . ($page + 1) . ")\n" if @list > $from + @pagev;
 
