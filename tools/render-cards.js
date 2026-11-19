@@ -42,12 +42,19 @@ function header(c) {
   ${c.sub ? `<p class="sub">${esc(c.sub)}</p>` : ''}`;
 }
 
+// A long word in a picture tile gets a smaller font, so the tile never grows past its column ("requirements").
+const tileFit = (en, three) => {
+  const len = Math.max(...String(en).split(/\s+/).map((x) => x.length));
+  const [base, fits] = three ? [20, 9] : [kid ? 28 : 30, 8];
+  return len > fits ? ` style="font-size:${Math.max(three ? 14 : 18, Math.floor(base * fits / len))}px"` : '';
+};
+
 const body = {
   // Items with an emoji get big picture rows (for children): emoji, the English word, the Ukrainian below.
   // kid, or grid: true → picture tiles (big emoji, the word, Ukrainian only if given); cols: 3 → three smaller tiles a row (for 6+ items)
   words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}${c.cols === 3 ? ' c3' : ''}">${c.items.map((w, i) => `
     <div class="ktile t${i % 6}">${w.svg ? `<span class="kemo ksvg">${w.svg}</span>` : `<span class="kemo">${esc(w.emoji || '')}</span>`}
-      <span class="kword"><span class="hl">${brk(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
+      <span class="kword"${tileFit(w.en, c.cols === 3)}><span class="hl">${brk(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
     : c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
     <div class="prow"><span class="pemo">${esc(w.emoji || '')}</span>
       <div class="wk"><span class="en big"><span class="hl">${brk(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
@@ -253,7 +260,7 @@ const html = `<!doctype html>
   .kemo{font-family:"Noto Color Emoji",sans-serif;font-size:76px;line-height:1}
   .kemo.md{font-size:50px;flex:none}
   .kemo.sm{font-size:46px}
-  .kgrid{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .kgrid{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
   .ktile{border-radius:28px;padding:18px 10px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
   .ktile:nth-child(4n+1),.ktile:nth-child(4n+4){transform:rotate(-1.6deg)}
   .ktile:nth-child(4n+2),.ktile:nth-child(4n+3){transform:rotate(1.6deg)}
@@ -261,7 +268,7 @@ const html = `<!doctype html>
   .flat .ktile{transform:none!important;padding:22px 10px 18px;background:#fff!important;border:1px solid #e3e7ef;box-shadow:0 1px 2px rgba(20,30,54,.05),0 10px 26px rgba(20,30,54,.08)}
   .flat .kemo{font-size:84px}
   .flat .kword{font-size:30px}
-  .kgrid.c3{grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .kgrid.c3{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
   .c3 .ktile,.flat.c3 .ktile{padding:14px 4px 12px;border-radius:22px}
   .c3 .kemo,.flat.c3 .kemo{font-size:56px}
   .c3 .kword,.flat.c3 .kword{font-size:20px}
