@@ -19,8 +19,8 @@
 # channel's videos once (most-viewed first; re-listed every 30 days), then fetches one video's captions at a time,
 # taking one video from each channel in turn, so the index is useful from the first hour. Uploaded (human) captions
 # are kept when there are any, otherwise YouTube's auto-captions with each word's time. Lines are cut into
-# sentences. About 250 videos an hour: yt-dlp's own pauses plus 5-10 s between videos, with jitter (YouTube rate-
-# limits logged-out users at about 300 an hour). On HTTP 429, a "confirm you're not a bot" page or a rate-limit
+# sentences. About 130 videos an hour (~15 s in yt-dlp, with its own pauses, plus 5-10 s between videos, with
+# jitter); YouTube rate-limits logged-out users at about 300 an hour. On HTTP 429, a "confirm you're not a bot" page or a rate-limit
 # message it stops for 4 hours (8, 16, then 24 if it happens again within a day) and never retries sooner.
 # yt-dlp updates itself (yt-dlp -U, from its GitHub releases) once a day, as YouTube keeps changing.
 # Everything is resumable: a video is either in the index or still in the queue.
@@ -495,7 +495,7 @@ sub status {
   if (!-e $db) { print "No index yet ($db). Start the collector: perl tools/real-video/index/collect.pl --start\n"; return }
   my $s = read_state();
   my $mb = sum0(map { -s $_ // 0 } $db, "$db-wal") / 1e6;
-  printf "Caption index (private, this PC only): %s, %.0f MB\n", $db, $mb;
+  printf "Caption index (private, this PC only): %s, %s MB\n", $db, $mb < 10 ? sprintf('%.1f', $mb) : sprintf('%.0f', $mb);
   my $when = sub { my $t = shift; $t ? strftime('%a %b %e %H:%M', localtime $t) : '?' };
   my $state = running() ? 'running' : stop_asked() ? 'stopped (--stop; --start starts it again)' : 'not running';
   $state .= sprintf ', paused until %s (%s)', $when->($s->{paused_until}), $s->{pause_reason} // '' if ($s->{paused_until} // 0) > time;

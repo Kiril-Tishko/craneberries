@@ -239,7 +239,7 @@ huggingface.co, about 15 min per hour of audio).
     (uploaded captions only, exact text), `--channel office,friends`, `--not snl`, `"a | b"` (either), `"call ~3
     back"` (near), `"tire*"`; `--channels` lists them. It holds only the 36 American channels he picked
     (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
-    scheduled task runs `collect.pl` logged out (no cookies), about 250 videos an hour, and stops for hours when
+    scheduled task runs `collect.pl` logged out (no cookies), about 130 videos an hour, and stops for hours when
     YouTube pushes back. `perl tools/real-video/index/collect.pl --status` says how far it has got (`--stop`,
     `--start`); after changing anything in `tools/real-video/index/`, run `collect.pl --install` so the task runs
     the new copy. Downloading captions breaks YouTube's terms (he chose it for private use), so the index
