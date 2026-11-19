@@ -254,8 +254,9 @@ huggingface.co, about 15 min per hour of audio).
     (`v`, `s`, `e`, `line`, `around`; write the note after watching). A scene found in several videos (a compilation
     and its own clip) shows once, with "same scene also in …". It holds only the 36 American channels he picked
     (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
-    scheduled task runs `collect.pl` logged out (no cookies), each channel's longest videos first, about 90 videos an
-    hour (one caption request a video), and stops for hours when YouTube pushes back, then goes slower. `perl tools/real-video/index/collect.pl --status` says how far it has got (`--stop`,
+    scheduled task runs `collect.pl` logged out (no cookies), each channel's longest videos first, one caption
+    request a video, a 4-hour rest after every 120 (YouTube said 429 after about 160 twice on Nov 19), about 400-500
+    videos a day; if YouTube still pushes back it stops for hours, then goes slower. `perl tools/real-video/index/collect.pl --status` says how far it has got (`--stop`,
     `--start`); after changing anything in `tools/real-video/index/`, run `collect.pl --install` so the task runs
     the new copy. Downloading captions breaks YouTube's terms (he chose it for private use), so the index
     (`~/.cache/caption-index/`) never goes in the repo, a page or a commit: only the clip lines saved in `words/`.

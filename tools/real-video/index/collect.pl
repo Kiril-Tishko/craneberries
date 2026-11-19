@@ -9,7 +9,8 @@
 #                                                        and (re)make the scheduled task that runs them
 #   perl tools/real-video/index/collect.pl               run in this window (what the scheduled task runs)
 #   perl tools/real-video/index/collect.pl --once <video id>   fetch one video now (a test)
-#   options: --per-channel 400 (most-viewed videos taken from each channel), --gap 40 (seconds per video, at least)
+#   options: --per-channel 400 (most-viewed videos taken from each channel), --gap 40 (seconds per video, at least),
+#            --round 120 --rest 4 (a rest of 4 hours after every 120 caption files)
 #
 # He chose this on Nov 19, knowing that automated caption download is against YouTube's terms: it is for his
 # private use only. So the index never goes in this repo (public), a page, a commit or anything a student loads;
@@ -20,8 +21,8 @@
 # taking one video from each channel in turn (each channel's longest first), so the index is useful from the first
 # hour. Uploaded (human) captions are kept when there are any, otherwise YouTube's auto-captions with each word's
 # time. Lines are cut into sentences. A video costs YouTube 4 requests (the watch page, two player requests, one
-# caption file; see fetch_video) and takes 6-8 s; a new one starts every 30-50 s (--gap 40, with jitter), about 90
-# an hour. On Nov 19 YouTube's caption server said 429 after 160 videos in 95 minutes at about twice that pace. On
+# caption file; see fetch_video) and takes 6-8 s; a new one starts every 30-50 s (--gap 40, with jitter), and after
+# every 120 caption files it rests 4 hours (--round 120, --rest 4; see count_caption): about 500 videos a day. On
 # HTTP 429, a "confirm you're not a bot" page or a rate-limit message it stops for 4 hours (8, 16, then 24 if it
 # happens again within a day), never retries sooner, and then goes on half as slowly again (back down a day later).
 # yt-dlp updates itself (yt-dlp -U, from its GitHub releases) once a day, as YouTube keeps changing.
@@ -36,18 +37,20 @@ use File::Copy qw(copy); use POSIX qw(strftime WNOHANG _exit); use List::Util qw
 binmode STDOUT, ':encoding(UTF-8)'; binmode STDERR, ':encoding(UTF-8)';
 $| = 1;
 
-my %opt = (per => 400, gap => 40);
+my %opt = (per => 400, gap => 40, round => 120, rest => 4);
 my @args;
 while (@ARGV) {
   my $a = shift @ARGV;
-  if ($a eq '--per-channel') { $opt{per} = shift @ARGV }
-  elsif ($a eq '--gap') { $opt{gap} = shift @ARGV }
+  if ($a =~ /^--(per-channel|gap|round|rest)$/) { $opt{$1 eq 'per-channel' ? 'per' : $1} = shift @ARGV }
   elsif ($a =~ /^--(status|stop|start|install|once|list|help)$/) { $opt{$1} = 1 }
   elsif ($a eq '-v') { $opt{v} = 1 }
   else { push @args, $a }
 }
 die "usage: see the top of $0\n" if $opt{help};
 $opt{gap} = 40 unless $opt{gap} =~ /^\d+(?:\.\d+)?$/ && $opt{gap} >= 10;
+$opt{round} = 120 unless $opt{round} =~ /^\d+$/ && $opt{round} >= 10;
+$opt{rest} = 4 unless $opt{rest} =~ /^\d+(?:\.\d+)?$/ && $opt{rest} >= 1;
+$opt{per} = 400 unless $opt{per} =~ /^\d+$/;
 
 my $DIR = data_dir();
 my $LOG = "$DIR/collector.log";
@@ -126,9 +129,32 @@ sub strike {
   my $n = ($s->{last_strike} // 0) > time - 86400 ? ($s->{strikes} // 0) + 1 : 1;
   my $hours = (4, 8, 16, 24)[min($n, 4) - 1];
   my $gap = min(120, max($opt{gap}, $s->{gap} // $opt{gap}) * 1.5);
+  my $size = max(40, int(min($opt{round}, $s->{round_size} // $opt{round}) * 0.75));
   state_set(strikes => $n, last_strike => int time, paused_until => int(time + $hours * 3600), pause_reason => $why,
-    gap => $gap, gap_eased => int time);
-  logl("YouTube pushed back ($why): stopping for $hours hours, then one video every " . int($gap) . ' s');
+    gap => $gap, gap_eased => int time, round_n => 0, round_size => $size, round_grown => int time);
+  logl("YouTube pushed back ($why): stopping for $hours hours, then one video every " . int($gap) . " s, resting after $size");
+}
+
+# Planned rests. On Nov 19 YouTube's caption server said 429 after about 160 caption files twice, once fast and once
+# at half the pace, so the count matters more than the pace: after every --round caption files (120) the collector
+# rests --rest hours (4), before YouTube complains. After a pushback the rounds get a quarter smaller (at least 40);
+# they grow back by 10 after each day without one.
+sub round_size {
+  my $s = read_state();
+  my $r = min($opt{round}, $s->{round_size} // $opt{round});
+  if ($r < $opt{round} && time - ($s->{last_strike} // 0) > 86400 && time - ($s->{round_grown} // 0) > 86400) {
+    $r = min($opt{round}, $r + 10);
+    state_set(round_size => $r, round_grown => int time);
+  }
+  $r;
+}
+sub count_caption {   # after each caption file asked for (step 2 of fetch_video)
+  my $n = (read_state()->{round_n} // 0) + 1;
+  my $size = round_size();
+  if ($n < $size) { state_set(round_n => $n); return }
+  my $until = int(time + $opt{rest} * 3600);
+  state_set(round_n => 0, paused_until => $until, pause_reason => "planned rest after $n caption files");
+  logl(sprintf 'planned rest after %d caption files, until %s', $n, strftime('%a %H:%M', localtime $until));
 }
 
 # Seconds from the start of one video to the start of the next: --gap (40 s, about 90 videos an hour), half as long
@@ -428,11 +454,18 @@ sub fetch_video {
       note => ($i->{language} && $i->{language} !~ /^en/ ? "spoken language: $i->{language}" : 'no English captions'));
     return 'none';
   }
-  $rc = run_cmd([ytdlp_base(), '--load-info-json', $json, '--skip-download',
+  # Without its watch-page address, yt-dlp can't fall back to fetching the whole video again when the caption file
+  # fails (it did on Nov 19: "The info failed to download …; trying with URL …"), which would be more requests.
+  delete $i->{webpage_url};
+  my $json2 = "$tmp/$id.step2.json";
+  open my $h, '>:encoding(UTF-8)', $json2 or return failed($v, "can't write $json2: $!");
+  print $h JSON::PP->new->encode($i); close $h;
+  $rc = run_cmd([ytdlp_base(), '--load-info-json', $json2, '--skip-download',
     ($kind eq 'human' ? '--write-subs' : '--write-auto-subs'), '--sub-langs', $lang, '--sub-format', 'json3',
     '-o', "subtitle:$tmp/%(id)s", '-o', "$tmp/%(id)s"], 120, "$tmp/out2.txt", "$tmp/err2.txt");
   $err = errors("$tmp/err2.txt");
   return pushed_back($v, $err) if $err =~ $RATE;
+  count_caption();
   my $file = "$tmp/$id.$lang.json3";
   my $d = -e $file ? eval { JSON::PP->new->decode(slurp($file)) } : undef;
   return failed($v, 'captions not downloaded: ' . (first_error($err) // "yt-dlp exit $rc")) unless $d;
@@ -551,8 +584,11 @@ sub status {
     commas($n{todo}), $opt{per}, $listed, $all, commas($last_hour);
   my $g = max($opt{gap}, $s->{gap} // $opt{gap});
   my $left = ($n{todo} // 0) + ($all - $listed) * $opt{per} * 0.9;   # channels not listed yet: about 360 each
-  printf "Pace: a video every %d s on average, about %d an hour; about %.0f more days of running%s\n",
-    $g, 3600 / $g, $left * $g / 86400, $all > $listed ? ' (with the channels not listed yet)' : '';
+  my $size = min($opt{round}, $s->{round_size} // $opt{round});
+  my $per_day = 24 * $size / ($size * $g / 3600 + $opt{rest});
+  printf "Pace: a video every %d s, a %s-hour rest after every %d (%d more until the next one): about %d a day;\n" .
+    "  about %.0f more days of running%s\n", $g, $opt{rest}, $size, max(0, $size - ($s->{round_n} // 0)), $per_day,
+    $left / $per_day, $all > $listed ? ' (with the channels not listed yet)' : '';
   return unless $opt{v};
   print "\n";
   for (sql("SELECT c.name, c.listed, sum(v.status='done'), sum(v.kind='human' AND v.status='done'), sum(v.status='todo'), c.note FROM channels c LEFT JOIN videos v ON v.channel=c.key GROUP BY c.key ORDER BY c.rowid;")) {
