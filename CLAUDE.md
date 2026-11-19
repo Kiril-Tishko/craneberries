@@ -228,7 +228,8 @@ huggingface.co, about 15 min per hour of audio).
     room, as big as the screen allows, and everything, "With context" included, stays in view with no scrolling;
     the clips change with big ‹ › arrows beside the video, on its edges on a phone, and none back on the first or
     forward on the last; no "Next clip" button there, his choice, so it isn't confused with the lesson's Next;
-    a low, wide screen (a phone on its side) puts the caption and buttons beside the video; **smart loading**: the
+    a low, wide screen (a phone on its side) puts the speed under the timeline and the caption, "With context" and
+    the dots beside the video; **smart loading**: the
     engine loads the next clips screen ahead in the background (its first clip waits on its first frame) and keeps
     the last three, so a clips screen opens at once (`Clips` in `engine.html`; pages built before Nov 19 lack it);
     `body.embed` in `docs/real-video/index.html`). It
