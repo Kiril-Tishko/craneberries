@@ -21,8 +21,8 @@
     "okay": "хорошо, ладно"
   },
   "clips": [
-    {"v":"66Jm1ETY9ic","s":681.68,"e":682.4,"line":"Bless you.","note":"Their new dog sneezes. They say: Bless you!","noteUa":"Их новая собака чихает. Они говорят: «Будь здоров!»","around":[[679.68,681.6,"There he comes."],[686.76,687.76,"You’re so cute."]]},
-    {"v":"Y68tm5RZQBI","s":384.28,"e":385.3,"line":"Bless you.","note":"Someone sneezes in a Bible class. The pastor says: Bless you.","noteUa":"Кто-то чихает на уроке Библии. Пастор говорит: «Будь здоров».","around":[[379.4,383.6,"Give me a minute here."],[386,387.6,"Okay, here we go."]]},
-    {"v":"D_ZGWj_38uA","s":8953.16,"e":8954.08,"line":"Bless you.","note":"His friend sneezes while they talk. He says: Bless you.","noteUa":"Его друг чихает во время разговора. Он говорит: «Будь здоров»."}
+    {"v":"66Jm1ETY9ic","s":680.88,"e":682.4,"line":"Bless you.","note":"Their new dog sneezes. They say: Bless you!","noteUa":"Их новая собака чихает. Они говорят: «Будь здоров!»","around":[[679.68,681.6,"There he comes."],[686.76,687.76,"You’re so cute."]]},
+    {"v":"Y68tm5RZQBI","s":384.28,"e":385.3,"line":"Bless you.","note":"Someone sneezes in a Bible class. The pastor says: Bless you.","noteUa":"Кто-то чихает на уроке Библии. Пастор говорит: «Будь здоров».","around":[[379.4,383.6,"Give me a minute here."],[386,387.6,"Okay, here we go."]],"hidden":true},
+    {"v":"D_ZGWj_38uA","s":8953.16,"e":8954.08,"line":"Bless you.","note":"His friend sneezes while they talk. He says: Bless you.","noteUa":"Его друг чихает во время разговора. Он говорит: «Будь здоров».","hidden":true}
   ]
 }
