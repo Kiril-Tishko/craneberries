@@ -3,5 +3,14 @@
   "ua": "порушення",
   "pic": "🚫",
   "hl": "\\bviolations?\\b",
-  "clips": []
+  "gloss": {
+    "that’s": "that’s = that is: це",
+    "a": "a — одне якесь (порушення)",
+    "of": "(a violation of = порушення чогось)",
+    "my": "мого, моєї",
+    "privacy": "приватність, особистий простір"
+  },
+  "clips": [
+    {"v":"3XyebxP8k48","s":1855.12,"e":1857.3,"line":"That’s a violation of my privacy.","note":"Someone looked at her private things. She is angry: That's a violation of my privacy.","noteUa":"Хтось подивився її особисті речі. Вона сердиться: «Це порушення моєї приватності»."}
+  ]
 }

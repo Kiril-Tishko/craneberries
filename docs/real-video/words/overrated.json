@@ -1,0 +1,33 @@
+{
+  "en": "overrated",
+  "ua": "переоцінений",
+  "pic": "📉",
+  "hl": "overrated",
+  "together": {"kind of":"ніби, трохи"},
+  "gloss": {
+    "overrated": "переоцінений",
+    "sunsets": "заходи сонця",
+    "are": "are — дієслово be: sunsets are = заходи сонця (є)",
+    "anyway": "все одно, та й узагалі",
+    "i": "я",
+    "kind": "(kind of = ніби)",
+    "of": "(kind of = ніби)",
+    "feel": "відчуваю (I feel = мені здається)",
+    "the": "the — та сама ікра, про яку говорять",
+    "caviar": "ікра",
+    "is": "is — дієслово be: is getting to = доходить до",
+    "getting": "(is getting to = доходить до)",
+    "to": "до",
+    "this": "цього",
+    "stage": "етапу, стадії",
+    "where": "коли, де",
+    "it": "вона",
+    "feels": "здається",
+    "a": "(a little = трохи)",
+    "little": "(a little = трохи)"
+  },
+  "clips": [
+    {"v":"I7Y3pVBrk4k","s":1523.78,"e":1525.3,"line":"Sunsets are overrated anyway.","note":"She doesn't care about the sunset: Sunsets are overrated anyway.","noteUa":"Їй байдуже до заходу сонця: «Та й узагалі, заходи сонця переоцінені»."},
+    {"v":"yVMQ-jlwTZI","s":1341,"e":1348.4,"line":"I kind of feel the caviar is getting to this stage where it feels a little… overrated.","note":"Joshua tries an expensive sandwich with caviar. He thinks people value caviar a little too much now.","noteUa":"Джошуа куштує дорогий сендвіч з ікрою. Він вважає, що ікру тепер трохи переоцінюють."}
+  ]
+}

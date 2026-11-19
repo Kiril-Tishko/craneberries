@@ -1,0 +1,31 @@
+{
+  "en": "Take a look.",
+  "ua": "Поглянь. / Подивись.",
+  "pic": "👀",
+  "hl": "take a look",
+  "together": {"had my eye on":"давно придивлявся до"},
+  "gloss": {
+    "take": "(take a look = поглянь)",
+    "a": "(take a look = поглянь)",
+    "look": "погляд (take a look = поглянь)",
+    "at": "на",
+    "this": "це, це ось",
+    "oh": "о",
+    "that’s": "that’s = that is: це",
+    "adorable": "чарівно, мило",
+    "i": "я",
+    "have": "(I have had = я вже давно)",
+    "had": "(had my eye on = придивлявся до)",
+    "my": "моє",
+    "eye": "око (have my eye on = придивлятися до)",
+    "on": "(have my eye on = придивлятися до)",
+    "massage": "масажне",
+    "chair": "крісло",
+    "for": "протягом (for months = кілька місяців)",
+    "months": "місяці",
+    "so": "тож"
+  },
+  "clips": [
+    {"v":"mvmYYLCXUPE","s":365.37,"e":366.3,"line":"Take a look at this.","note":"He shows a friend something on his phone: Take a look at this. It's a massage chair he wants to buy.","noteUa":"Він показує другові щось на телефоні: «Поглянь». Це масажне крісло, яке він хоче купити.","around":[[364,365.2,"Oh, that’s adorable."],[366.3,370.8,"I have had my eye on this massage chair for months, so…"]]}
+  ]
+}

@@ -3,5 +3,23 @@
   "ua": "судовий позов, судова справа",
   "pic": "⚖️",
   "hl": "\\blawsuits?\\b",
-  "clips": []
+  "together": {"filed a lawsuit":"подала позов до суду"},
+  "gloss": {
+    "and": "і",
+    "finally": "і насамкінець",
+    "a": "a — одна якась (жінка)",
+    "texas": "Техас (штат у США)",
+    "woman": "жінка",
+    "has": "(has filed = подала)",
+    "filed": "подала (документ до суду)",
+    "you": "ви",
+    "guys": "(you guys = друзі, ви всі)",
+    "this": "це",
+    "is": "is — дієслово be: this is = це",
+    "very": "дуже",
+    "exciting": "цікаве, захопливе"
+  },
+  "clips": [
+    {"v":"Z_kf7WfJ5aE","s":172.67,"e":175,"line":"And finally, a Texas woman has filed a lawsuit.","note":"Seth Meyers tells a funny news story: a woman in Texas has gone to court with a lawsuit.","noteUa":"Сет Маєрс розповідає кумедну новину: жінка з Техасу подала позов до суду.","around":[[175,177,"You guys, this is very exciting."]]}
+  ]
 }

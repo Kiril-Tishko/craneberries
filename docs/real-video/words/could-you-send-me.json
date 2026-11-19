@@ -1,0 +1,27 @@
+{
+  "en": "Could you send me …?",
+  "ua": "Чи могли б ви надіслати мені …?",
+  "pic": "📩",
+  "hl": "(could|can) you send me",
+  "gloss": {
+    "could": "могли б (ввічливо)",
+    "you": "ви, ти",
+    "send": "надіслати",
+    "me": "мені",
+    "hey": "слухай",
+    "the": "the — той сайт, про який говорили",
+    "website": "сайт",
+    "and": "і",
+    "so": "тож",
+    "i": "я",
+    "just": "просто",
+    "looked": "подивився",
+    "at": "на",
+    "my": "мою",
+    "wife": "дружину",
+    "said": "сказав"
+  },
+  "clips": [
+    {"v":"noPIMCJWJuw","s":1552.4,"e":1555,"line":"Hey, could you send me the website?","note":"He tells a story: he asked someone to send him a website.","noteUa":"Він розповідає історію: попросив надіслати йому сайт.","around":[[1548,1549.9,"And so, I just looked at my wife, I said,"]]}
+  ]
+}

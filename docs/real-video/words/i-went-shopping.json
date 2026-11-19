@@ -1,0 +1,27 @@
+{
+  "en": "I went shopping.",
+  "ua": "Я ходила по магазинах.",
+  "pic": "🛍️",
+  "hl": "went shopping",
+  "together": {"pick out":"вибрати","legend has it":"кажуть, що"},
+  "gloss": {
+    "i": "я",
+    "went": "ходила (від go)",
+    "shopping": "по магазинах (go shopping = ходити по магазинах)",
+    "with": "з",
+    "him": "ним",
+    "legend": "легенда (legend has it = кажуть)",
+    "has": "(legend has it = кажуть)",
+    "it": "(legend has it = кажуть)",
+    "you": "ти",
+    "helped": "допомогла",
+    "pick": "(pick out = вибрати)",
+    "out": "(pick out = вибрати)",
+    "his": "його",
+    "jacket": "піджак",
+    "wow": "ого"
+  },
+  "clips": [
+    {"v":"Kk5W_NfQdo8","s":718.58,"e":719.8,"line":"I went shopping with him.","note":"Lisa Kudrow helped a friend choose a jacket: I went shopping with him.","noteUa":"Ліза Кудроу допомогла другові вибрати піджак: «Я ходила з ним по магазинах».","around":[[713,718.4,"Legend has it you helped him pick out his jacket."],[720,721,"Wow."]]}
+  ]
+}

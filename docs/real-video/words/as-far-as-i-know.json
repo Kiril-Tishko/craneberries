@@ -1,0 +1,39 @@
+{
+  "en": "as far as I know",
+  "ua": "наскільки я знаю",
+  "pic": "💭",
+  "hl": "as far as I know",
+  "gloss": {
+    "as": "(as far as I know = наскільки я знаю)",
+    "far": "(as far as I know = наскільки я знаю)",
+    "i": "я",
+    "know": "знаю",
+    "there’s": "there’s = there is: є (there’s not = немає)",
+    "not": "не",
+    "a": "a — жодного (not a single = жодного)",
+    "single": "єдиного (not a single = жодного)",
+    "place": "місця, закладу",
+    "in": "в",
+    "texas": "Техас (штат у США)",
+    "that": "який",
+    "has": "має",
+    "traditional": "традиційну, справжню",
+    "barbacoa": "барбакоа (м’ясо, тушковане по-мексиканськи)",
+    "only": "лише",
+    "ever": "(only ever been one = завжди був лише один)",
+    "been": "(has been = був)",
+    "one": "один",
+    "most": "більшість",
+    "people": "людей",
+    "the": "the — у США",
+    "us": "США",
+    "definitely": "точно",
+    "don’t": "don’t = do not: не",
+    "about": "про",
+    "it": "нього"
+  },
+  "clips": [
+    {"v":"yVMQ-jlwTZI","s":625.65,"e":630,"line":"As far as I know, there’s not a single place in Texas that has traditional barbacoa.","note":"Joshua talks about food in Texas: as far as he knows, no place there makes real barbacoa.","noteUa":"Джошуа розповідає про їжу в Техасі: наскільки він знає, там ніде не готують справжню барбакоа."},
+    {"v":"uH_RtbZY5sA","s":569.41,"e":571.5,"line":"As far as I know, there’s only ever been one.","note":"He shows an old fast-food place: as far as he knows, there has only ever been one.","noteUa":"Він показує старий фастфуд: наскільки він знає, такий заклад завжди був лише один.","around":[[567,569.3,"Most people in the US definitely don’t know about it."]]}
+  ]
+}

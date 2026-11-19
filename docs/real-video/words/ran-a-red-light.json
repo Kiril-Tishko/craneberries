@@ -3,5 +3,39 @@
   "ua": "проїхав на червоне світло",
   "pic": "🚦",
   "hl": "\\br[au]n(s|ning)? (a|the) red light\\b",
-  "clips": []
+  "together": {"make sure":"переконатися, подбати","catch up to":"наздогнати","or two":"чи два"},
+  "gloss": {
+    "you": "ти",
+    "even": "навіть",
+    "or": "або, чи",
+    "two": "два",
+    "to": {"*": "to — перед дієсловом: to make sure = щоб переконатися", "to two people": "(catch up to = наздогнати)"},
+    "make": "(make sure = подбати, щоб)",
+    "sure": "(make sure = подбати, щоб)",
+    "were": "були (you were seen = тебе бачили)",
+    "seen": "побачений (you were seen = тебе бачили)",
+    "try": "спробувати (try and catch = спробувати наздогнати)",
+    "and": "і (try and catch = спробувати наздогнати)",
+    "catch": "(catch up to = наздогнати)",
+    "up": "(catch up to = наздогнати)",
+    "people": "люди",
+    "who": "які",
+    "i": "я",
+    "love": "обожнюю (I love how = мені смішно, як)",
+    "how": "як",
+    "hellbent": "одержимі (дуже хочуть)",
+    "these": "ці",
+    "cops": "поліцейські",
+    "are": "are — дієслово be: these cops are = ці копи",
+    "on": "(hellbent on = одержимі тим, щоб)",
+    "absolutely": "повністю, геть",
+    "destroying": "руйнують",
+    "this": "цей",
+    "mall": "торговий центр",
+    "just": "лише, просто"
+  },
+  "clips": [
+    {"v":"ZhFxf5dLDxU","s":1470.64,"e":1474,"line":"You even ran a red light or two to make sure you were seen.","note":"Monk explains the crime: the killer wanted people to notice his car, so he even ran a red light.","noteUa":"Монк пояснює злочин: убивця хотів, щоб його машину помітили, тож навіть проїхав на червоне світло."},
+    {"v":"wJsFlCQcwrw","s":214.98,"e":217.8,"line":"to try and catch up to two people who ran a red light.","note":"In an old movie, the police destroy a whole mall to catch two men who only ran a red light.","noteUa":"У старому фільмі поліція руйнує цілий торговий центр, щоб спіймати двох чоловіків, які лише проїхали на червоне світло.","around":[[211,214.9,"I love how hellbent these cops are on absolutely destroying this mall just"]]}
+  ]
 }
