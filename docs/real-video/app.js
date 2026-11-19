@@ -7,8 +7,11 @@
 //     &from=lesson                         a "← Lesson" button that closes this tab, back to the lesson page
 //   #w=excuse                              open this word first
 //   ?mute                                  plays without sound (for testing)
-//   &listen                                listen first: each clip plays without its caption, which shows when the
-//                                          clip ends (or on a tap on the 🎧 in its place)
+//   &listen                                listen first: each clip plays with its caption hidden (blurred), which
+//                                          shows when the clip ends (or on a tap on it)
+//   &embed                                 inside a lesson screen (below)
+// CC beside the timeline hides the subtitles (blurred, for every clip until it is tapped again); a tap on the blurred
+// line shows just that one.
 // Tapping the top-left corner 5 times opens edit mode (edit.js): click the text on the page and type, times and Save
 // in a small bar under the video.
 'use strict';
@@ -17,30 +20,32 @@ const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt
 const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const slugify = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const Q = new URLSearchParams(location.search);
-// ?embed: inside a lesson slide (the student site): only the word row (one word: the word and its Ukrainian, big),
-// the video and its controls (index.html CSS).
+// ?embed: inside a lesson slide (the student site): no heading (one word) or just the row of words, then the video
+// and its controls (index.html CSS).
 const EMBED = Q.has('embed');
 if (EMBED) document.body.classList.add('embed');
-// ?embed: the video is as big as the screen's height allows once the title and the controls have their room (they
-// wrap differently at each width, so it measures a few times).
+// ?embed: the video is as big as the screen's height allows once the timeline, the caption and the buttons have their
+// room. Those keep the slide's whole width, so their height doesn't change with the video's width: one measure fits.
 function fitEmbed(){
   if (!EMBED) return;
-  // The title keeps the whole width; only the player (main) gets narrower.
-  const app = document.querySelector('.app'), box = document.querySelector('main'), video = document.querySelector('.video');
-  for (let k = 0; k < 4; k++) {
+  const app = document.querySelector('.app'), video = document.querySelector('.video');
+  const W = document.documentElement.clientWidth;
+  for (let k = 0; k < 3; k++) {
     const others = app.getBoundingClientRect().height - video.getBoundingClientRect().height;
-    const w = Math.max(220, Math.min(1100, Math.floor((innerHeight - others - 6) * 16 / 9)));
-    if (box.style.maxWidth === `${w}px`) break;
-    box.style.maxWidth = `${w}px`;
+    const w = Math.max(200, Math.min(W, 1100, Math.floor((innerHeight - others - 4) * 16 / 9)));
+    if (app.style.getPropertyValue('--vw') === `${w}px`) break;
+    app.style.setProperty('--vw', `${w}px`);
   }
 }
 if (EMBED) { addEventListener('resize', fitEmbed); if (document.fonts) document.fonts.ready.then(fitEmbed); }
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
-// ?listen: a clip's caption is hidden until the clip has played to its end (a quiet 🎧 keeps its place; a tap on it
-// shows the caption at once). Every clip starts hidden again. Edit mode always shows it.
+// Hidden subtitles: the caption is blurred (it keeps its place, so nothing moves); a tap on it shows it at once.
+// ?listen: every clip starts hidden and its caption shows when the clip has played to its end.
+// CC: hides them for this clip and the next ones (they stay hidden at the end), until CC is tapped again.
+// capHidden = the caption shown now is blurred; subsOff = CC is on, so each new clip starts blurred. Edit mode always shows it.
 const LISTEN = Q.has('listen');
-let capHidden = false;
+let capHidden = false, subsOff = false;
 // The page's base: here, or this folder when the student site (kiril-tishko/lessons site/clips/) shows this page.
 const LIB = new URL('words/', document.baseURI);
 
@@ -101,15 +106,9 @@ async function init(){
   if (EMBED && parent !== window) setTimeout(() => parent.postMessage({clipsReady: true}, '*'), 150);
 }
 function renderChips(){
-  // In a lesson screen (?embed) with one word: the lesson's own heading (a small label, the phrase big, its Ukrainian
-  // in the lesson's yellow chip) instead of the row of words.
-  if (EMBED && ORDER.length === 1) {
-    const w = WORDS[ORDER[0]] || INDEX.find((x) => x.slug === ORDER[0]);
-    $('words').innerHTML = w ? `<div class="bigword"><span class="who">🎬 Real people say it</span>`
-      + `<b>${w.pic ? `${esc(w.pic)} ` : ''}${esc(w.en)}</b>${w.ua ? `<span class="uachip">${esc(w.ua)}</span>` : ''}</div>` : '';
-    fitEmbed();
-    return;
-  }
+  // In a lesson screen (?embed) with one word: no heading at all (the lesson's screen before it shows the word), so
+  // the video gets that room.
+  if (EMBED && ORDER.length === 1) { document.body.classList.add('one'); $('words').innerHTML = ''; fitEmbed(); return; }
   $('words').innerHTML = ORDER.map((s) => `<button data-w="${esc(s)}" aria-current="${s === cur}">${esc(label(s))}</button>`).join('');
 }
 App.renderChips = renderChips;
@@ -165,7 +164,7 @@ function showClip(play){
   clipN = Math.min(Math.max(clipN, 0), L.length - 1);
   const c = L[clipN];
   setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || '');
-  capHidden = LISTEN && !App.editing;
+  capHidden = (LISTEN || subsOff) && !App.editing; drawCC();
   showLine(c.line);
   range = rangeOf(c, longerMode); drawTimeline(range.from);
   // The next clip may already be waiting in the hidden player: then it simply comes to the front.
@@ -197,8 +196,11 @@ function setNote(text){
 }
 function showLine(text, plain, ref){
   lineRef = ref || null; hidePop();
-  if (capHidden && !plain && !App.editing) {
-    $('capbar').innerHTML = '<span class="listen" role="button" tabindex="0" aria-label="Show the caption">🎧</span>';
+  const cens = capHidden && !plain && !App.editing && !!word;
+  $('capbar').classList.toggle('cens', cens);
+  if (cens) {
+    $('capbar').innerHTML = `<span aria-hidden="true">${tapLine(text)}</span>`
+      + '<button class="peek" aria-label="Show the subtitles" title="Show the subtitles"><svg><use href="#i-eye"/></svg></button>';
     return;
   }
   const ed = App.editing && !plain ? ' contenteditable="plaintext-only" spellcheck="false"' : '';
@@ -263,13 +265,26 @@ function tapGloss(el){
   const ua = glossFor(el.textContent, cap.textContent, r.toString().length);
   return ua ? {en: el.textContent, ua, box: el} : null;
 }
-// Listen first (?listen): show the caption that belongs to this moment (with context, the line being said).
-function showCaption(){
-  if (!capHidden) return;
-  capHidden = false;
+// Hidden subtitles: show (or blur again) the caption that belongs to this moment (with context, the line being said).
+function redrawLine(){
   const l = range && range.lines && started && !ended ? shown : null;
   if (l) showLine(l[2], null, l); else if (clip()) showLine(clip().line);
 }
+function showCaption(){
+  if (!capHidden) return;
+  capHidden = false; drawCC(); redrawLine();
+}
+function drawCC(){
+  const off = capHidden && !App.editing;
+  $('cc').setAttribute('aria-pressed', String(off));
+  $('ccicon').setAttribute('href', off ? '#i-ccoff' : '#i-cc');
+  const t = off ? 'Show subtitles' : 'Hide subtitles';
+  $('cc').setAttribute('aria-label', t); $('cc').title = t;
+}
+$('cc').onclick = () => {
+  if (capHidden) { subsOff = false; showCaption(); return; }
+  subsOff = true; capHidden = true; drawCC(); if (clip()) redrawLine();
+};
 function hidePop(){ const p = $('pop'); if (p) p.hidden = true; document.querySelectorAll('#capbar .on').forEach((x) => x.classList.remove('on')); }
 function showPop(el){
   const g = tapGloss(el);
@@ -316,6 +331,7 @@ function sizeCaption(){
     h = Math.max(h, probe.getBoundingClientRect().height);
   }
   probe.remove(); bar.style.minHeight = `${Math.ceil(h)}px`;
+  fitEmbed();
 }
 App.sizeCaption = sizeCaption;
 // What a play covers: just the line, or with context the lines around it too.
@@ -420,8 +436,10 @@ setInterval(() => {
   if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { P().seekTo(range.from, true); return; }
   if (playing && t >= range.to - 0.06) {
     P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
-    const wasHidden = capHidden; capHidden = false;   // listen first: the caption comes once the clip has played
-    if (range.lines || wasHidden) { showLine(range.c.line); shown = null; }
+    // Listen first: the caption comes once the clip has played (with CC on, it stays hidden until tapped).
+    const reveal = capHidden && LISTEN && !subsOff;
+    if (reveal) { capHidden = false; drawCC(); }
+    if (range.lines || reveal) { showLine(range.c.line); shown = null; }
     drawTimeline(range.to); setCover(); return;
   }
   if (!ended && !dragging) drawTimeline(t);

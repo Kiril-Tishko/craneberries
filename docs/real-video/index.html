@@ -31,7 +31,7 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .video{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
 /* The player is taller than the box: the picture keeps its full size in the middle, and YouTube's title (top)
    and "Watch on YouTube" bar (bottom) land in black margins that the box cuts off. */
-.video iframe{position:absolute;left:0;top:-30%;width:100%;height:160%;border:0;opacity:0}
+.video iframe{position:absolute;left:0;top:-40%;width:100%;height:180%;border:0;opacity:0}
 /* Two players lie on top of each other; only the one in use is seen, the other preloads the next clip. */
 .video iframe.on{opacity:1}
 /* Our cover sits on the video all the time, so no YouTube buttons ever show. Before a clip starts it darkens the
@@ -80,8 +80,22 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
 .nav{display:flex;align-items:center;gap:8px;margin-left:auto}
 .capbar .err{color:var(--muted);font-size:16px}
-.capbar .listen{font-size:28px;opacity:.5;cursor:pointer;border-radius:12px;padding:0 10px}
-.capbar .listen:hover{opacity:.8}
+/* Subtitles hidden (the CC button, or ?listen): the line is there but blurred, like a censored bit of film, so
+   nothing moves; a tap on it (or on the eye) shows it. */
+.capbar{position:relative}
+.capbar.cens{cursor:pointer}
+.capbar.cens>span{filter:blur(7px);opacity:.75;user-select:none;-webkit-user-select:none;pointer-events:none}
+.capbar .peek{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--line);background:var(--surface);
+  color:var(--muted);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.capbar .peek svg{width:20px;height:20px}
+.capbar.cens:hover .peek{color:var(--accent);border-color:var(--accent)}
+/* CC beside the timeline: hide or show the subtitles (a slash while they are hidden). */
+.ccb{--ccbg:var(--surface);width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--ccbg);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:none}
+.ccb svg{width:22px;height:22px}
+.ccb:hover{color:var(--accent)}
+.ccb[aria-pressed="true"]{--ccbg:var(--tint);color:var(--accent);border-color:var(--accent)}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start}
 @media (max-width:820px){.card{padding:14px;gap:8px}}
@@ -114,34 +128,36 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 #sugg .none{padding:8px 10px;color:var(--muted);font-size:14px}
 @media (max-width:560px){.search{flex:1 1 100%}}
 
-/* ?embed: inside a lesson slide on the student site. Only the word row, the video and its controls, sized so it all
-   fits the slide (the video is as wide as the slide's height allows). */
-body.embed{padding:0;background:transparent}
+/* ?embed: inside a lesson slide on the student site. No heading (the lesson's screen before it shows the word): the
+   video as big as the slide allows, then the timeline, the caption and one row of buttons, all of it in view (app.js
+   fitEmbed sets --vw, the video's width; the caption and the buttons keep the slide's width, so their height never
+   depends on the video's). It takes the lesson's own look (tools/lesson-page/engine.html): its colors, rounded
+   buttons, progress dots, no box inside the lesson's card. "Next clip" is a soft button, so it doesn't compete with
+   the lesson's own Next. */
+body.embed{padding:0;background:transparent;height:100vh;display:flex;flex-direction:column;justify-content:center}
+body.embed:not(.editing){overflow:hidden}
+body.embed.editing{height:auto}
 body.embed .search,body.embed #back,body.embed .ltitle,body.embed main>.card{display:none!important}
-body.embed main{grid-template-columns:minmax(0,1fr);width:100%;margin:0 auto}
-body.embed .app{gap:8px;max-width:none}
+body.embed.one .top{display:none}
+body.embed .app{gap:8px;max-width:none;width:100%;margin:0}
 body.embed .words{justify-content:center}
-/* Inside a lesson it takes the lesson's own look (tools/lesson-page/engine.html): its colors, a small label, the
-   phrase big with its Ukrainian in the yellow chip, rounded buttons, progress dots, and no box inside the lesson's
-   card. "Next clip" is a soft button, so it doesn't compete with the lesson's own Next. */
+body.embed main{display:block;width:100%}
 body.embed{--bg:#EDF2F0;--surface:#FFFFFF;--soft:#F4F8F6;--ink:#10241F;--muted:#4F635D;--line:#D2DDD9;--accent:#1E6B58;
-  --accent-ink:#FFFFFF;--tint:#DCEFE8;--mark:#FBE1EC;--mark-ink:#C42A6B;--hear:#2F5FB3;--hear-bg:#E2EBFB;--ua:#6B5A12;--ua-bg:#FFF4C9}
+  --accent-ink:#FFFFFF;--tint:#DCEFE8;--mark:#FBE1EC;--mark-ink:#C42A6B;--ua:#6B5A12;--ua-bg:#FFF4C9}
 @media (prefers-color-scheme:dark){body.embed{--bg:#0E1916;--surface:#16241F;--soft:#1B2B25;--ink:#E6F1ED;--muted:#9DB3AB;--line:#2A3B35;
-  --accent:#6FD1B4;--accent-ink:#0E1916;--tint:#163A31;--mark:#3B1B2A;--mark-ink:#FF8DBB;--hear:#9DBBFF;--hear-bg:#1B2A47;--ua:#F3DC85;--ua-bg:#3A3212}}
-body.embed .bigword{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;width:100%}
-body.embed .bigword .who{font-size:13px;font-weight:600;letter-spacing:.04em;padding:4px 12px;border-radius:99px;background:var(--hear-bg);color:var(--hear)}
-body.embed .bigword b{font-size:clamp(22px,4.4vw,34px);font-weight:800;line-height:1.15;text-wrap:balance}
-body.embed .bigword .uachip{font-size:clamp(15px,2.4vw,19px);font-weight:600;color:var(--ua);background:var(--ua-bg);border-radius:12px;padding:3px 12px}
-body.embed .player{border:0;border-radius:0;background:transparent;overflow:visible}
-body.embed .video{border-radius:18px}
-body.embed .bar{padding:12px 2px 0}
+  --accent:#6FD1B4;--accent-ink:#0E1916;--tint:#163A31;--mark:#3B1B2A;--mark-ink:#FF8DBB;--ua:#F3DC85;--ua-bg:#3A3212}}
+body.embed .player{border:0;border-radius:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:center}
+body.embed .video{width:var(--vw,100%);max-width:100%;border-radius:18px;flex:none}
+body.embed .etools{width:100%}
+body.embed .bar{width:max(var(--vw,100%),min(100%,440px));max-width:100%;padding:10px 2px 0}
 body.embed .tl{height:6px;background:var(--line)}
 body.embed .cover{background:rgba(16,36,31,.9)}
 body.embed .cover.dim{background:rgba(16,36,31,.25)}
 body.embed .cover.playing{background:transparent}
-body.embed .capbar{padding:6px 8px 8px;font-size:clamp(18px,2.6vw,23px)}
+body.embed .capbar{width:min(100%,760px);min-height:48px;padding:6px 8px;font-size:clamp(18px,2.6vw,23px)}
 body.embed .capbar mark{background:var(--mark);color:var(--mark-ink);border-radius:6px;padding:0 4px}
-body.embed .tools{background:transparent;border-top:0;padding:6px 0 0;gap:10px;justify-content:center}
+body.embed .ccb{border-width:2px;border-radius:12px}
+body.embed .tools{width:100%;background:transparent;border-top:0;padding:4px 0 2px;gap:8px 10px;justify-content:center}
 body.embed .group{justify-content:center}
 body.embed .nav{margin-left:0}
 body.embed .btn{border:2px solid var(--line);border-radius:14px;padding:8px 14px;background:var(--surface);transition:border-color .15s}
@@ -154,12 +170,17 @@ body.embed .seg button[aria-pressed="true"]{background:var(--tint);color:var(--a
 body.embed .primary{background:var(--tint);color:var(--accent);border-color:var(--tint);font-size:16px;padding:8px 16px}
 body.embed .primary:hover{border-color:var(--accent)}
 body.embed .back{padding:8px 10px}
+@media (max-width:340px){body.embed .btn{padding:8px 10px}body.embed .seg button{padding:7px 8px}body.embed .primary{padding:8px 12px}}
 body.embed .count{display:none}
 body.embed .cdots{display:flex}
 .cdots{display:none;gap:5px;align-items:center;margin-right:4px}
 .cdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
 .cdots i.on{background:var(--accent);width:20px;border-radius:99px}
-body.embed .foot{justify-content:flex-end;margin-top:-4px}
+/* The ⓘ takes no row of its own: it sits in the bottom corner, its links open above it. */
+body.embed .foot{position:fixed;right:2px;bottom:2px;z-index:5}
+body.embed #credits{position:absolute;right:0;bottom:calc(100% + 4px);width:min(300px,80vw);padding:8px 10px;border-radius:10px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.15);line-height:1.4}
+body.embed.editing .foot{position:static}
 /* The invisible corner for edit mode. */
 .corner{position:fixed;left:0;top:0;width:44px;height:44px;border:0;padding:0;background:transparent;z-index:30;cursor:default}
 body.editing .corner{background:repeating-linear-gradient(45deg,var(--accent) 0 4px,transparent 4px 8px);opacity:.35}
@@ -220,6 +241,9 @@ body.editing .capbar .tw{cursor:text}
   <symbol id="i-wide" viewBox="0 0 24 24"><path d="M7 7 2 12l5 5v-3.5h10V17l5-5-5-5v3.5H7z"/></symbol>
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="m8.6 5.4 6.6 6.6-6.6 6.6L10 20l8-8-8-8z"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><path d="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1z"/></symbol>
+  <symbol id="i-ccoff" viewBox="0 0 24 24"><path d="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1z"/><path d="M2.6 2.6 21.4 21.4" fill="none" style="stroke:var(--ccbg)" stroke-width="4.4"/><path d="M2.6 2.6 21.4 21.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></symbol>
 </svg>
 <!-- 5 quick taps here open edit mode -->
 <button class="corner" id="corner" tabindex="-1" aria-hidden="true"></button>
@@ -243,6 +267,7 @@ body.editing .capbar .tw{cursor:text}
         <button class="pp" id="pp" aria-label="Play" title="Play / pause (Space)"><svg><use id="ppicon" href="#i-play"/></svg></button>
         <div class="tlhit" id="tlhit" title="Tap or drag to move"><div class="tl" id="tl"><div class="tl-word" id="tlword"></div><div class="tl-fill" id="tlfill"></div><div class="tl-dot" id="tldot"></div></div></div>
         <span class="tltime" id="tltime"></span>
+        <button class="ccb" id="cc" aria-pressed="false" aria-label="Hide subtitles" title="Hide subtitles"><svg><use id="ccicon" href="#i-cc"/></svg></button>
       </div>
       <div class="capbar" id="capbar"></div>
       <div class="tools">
@@ -273,6 +298,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
