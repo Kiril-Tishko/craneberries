@@ -55,8 +55,8 @@ const body = {
   words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}${c.cols === 3 ? ' c3' : ''}">${c.items.map((w, i) => `
     <div class="ktile t${i % 6}">${w.svg ? `<span class="kemo ksvg">${w.svg}</span>` : `<span class="kemo">${esc(w.emoji || '')}</span>`}
       <span class="kword"${tileFit(w.en, c.cols === 3)}><span class="hl">${brk(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
-    : c.items.some((w) => w.emoji) ? `<div class="prows">${c.items.map((w) => `
-    <div class="prow"><span class="pemo">${esc(w.emoji || '')}</span>
+    : c.items.some((w) => w.emoji || w.svg) ? `<div class="prows">${c.items.map((w) => `
+    <div class="prow">${w.svg ? `<span class="pemo psvg">${w.svg}</span>` : `<span class="pemo">${esc(w.emoji || '')}</span>`}
       <div class="wk"><span class="en big"><span class="hl">${brk(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</div></div>`).join('')}</div>` : `<ol class="words">${c.items.map((w) => `
     <li><span class="ua">${esc(w.ua)}</span>
@@ -210,6 +210,8 @@ const html = `<!doctype html>
   .en.big{font-size:30px;line-height:1.15}
   .prow{background:var(--tile);border-radius:16px;padding:16px;display:flex;gap:16px;align-items:center}
   .pemo{font-size:56px;line-height:1;font-family:"Noto Color Emoji",sans-serif;flex:none}
+  .psvg{display:flex;justify-content:center;line-height:0;width:1.2em}
+  .psvg svg{width:62px;height:62px}
   .pw.stress{font-weight:500;color:var(--ink)}
   .pw.stress .hl{font-weight:800}
   .prow .ptip{font-size:18px;margin-top:6px}
