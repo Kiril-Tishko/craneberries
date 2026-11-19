@@ -213,7 +213,8 @@ huggingface.co, about 15 min per hour of audio).
     the 💡 note and types; a small bar under the video has Start / End (minutes:seconds; − / + 0.1 s, then that bit plays again; ⏱ =
     where the video is now), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
     that really changed) and ⋯ (move, delete, add a clip by pasting a YouTube link with a time, lines around with their
-    times, the note in the other language, other forms to highlight, the GitHub key), ↻ beside the Ukrainian and the
+    times, the note in the other language, other forms to highlight; while a site has no GitHub key its box comes first in the bar, and the student site, which
+    keeps its own, gets it from the clip library with one tap: "Use my key from the clip library", key.html), ↻ beside the Ukrainian and the
     note (Make again, above). Entering edit mode stays on the clip that was open. Ctrl+Z / Ctrl+Y undo and redo
     every change. "Save" commits to this branch with his own GitHub key (`?mute` plays without sound, for testing).
     Never test edit mode in a tab he might use: a test tab with unsaved changes can end up saved with his key. So `git pull --rebase` before touching the library, and
