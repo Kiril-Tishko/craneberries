@@ -36,7 +36,7 @@
   },
   "clips": [
     {"v":"POg3_b9txwM","s":0,"e":2.04,"line":"Good morning, good morning.","note":"Morning in New York. He says good morning to everyone.","noteUa":"Утро в Нью-Йорке. Он всем говорит «доброе утро».","around":[[2.04,4.84,"Good morning."],[4.84,7.52,"You ready, piggy?"]]},
-    {"v":"Af6i6ChAVTw","s":103.65,"e":104.18,"line":"Good morning, gentlemen!","note":"The first morning in a big house. He says to the men: Good morning!","noteUa":"Первое утро в большом доме. Он говорит парням: «Доброе утро, господа!»","around":[[100.89,102.73,"First morning in MrBeast’s mansion."],[105.05,105.8,"This doesn’t feel real."]]},
+    {"v":"Af6i6ChAVTw","s":103.65,"e":104.78,"line":"Good morning, gentlemen!","note":"The first morning in a big house. He says to the men: Good morning!","noteUa":"Первое утро в большом доме. Он говорит парням: «Доброе утро, господа!»","around":[[100.89,102.73,"First morning in MrBeast’s mansion."],[105.05,105.8,"This doesn’t feel real."]]},
     {"v":"oUg1kNBqQEE","s":855.6,"e":857.72,"line":"Good morning, good morning.","note":"Morning, snow and her dogs. She says to them: Good morning!","noteUa":"Утро, снег и её собаки. Она говорит им: «Доброе утро!»","around":[[853.2,854.48,"We got some snow."],[857.72,862.64,"How can you have a bad day when you wake up to this?"]]}
   ]
 }
