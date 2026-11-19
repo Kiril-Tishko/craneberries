@@ -20,7 +20,7 @@
   },
   "clips": [
     {"v":"NxcdhL1GiRc","s":380.44,"e":381.84,"line":"I’m late.","note":"He sees the time: I'm late! He has to go now.","noteUa":"Он видит, который час: «Я опаздываю!» Ему надо бежать.","around":[[379.32,380.44,"Oh, hell."],[381.84,383.2,"Got to go be famous."]]},
-    {"v":"kmQ4e6UMsnM","s":1862.24,"e":1867.35,"line":"I’m late. Oh, I’m late.","note":"Po runs and runs: he is late!","noteUa":"По бежит со всех ног: он опаздывает!"},
-    {"v":"Oh8VUpQXSwI","s":1998.7,"e":1999.72,"line":"I’m late.","note":"A friend comes to the birthday party late: I'm late!","noteUa":"Друг пришёл на день рождения поздно: «Я опоздал!»","around":[[1999.72,2000.4,"Oh my God, bro."]]}
+    {"v":"kmQ4e6UMsnM","s":1862.24,"e":1864.35,"line":"I’m late. Oh, I’m late.","note":"Po runs and runs: he is late!","noteUa":"По бежит со всех ног: он опаздывает!"},
+    {"v":"Oh8VUpQXSwI","s":1998.7,"e":1999.72,"line":"I’m late.","note":"A friend comes to the birthday party late: I'm late!","noteUa":"Друг пришёл на день рождения поздно: «Я опоздал!»","around":[[1999.72,2000.4,"Oh my God, bro."]],"hidden":true}
   ]
 }
