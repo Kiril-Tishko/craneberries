@@ -1,0 +1,23 @@
+{
+  "en": "You’re on mute.",
+  "ua": "У вас вимкнений мікрофон.",
+  "pic": "🔇",
+  "hl": "(you[’']re|you are) on mute",
+  "gloss": {
+    "you’re": "you’re = you are: ви (є)",
+    "you": {"*": "вас", "you are": "ви"},
+    "are": "are — дієслово be: ви (є)",
+    "on": "(on mute = з вимкненим звуком)",
+    "mute": "без звуку (on mute = з вимкненим мікрофоном)",
+    "i": "я",
+    "think": "думаю",
+    "chelsea": "Челсі (ім’я)",
+    "we": "ми",
+    "can’t": "can’t = cannot: не можемо",
+    "hear": "чути"
+  },
+  "clips": [
+    {"v":"vIyhQGBkn34","s":2210.14,"e":2211.2,"line":"I think you’re on mute.","note":"In an online talk, Chelsea starts asking a question, but her microphone is off. Her co-host tells her.","noteUa":"Під час онлайн-трансляції Челсі починає ставити питання, але в неї вимкнений мікрофон. Колега їй підказує.","around":[[2211.2,2212.4,"Chelsea, we can’t hear you."]]},
+    {"v":"ianSkj0E7lM","s":176.4,"e":178,"line":"I think you are on mute.","note":"At the start of an online talk, one speaker's microphone is still off. The other tells him.","noteUa":"На початку онлайн-доповіді в одного зі спікерів ще вимкнений мікрофон. Інший йому про це каже."}
+  ]
+}

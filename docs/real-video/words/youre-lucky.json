@@ -1,0 +1,29 @@
+{
+  "en": "You’re lucky.",
+  "ua": "Тебе повезло.",
+  "pic": "🍀",
+  "hl": "you[’']re (so )?lucky",
+  "together": {"a lot of":"много"},
+  "gloss": {
+    "you’re": "you’re = you are: ты (you’re lucky = тебе повезло)",
+    "lucky": "везучий (you’re lucky = тебе повезло)",
+    "oh": "о",
+    "well": "ну",
+    "he": "он",
+    "seems": "кажется",
+    "very": "очень",
+    "talented": "талантливым",
+    "and": "и",
+    "i’m": "I’m = I am: я",
+    "sure": "уверена",
+    "people": "людей",
+    "want": "хотят",
+    "to": "to — перед глаголом: to work = работать",
+    "work": "работать",
+    "with": "с",
+    "him": "ним"
+  },
+  "clips": [
+    {"v":"QYGa_CtWqQE","s":3154.56,"e":3156,"line":"Oh, well, you’re lucky.","note":"Two women talk about a man they both know. One says: You're lucky. He seems very talented.","noteUa":"Две девушки говорят о мужчине, которого обе знают. Одна говорит: «Тебе повезло». Он кажется очень талантливым.","around":[[3156,3159.6,"He seems very talented, and I’m sure a lot of people want to work with him."]]}
+  ]
+}

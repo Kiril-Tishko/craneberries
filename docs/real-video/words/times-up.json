@@ -1,0 +1,22 @@
+{
+  "en": "Time’s up.",
+  "ua": "Час вийшов.",
+  "pic": "⏱️",
+  "hl": "time[’']s up|time is up",
+  "gloss": {
+    "time’s": "time’s = time is: час (time’s up = час вийшов)",
+    "up": "(time’s up = час вийшов)",
+    "nobody": "ніхто (nobody cares = всім байдуже)",
+    "cares": "переймається",
+    "about": "(cares about = переймається чимось)",
+    "the": "the — ті самі (дві Дакоти)",
+    "dakotas": "Дакоти (два штати США: Північна і Південна Дакота)",
+    "oh": "о",
+    "okay": "ну добре",
+    "all": "(all right = гаразд)",
+    "right": "(all right = гаразд)"
+  },
+  "clips": [
+    {"v":"Z7UBB41rF_o","s":1958.96,"e":1959.92,"line":"Time’s up.","note":"In a game, Ross tries to name all 50 US states in a set time. The time is over: Time's up!","noteUa":"У грі Росс намагається назвати всі 50 штатів США за певний час. Час закінчився: «Час вийшов!»","around":[[1954.56,1956.16,"Nobody cares about the Dakotas."],[1958.16,1958.96,"Oh, okay."],[1959.92,1960.24,"All right."]]}
+  ]
+}

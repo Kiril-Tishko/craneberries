@@ -1,0 +1,36 @@
+{
+  "en": "What’s wrong with you?",
+  "ua": "Что с тобой не так?",
+  "pic": "😠",
+  "hl": "what([’']s| is) wrong with you",
+  "gloss": {
+    "what’s": "what’s = what is: что",
+    "what": "что",
+    "is": "is — глагол be (what is wrong = что не так)",
+    "wrong": "не так",
+    "with": "с",
+    "you": "тобой, ты",
+    "well": "ну",
+    "it": {"*": "это", "had it": "его (подарок)"},
+    "just": {"*": "просто", "just had": "только что"},
+    "seems": "кажется",
+    "like": "как (seems like = похоже на)",
+    "a": "a — одно из (a thing = такое)",
+    "thing": "то, что (a thing … might do = то, что могли бы делать)",
+    "mothers": "мамы",
+    "and": "и",
+    "daughters": "дочери",
+    "might": "могли бы",
+    "do": "делать",
+    "nothing": "ничего",
+    "look": "выглядишь",
+    "psychotic": "как псих",
+    "brick": "Брик (имя)",
+    "had": "держал (you just had it = он только что был у тебя)"
+  },
+  "clips": [
+    {"v":"lKOVQLmTCVU","s":683.56,"e":685,"line":"What’s wrong with you?","note":"Mary suddenly offers to do Missy's nails. Missy finds it strange: What's wrong with you? (= why are you acting like this?)","noteUa":"Мэри вдруг предлагает Мисси сделать ей маникюр. Мисси это кажется странным: «Что с тобой не так?» (= почему ты так себя ведёшь?)","around":[[679,683.5,"Well, it just seems like a thing mothers and daughters might do."],[685,686,"Nothing."]]},
+    {"v":"sjFci9p2mqA","s":46.8,"e":47.6,"line":"What’s wrong with you?","note":"The team watches Ben's bad TV interview. He looks crazy in it: What's wrong with you? You look psychotic.","noteUa":"Команда смотрит неудачное интервью Бена по телевизору. Он выглядит как сумасшедший: «Что с тобой не так? Ты выглядишь как псих».","around":[[47.6,49,"You look psychotic."]]},
+    {"v":"EykBk40ZmjI","s":861.03,"e":862.31,"line":"What is wrong with you?","note":"Brick has just lost his present. Frankie can't believe it: What is wrong with you?","noteUa":"Брик только что потерял свой подарок. Фрэнки не может поверить: «Да что с тобой не так?»","around":[[859.51,860.99,"Brick, you just had it."]]}
+  ]
+}

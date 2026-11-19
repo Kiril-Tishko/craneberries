@@ -1,0 +1,23 @@
+{
+  "en": "Mind your own business.",
+  "ua": "Не лезь не в своё дело.",
+  "pic": "🙅",
+  "hl": "mind your (own )?business",
+  "gloss": {
+    "mind": "занимайся (mind your own business = не лезь не в своё дело)",
+    "your": "своим",
+    "own": "собственным",
+    "business": "делом",
+    "hey": "эй",
+    "frank": "Фрэнк (имя)",
+    "you": "ты",
+    "are": "are — вспомогательное слово: you are ruining = ты портишь",
+    "ruining": "портишь",
+    "my": "мой",
+    "birthday": "день рождения",
+    "party": "праздник"
+  },
+  "clips": [
+    {"v":"h3pnGaYXOnE","s":1223.28,"e":1224.4,"line":"Hey, mind your own business.","note":"At Marie's birthday party, Frank and Marie argue about a guest. One of them snaps: Mind your own business!","noteUa":"На дне рождения Мари она и Фрэнк спорят из-за гостя. Один из них резко отвечает: «Не лезь не в своё дело!»","around":[[1224.6,1227.8,"Frank, you are ruining my birthday party."]]}
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "en": "sooner or later",
+  "ua": "рано чи пізно",
+  "pic": "⏳",
+  "hl": "sooner or later",
+  "together": {"go ahead":"давай, кажи","gets dumped":"кидають (дівчина кидає)","get dumped":"кидають (дівчина кидає)"},
+  "gloss": {
+    "sooner": {"*": "раніше (sooner or later = рано чи пізно)", "sooner and later": "(жарт: і рано, і пізно)"},
+    "or": "чи",
+    "later": {"*": "пізніше (sooner or later = рано чи пізно)", "sooner and later": "(жарт: і рано, і пізно)"},
+    "oh": "о",
+    "good": "добра",
+    "idea": "ідея",
+    "jake": "Джейк (ім’я)",
+    "every": "кожного",
+    "guy": "хлопця",
+    "some": "деяких",
+    "guys": "хлопців",
+    "and": "і",
+    "right": "так? (right, Alan? = правда ж, Алане?)",
+    "alan": "Алан (ім’я)"
+  },
+  "clips": [
+    {"v":"DZBBSQbNgw8","s":428.6,"e":432.04,"line":"Jake, sooner or later, every guy gets dumped.","note":"Jake's girlfriend left him. Alan tries to comfort him: sooner or later, it happens to every guy.","noteUa":"Від Джейка пішла дівчина. Алан його втішає: рано чи пізно це трапляється з кожним хлопцем.","around":[[425.96,428.5,"Oh, good idea. Go ahead."],[432.24,435,"Some guys get dumped sooner and later, right, Alan?"]]}
+  ]
+}

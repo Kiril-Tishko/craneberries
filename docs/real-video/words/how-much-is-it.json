@@ -1,0 +1,30 @@
+{
+  "en": "How much is it?",
+  "ua": "Сколько это стоит?",
+  "pic": "💲",
+  "hl": "how much (is|are) (it|this|that|they)",
+  "together": {"a piece":"за штуку"},
+  "gloss": {
+    "how": "сколько (how much = сколько)",
+    "much": "(how much = сколько)",
+    "is": "is — глагол be (How much is it? = Сколько это стоит?)",
+    "are": "are — глагол be (How much are they? = Сколько они стоят?)",
+    "they": "они",
+    "that": "это",
+    "hey": "эй, привет",
+    "can": "можно (Can I get…? = Можно мне…?)",
+    "i": "я",
+    "get": "взять, купить",
+    "these": "эти",
+    "two": "два",
+    "bucks": "бакса, доллара",
+    "that’s": "that’s = that is: это",
+    "only": "всего",
+    "25": "двадцать пять",
+    "wow": "ого"
+  },
+  "clips": [
+    {"v":"QpjvslNTUZc","s":255.04,"e":256.32,"line":"How much are they?","note":"Someone wants to buy these things and asks the price. The answer: two dollars each.","noteUa":"Покупатель хочет купить эти вещи и спрашивает цену. Ответ: два доллара за штуку.","around":[[253.64,255,"Hey, can I get these?"],[256.32,257.88,"Two bucks a piece."]]},
+    {"v":"32zzZE658ec","s":266.2,"e":267.3,"line":"How much is that?","note":"In the office, people watch a TV ad for ab exercises. Someone asks the price: only 25 dollars.","noteUa":"В офисе смотрят рекламу упражнений для пресса. Кто-то спрашивает цену: всего 25 долларов.","around":[[267.3,269.53,"That’s only 25 bucks. Wow."]]}
+  ]
+}

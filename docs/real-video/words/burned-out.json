@@ -1,0 +1,26 @@
+{
+  "en": "burned out",
+  "ua": "вигорілий, виснажений (від роботи)",
+  "pic": "🪫",
+  "hl": "burn(ed|t|s)? out",
+  "gloss": {
+    "burn": "вигорати (burn out = вигоріти)",
+    "out": "(burn out = вигоріти)",
+    "people": "люди",
+    "it": "це",
+    "happens": "буває, трапляється",
+    "there’s": "there’s = there is: є",
+    "just": "просто",
+    "so": "так",
+    "much": "багато (so much = так багато)",
+    "pressure": "тиску",
+    "you": "ти",
+    "studied": "вчився",
+    "for": "(for one night = лише один вечір)",
+    "one": "один",
+    "night": "вечір, ніч"
+  },
+  "clips": [
+    {"v":"7bciBnlpEes","s":193.46,"e":194.98,"line":"People burn out. It happens.","note":"The family talks about stress at school. Someone studied for just one night, and Axl says: People burn out. It happens.","noteUa":"Родина говорить про стрес у школі. Хтось учився лише один вечір, а Ексл каже: «Люди вигорають. Таке буває».","around":[[189.7,191.46,"There’s just so much pressure."],[191.5,193.42,"You studied for one night."]]}
+  ]
+}

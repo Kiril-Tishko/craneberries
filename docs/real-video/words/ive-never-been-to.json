@@ -1,0 +1,28 @@
+{
+  "en": "I’ve never been to …",
+  "ua": "Я ніколи не був у …",
+  "pic": "🗺️",
+  "hl": "I[’']ve never been to",
+  "together": {"with God as my witness":"Бог мені свідок","dog track":"собачі перегони","had a few":"випила кілька чарок"},
+  "gloss": {
+    "i’ve": "I’ve = I have: я (I’ve been = я був)",
+    "never": "ніколи (не)",
+    "been": "був (have been to = бував у)",
+    "to": "у, на (been to = бував у)",
+    "the": "the — ті самі (собачі перегони)",
+    "in": "за (in my life = за все життя)",
+    "my": "моєму (in my life = за все моє життя)",
+    "life": "житті",
+    "i": "я",
+    "was": "була",
+    "at": "на",
+    "with": "з",
+    "georgie": "Джорджі (ім’я)",
+    "and": "і",
+    "she": "вона",
+    "knows": "знає"
+  },
+  "clips": [
+    {"v":"qe-VlhaZPgw","s":46.6,"e":50.16,"line":"With God as my witness, I’ve never been to the dog track in my life.","note":"Meemaw says she was at the dog races with Georgie. Georgie swears he has never been there (but he has).","noteUa":"Бабуся каже, що була з Джорджі на собачих перегонах. Джорджі клянеться, що ніколи там не був (хоча був).","around":[[41.44,44.72,"I was at the dog track with Georgie and I had a few."],[50.64,51.76,"She knows."]]}
+  ]
+}

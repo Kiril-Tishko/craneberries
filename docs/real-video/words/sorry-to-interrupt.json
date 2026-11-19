@@ -1,0 +1,33 @@
+{
+  "en": "Sorry to interrupt.",
+  "ua": "Вибачте, що перебиваю.",
+  "pic": "✋",
+  "hl": "sorry to interrupt",
+  "together": {"Teach for America":"«Навчай для Америки» (програма для молодих учителів)","go down to":"поїхати в","inner city":"бідні райони в центрі міста"},
+  "gloss": {
+    "sorry": "вибачте",
+    "interrupt": "перебивати",
+    "hey": "привіт, гей",
+    "guys": "народ, хлопці",
+    "uh": "е-е (пауза)",
+    "i": "я",
+    "just": "просто",
+    "want": "хочу",
+    "to": "to — перед дієсловом: to say = сказати",
+    "say": "сказати (say goodbye = попрощатися)",
+    "goodbye": "до побачення (say goodbye = попрощатися)",
+    "everyone": "всім",
+    "through": "через, завдяки",
+    "i’m": "I’m = I am: я",
+    "gonna": "gonna = going to: збираюся",
+    "detroit": "Детройт (місто)",
+    "and": "і",
+    "teach": "навчати",
+    "kids": "дітей",
+    "about": "про (teach about computers = вчити комп’ютерів)",
+    "computers": "комп’ютери"
+  },
+  "clips": [
+    {"v":"RFQRM1B2AKA","s":12.72,"e":16.32,"line":"Hey guys, uh, sorry to interrupt. I just want to say goodbye to everyone.","note":"Everyone in the office is busy with something. Nick, the IT guy, comes in and politely breaks in: he wants to say goodbye.","noteUa":"В офісі всі зайняті своїми справами. Нік, айтішник, заходить і ввічливо перебиває: він хоче попрощатися.","around":[[16.32,19.6,"Through Teach for America, I’m gonna go down to Detroit and teach, uh, inner city kids about computers."]]}
+  ]
+}

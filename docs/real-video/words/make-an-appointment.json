@@ -1,0 +1,29 @@
+{
+  "en": "make an appointment",
+  "ua": "записаться (на приём)",
+  "pic": "📅",
+  "hl": "(make|made|making) an appointment",
+  "gloss": {
+    "make": "(make an appointment = записаться)",
+    "made": "(made an appointment = записался)",
+    "an": "(an appointment = запись, приём)",
+    "appointment": "запись, приём (на определённое время)",
+    "all": "весь",
+    "day": "день",
+    "you": "ты, тебе",
+    "should": "(should have made = надо было записаться)",
+    "have": "(should have made = надо было записаться)",
+    "i": "я",
+    "told": "говорил",
+    "the": "the — та самая (автоинспекция)",
+    "dmv": "DMV — автоинспекция (там получают права)",
+    "yeah": "да",
+    "next": "в следующий",
+    "time": "раз",
+    "i’ll": "I’ll = I will: я буду",
+    "know": "знать"
+  },
+  "clips": [
+    {"v":"KOLF41qlJhw","s":3752.92,"e":3757.6,"line":"All day? You should have made an appointment.","note":"Alan spent the whole day waiting at the DMV (where you get a driver's license). Charlie: You should have made an appointment.","noteUa":"Алан весь день прождал в DMV (там получают водительские права). Чарли: «Надо было записаться заранее».","around":[[3751,3752.92,"I told you, the DMV."],[3757.6,3759.6,"Yeah, next time I’ll know."]]}
+  ]
+}

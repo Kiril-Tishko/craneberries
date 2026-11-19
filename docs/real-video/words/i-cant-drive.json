@@ -1,0 +1,21 @@
+{
+  "en": "I can’t drive.",
+  "ua": "Я не умею водить.",
+  "pic": "🚗",
+  "hl": "I can[’']t drive",
+  "gloss": {
+    "i": "я",
+    "can’t": "can’t = cannot: не могу, не умею",
+    "drive": "водить машину",
+    "well": "ну",
+    "sheldon": "Шелдон (имя)",
+    "need": "нужно (I need to go = мне нужно поехать)",
+    "to": {"*": "to — перед глаголом: to go = поехать", "to the hospital": "в (to the hospital = в больницу)"},
+    "go": "поехать",
+    "the": "the — та самая (больница)",
+    "hospital": "больница"
+  },
+  "clips": [
+    {"v":"i-BZPxIowdk","s":724.4,"e":725.6,"line":"Well, I can’t drive.","note":"Mandy needs to go to the hospital, but only young Sheldon is with her. He's a child: he can't drive.","noteUa":"Мэнди нужно в больницу, но рядом только маленький Шелдон. Он ребёнок и не умеет водить машину.","around":[[722.48,724.4,"Sheldon, I need to go to the hospital."]]}
+  ]
+}

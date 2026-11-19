@@ -1,0 +1,37 @@
+{
+  "en": "Unfortunately …",
+  "ua": "К сожалению …",
+  "pic": "😔",
+  "hl": "unfortunately",
+  "together": {"the only thing":"единственное, что"},
+  "gloss": {
+    "unfortunately": "к сожалению",
+    "yes": "да",
+    "dad": "папа",
+    "did": "did — слово для вопроса в прошлом: Did you…? = Ты…?",
+    "you": {"*": "ты", "room you have": "вы (you have = у вас есть)"},
+    "remember": "помнишь",
+    "what": "что",
+    "we": "мы",
+    "said": "сказали",
+    "just": "просто",
+    "give": "дайте",
+    "us": "нам",
+    "the": "the — самый (the cheapest = самый дешёвый)",
+    "cheapest": "самый дешёвый",
+    "room": "номер",
+    "have": "есть (you have = у вас есть; we have = у нас есть)",
+    "well": "ну",
+    "available": "свободное",
+    "is": "это (is — глагол be)",
+    "our": "наш",
+    "deluxe": "люкс",
+    "suite": "номер-люкс",
+    "rate": "цена",
+    "600": "шестьсот (долларов)"
+  },
+  "clips": [
+    {"v":"Bq91RGSOInQ","s":611.12,"e":612.72,"line":"Unfortunately, yes.","note":"His son asks if Mike remembers what they said. He does, but he isn't happy about it: Unfortunately, yes.","noteUa":"Сын спрашивает, помнит ли Майк, что они говорили. Помнит, но ему это не нравится: «К сожалению, да».","around":[[609.84,611.12,"Dad, did you remember what we said?"]]},
+    {"v":"q8jLyotMMVE","s":2706.7,"e":2710.4,"line":"Well, unfortunately, the only thing we have available is our Deluxe Suite.","note":"Chandler and Ross want the cheapest room in a hotel. Unfortunately, only an expensive suite is free.","noteUa":"Чендлер и Росс хотят самый дешёвый номер в отеле. К сожалению, свободен только дорогой люкс.","around":[[2704.6,2706.6,"Just give us the cheapest room you have."],[2710.4,2711.36,"The rate is $600."]]}
+  ]
+}

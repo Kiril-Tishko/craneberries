@@ -1,0 +1,20 @@
+{
+  "en": "We’ll figure it out.",
+  "ua": "Ми щось придумаємо. / Розберемося.",
+  "pic": "🧩",
+  "hl": "(we[’']ll|I[’']ll|you[’']ll) figure (it|something) out",
+  "together": {"how about":"як щодо","you know what":"знаєш що"},
+  "gloss": {
+    "we’ll": "we’ll = we will: ми (у майбутньому)",
+    "figure": "(figure it out = знайти рішення, розібратися)",
+    "it": "це",
+    "out": "(figure it out = знайти рішення, розібратися)",
+    "when": "коли?",
+    "tomorrow": "завтра",
+    "come": "(come on = ну ж бо, ходімо)",
+    "on": "(come on = ну ж бо, ходімо)"
+  },
+  "clips": [
+    {"v":"xnRYRUaezew","s":2327.68,"e":2328.56,"line":"We’ll figure it out.","note":"Meemaw and Dr. Sturgis try to find a day to meet. When? Tomorrow? We'll figure it out.","noteUa":"Бабуся й доктор Стерджис шукають день для зустрічі. Коли? Завтра? «Розберемося».","around":[[2325.44,2326.64,"How about tomorrow?"],[2327.12,2327.68,"You know what?"],[2328.56,2329.2,"Come on."]]}
+  ]
+}
