@@ -24,10 +24,35 @@
     "it": "вона",
     "feels": "здається",
     "a": "(a little = трохи)",
-    "little": "(a little = трохи)"
+    "little": "(a little = трохи)",
+    "just": "просто",
+    "think": "думаю",
+    "it’s": "it’s = it is: він (цей шматок)",
+    "love": "обожнюю",
+    "cut": "шматок (м’яса)",
+    "way": "(way too = набагато, геть)",
+    "too": "занадто",
+    "expensive": "дорогий",
+    "one": "один",
+    "my": "моїх",
+    "spicier": "гостріших, сміливіших",
+    "arguments": "думок, аргументів",
+    "that": "що",
+    "happiness": "щастя",
+    "greatly": "дуже, значно",
+    "in": "у",
+    "today’s": "today’s = сьогоднішній",
+    "today": "сьогоднішній (today’s age = наш час)",
+    "age": "час, епоха",
+    "people": "люди",
+    "focus": "зосереджуються",
+    "on": "на",
+    "much": "(way too much = геть забагато)"
   },
   "clips": [
     {"v":"I7Y3pVBrk4k","s":1523.78,"e":1525.3,"line":"Sunsets are overrated anyway.","note":"She doesn't care about the sunset: Sunsets are overrated anyway.","noteUa":"Їй байдуже до заходу сонця: «Та й узагалі, заходи сонця переоцінені»."},
-    {"v":"yVMQ-jlwTZI","s":1341,"e":1348.4,"line":"I kind of feel the caviar is getting to this stage where it feels a little… overrated.","note":"Joshua tries an expensive sandwich with caviar. He thinks people value caviar a little too much now.","noteUa":"Джошуа куштує дорогий сендвіч з ікрою. Він вважає, що ікру тепер трохи переоцінюють."}
+    {"v":"yVMQ-jlwTZI","s":1341,"e":1348.4,"line":"I kind of feel the caviar is getting to this stage where it feels a little… overrated.","note":"Joshua tries an expensive sandwich with caviar. He thinks people value caviar a little too much now.","noteUa":"Джошуа куштує дорогий сендвіч з ікрою. Він вважає, що ікру тепер трохи переоцінюють."},
+    {"v":"vgVyOfg8Nvg","s":422.8,"e":423.6,"line":"I just think it’s overrated.","note":"Two cooks rank steaks. One loves this cut; the other thinks it's overrated and way too expensive.","noteUa":"Двоє кухарів оцінюють стейки. Одному цей шматок дуже подобається, а інший вважає його переоціненим і задорогим.","around":[[421,422.8,"I love this cut."],[424.6,426,"It’s way too expensive."]]},
+    {"v":"jfiBDuUVc-A","s":18,"e":26,"line":"One of my spicier arguments is that I think happiness is greatly overrated in today’s age.","note":"A writer says people talk about happiness too much today: he thinks it's overrated.","noteUa":"Письменник каже, що сьогодні про щастя говорять забагато: він вважає його переоціненим.","around":[[26,28.5,"I think people focus on it way too much."]]}
   ]
 }

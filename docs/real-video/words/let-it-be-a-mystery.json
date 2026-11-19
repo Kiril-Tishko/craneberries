@@ -1,0 +1,41 @@
+{
+  "en": "Let it be a mystery.",
+  "ua": "Нехай це буде таємницею.",
+  "pic": "🤫",
+  "hl": "(let it be|keep it|it[’']s) a mystery",
+  "together": {"how the hell":"як, чорт забирай","wait a minute":"зачекай-но"},
+  "gloss": {
+    "let": "нехай",
+    "it": "це",
+    "be": "буде",
+    "a": "a — якась (таємниця)",
+    "mystery": "таємниця, загадка",
+    "it’s": "it’s = it is: це",
+    "what": "що",
+    "is": "is — дієслово be: What is in…? = Що є в…?",
+    "in": "у, в",
+    "coquito": "кокіто (святковий напій з кокосом)",
+    "and": "і",
+    "always": "завжди",
+    "like": "типу, ну",
+    "someone’s": "чиясь (someone’s mom = чиясь мама)",
+    "mom": "мама",
+    "makes": "готує",
+    "how": "як",
+    "the": "the — тут не перекладається: how the hell = як, чорт забирай",
+    "hell": "(how the hell = як, чорт забирай)",
+    "did": "did — допоміжне слово для питання в минулому",
+    "quarter": "чверть",
+    "tank": "бак",
+    "of": "(a quarter tank of gas = чверть бака бензину)",
+    "gas": "бензин",
+    "disappear": "зникнути",
+    "overnight": "за ніч",
+    "wait": "зачекай",
+    "minute": "хвилина (wait a minute = зачекай-но)"
+  },
+  "clips": [
+    {"v":"g1DyIlHqfVU","s":1381.88,"e":1383,"line":"It’s a mystery.","note":"Nicole Kidman asks what is in coquito, a holiday drink. Jimmy jokes: It's a mystery (it's always someone's mom's secret recipe).","noteUa":"Ніколь Кідман питає, що в кокіто, святковому напої. Джиммі жартує: «Це таємниця» (рецепт завжди знає тільки чиясь мама). Схоже на Let it be a mystery.","around":[[1380,1381.8,"What is in coquito?"],[1383,1388,"And it’s always, like, someone’s mom makes it…"]]},
+    {"v":"Ekys_pfV3nU","s":377.16,"e":379,"line":"It’s a mystery.","note":"Charlie asks where his gas went. His brother took it, but he plays innocent: It's a mystery.","noteUa":"Чарлі питає, куди подівся бензин. Його забрав брат, але робить невинний вигляд: «Це загадка». Схоже на Let it be a mystery.","around":[[373,377.1,"How the hell did a quarter tank of gas disappear overnight?"],[381,383,"Wait a minute."]]}
+  ]
+}

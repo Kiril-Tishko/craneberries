@@ -1,0 +1,37 @@
+{
+  "en": "the expensive one",
+  "ua": "дорожчий (з двох)",
+  "pic": "💰",
+  "hl": "the (more )?expensive one",
+  "together": {"go with":"вибрати","worth it":"воно того варте"},
+  "gloss": {
+    "the": "the — той (з двох)",
+    "more": "більш (more expensive = дорожчий)",
+    "expensive": "дорогий",
+    "one": "той (the expensive one = дорожчий)",
+    "i": "я",
+    "would": "б (I would go = я б вибрав)",
+    "go": "(go with = вибрати)",
+    "with": "(go with = вибрати)",
+    "cause": "’cause = because: бо",
+    "cook": "готувати",
+    "it": "ним",
+    "than": "ніж",
+    "an": "an — якась (людина)",
+    "average": "звичайна, середня",
+    "person": "людина",
+    "for": "для",
+    "me": "мене",
+    "it’s": "it’s = it is: це",
+    "worth": "варте (it’s worth it = воно того варте)",
+    "clearly": "явно",
+    "was": "був",
+    "better": "кращий",
+    "which": "який",
+    "one": "той (the expensive one = дорожчий)"
+  },
+  "clips": [
+    {"v":"4TyPUB6o-t8","s":1968.11,"e":1972,"line":"I would go with the more expensive one, ’cause I would cook with it more than an average person.","note":"They tested a cheap and an expensive kitchen gadget. The chef would choose the more expensive one.","noteUa":"Вони тестували дешевий і дорогий кухонний прилад. Кухар вибрав би дорожчий.","around":[[1967,1968.1,"For me, it’s worth it."]]},
+    {"v":"4TyPUB6o-t8","s":1331.03,"e":1333,"line":"Clearly the more expensive one was better.","note":"They compared a cheap knife and an expensive knife. The expensive one was better.","noteUa":"Вони порівнювали дешевий і дорогий ніж. Дорожчий виявився кращим.","around":[[1330,1331,"Which one was better?"]]}
+  ]
+}

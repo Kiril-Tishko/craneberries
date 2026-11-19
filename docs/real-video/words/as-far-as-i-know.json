@@ -30,10 +30,21 @@
     "definitely": "точно",
     "don’t": "don’t = do not: не",
     "about": "про",
-    "it": "нього"
+    "it": {"*": "нього", "it belonged": "вона (брошка)", "about it": "неї (про неї)"},
+    "well": "ну",
+    "belonged": "належала",
+    "to": "(belonged to = належала комусь)",
+    "my": "моїй",
+    "great": "(great-grandmother = прабабуся)",
+    "grandmother": "бабуся (great-grandmother = прабабуся)",
+    "but": "але",
+    "i": "я",
+    "anything": "нічого (not … anything = нічого)",
+    "more": "більше"
   },
   "clips": [
     {"v":"yVMQ-jlwTZI","s":625.65,"e":630,"line":"As far as I know, there’s not a single place in Texas that has traditional barbacoa.","note":"Joshua talks about food in Texas: as far as he knows, no place there makes real barbacoa.","noteUa":"Джошуа розповідає про їжу в Техасі: наскільки він знає, там ніде не готують справжню барбакоа."},
-    {"v":"uH_RtbZY5sA","s":569.41,"e":571.5,"line":"As far as I know, there’s only ever been one.","note":"He shows an old fast-food place: as far as he knows, there has only ever been one.","noteUa":"Він показує старий фастфуд: наскільки він знає, такий заклад завжди був лише один.","around":[[567,569.3,"Most people in the US definitely don’t know about it."]]}
+    {"v":"uH_RtbZY5sA","s":569.41,"e":571.5,"line":"As far as I know, there’s only ever been one.","note":"He shows an old fast-food place: as far as he knows, there has only ever been one.","noteUa":"Він показує старий фастфуд: наскільки він знає, такий заклад завжди був лише один.","around":[[567,569.3,"Most people in the US definitely don’t know about it."]]},
+    {"v":"iJDEFE9GXYI","s":184.93,"e":188,"line":"Well, as far as I know, it belonged to my great-grandmother, but I don’t know anything more about it.","note":"A woman shows an old brooch to an expert. She only knows a little: as far as she knows, it was her great-grandmother's.","noteUa":"Жінка показує експертові стару брошку. Вона знає небагато: наскільки їй відомо, брошка належала її прабабусі."}
   ]
 }

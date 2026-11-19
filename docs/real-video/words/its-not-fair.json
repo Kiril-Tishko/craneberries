@@ -39,11 +39,40 @@
     "have": "(have to = мусимо)",
     "share": "ділити, ділитися",
     "it": "її (share it = ділити її)",
-    "equally": "порівну"
+    "equally": "порівну",
+    "play": "грати",
+    "charades": "шаради (гра: показати слово без слів)",
+    "meryl": "Меріл (Стріп, акторка)",
+    "streep": "Стріп (Меріл Стріп, акторка)",
+    "she’s": "she’s = she is: вона",
+    "amazing": "дивовижна",
+    "no": "ні",
+    "good": "добра",
+    "is": "is — дієслово be (питання): Is it because…? = Це тому, що…?",
+    "because": "(because of = через)",
+    "her": "її",
+    "acting": "акторська гра",
+    "or": "чи",
+    "but": "але",
+    "tribunal": "трибунал, суд (чарівників)",
+    "thinks": "вважає",
+    "dangerous": "небезпечна",
+    "they": "вони",
+    "wanna": "wanna = want to: хочуть",
+    "wand": "чарівна паличка",
+    "i’m": "I’m = I am: я",
+    "great": "чудовий, сильний",
+    "wizard": "чарівник",
+    "take": "забрати",
+    "that": "що (thinks that = вважає, що)",
+    "too": "занадто (too good = аж надто добра)",
+    "your": "твою"
   },
   "clips": [
     {"v":"lJVoWn_vQ80","s":343,"e":344.8,"line":"That’s not fair.","note":"A quick quiz between two lawyers. One answers before the question is finished, and the other says: That's not fair!","noteUa":"Швидка вікторина між двома юристами. Один відповідає, ще не дослухавши питання, а інший каже: «Так нечесно!»","around":[[345,346.5,"You didn’t even finish the question."],[346.6,348,"And yet it’s right."]]},
     {"v":"yG23JJT-Rms","s":3451.04,"e":3452.4,"line":"That’s not fair.","note":"His brother is leaving, and Charlie must take care of their mom alone: That's not fair.","noteUa":"Брат їде, і Чарлі має сам доглядати маму: «Це нечесно».","around":[[3448,3450.9,"You’re taking care of Mom, remember?"],[3452.5,3454,"You got a complaint?"]]},
-    {"v":"boOzKLyomJo","s":2068.76,"e":2069.8,"line":"That’s not fair.","note":"One bear wants to keep the jacket they found. The others say: That's not fair. We have to share it.","noteUa":"Один ведмідь хоче забрати знайдену куртку собі. Інші кажуть: «Так нечесно. Треба ділитися порівну».","around":[[2065,2067.5,"Just up to my room with this jacket."],[2069.9,2071.5,"We have to share it equally."]]}
+    {"v":"boOzKLyomJo","s":2068.76,"e":2069.8,"line":"That’s not fair.","note":"One bear wants to keep the jacket they found. The others say: That's not fair. We have to share it.","noteUa":"Один ведмідь хоче забрати знайдену куртку собі. Інші кажуть: «Так нечесно. Треба ділитися порівну».","around":[[2065,2067.5,"Just up to my room with this jacket."],[2069.9,2071.5,"We have to share it equally."]]},
+    {"v":"L7xnseS54qY","s":470.74,"e":472,"line":"It’s not fair to play charades with Meryl Streep.","note":"They talk about playing a game of acting out words with Meryl Streep. She is such a good actress that it's not fair to play against her.","noteUa":"Говорять про гру в шаради з Меріл Стріп. Вона така сильна акторка, що грати проти неї нечесно.","around":[[467,469,"She’s amazing. No, she’s too good."],[472,474,"Is it because of her acting or?"]]},
+    {"v":"HAw412b4zd4","s":1014.71,"e":1015.9,"line":"But that’s not fair.","note":"Billie hears that the wizards want to take her magic wand. She protests: But that's not fair.","noteUa":"Біллі чує, що чарівники хочуть забрати її чарівну паличку. Вона обурюється: «Але це нечесно».","around":[[1011,1014.6,"The Tribunal thinks that you’re dangerous and they wanna take your wand."],[1015.9,1017,"I’m a great wizard."]]}
   ]
 }
