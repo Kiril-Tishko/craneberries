@@ -18,7 +18,7 @@
     "mother": "мама (строже, чем mom)"
   },
   "clips": [
-    {"v":"Af6i6ChAVTw","s":96.45,"e":96.9,"line":"Good night, boys.","note":"It is late in the big house. Everyone goes to sleep: Good night!","noteUa":"В большом доме поздно, все ложатся спать: «Спокойной ночи!»","around":[[91,92.9,"It’s time to get some sleep."],[97.15,97.6,"Good night, bro."]]},
-    {"v":"MCpz8UuGndM","s":316.04,"e":317,"line":"Good night, Mother.","note":"It is late. They say good night and go to sleep.","noteUa":"Уже поздно. Они желают друг другу спокойной ночи.","around":[[317,318,"Good night."]]}
+    {"v":"Af6i6ChAVTw","s":96.45,"e":96.9,"line":"Good night, boys.","note":"It is late in the big house. Everyone goes to sleep: Good night!","noteUa":"В большом доме поздно, все ложатся спать: «Спокойной ночи!»","around":[[91,92.9,"It’s time to get some sleep."],[97.15,97.6,"Good night, bro."]],"hidden":true},
+    {"v":"MCpz8UuGndM","s":315.94,"e":318.2,"line":"Good night, Mother.","note":"It is late. They say good night and go to sleep.","noteUa":"Уже поздно. Они желают друг другу спокойной ночи.","around":[[317,318,"Good night."]]}
   ]
 }
