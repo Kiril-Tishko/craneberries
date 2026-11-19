@@ -5,7 +5,7 @@
   {"slug":"can-i-call-you-back","en":"Can I call you back?","ua":"Можна я вам передзвоню?","pic":"📞","n":5},
   {"slug":"come-here","en":"Come here!","ua":"Иди сюда!","pic":"👋","n":1},
   {"slug":"could-you-send-me","en":"Could you send me …?","ua":"Чи могли б ви надіслати мені …?","pic":"📩","n":1},
-  {"slug":"dont-interrupt-me","en":"Don’t interrupt me.","ua":"Не перебивай мене.","pic":"🤫","n":1},
+  {"slug":"dont-interrupt-me","en":"Don’t interrupt me.","ua":"Не перебивай мене.","pic":"🤫","n":4},
   {"slug":"excuse","en":"excuse","ua":"відмовка, виправдання","pic":"🙈","n":5},
   {"slug":"fail","en":"fail","ua":"провалитися, не вдатися","pic":"❌","n":2},
   {"slug":"go-to-bed","en":"Go to bed!","ua":"Иди спать!","pic":"😴","n":2},
