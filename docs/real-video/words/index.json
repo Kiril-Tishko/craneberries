@@ -10,6 +10,7 @@
   {"slug":"i-agree","en":"I agree.","ua":"Я согласен.","pic":"🤝","n":1},
   {"slug":"i-believe-in-you","en":"I believe in you.","ua":"Я в тебе вірю.","pic":"💪","n":3},
   {"slug":"i-changed-my-mind","en":"I changed my mind.","ua":"Я передумала.","pic":"🔄","n":2},
+  {"slug":"im-in-a-meeting","en":"I’m in a meeting.","ua":"Я на нараді.","pic":"💼","n":3},
   {"slug":"im-late","en":"I’m late!","ua":"Я опаздываю!","pic":"🏃","n":2},
   {"slug":"im-tired","en":"I’m tired.","ua":"Я устал.","pic":"🥱","n":3},
   {"slug":"is-that-a-thing","en":"Is that a thing?","ua":"Таке буває? / Це щось відоме?","pic":"🤔","n":5},
