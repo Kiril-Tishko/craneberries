@@ -449,6 +449,9 @@ people, less, everyday, phrases, city, weather, food, home, event, grammar, soun
 `materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
 with a short quality note (British usage, errors, overload). His "reviewed again" ticks live in
 `state/mat-<slug>`. Materials follow the student's English (see **Students**); flag British forms when you see them.
+`emails/<slug>` = real work emails a student sent or received, kept to build lessons from (`{note, items[{n, got, from,
+kind: received|hers, text, use[]}], plan[]}`; `use` = the lines worth teaching). Read it before a lesson for that
+student; never put an email on a page as it is: made-up versions only (other names, codes, customers, numbers).
 
 **Course.** `course/plan` (Claude writes) = the 30-unit backbone, same order for every student:
 `units[{n, grammar, cando, words, sound, materials[{title, url}], fix, extra}]`, `phases[{name, from, to, sum}]`,
