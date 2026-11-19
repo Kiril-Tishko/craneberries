@@ -1,6 +1,44 @@
 {
- "en": "It’s early.",
- "ua": "Ещё рано.",
- "pic": "🌅",
- "clips": []
+  "en": "It’s early.",
+  "ua": "Ещё рано.",
+  "pic": "🌅",
+  "hl": "it[’']s (so |too )?early",
+  "together": {"come on":"ну давай, ну же","oh my gosh":"ого, боже мой","in the middle of":"посреди"},
+  "gloss": {
+    "it’s": "it’s = it is: It’s early = Ещё рано",
+    "early": "рано",
+    "so": "так, очень",
+    "too": "слишком",
+    "come": "(come on = ну давай)",
+    "on": "(come on = ну давай)",
+    "i": "я",
+    "just": "просто",
+    "want": "хочу",
+    "to": "to — перед глаголом: want to see = хочу увидеть",
+    "see": "увидеть",
+    "the": "the — те самые, наши (дети)",
+    "kids": "дети",
+    "dark": "тёмный, темно",
+    "out": "(dark out = темно на улице)",
+    "oh": "ох",
+    "my": "мой",
+    "gosh": "боже (мягко)",
+    "this": "это",
+    "looks": "выглядит",
+    "yummy": "вкусно, вкусный",
+    "god": "боже",
+    "you": "ты",
+    "woke": "разбудил (прошедшее от wake)",
+    "me": "меня",
+    "up": "(woke me up = разбудил меня)",
+    "in": "в",
+    "middle": "середина",
+    "of": "(in the middle of = посреди)",
+    "rem": "REM — фаза сна"
+  },
+  "clips": [
+    {"v":"SDPcA6bC6XU","s":26.16,"e":27.04,"line":"It’s early.","note":"It is early in the morning, but Grandma wants to see the kids.","noteUa":"Раннее утро, но бабушка хочет увидеть внуков.","around":[[25.84,26.16,"Come on."],[27.04,28.32,"I just want to see the kids."]]},
+    {"v":"Myp2On95hJM","s":626.08,"e":628.56,"line":"Oh my gosh, it’s so early.","note":"She got up at 5 a.m. It is still dark: it's so early!","noteUa":"Она встала в 5 утра. Ещё темно: «Как же рано!»","around":[[624.72,626.08,"It’s so dark out."]]},
+    {"v":"Z_dNT7Enjk8","s":130.51,"e":132,"line":"God, it’s too early.","note":"The family gets up very early on Mother's Day. Axl is still sleepy: It's too early!","noteUa":"В День матери семья встала очень рано. Аксель ещё сонный: «Слишком рано!»","around":[[128.6,130.4,"This looks yummy."],[132.1,134.8,"You woke me up in the middle of my REM."]]}
+  ]
 }

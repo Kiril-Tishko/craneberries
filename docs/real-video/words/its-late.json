@@ -1,6 +1,23 @@
 {
- "en": "It’s late.",
- "ua": "Уже поздно.",
- "pic": "🌙",
- "clips": []
+  "en": "It’s late.",
+  "ua": "Уже поздно.",
+  "pic": "🌙",
+  "hl": "it[’']s late",
+  "gloss": {
+    "it’s": "it’s = it is: It’s late = Уже поздно",
+    "late": "поздно",
+    "honey": "милый, дорогой (ласково)",
+    "please": "пожалуйста",
+    "i": "я",
+    "have": "у меня (есть)",
+    "a": "a — один: a big day = важный день",
+    "big": "большой, важный",
+    "day": "день",
+    "tomorrow": "завтра",
+    "mom": "мама"
+  },
+  "clips": [
+    {"v":"SzafPFYd724","s":433.44,"e":434.32,"line":"Honey, please. It’s late.","note":"It is night. She wants to stop and go to sleep: Honey, please, it's late.","noteUa":"Ночь. Она хочет закончить и лечь спать: «Милый, пожалуйста, уже поздно»."},
+    {"v":"MCpz8UuGndM","s":311.16,"e":312,"line":"It’s late.","note":"Rory wants to go to sleep: it's late, and tomorrow is a big day.","noteUa":"Рори хочет спать: уже поздно, а завтра важный день.","around":[[312,313.4,"I have a big day tomorrow, Mom."]]}
+  ]
 }

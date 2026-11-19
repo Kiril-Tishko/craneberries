@@ -1,6 +1,35 @@
 {
- "en": "Go to bed!",
- "ua": "Иди спать!",
- "pic": "😴",
- "clips": []
+  "en": "Go to bed!",
+  "ua": "Иди спать!",
+  "pic": "😴",
+  "hl": "go to bed",
+  "together": {"what the hell":"что, чёрт возьми (грубовато)","is going on":"происходит","all right":"ладно","that’s it":"всё, хватит!","right now":"прямо сейчас"},
+  "gloss": {
+    "go": "иди",
+    "to": {"*": "to — куда: to bed = в кровать", "go to sleep": "go to sleep = ложись спать"},
+    "bed": "кровать (go to bed = иди спать)",
+    "liam": "Лиам (имя)",
+    "now": "сейчас, сейчас же",
+    "what": "что",
+    "the": "the — здесь не переводится: what the hell = что, чёрт возьми",
+    "hell": "ад (what the hell = что, чёрт возьми)",
+    "is": "is — глагол be: what is going on = что происходит",
+    "going": "(is going on = происходит)",
+    "on": "(is going on = происходит)",
+    "all": "(all right = ладно)",
+    "right": "(all right = ладно)",
+    "that’s": {"*": "that’s = that is: That’s it! = Всё, хватит!", "that’s when": "that’s when = вот тогда"},
+    "it": "(That’s it! = Всё, хватит!)",
+    "anyway": "в общем, короче",
+    "when": "когда",
+    "you’re": "you’re = you are: ты",
+    "like": "(you’re like … = ты такой: «…»)",
+    "sleep": "спать (go to sleep = ложись спать)",
+    "yes": "да"
+  },
+  "clips": [
+    {"v":"qnykUE5ibEU","s":26.84,"e":28.72,"line":"Liam, go to bed now.","note":"There is a fight at home at night. The big sister tells little Liam: Go to bed now.","noteUa":"Ночью дома ссора. Старшая сестра говорит маленькому Лиаму: «Иди спать, сейчас же».","around":[[25.28,26.84,"What the hell is going on?"]]},
+    {"v":"Ekys_pfV3nU","s":2358.24,"e":2360.72,"line":"Go to bed.","note":"A mom is tired of the talk: That's it. Go to bed.","noteUa":"Маме надоел этот разговор: «Всё, хватит. Иди спать».","around":[[2357.6,2358.24,"All right. That’s it."]]},
+    {"v":"iU3PSAAgbrU","s":971.28,"e":972.08,"line":"Go to bed.","note":"TV hosts joke about a show that ends very late at night. It says to you: Go to bed!","noteUa":"Ведущие шутят про шоу, которое заканчивается очень поздно. Оно как будто говорит тебе: «Иди спать!»","around":[[966.96,971.2,"Anyway, that’s when you’re like, go to sleep right now."],[972.32,972.56,"Yes."]]}
+  ]
 }
