@@ -5,9 +5,9 @@
   "hl": "it depends",
   "together": {"Muay Thai":"тайский бокс"},
   "gloss": {
-    "it": {"*": "it — здесь не переводится: It depends = Зависит", "or is it": "Or is it? = А может, и нет?"},
+    "it": {"*":"it — здесь не переводится: It depends = Зависит","or is it":"Or is it? = А может, и нет?"},
     "depends": "зависит",
-    "are": {"*": "are — глагол be", "are you okay": "вопрос: Are you okay? = Ты в порядке?", "color are": "are — потому что eyes (глаза) — их много", "are we talking": "вопрос: Are we talking …? = Мы говорим о …?"},
+    "are": {"*":"are — глагол be","are you okay":"вопрос: Are you okay? = Ты в порядке?","color are":"are — потому что eyes (глаза) — их много","are we talking":"вопрос: Are we talking …? = Мы говорим о …?"},
     "you": "ты",
     "okay": "в порядке",
     "what": "какой, что",
@@ -17,14 +17,14 @@
     "on": "от (depends on = зависит от)",
     "the": "the — та самая драка, о которой говорят",
     "fight": "драка, бой",
-    "is": {"*": "is — глагол be: what the fight is = какая это драка", "or is it": "Or is it? = А может, и нет?"},
+    "is": {"*":"is — глагол be: what the fight is = какая это драка","or is it":"Or is it? = А может, и нет?"},
     "we": "мы",
     "talking": "говорим (о чём-то)",
     "or": "или"
   },
   "clips": [
     {"v":"69ACF7C9NGE","s":1509.92,"e":1510.5,"line":"It depends.","note":"Someone screams. A friend asks: Are you okay? He is not sure, so he says: It depends.","noteUa":"Кто-то кричит. Друг спрашивает: «Ты в порядке?» Он не уверен и отвечает: «Зависит».","around":[[1507.2,1509,"Are you okay?"],[1510.6,1512,"What color are my eyes?"]]},
-    {"v":"iU3PSAAgbrU","s":752,"e":752.48,"line":"It depends.","note":"Who wins a fight? He says: It depends. What kind of fight is it?","noteUa":"Кто победит в драке? Он отвечает: «Зависит» — от того, какая драка.","around":[[750.08,752,"It depends on what the fight is."],[752.48,754.48,"Are we talking Muay Thai?"]]},
-    {"v":"wKrmlDOC540","s":1715.1,"e":1715.44,"line":"It depends.","note":"A hard question about AI. The answer is not yes or no. It is: It depends.","noteUa":"Сложный вопрос про ИИ. Ответ не «да» и не «нет», а «зависит».","around":[[1714.4,1715.08,"Or is it?"]]}
+    {"v":"iU3PSAAgbrU","s":752,"e":752.48,"line":"It depends.","note":"Who wins a fight? He says: It depends. What kind of fight is it?","noteUa":"Кто победит в драке? Он отвечает: «Зависит» — от того, какая драка.","around":[[750.08,752,"It depends on what the fight is."],[752.48,754.48,"Are we talking Muay Thai?"]],"hidden":true},
+    {"v":"wKrmlDOC540","s":1715.1,"e":1715.34,"line":"It depends.","note":"A hard question about AI. The answer is not yes or no. It is: It depends.","noteUa":"Сложный вопрос про ИИ. Ответ не «да» и не «нет», а «зависит».","around":[[1714.4,1715.08,"Or is it?"]]}
   ]
 }
