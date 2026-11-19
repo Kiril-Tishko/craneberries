@@ -225,6 +225,8 @@ huggingface.co, about 15 min per hour of audio).
     inside a lesson the clip page takes the lesson's look: its colors, rounded buttons, progress dots, no box inside
     the card, and **no heading** (he crossed out the label, the phrase and its Ukrainian, Nov 19: the video takes that
     room, as big as the screen allows, and everything, "With context" included, stays in view with no scrolling;
+    the clips change with big ‹ › arrows beside the video, on its edges on a phone, and none back on the first or
+    forward on the last; no "Next clip" button there, his choice, so it isn't confused with the lesson's Next;
     `body.embed` in `docs/real-video/index.html`). It
     opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
     file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),

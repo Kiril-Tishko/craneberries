@@ -32,7 +32,9 @@ function fitEmbed(){
   const W = document.documentElement.clientWidth;
   for (let k = 0; k < 3; k++) {
     const others = app.getBoundingClientRect().height - video.getBoundingClientRect().height;
-    const w = Math.max(200, Math.min(W, 1100, Math.floor((innerHeight - others - 4) * 16 / 9)));
+    // Room for the clip arrows beside the video (a narrow screen puts them on its edges instead).
+    const side = W >= 560 && !document.body.classList.contains('single') ? 2 * (46 + 8) : 0;
+    const w = Math.max(200, Math.min(W - side, 1100, Math.floor((innerHeight - others - 4) * 16 / 9)));
     if (app.style.getPropertyValue('--vw') === `${w}px`) break;
     app.style.setProperty('--vw', `${w}px`);
   }
@@ -150,8 +152,12 @@ App.renderCard = renderCard;
 // Which clip of how many: "2 / 4", and inside a lesson the lesson's own progress dots instead.
 function drawCount(n, i){
   $('count').textContent = n ? `${i + 1} / ${n}` : '0 / 0';
-  $('cdots').innerHTML = n > 1 ? Array.from({length: n}, (_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('') : '';
+  $('cdots').innerHTML = n > 1 ? Array.from({length: n}, (_, k) => `<i class="${k === i ? 'on' : ''}" data-k="${k}"></i>`).join('') : '';
+  // Inside a lesson: the arrows beside the video (none back on the first clip, none forward on the last).
+  $('sprev').disabled = i <= 0; $('snext').disabled = i >= n - 1;
+  if (EMBED && document.body.classList.toggle('single', n < 2) !== single) { single = !single; fitEmbed(); }
 }
+let single = false;
 function showClip(play){
   const L = list();
   drawCount(L.length, clipN);
@@ -566,6 +572,11 @@ $('longer').onclick = () => {
 const step = (d) => { const n = list().length; if (!n) return; clipN = (clipN + d + n) % n; resetContext(); showClip(true); };
 $('next').onclick = () => step(1);
 $('prev').onclick = () => step(-1);
+// The arrows beside the video and the dots (inside a lesson) go to a clip without going round.
+const goClip = (k) => { const n = list().length; if (k < 0 || k >= n || k === clipN) return; clipN = k; resetContext(); showClip(true); };
+$('snext').onclick = () => goClip(clipN + 1);
+$('sprev').onclick = () => goClip(clipN - 1);
+$('cdots').onclick = (e) => { const d = e.target.closest('[data-k]'); if (d) goClip(+d.dataset.k); };
 $('speed').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   rate = +b.dataset.r;

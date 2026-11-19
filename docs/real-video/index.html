@@ -29,6 +29,7 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 /* The player: video, then timeline, caption and the controls, all in one panel. */
 .player{border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
 .video{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
+.side{display:none}
 /* The player is taller than the box: the picture keeps its full size in the middle, and YouTube's title (top)
    and "Watch on YouTube" bar (bottom) land in black margins that the box cuts off. */
 .video iframe{position:absolute;left:0;top:-40%;width:100%;height:180%;border:0;opacity:0}
@@ -147,7 +148,24 @@ body.embed{--bg:#EDF2F0;--surface:#FFFFFF;--soft:#F4F8F6;--ink:#10241F;--muted:#
 @media (prefers-color-scheme:dark){body.embed{--bg:#0E1916;--surface:#16241F;--soft:#1B2B25;--ink:#E6F1ED;--muted:#9DB3AB;--line:#2A3B35;
   --accent:#6FD1B4;--accent-ink:#0E1916;--tint:#163A31;--mark:#3B1B2A;--mark-ink:#FF8DBB;--ua:#F3DC85;--ua-bg:#3A3212}}
 body.embed .player{border:0;border-radius:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:center}
+body.embed .vrow{position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
 body.embed .video{width:var(--vw,100%);max-width:100%;border-radius:18px;flex:none}
+/* The clip arrows: big round buttons beside the video (app.js fitEmbed leaves them their room). No arrow back on the
+   first clip, none forward on the last: the lesson's own Next goes on from there. */
+body.embed .side{display:flex;flex:none;width:46px;height:46px;border-radius:99px;align-items:center;justify-content:center;padding:0;
+  border:2px solid var(--line);background:var(--surface);color:var(--accent);cursor:pointer;transition:border-color .15s,opacity .15s}
+body.embed .side svg{width:26px;height:26px}
+body.embed .side:hover{border-color:var(--accent)}
+body.embed .side:disabled{opacity:0;pointer-events:none}
+body.embed.single .side{display:none}
+/* A narrow screen has no room beside the video: the arrows sit on its edges, darker, so the video keeps the width. */
+@media (max-width:559px){
+  body.embed .side{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:40px;height:40px;border:0;
+    background:rgba(255,255,255,.92);color:#1E6B58;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+  body.embed .side.l{left:6px}
+  body.embed .side.r{right:6px}
+  body.embed .side svg{width:24px;height:24px}
+}
 body.embed .etools{width:100%}
 body.embed .bar{width:max(var(--vw,100%),min(100%,440px));max-width:100%;padding:10px 2px 0}
 body.embed .tl{height:6px;background:var(--line)}
@@ -171,8 +189,10 @@ body.embed .primary{background:var(--tint);color:var(--accent);border-color:var(
 body.embed .primary:hover{border-color:var(--accent)}
 body.embed .back{padding:8px 10px}
 @media (max-width:340px){body.embed .btn{padding:8px 10px}body.embed .seg button{padding:7px 8px}body.embed .primary{padding:8px 12px}}
-body.embed .count{display:none}
+body.embed .count,body.embed #prev,body.embed #next{display:none}
 body.embed .cdots{display:flex}
+body.embed .cdots i{cursor:pointer;position:relative}
+body.embed .cdots i::after{content:"";position:absolute;inset:-8px -3px}
 .cdots{display:none;gap:5px;align-items:center;margin-right:4px}
 .cdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
 .cdots i.on{background:var(--accent);width:20px;border-radius:99px}
@@ -256,10 +276,15 @@ body.editing .capbar .tw{cursor:text}
   </header>
   <main>
     <section class="player" aria-label="Video">
-      <div class="video">
-        <div id="yt0"></div><div id="yt1"></div>
-        <button class="cover" id="cover" tabindex="-1" aria-label="Play"><span class="big"><svg><use id="bigicon" href="#i-play"/></svg></span></button>
-        <div class="flash l" id="flashl">− 1 s</div><div class="flash r" id="flashr">+ 1 s</div>
+      <div class="vrow">
+        <!-- Inside a lesson (?embed): the previous / next clip, beside the video (on a narrow screen, on its edges). -->
+        <button class="side l" id="sprev" aria-label="Previous clip" title="Previous clip"><svg><use href="#i-prev"/></svg></button>
+        <div class="video">
+          <div id="yt0"></div><div id="yt1"></div>
+          <button class="cover" id="cover" tabindex="-1" aria-label="Play"><span class="big"><svg><use id="bigicon" href="#i-play"/></svg></span></button>
+          <div class="flash l" id="flashl">− 1 s</div><div class="flash r" id="flashr">+ 1 s</div>
+        </div>
+        <button class="side r" id="snext" aria-label="Next clip" title="Next clip"><svg><use href="#i-next"/></svg></button>
       </div>
       <!-- Edit mode only: the clip's times, hide, save (edit.js fills it). -->
       <div class="etools" id="etools" hidden></div>
@@ -298,6 +323,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=10"></script>
+<script src="app.js?v=11"></script>
 </body>
 </html>
