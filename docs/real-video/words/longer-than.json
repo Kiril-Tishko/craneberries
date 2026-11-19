@@ -1,0 +1,28 @@
+{
+  "en": "longer than",
+  "ua": "довший, ніж",
+  "pic": "📏",
+  "hl": "longer than",
+  "together": {"never mind":"нічого, байдуже"},
+  "gloss": {
+    "longer": "довший",
+    "than": "ніж",
+    "mine": "мій (моя)",
+    "but": "але",
+    "never": "(never mind = нічого, байдуже)",
+    "mind": "(never mind = нічого, байдуже)",
+    "maybe": "може",
+    "a": "a — одна якась",
+    "small": "маленька",
+    "gopro": "GoPro (маленька камера)",
+    "360": "360 (камера, що знімає навколо)",
+    "camera": "камера",
+    "on": "на",
+    "very": "дуже",
+    "long": "довгій",
+    "stick": "палиці"
+  },
+  "clips": [
+    {"v":"hCZwH5CSlEY","s":86.56,"e":88.3,"line":"longer than mine, but never mind.","note":"Many people film with cameras on long sticks. Someone's stick is longer than his.","noteUa":"Багато хто знімає камерою на довгій палиці. В когось палиця довша, ніж у нього.","around":[[82,86.4,"maybe a small GoPro, maybe a 360 camera on a very long stick…"]]}
+  ]
+}

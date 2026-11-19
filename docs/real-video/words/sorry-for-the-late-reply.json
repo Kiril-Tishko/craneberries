@@ -1,0 +1,31 @@
+{
+  "en": "Sorry for the late reply.",
+  "ua": "Вибачте за пізню відповідь.",
+  "pic": "📨",
+  "hl": "sorry (for the late reply|I didn[’']t text you back)",
+  "together": {"text you back":"відповісти тобі (на повідомлення)"},
+  "gloss": {
+    "sorry": "вибач(те)",
+    "for": "за",
+    "the": "the — ту саму",
+    "late": "пізню",
+    "reply": "відповідь",
+    "look": "слухай",
+    "i’m": "I’m = I am: я",
+    "i": "я",
+    "didn’t": "didn’t = did not: не (у минулому)",
+    "text": "написати повідомлення",
+    "you": "тобі",
+    "back": "у відповідь",
+    "hey": "привіт",
+    "just": "просто",
+    "needed": "потрібно було (від need)",
+    "some": "трохи",
+    "time": "часу",
+    "to": "щоб",
+    "think": "подумати"
+  },
+  "clips": [
+    {"v":"VWTlllAiuXk","s":1695.52,"e":1697.6,"line":"Look, I’m sorry I didn’t text you back.","note":"Penny didn't answer Leonard's messages. Now she comes and says sorry. (Close to: Sorry for the late reply.)","noteUa":"Пенні не відповідала на повідомлення Леонарда. Тепер вона приходить і вибачається. (Схоже на Sorry for the late reply.)","around":[[1694.3,1695.3,"Hey."],[1697.7,1699.5,"I just needed some time to think."]]}
+  ]
+}

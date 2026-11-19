@@ -19,9 +19,30 @@
     "you": "ти",
     "mixed": "(mixed them up = переплутала їх)",
     "them": "їх",
-    "up": "(mix up = переплутати)"
+    "up": "(mix up = переплутати)",
+    "way": "(way too small = набагато замалий)",
+    "amount": "кількість",
+    "for": "для (too small for = замалий для); for so long = так довго",
+    "of": "(the amount of = кількість)",
+    "necklaces": "намиста (кілька)",
+    "that": "які; та (that was = що була)",
+    "i": "я",
+    "had": "мала (від have)",
+    "at": "(at the time = тоді)",
+    "time": "(at the time = тоді)",
+    "like": "типу, ну",
+    "so": "так",
+    "long": "довго (for so long = так довго)",
+    "this": "цю",
+    "little": "маленьку",
+    "necklace": "для намиста",
+    "stand": "підставку",
+    "or": "або",
+    "whatever": "щось таке",
+    "was": "була"
   },
   "clips": [
-    {"v":"bF0ujA9dw2o","s":1445.6,"e":1447.8,"line":"It’s too small.","note":"Monk compares two cards and two envelopes. This card is too small.","noteUa":"Монк порівнює дві листівки й два конверти. Ця листівка замала.","around":[[1442,1445.4,"This card came with the poison bottle."],[1448,1450,"Alice, you mixed them up."]]}
+    {"v":"bF0ujA9dw2o","s":1445.6,"e":1447.8,"line":"It’s too small.","note":"Monk compares two cards and two envelopes. This card is too small.","noteUa":"Монк порівнює дві листівки й два конверти. Ця листівка замала.","around":[[1442,1445.4,"This card came with the poison bottle."],[1448,1450,"Alice, you mixed them up."]]},
+    {"v":"f5PhrT7-hZM","s":1159.36,"e":1163,"line":"way too small for the amount of necklaces that I had at the time.","note":"Emma had a little stand for her necklaces. It was way too small for all of them.","noteUa":"У Емми була маленька підставка для намиста. Вона була замала для всіх її намист.","around":[[1154,1159.2,"Like, for so long I had this, like, little necklace stand or whatever, that was"]]}
   ]
 }

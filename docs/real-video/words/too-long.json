@@ -1,0 +1,41 @@
+{
+  "en": "too long",
+  "ua": "задовгий",
+  "pic": "📐",
+  "hl": "too long",
+  "together": {"do the buttons":"застібати ґудзики","I wish":"я б хотіла, щоб"},
+  "gloss": {
+    "too": "занадто",
+    "long": "довгий (too long = задовгий)",
+    "it’s": "it’s = it is: вона, це",
+    "for": "для",
+    "this": "цього",
+    "beautiful": "гарного",
+    "little": "маленького",
+    "case": "корпусу (комп’ютера)",
+    "still": "все одно",
+    "two": "два",
+    "whole": "цілих",
+    "slots": "слоти (місця в комп’ютері)",
+    "and": "і",
+    "turtleneck": "водолазка",
+    "gray": "сіра",
+    "my": "мої",
+    "nails": "нігті",
+    "are": "are — дієслово be: my nails are = мої нігті (є)",
+    "to": "щоб (too long to do = задовгі, щоб застібати)",
+    "do": "(do the buttons = застібати ґудзики)",
+    "the": "the — ці ґудзики",
+    "buttons": "ґудзики",
+    "i": "я",
+    "wish": "(I wish = я б хотіла)",
+    "mommy": "мамуся",
+    "was": "була",
+    "here": "тут",
+    "me": "мене"
+  },
+  "clips": [
+    {"v":"pQ0MsGP1nK4","s":16.44,"e":18.3,"line":"It’s too long for this beautiful little case.","note":"He shows a graphics card. It doesn't fit: it's too long for the small computer case.","noteUa":"Він показує відеокарту. Вона не влазить: задовга для маленького корпусу комп’ютера.","around":[[14,16.3,"It’s still two whole slots, and it’s long."]]},
+    {"v":"qZLt2R2IgFE","s":1202.44,"e":1206.8,"line":"Turtleneck, gray turtleneck. My nails are too long to do the buttons.","note":"Emma shows her clothes. Her nails are too long, so she can't do up the small buttons.","noteUa":"Емма показує свій одяг. Її нігті задовгі, тож вона не може застібнути маленькі ґудзики.","around":[[1206.8,1210.5,"I wish my mommy was here to do the buttons for me."]]}
+  ]
+}
