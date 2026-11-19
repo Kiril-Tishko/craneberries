@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>GitHub key</title>
+<!-- The small window that "Use my key from the clip library" opens (edit.js, edit mode on the student site's /clips/).
+     The student site is another site, so it can't see the GitHub key kept here: after a tap, this page sends it to
+     that one site only (postMessage with its exact address), and closes. Nothing else can ask for it. -->
+<style>
+:root{--bg:#EEF1F4;--surface:#FFF;--ink:#141B24;--muted:#5D6773;--line:#D5DBE2;--accent:#C2410C;--accent-ink:#FFF;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0F141A;--surface:#18202A;--ink:#E8EDF2;--muted:#9AA6B3;--line:#2A3542;--accent:#FB8A4C;--accent-ink:#0F141A;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI",system-ui,sans-serif;padding:16px}
+main{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:420px;width:100%}
+h1{margin:0 0 8px;font-size:20px}
+p{margin:0 0 16px;color:var(--muted)}
+b{color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button{font-weight:600;font-size:15px;font-family:inherit;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <h1>🔑 GitHub key</h1>
+  <p id="say"></p>
+  <div class="row"><button class="primary" id="send" hidden>Send the key</button><button id="close">Close</button></div>
+</main>
+<script>
+(() => {
+  'use strict';
+  // Only the student site may get the key, and only when it opened this window itself.
+  const ALLOWED = ['https://lessons.ukrainglish.com'];
+  const to = new URLSearchParams(location.search).get('to') || '';
+  let token = '';
+  try { token = localStorage.getItem('rv-github-token') || ''; } catch (e) {}
+  const say = (html) => { document.getElementById('say').innerHTML = html; };
+  const send = document.getElementById('send');
+  if (!window.opener || !ALLOWED.includes(to)) say('Open this from edit mode on a lesson’s clips screen (“Use my key from the clip library”).');
+  else if (!token) say('This browser has no key kept in the clip library yet. Close this window and paste the key in the box on the lesson page instead.');
+  else {
+    say(`Send the key kept in the clip library to <b>${new URL(to).host}</b>? It stays in this browser and goes only to GitHub when you save.`);
+    send.hidden = false; send.focus();
+  }
+  send.onclick = () => {
+    try { window.opener.postMessage({rvKey: token}, to); } catch (e) { say('It didn’t go through. Close this window and try again.'); return; }
+    send.hidden = true; say('Sent. This window closes now.');
+    setTimeout(() => window.close(), 700);
+  };
+  document.getElementById('close').onclick = () => window.close();
+})();
+</script>
+</body>
+</html>

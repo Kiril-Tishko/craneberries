@@ -652,7 +652,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (App.toggleEdit) { App.toggleEdit(); return; }
-  const s = document.createElement('script'); s.src = 'edit.js?v=3'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
+  const s = document.createElement('script'); s.src = 'edit.js?v=4'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
 };
 let resizeT = null;
 window.addEventListener('resize', () => { hidePop(); clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });

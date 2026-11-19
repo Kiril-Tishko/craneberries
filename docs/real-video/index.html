@@ -235,6 +235,12 @@ body.editing .capbar [contenteditable]{display:inline-block;padding:0 4px}
 .etools .msg{flex:1 1 100%;color:var(--muted);font-size:13px;min-height:0}
 .etools .msg:empty{display:none}
 .etools .msg.bad{color:var(--accent);font-weight:600}
+/* No GitHub key on this site yet: its box comes first in the bar (edit.js keyRow). */
+.ekey{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.ekey label{display:grid;gap:4px;flex:1 1 220px;font-weight:700;color:var(--ink)}
+.ekey input{font:500 15px var(--font);color:var(--ink);padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);width:100%}
+.ekey .hint{flex:1 1 100%;color:var(--muted)}
+.ekey a{color:var(--accent)}
 /* The rest of edit mode (⋯): move, delete, add a clip, lines around, highlight, GitHub key. */
 .edit{background:var(--surface);border:2px dashed var(--accent);border-radius:16px;padding:16px;display:grid;gap:12px}
 .edit h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -335,6 +341,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>

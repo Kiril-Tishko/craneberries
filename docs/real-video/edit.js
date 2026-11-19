@@ -4,7 +4,9 @@
 //   - The small bar under the video: where the line starts and ends (− / + = 0.1 s, then it plays that bit again;
 //     ⏱ = where the video is now), hide the clip from students, Save.
 //   - ⋯ opens the rest: move or delete the clip, add a clip from a YouTube link, the lines around it with their times,
-//     the note in the other language, other forms of the word to highlight, the GitHub key.
+//     the note in the other language, other forms of the word to highlight, forgetting the GitHub key.
+//   - No GitHub key on this site yet: its box comes first in the bar. On the student site (another site, so it can't
+//     see the key kept here) "Use my key from the clip library" copies it over in one tap (key.html).
 // Saving writes to the shared library on GitHub (docs/real-video/words/*.json), so every lesson and the lesson chat
 // see the change. It needs a GitHub fine-grained token for this one repository (Contents: Read and write), kept only
 // in this browser and sent only to api.github.com.
@@ -15,6 +17,9 @@ const KEY = 'rv-github-token';
 const $ = (id) => document.getElementById(id), esc = App.esc;
 let token = '';
 try { token = localStorage.getItem(KEY) || ''; } catch (e) {}
+// The clip library's own site. Elsewhere (the student site's /clips/) the key is kept apart, per site.
+const LIB = 'https://kiril-tishko.github.io', HOME = location.origin === LIB;
+let askedKey = false;   // the key comes over only after a tap on "Use my key from the clip library"
 // Each word as it was when it was loaded or last saved: Save counts only the words that really differ from it.
 const base = {};
 const changed = () => Object.keys(base).filter((s) => App.WORDS[s] && wordText(App.WORDS[s]) !== base[s]);
@@ -75,7 +80,7 @@ const indexText = (list) => `[\n${list.map((x) => `  ${JSON.stringify(x)}`).join
 
 async function save(){
   if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
-  if (!token) { more = true; say('Add the GitHub key first (it’s asked only once on this computer).', true); render(); return; }
+  if (!token) { say('Add the GitHub key first, in the box above (it’s asked only once).', true); render(); return; }
   const todo = changed();
   if (!todo.length) { say('Nothing to save: nothing has changed.'); return; }
   say('Saving…');
@@ -259,11 +264,21 @@ const parseT = (v) => {
 };
 const timeBox = (f, name, c) => `<span class="etime"><span class="lbl">${name}</span>
   <button data-nudge="${f}:-0.1" aria-label="${name} 0.1 s earlier">−</button><input type="text" inputmode="decimal" data-t="${f}" value="${fmt(c[f])}" aria-label="${name} (minutes:seconds)"><button data-nudge="${f}:0.1" aria-label="${name} 0.1 s later">+</button><button data-now="${f}" title="Where the video is now" aria-label="${name} where the video is now">⏱</button></span>`;
+// No key on this site yet: its box is the first thing in the bar (a lesson's clips screen has no room for ⋯). The
+// student site is another site, so it doesn't see the key kept in the clip library: one tap copies it over (key.html).
+const keyRow = () => (token ? '' : `
+    <div class="ekey"><label>🔑 GitHub key, needed once on this ${HOME ? 'computer' : 'site'} to save
+      <input id="e-token" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+      <button class="btn primary" id="e-token-save">Keep it</button>
+      ${HOME ? '' : '<button class="btn" id="e-token-get">Use my key from the clip library</button>'}
+      <span class="hint">A new one: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a>,
+        repository <b>craneberries</b> only, <b>Contents: Read and write</b>.</span></div>`);
 function render(){
   if (!App.editing) return;
   const w = App.word, L = App.list(), c = App.clip();
   const other = App.NOTES === 'ua' ? 'note' : 'noteUa';
-  $('etools').innerHTML = `
+  const typedKey = $('e-token') ? $('e-token').value : '';
+  $('etools').innerHTML = `${keyRow()}
     ${c ? `${timeBox('s', 'Start', c)}${timeBox('e', 'End', c)}
     <button class="btn" data-act="hide" aria-pressed="${!!c.hidden}">${c.hidden ? '🙈 Hidden' : '🙈 Hide'}</button>` : ''}
     <span class="right">
@@ -275,15 +290,10 @@ function render(){
     ${leaving ? `<div class="msg"><b>Not saved yet.</b> <button class="btn primary" id="e-leave-save">Save and leave</button>
       <button class="btn" id="e-leave-drop">Throw the changes away</button> <button class="btn" id="e-leave-stay">Keep editing</button></div>` : ''}
     <div class="msg${bad ? ' bad' : ''}" id="e-msg">${esc(msg)}</div>`;
+  if (typedKey && $('e-token')) $('e-token').value = typedKey;
   $('edit').hidden = !more;
   if (!more) { $('edit').innerHTML = ''; return; }
   $('edit').innerHTML = `
-    ${token ? '' : `
-    <div class="row"><label>GitHub key, needed once on this computer to save
-      <input id="e-token" type="password" autocomplete="off" placeholder="github_pat_…"></label>
-      <button class="btn" id="e-token-save">Keep it</button></div>
-    <div class="msg">Make one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a>:
-      repository <b>craneberries</b> only, permission <b>Contents: Read and write</b>.</div>`}
     ${c ? `
     <h3>Clip ${App.clipN + 1} / ${L.length}
       <button class="btn" data-act="up" ${App.clipN ? '' : 'disabled'}>◀ Move</button>
@@ -408,6 +418,11 @@ document.addEventListener('click', (e) => {
     try { localStorage.setItem(KEY, token); } catch (err) {}
     App.getJSON = (path) => readJSON(`${DIR}/${path}`);
     say(token ? 'Key kept on this computer.' : ''); render();
+  } else if (b.id === 'e-token-get') {
+    // A small window on the clip library's site asks, then sends the key to this site only (key.html).
+    const win = window.open(`${LIB}/craneberries/real-video/key.html?to=${encodeURIComponent(location.origin)}`, 'rv-key', 'popup,width=480,height=360');
+    askedKey = !!win;
+    say(win ? 'In the small window, tap “Send the key”.' : 'The browser blocked the small window: allow pop-ups for this site, then tap again.', !win);
   } else if (b.id === 'e-forget') {
     token = ''; try { localStorage.removeItem(KEY); } catch (err) {}
     say('The key is forgotten on this computer.'); render();
@@ -453,5 +468,14 @@ document.addEventListener('click', (e) => {
     const inp = $('etools').querySelector(`[data-t="${f}"]`); if (inp) inp.value = fmt(c[f]);
     replay(f);
   }
+});
+// The key from the clip library's small window (key.html): only from that site, only after the tap asked for it.
+addEventListener('message', (e) => {
+  const k = e.origin === LIB && askedKey && e.data && typeof e.data.rvKey === 'string' ? e.data.rvKey.trim() : '';
+  if (!k) return;
+  askedKey = false; token = k;
+  try { localStorage.setItem(KEY, token); } catch (err) {}
+  App.getJSON = (path) => readJSON(`${DIR}/${path}`);
+  say('Key kept on this computer for this site too. Save works now.'); render();
 });
 })();
