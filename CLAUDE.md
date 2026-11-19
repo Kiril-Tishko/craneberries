@@ -205,6 +205,9 @@ huggingface.co, about 15 min per hour of audio).
     clip's line and lines around (same shape as the song pages' gloss, context keys for grammar words), so **when you
     add a clip or its lines around, add glosses for its new words** (and `together` for phrasal verbs / set phrases).
     `words/index.json` lists them for the search: after changing word files run `python3 tools/real-video/build_index.py`.
+    `words/groups.json` = the topics of the whole-library page (`[{name, pic, words: [slugs]}]`; Nov 20, he wanted the
+    phrases grouped): put every new word in one topic (a word in none shows under "More"). On a phone the topics and
+    the words each scroll sideways in one row, so the video stays near the top; a lesson's `?words` list isn't grouped.
   - The player reads them: `https://kiril-tishko.github.io/craneberries/real-video/?words=rip-off,excuse` (a lesson's
     words; `&title=…`, `&notes=ua` for Ukrainian notes, `&from=lesson` adds "← Lesson", which closes the tab). Without
     `?words` it shows the whole library; the search box finds any word in it.
@@ -266,7 +269,8 @@ huggingface.co, about 15 min per hour of audio).
     (Nov 17; 5 searches a minute, 30 a day, at most 5 results a search and no next page; saving the results for
     students is fine): `perl tools/real-video/captionsearch.pl "what do you mean" [1-5]` gives each match's channel and
     video title, a YouTube link with the time, the exact start and end, and the line with up to two lines before and
-    after it, with times (Dunqing, who runs Caption Search, added this for him on Nov 18), and keeps every answer (the
+    after it, with times (Dunqing, who runs Caption Search, added this for him on Nov 18; on Nov 20 he made one video
+    crowd the first results less and said to keep using the key), and keeps every answer (the
     same phrase again costs nothing; `--fresh` asks again; punctuation is left out because the API
     answers 400 to a comma, Nov 18; more than 5 a minute gets 503 "temporarily unavailable"). The first 5 are often no good (for "what do you mean": an
     audiobook, MrBeast), so search a few other phrasings that give the meaning ("what do you mean by that", "wait,
