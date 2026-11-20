@@ -388,13 +388,14 @@ function view(s){
     const first = (w) => w.split(' ').map((x) => x[0] + '_'.repeat(Math.max(1, clean(x).length - 1))).join(' ');
     const line = (f) => esc(s.en).replace(/\[([^\]]+)\]/g, (m, w) => `<span class="gapw">${f(w)}</span>`);
     const hinted = /\[/.test(s.en);
+    const h0 = hinted && s.hint ? 1 : 0;   // hint: 1 = the sentence with its gap shows from the start (older words)
     return `
     <div class="who">🧠 Say it in English</div>
     ${s.pic ? `<div class="pic${s.anim ? ' anim anim-' + s.anim : ''}" aria-hidden="true">${/^<svg/.test(s.pic) ? s.pic : esc(s.pic)}</div>` : ''}
     <div class="recall-ua">${xs(s.ua)}</div>
-    <div class="stack">${hinted ? `<div class="cueline" data-cue="1" hidden>${line(gap)}</div><div class="cueline" data-cue="2" hidden>${line(first)}</div>` : ''}
+    <div class="stack">${hinted ? `<div class="cueline" data-cue="1"${h0 === 1 ? '' : ' hidden'}>${line(gap)}</div><div class="cueline" data-cue="2" hidden>${line(first)}</div>` : ''}
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</span> ${spk(plain)}</span></div></div>
-    <div class="row">${hinted ? '<button class="btn" data-hint="0">💡 Hint</button>' : '<button class="btn" data-show="ans">Answer</button>'}</div>`;
+    <div class="row">${hinted ? `<button class="btn" data-hint="${h0}">${h0 ? '💡 First letter' : '💡 Hint'}</button>` : '<button class="btn" data-show="ans">Answer</button>'}</div>`;
   }
   if (s.t === 'sound') return `
     <div class="who swapw">🔊 The sound</div>
