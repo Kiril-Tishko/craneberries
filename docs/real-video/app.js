@@ -230,6 +230,9 @@ App.refresh = () => {
 };
 // In edit mode the note is always open, so it can be clicked and typed in.
 function setNote(text){
+  // Inside a lesson: 💡 opens the note over the video (closed again for every clip).
+  $('tipnote').textContent = text; $('tipnote').hidden = true; $('tipe').setAttribute('aria-pressed', 'false');
+  $('tipe').style.visibility = text ? 'visible' : 'hidden';
   $('note').textContent = text; $('note').classList.toggle('off', !App.editing);
   $('tipbtn').setAttribute('aria-expanded', String(App.editing));
   $('tip').style.visibility = text || App.editing ? 'visible' : 'hidden';
@@ -624,6 +627,11 @@ $('speed').onclick = (e) => {
 $('about').onclick = () => {
   $('credits').hidden = !$('credits').hidden; $('about').setAttribute('aria-expanded', !$('credits').hidden);
 };
+$('tipe').onclick = () => {
+  const open = $('tipnote').hidden && !!$('tipnote').textContent;
+  $('tipnote').hidden = !open; $('tipe').setAttribute('aria-pressed', String(open));
+};
+$('tipnote').onclick = () => { $('tipnote').hidden = true; $('tipe').setAttribute('aria-pressed', 'false'); };
 $('tipbtn').onclick = () => {
   const open = $('note').classList.toggle('off') === false;
   $('tipbtn').setAttribute('aria-expanded', open);

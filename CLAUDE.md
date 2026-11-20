@@ -238,7 +238,8 @@ huggingface.co, about 15 min per hour of audio).
     the clips change with big ‹ › arrows beside the video, on its edges on a phone, and none back on the first or
     forward on the last; no "Next clip" button there, his choice, so it isn't confused with the lesson's Next;
     a low, wide screen (a phone on its side) puts the speed under the timeline and the caption, "With context" and
-    the dots beside the video; **smart loading**: the
+    the dots beside the video; **💡 What's happening?** beside "With context" (Nov 20, his wish) opens the clip's 💡 note over
+    the video (across the screen's bottom on a low screen; a tap closes it, so does the next clip; just 💡 on a phone); **smart loading**: the
     engine loads the next clips screen ahead in the background (its first clip waits on its first frame) and keeps
     the last three, so a clips screen opens at once (`Clips` in `engine.html`; pages built before Nov 19 lack it);
     `body.embed` in `docs/real-video/index.html`). It
