@@ -3,6 +3,7 @@
   "ua": "записаться (на приём)",
   "pic": "📅",
   "hl": "(make|made|making) an appointment",
+  "together": {"how about":"как насчёт","come back":"вернуться","that way":"так"},
   "gloss": {
     "make": "(make an appointment = записаться)",
     "made": "(made an appointment = записался)",
@@ -21,12 +22,12 @@
     "next": "в следующий",
     "time": "раз",
     "i’ll": "I’ll = I will: я буду",
-    "know": "знать",
+    "know": {"*": "знать", "i know": "знаю"},
     "can’t": "can’t = cannot: не могу",
     "believe": "поверить",
     "i’m": "I’m = I am: я",
     "going": "(going to = собираюсь)",
-    "to": "(going to = собираюсь)",
+    "to": {"*": "(going to = собираюсь)", "to come back": "to — чтобы (to come back = чтобы прийти снова)"},
     "say": "сказать",
     "this": "это",
     "but": "но",
@@ -38,10 +39,14 @@
     "that": "это",
     "is": "is — глагол be: that is = это (есть)",
     "so": "так",
-    "great": "здорово"
+    "great": "здорово",
+    "he’ll": "he’ll = he will: он будет",
+    "be": "(he’ll be = он будет)",
+    "here": "здесь"
   },
   "clips": [
     {"v":"KOLF41qlJhw","s":3752.92,"e":3757.6,"line":"All day? You should have made an appointment.","note":"Alan spent the whole day waiting at the DMV (where you get a driver's license). Charlie: You should have made an appointment.","noteUa":"Алан весь день прождал в DMV (там получают водительские права). Чарли: «Надо было записаться заранее».","around":[[3751,3752.92,"I told you, the DMV."],[3757.6,3759.6,"Yeah, next time I’ll know."]]},
-    {"v":"tqrTN1ydrMk","s":3748.84,"e":3753,"line":"I can’t believe I’m going to say this, but I think I’m going to make an appointment with a shrink.","note":"Jake finally decides to get help: I think I'm going to make an appointment with a therapist. His friend is very happy.","noteUa":"Джейк наконец решается: «Кажется, я запишусь к психотерапевту». Друг очень рад.","around":[[3753,3754.4,"Jake, that is so great."]]}
+    {"v":"tqrTN1ydrMk","s":3748.84,"e":3753,"line":"I can’t believe I’m going to say this, but I think I’m going to make an appointment with a shrink.","note":"Jake finally decides to get help: I think I'm going to make an appointment with a therapist. His friend is very happy.","noteUa":"Джейк наконец решается: «Кажется, я запишусь к психотерапевту». Друг очень рад.","around":[[3753,3754.4,"Jake, that is so great."]]},
+    {"v":"1baVt4UrP3k","s":793.6,"e":796.52,"line":"How about I make an appointment to come back?","note":"A salesman visits an office, but the boss isn't there. He offers to set a time and come back, so the boss will be there.","noteUa":"Продавец приходит в офис, но начальника нет на месте. Он предлагает: «Давайте я договорюсь о встрече и приду в другой раз?» Тогда начальник точно будет.","around":[[796.52,798.32,"That way I know he’ll be here."]]}
   ]
 }

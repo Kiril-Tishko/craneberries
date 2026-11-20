@@ -20,17 +20,35 @@
     "my": "мій",
     "brother": "брат",
     "threw": "кинув (від throw)",
-    "at": "в (threw at my head = кинув мені в голову)",
+    "at": {"*": "в (threw at my head = кинув мені в голову)", "at his desk": "за (at his desk = за свій стіл)"},
     "head": "голова",
     "you": "ти, ви",
     "can": "можеш",
     "still": "досі, ще",
     "feel": "відчути, намацати",
     "and": "і",
-    "water": "вода"
+    "water": "вода",
+    "knox": "Нокс (ім’я)",
+    "is": "is — дієслово be: Knox is = Нокс (є)",
+    "him": "ним",
+    "call": "подзвони",
+    "hope": "Гоуп (ім’я)",
+    "he’ll": "he’ll = he will: він",
+    "hear": "почує",
+    "everything": "все",
+    "he": "він",
+    "had": "мав",
+    "office": "кабінет",
+    "mine": "моїм",
+    "went": "пішов",
+    "sat": "сів",
+    "his": "свій",
+    "desk": "стіл"
   },
   "clips": [
     {"v":"tkZTFh3XXTY","s":1425.76,"e":1427.6,"line":"It’s right next to the hockey puck dent.","note":"Sheldon shows a small dent on his head. Another dent is right next to it.","noteUa":"Шелдон показує вм’ятинку на голові. А прямо поруч — ще одна.","around":[[1418.6,1421.8,"Well, it’s just a golf ball that my brother threw at my head."],[1421.9,1425.6,"You can still feel the dent."]]},
-    {"v":"XipcupFilFE","s":272.88,"e":274.3,"line":"And it’s right next to the water,","note":"Oscar Isaac talks about his summer house: it is right next to the water.","noteUa":"Оскар Айзек розповідає про свій літній будинок: він стоїть прямо біля води."}
+    {"v":"XipcupFilFE","s":272.88,"e":274.3,"line":"And it’s right next to the water,","note":"Oscar Isaac talks about his summer house: it is right next to the water.","noteUa":"Оскар Айзек розповідає про свій літній будинок: він стоїть прямо біля води."},
+    {"v":"sIlIvGZbqyQ","s":3616.4,"e":3617.36,"line":"Knox is right next to him.","note":"The detectives can't call their friend: the bad guy is right next to him and will hear everything.","noteUa":"Детективи не можуть подзвонити другу: злочинець стоїть просто поруч із ним і все почує.","around":[[3615.92,3616.4,"Call Hope."],[3617.36,3618.08,"He’ll hear everything."]]},
+    {"v":"jCwlDm3lmFw","s":627,"e":629.28,"line":"He had the office right next to mine.","note":"Conan remembers a writer from his old show: his office was right next to Conan's.","noteUa":"Конан згадує сценариста зі свого старого шоу: його кабінет був просто поруч із кабінетом Конана.","around":[[629.68,631.88,"And he went and he sat at his desk."]]}
   ]
 }

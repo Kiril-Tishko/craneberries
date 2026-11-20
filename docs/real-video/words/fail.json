@@ -24,11 +24,19 @@
     "16": "шістнадцять",
     "on": "на (on day ten = на десятий день)",
     "day": "день",
-    "ten": "десять"
+    "ten": "десять",
+    "it’ll": "it’ll = it will: він (план)",
+    "probably": "найімовірніше",
+    "it": "він (план)",
+    "just": "просто",
+    "might": "може",
+    "also": "також",
+    "work": "спрацювати"
   },
   "together": {"have to":"мусиш, треба","the point is":"суть у тому, що"},
   "clips": [
     {"v":"HAw412b4zd4","s":1239.64,"e":1241,"line":"I already tried, but I failed.","note":"He tried to do something important, and it didn't work: I already tried, but I failed.","noteUa":"Він уже пробував зробити щось важливе, але не вийшло: «Я вже пробував, але провалився».","around":[[1237,1239.5,"You have to do this, okay?"]]},
-    {"v":"S0OHw58IjJk","s":4352.42,"e":4353.6,"line":"The point is, I failed.","note":"Ryan tried to double $1 every day. It didn't work: he failed on day ten.","noteUa":"Райан намагався щодня подвоювати 1 долар. Не вийшло: він провалився на десятий день.","around":[[4349.5,4352.3,"$4 to $8, $8 to $16."],[4355,4357,"But I failed on day ten."]]}
+    {"v":"S0OHw58IjJk","s":4352.42,"e":4353.6,"line":"The point is, I failed.","note":"Ryan tried to double $1 every day. It didn't work: he failed on day ten.","noteUa":"Райан намагався щодня подвоювати 1 долар. Не вийшло: він провалився на десятий день.","around":[[4349.5,4352.3,"$4 to $8, $8 to $16."],[4355,4357,"But I failed on day ten."]]},
+    {"v":"SzafPFYd724","s":1161.44,"e":1162.4,"line":"It’ll probably fail.","note":"Michael has a crazy plan: It just might fail. It'll probably fail. But it also might work.","noteUa":"У Майкла божевільний план: він може провалитися, найімовірніше, провалиться. Але може й спрацювати.","around":[[1160.16,1161.44,"It just might fail."],[1162.4,1164.16,"But it also might work."]]}
   ]
 }

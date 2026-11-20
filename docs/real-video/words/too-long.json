@@ -32,10 +32,19 @@
     "mommy": "мамуся",
     "was": "була",
     "here": "тут",
-    "me": "мене"
+    "me": "мене",
+    "boy": "хлопчика (boy’s = у хлопчика)",
+    "hair": "волосся",
+    "is": "is — дієслово be: hair is = волосся (є)",
+    "per": "згідно з",
+    "student": "учнівського",
+    "dress": "одягу",
+    "grooming": "зовнішнього вигляду",
+    "code": "кодексу"
   },
   "clips": [
     {"v":"pQ0MsGP1nK4","s":16.44,"e":18.3,"line":"It’s too long for this beautiful little case.","note":"He shows a graphics card. It doesn't fit: it's too long for the small computer case.","noteUa":"Він показує відеокарту. Вона не влазить: задовга для маленького корпусу комп’ютера.","around":[[14,16.3,"It’s still two whole slots, and it’s long."]]},
-    {"v":"qZLt2R2IgFE","s":1202.44,"e":1206.8,"line":"Turtleneck, gray turtleneck. My nails are too long to do the buttons.","note":"Emma shows her clothes. Her nails are too long, so she can't do up the small buttons.","noteUa":"Емма показує свій одяг. Її нігті задовгі, тож вона не може застібнути маленькі ґудзики.","around":[[1206.8,1210.5,"I wish my mommy was here to do the buttons for me."]]}
+    {"v":"qZLt2R2IgFE","s":1202.44,"e":1206.8,"line":"Turtleneck, gray turtleneck. My nails are too long to do the buttons.","note":"Emma shows her clothes. Her nails are too long, so she can't do up the small buttons.","noteUa":"Емма показує свій одяг. Її нігті задовгі, тож вона не може застібнути маленькі ґудзики.","around":[[1206.8,1210.5,"I wish my mommy was here to do the buttons for me."]]},
+    {"v":"VDRorIuHd6Q","s":191.12,"e":192.72,"line":"This boy’s hair is too long.","note":"Sheldon reads the school dress code and reports other kids: This boy's hair is too long.","noteUa":"Шелдон читає шкільні правила щодо одягу і скаржиться на інших: «У цього хлопчика задовге волосся».","around":[[188.4,190.8,"Per the student dress and grooming code."]]}
   ]
 }

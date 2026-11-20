@@ -3,7 +3,7 @@
   "ua": "судовий позов, судова справа",
   "pic": "⚖️",
   "hl": "\\blawsuits?\\b",
-  "together": {"filed a lawsuit":"подала позов до суду"},
+  "together": {"filed a lawsuit":"подала позов до суду","get away with":"вийти сухою з води","going to":"збираємося","what hit her":"що на неї звалилося","slap such a lawsuit on":"вліпити такий позов"},
   "gloss": {
     "and": "і",
     "finally": "і насамкінець",
@@ -40,10 +40,22 @@
     "we’re": "we’re = we are: ми",
     "here": "тут",
     "until": "поки (не)",
-    "over": "скінчиться (is over = закінчиться)"
+    "over": "скінчиться (is over = закінчиться)",
+    "are": "are — дієслово be: we are going to = ми збираємося",
+    "her": "неї",
+    "she": "вона",
+    "won’t": "won’t = will not: не",
+    "know": "знатиме",
+    "not": "не",
+    "let": "дозволимо",
+    "slap": "вліпити (slap a lawsuit on = подати на когось позов)",
+    "such": "такий",
+    "on": "на (неї)",
+    "but": "але"
   },
   "clips": [
     {"v":"Z_kf7WfJ5aE","s":172.67,"e":175,"line":"And finally, a Texas woman has filed a lawsuit.","note":"Seth Meyers tells a funny news story: a woman in Texas has gone to court with a lawsuit.","noteUa":"Сет Маєрс розповідає кумедну новину: жінка з Техасу подала позов до суду.","around":[[175,177,"You guys, this is very exciting."]]},
-    {"v":"B-E3MXbqHvA","s":306.32,"e":312.24,"line":"Case closed. If we don’t find something conclusive, it jeopardizes the case and opens the department up to a lawsuit.","note":"Captain Holt explains why the case isn't finished: without strong proof, someone could sue the police department.","noteUa":"Капітан Холт пояснює, чому справа не закрита: без вагомих доказів на відділок можуть подати позов до суду.","around":[[312.24,316.6,"So cancel your plans. We’re here until this is over."]]}
+    {"v":"B-E3MXbqHvA","s":306.32,"e":312.24,"line":"Case closed. If we don’t find something conclusive, it jeopardizes the case and opens the department up to a lawsuit.","note":"Captain Holt explains why the case isn't finished: without strong proof, someone could sue the police department.","noteUa":"Капітан Холт пояснює, чому справа не закрита: без вагомих доказів на відділок можуть подати позов до суду.","around":[[312.24,316.6,"So cancel your plans. We’re here until this is over."]]},
+    {"v":"6-I9G02dSY4","s":2996.8,"e":3000.88,"line":"We are going to slap such a lawsuit on her, she won’t know what hit her.","note":"Someone treated Jack badly. Will is angry: we'll sue her, and she won't know what hit her.","noteUa":"Хтось погано вчинив із Джеком. Вілл обурений: ми подамо на неї до суду, і вона й не зрозуміє, що сталося.","around":[[2995.56,2996.8,"But we are not going to let her get away with this."]]}
   ]
 }

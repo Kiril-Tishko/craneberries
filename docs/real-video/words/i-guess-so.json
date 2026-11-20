@@ -3,7 +3,7 @@
   "ua": "Мабуть, так.",
   "pic": "🤔",
   "hl": "I guess so",
-  "together": {"this is it":"от і все, це кінець"},
+  "together": {"this is it":"от і все, це кінець","make him laugh":"розсмішити його"},
   "gloss": {
     "i": "я",
     "guess": "здогадуюся (I guess = мабуть)",
@@ -37,10 +37,14 @@
     "thought": "думав",
     "it": "це (it would be = це буде)",
     "would": "(would be = буде)",
-    "be": "бути (would be = буде)"
+    "be": "бути (would be = буде)",
+    "i’m": "I’m = I am: я",
+    "here": "тут",
+    "did": "did — слово для питання в минулому: Did you…? = Ти…?"
   },
   "clips": [
     {"v":"zdHZEzCtq00","s":513.12,"e":514.16,"line":"I guess so.","note":"Missy is asked if she was always like this. She isn't sure: I guess so.","noteUa":"Міссі питають, чи вона завжди була такою. Вона не впевнена: «Мабуть, так».","around":[[511.44,513.12,"Have you always been that way?"],[514.16,517.68,"I think when you’re on your own a lot, you get good at saying that kind of stuff."]]},
-    {"v":"jtoq3S48Pgk","s":3589.4,"e":3593.2,"line":"Yeah, I guess so.","note":"The friends leave their empty apartment for the last time. So this is the end? Yeah, I guess so.","noteUa":"Друзі востаннє виходять з порожньої квартири. Отже, це кінець? «Так, мабуть».","around":[[3584.8,3586.76,"So I guess this is it."],[3593.4,3595.52,"This is harder than I thought it would be."]]}
+    {"v":"jtoq3S48Pgk","s":3589.4,"e":3593.2,"line":"Yeah, I guess so.","note":"The friends leave their empty apartment for the last time. So this is the end? Yeah, I guess so.","noteUa":"Друзі востаннє виходять з порожньої квартири. Отже, це кінець? «Так, мабуть».","around":[[3584.8,3586.76,"So I guess this is it."],[3593.4,3595.52,"This is harder than I thought it would be."]]},
+    {"v":"TAwFABqV7JQ","s":699.27,"e":700.8,"line":"I guess so. I’m here.","note":"Eddie Murphy tells a story. Did you make him laugh? He isn't sure: I guess so. I'm here (so it worked).","noteUa":"Едді Мерфі розповідає історію. «Ти його розсмішив?» Він не впевнений: «Мабуть, так. Я ж тут» (отже, вийшло).","around":[[698,699.27,"Did you make him laugh?"]]}
   ]
 }

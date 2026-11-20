@@ -3,7 +3,7 @@
   "ua": "зручний, комфортний (тілу або на душі)",
   "pic": "🛋️",
   "hl": "comfortable",
-  "together": {"get back into":"знову перевдягаюся в","come on the show":"приходить на шоу"},
+  "together": {"get back into":"знову перевдягаюся в","come on the show":"приходить на шоу","fine with me":"я не проти","me, too":"мені теж"},
   "gloss": {
     "comfortable": "зручний, комфортний",
     "this": "це",
@@ -51,10 +51,12 @@
     "you": "ти",
     "are": "are — дієслово be: you are = ти (є)",
     "to": "для",
-    "everybody": "всіх"
+    "everybody": "всіх",
+    "i’m": "I’m = I am: мені (I’m comfortable = мені зручно)"
   },
   "clips": [
     {"v":"ir3xLtSZhek","s":391.6,"e":392.9,"line":"This is so comfortable.","note":"At home Emma changes into soft, simple clothes: This is so comfortable (pleasant for the body).","noteUa":"Удома Емма перевдягається в м’який простий одяг: «Це так зручно» (приємно тілу).","around":[[387,390,"I get back into something pretty comfortable."],[392.9,395,"I’ve never been more comfortable in my life, but it’s not cute."]]},
-    {"v":"m8TaNKhZju4","s":368.73,"e":370,"line":"and you just made everyone feel so comfortable.","note":"Jimmy tells the director: your actors say they felt good and relaxed with you.","noteUa":"Джиммі каже режисерові: актори кажуть, що з тобою їм було спокійно й комфортно (на душі).","around":[[364,366,"Everyone who’s come on the show says how much they love you"],[366,368.7,"and how great of a leader you are to everybody,"]]}
+    {"v":"m8TaNKhZju4","s":368.73,"e":370,"line":"and you just made everyone feel so comfortable.","note":"Jimmy tells the director: your actors say they felt good and relaxed with you.","noteUa":"Джиммі каже режисерові: актори кажуть, що з тобою їм було спокійно й комфортно (на душі).","around":[[364,366,"Everyone who’s come on the show says how much they love you"],[366,368.7,"and how great of a leader you are to everybody,"]]},
+    {"v":"6nVAQaiLNkY","s":2030.88,"e":2032.8,"line":"I’m so comfortable.","note":"Joey and Chandler sit together in one big chair: I'm so comfortable. — Me too.","noteUa":"Джоуї й Чендлер сидять разом в одному великому кріслі: «Мені так зручно». — «Мені теж».","around":[[2025.92,2027.2,"Fine with me."],[2034.48,2035.72,"Me, too."]]}
   ]
 }

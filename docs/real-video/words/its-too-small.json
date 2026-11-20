@@ -3,12 +3,12 @@
   "ua": "Це замале.",
   "pic": "🤏",
   "hl": "too small",
-  "together": {"mixed them up":"переплутала їх"},
+  "together": {"mixed them up":"переплутала їх","just right":"якраз"},
   "gloss": {
     "it’s": "it’s = it is: це, вона",
     "too": "занадто",
     "small": "малий (too small = замалий)",
-    "this": "ця",
+    "this": {"*": "ця", "this cute": "таке"},
     "card": "листівка",
     "came": "прийшла, була (від come)",
     "with": "з",
@@ -34,15 +34,23 @@
     "so": "так",
     "long": "довго (for so long = так довго)",
     "this": "цю",
-    "little": "маленьку",
+    "little": {"*": "маленьку", "little place": "маленьке"},
     "necklace": "для намиста",
     "stand": "підставку",
     "or": "або",
     "whatever": "щось таке",
-    "was": "була"
+    "was": "була",
+    "not": "не",
+    "big": "велике",
+    "cute": "миле",
+    "place": "місце",
+    "on": "на",
+    "10th": "10-й",
+    "street": "вулиці"
   },
   "clips": [
     {"v":"bF0ujA9dw2o","s":1445.6,"e":1447.8,"line":"It’s too small.","note":"Monk compares two cards and two envelopes. This card is too small.","noteUa":"Монк порівнює дві листівки й два конверти. Ця листівка замала.","around":[[1442,1445.4,"This card came with the poison bottle."],[1448,1450,"Alice, you mixed them up."]]},
-    {"v":"f5PhrT7-hZM","s":1159.36,"e":1163,"line":"way too small for the amount of necklaces that I had at the time.","note":"Emma had a little stand for her necklaces. It was way too small for all of them.","noteUa":"У Емми була маленька підставка для намиста. Вона була замала для всіх її намист.","around":[[1154,1159.2,"Like, for so long I had this, like, little necklace stand or whatever, that was"]]}
+    {"v":"f5PhrT7-hZM","s":1159.36,"e":1163,"line":"way too small for the amount of necklaces that I had at the time.","note":"Emma had a little stand for her necklaces. It was way too small for all of them.","noteUa":"У Емми була маленька підставка для намиста. Вона була замала для всіх її намист.","around":[[1154,1159.2,"Like, for so long I had this, like, little necklace stand or whatever, that was"]]},
+    {"v":"QdQ58BbGRsA","s":2524.04,"e":2527.04,"line":"It’s not too big, it’s not too small, it’s just right.","note":"Monica describes the place for her new restaurant: not too big, not too small, just right.","noteUa":"Моніка описує приміщення для нового ресторану: не завелике, не замале, якраз.","around":[[2521.88,2524.04,"It’s this cute little place on 10th Street."]]}
   ]
 }

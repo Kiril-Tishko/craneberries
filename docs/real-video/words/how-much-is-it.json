@@ -3,7 +3,7 @@
   "ua": "Сколько это стоит?",
   "pic": "💲",
   "hl": "how much (is|are) (it|this|that|they)",
-  "together": {"a piece":"за штуку"},
+  "together": {"a piece":"за штуку","right away":"сейчас же"},
   "gloss": {
     "how": "сколько (how much = сколько)",
     "much": "(how much = сколько)",
@@ -21,10 +21,20 @@
     "that’s": "that’s = that is: это",
     "only": "всего",
     "25": "двадцать пять",
-    "wow": "ого"
+    "wow": "ого",
+    "uh": "э-э",
+    "sir": "сэр",
+    "4": "четыре (доллара)",
+    "burger": "бургер",
+    "oh": "о",
+    "it’s": "it’s = it is: (он) стоит",
+    "16": "шестнадцать (долларов)",
+    "49": "сорок девять (центов)"
   },
   "clips": [
     {"v":"QpjvslNTUZc","s":255.04,"e":256.32,"line":"How much are they?","note":"Someone wants to buy these things and asks the price. The answer: two dollars each.","noteUa":"Покупатель хочет купить эти вещи и спрашивает цену. Ответ: два доллара за штуку.","around":[[253.64,255,"Hey, can I get these?"],[256.32,257.88,"Two bucks a piece."]]},
-    {"v":"32zzZE658ec","s":266.2,"e":267.3,"line":"How much is that?","note":"In the office, people watch a TV ad for ab exercises. Someone asks the price: only 25 dollars.","noteUa":"В офисе смотрят рекламу упражнений для пресса. Кто-то спрашивает цену: всего 25 долларов.","around":[[267.3,269.53,"That’s only 25 bucks. Wow."]]}
+    {"v":"32zzZE658ec","s":266.2,"e":267.3,"line":"How much is that?","note":"In the office, people watch a TV ad for ab exercises. Someone asks the price: only 25 dollars.","noteUa":"В офисе смотрят рекламу упражнений для пресса. Кто-то спрашивает цену: всего 25 долларов.","around":[[267.3,269.53,"That’s only 25 bucks. Wow."]]},
+    {"v":"FRLE8t1rfA8","s":557.09,"e":560.29,"line":"Uh, how much is that?","note":"In a comedy sketch, a man orders a drink at a bar and asks the price: How much is that? — $4.25.","noteUa":"В комедийном скетче мужчина заказывает напиток в баре и спрашивает цену: «Сколько это стоит?» — 4,25 доллара.","around":[[555.92,557.06,"Right away, sir."],[560.33,561.33,"$4.25."]]},
+    {"v":"04Of9UtclI8","s":5484.28,"e":5485.75,"line":"How much is this burger?","note":"Rhett and Link try burgers. One asks the price: How much is this burger? — $16.49.","noteUa":"Ретт и Линк пробуют бургеры. Один спрашивает цену: «Сколько стоит этот бургер?» — 16,49 доллара.","around":[[5485.75,5488.36,"Oh, it’s 16.49."]]}
   ]
 }

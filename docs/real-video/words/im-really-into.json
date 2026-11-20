@@ -3,7 +3,7 @@
   "ua": "Я дуже захоплююся… / Мені дуже подобається…",
   "pic": "😍",
   "hl": "really into",
-  "together": {"3D printing":"3D-друк","a lot of":"багато","that stuff":"такі речі"},
+  "together": {"3D printing":"3D-друк","a lot of":"багато","that stuff":"такі речі","all right":"гаразд?","more of a":"скоріше"},
   "gloss": {
     "really": "дуже",
     "into": "(be into = захоплюватися)",
@@ -23,7 +23,7 @@
     "robots": "роботи",
     "think": "думаю",
     "that’s": "that’s = that is: це",
-    "like": "типу, ну",
+    "like": {"*": "типу, ну", "like harry": "як (like Harry Potter = як у «Гаррі Поттері»)"},
     "fun": "веселий, цікавий",
     "diy": "DIY = do it yourself: зроби сам",
     "hobby": "хобі",
@@ -37,10 +37,17 @@
     "awake": "не спимо",
     "here": "тут",
     "this": "цей",
-    "dimension": "вимір (світ)"
+    "dimension": "вимір (світ)",
+    "wizards": "чарівниками",
+    "it’s": "it’s = it is: це",
+    "wizard": "чарівника (wizard’s = чарівника)",
+    "robe": "мантія",
+    "harry": "Гаррі",
+    "potter": "Поттер"
   },
   "clips": [
     {"v":"WuTJkFvw70o","s":1747.33,"e":1749.9,"line":"I, I’m really into 3D printing.","note":"Mark Zuckerberg talks about his hobby: I'm really into 3D printing. His daughters like it too.","noteUa":"Марк Цукерберг розповідає про своє хобі: «Я дуже захоплююся 3D-друком». Його донькам теж подобається.","around":[[1741.5,1747.2,"But, in our family, we build a lot of robots."],[1750,1753.8,"I think that’s like a really fun DIY hobby."]]},
-    {"v":"y-GR3a_iW-8","s":694.07,"e":695.6,"line":"So I’m really into that stuff.","note":"On a TV show they talk about dreams and other worlds. One of them says: I'm really into that stuff.","noteUa":"На телешоу говорять про сни та інші світи. Хтось каже: «Мене це дуже захоплює».","around":[[688,691.8,"And then when we’re awake here, that’s this dimension."]]}
+    {"v":"y-GR3a_iW-8","s":694.07,"e":695.6,"line":"So I’m really into that stuff.","note":"On a TV show they talk about dreams and other worlds. One of them says: I'm really into that stuff.","noteUa":"На телешоу говорять про сни та інші світи. Хтось каже: «Мене це дуже захоплює».","around":[[688,691.8,"And then when we’re awake here, that’s this dimension."]]},
+    {"v":"X-_XjrIOR90","s":129.68,"e":131.36,"line":"I’m really into wizards.","note":"Ashley wears a strange dress. It's a wizard's robe: she's really into wizards, like in Harry Potter.","noteUa":"Ешлі в дивній сукні. Це мантія чарівника: вона дуже захоплюється чарівниками, як у «Гаррі Поттері».","around":[[128.04,129.64,"It’s more of a wizard’s robe."],[131.36,133.44,"All right? Like Harry Potter."]]}
   ]
 }

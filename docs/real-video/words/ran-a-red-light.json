@@ -3,13 +3,13 @@
   "ua": "проїхав на червоне світло",
   "pic": "🚦",
   "hl": "\\br[au]n(s|ning)? (a|the) red light\\b",
-  "together": {"make sure":"переконатися, подбати","catch up to":"наздогнати","or two":"чи два"},
+  "together": {"make sure":"переконатися, подбати","catch up to":"наздогнати","or two":"чи два","miles an hour":"миль на годину","What for":"за що?","crash site":"місце аварії"},
   "gloss": {
     "you": "ти",
     "even": "навіть",
     "or": "або, чи",
     "two": "два",
-    "to": {"*": "to — перед дієсловом: to make sure = щоб переконатися", "to two people": "(catch up to = наздогнати)"},
+    "to": {"*": "to — перед дієсловом: to make sure = щоб переконатися", "to two people": "(catch up to = наздогнати)", "to the crash": "до (to the crash site = до місця аварії)"},
     "make": "(make sure = подбати, щоб)",
     "sure": "(make sure = подбати, щоб)",
     "were": "були (you were seen = тебе бачили)",
@@ -32,10 +32,22 @@
     "destroying": "руйнують",
     "this": "цей",
     "mall": "торговий центр",
-    "just": "лише, просто"
+    "just": "лише, просто",
+    "apparently": "виявляється",
+    "at": "зі швидкістю",
+    "64": "64",
+    "was": "був",
+    "in": "на",
+    "the": "the — (те саме місце, сидіння)",
+    "passenger": "пасажирському",
+    "seat": "сидінні",
+    "drove": "привіз (на машині)",
+    "her": "її"
   },
   "clips": [
     {"v":"ZhFxf5dLDxU","s":1470.64,"e":1474,"line":"You even ran a red light or two to make sure you were seen.","note":"Monk explains the crime: the killer wanted people to notice his car, so he even ran a red light.","noteUa":"Монк пояснює злочин: убивця хотів, щоб його машину помітили, тож навіть проїхав на червоне світло."},
-    {"v":"wJsFlCQcwrw","s":214.98,"e":217.8,"line":"to try and catch up to two people who ran a red light.","note":"In an old movie, the police destroy a whole mall to catch two men who only ran a red light.","noteUa":"У старому фільмі поліція руйнує цілий торговий центр, щоб спіймати двох чоловіків, які лише проїхали на червоне світло.","around":[[211,214.9,"I love how hellbent these cops are on absolutely destroying this mall just"]]}
+    {"v":"wJsFlCQcwrw","s":214.98,"e":217.8,"line":"to try and catch up to two people who ran a red light.","note":"In an old movie, the police destroy a whole mall to catch two men who only ran a red light.","noteUa":"У старому фільмі поліція руйнує цілий торговий центр, щоб спіймати двох чоловіків, які лише проїхали на червоне світло.","around":[[211,214.9,"I love how hellbent these cops are on absolutely destroying this mall just"]]},
+    {"v":"U8Y_4LNIGFQ","s":3129.52,"e":3134.56,"line":"Apparently, I ran a red light at 64 miles an hour, and I was in the passenger seat.","note":"A man got a ticket from a traffic camera: he ran a red light at 64 miles an hour. But he was in the passenger seat!","noteUa":"Чоловік отримав штраф із камери: він проїхав на червоне зі швидкістю 64 милі на годину. Але ж він сидів на пасажирському сидінні!","around":[[3128.08,3129.12,"What for?"]]},
+    {"v":"GTVrTgeo-WY","s":1470.64,"e":1474.24,"line":"You even ran a red light or two to make sure you were seen.","note":"Monk explains the crime: the killer drove her car and even ran a red light on purpose, so people would see the car.","noteUa":"Монк пояснює злочин: убивця їхав її машиною і навіть навмисно проїхав на червоне, щоб машину помітили.","around":[[1468.16,1470.08,"You drove her to the crash site."]]}
   ]
 }

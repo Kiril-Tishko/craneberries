@@ -3,6 +3,7 @@
   "ua": "Ти мені не віриш?",
   "pic": "🤨",
   "hl": "(you )?don[’']t believe me",
+  "together": {"I’ve got":"у мене є","got hit":"мене збив"},
   "gloss": {
     "here’s": "here’s = here is: ось",
     "today": "сьогодні (today’s newspaper = сьогоднішня газета)",
@@ -10,11 +11,26 @@
     "if": "якщо",
     "just": "просто",
     "ask": "спитайте",
-    "them": "їх"
+    "them": "їх",
+    "no": "ні",
+    "i": "я",
+    "by": "(by a deer = олень)",
+    "a": "a — один (олень)",
+    "deer": "олень",
+    "antler": "рогів (оленячих)",
+    "prints": "сліди",
+    "on": "на",
+    "the": "the — той (бік)",
+    "side": "боці",
+    "of": "(the side of = бік)",
+    "my": "моєї",
+    "mother": "мами (mother’s = мами)",
+    "car": "машини"
   },
   "clips": [
     {"v":"rokPqHc9iD0","s":29,"e":30,"line":"You don’t believe me?","note":"He says something surprising and asks the audience if they believe him.","noteUa":"Лектор каже щось несподіване і питає зал: «Не вірите мені?»"},
     {"v":"0ohAeenGSXE","s":35,"e":37,"line":"You don’t believe me? Here’s today’s newspaper.","note":"He shows today’s newspaper to prove he is right.","noteUa":"Він показує сьогоднішню газету як доказ."},
-    {"v":"k_VNjOGmhzg","s":300,"e":302,"line":"If you don’t believe me, just ask them.","note":"If you don’t believe me, ask them: they will tell you.","noteUa":"«Якщо не вірите мені, просто спитайте їх». Після believe одразу me, без on.","hidden":true}
+    {"v":"k_VNjOGmhzg","s":300,"e":302,"line":"If you don’t believe me, just ask them.","note":"If you don’t believe me, ask them: they will tell you.","noteUa":"«Якщо не вірите мені, просто спитайте їх». Після believe одразу me, без on.","hidden":true},
+    {"v":"MCpz8UuGndM","s":223.76,"e":224.88,"line":"You don’t believe me?","note":"Rory is late because a deer hit her car. Her teacher doesn't believe it. You don't believe me? There are antler prints on the car!","noteUa":"Рорі запізнилася, бо в її машину врізався олень. Вчитель не вірить. «Ви мені не вірите? На машині сліди від рогів!»","around":[[221.92,223.76,"No, I got hit by a deer."],[224.88,227.12,"I’ve got antler prints on the side of my mother’s car."]]}
   ]
 }

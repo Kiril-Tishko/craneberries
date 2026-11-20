@@ -29,11 +29,20 @@
     "on": "на",
     "this": "этот, эта",
     "shift": "смена (на работе)",
-    "since": "с (какого-то времени)"
+    "since": "с (какого-то времени)",
+    "7": "семь",
+    "15": "пятнадцать (7:15 = семь пятнадцать)",
+    "oh": "о",
+    "leonard": "Леонард (имя)",
+    "00": "(7:00 = семь часов)",
+    "a": "(a.m. = утра)",
+    "m": "(a.m. = утра)"
   },
   "clips": [
     {"v":"d1Lnp08XTSk","s":1865.28,"e":1867.08,"line":"What time is it?","note":"It is night and she is very tired. She asks: What time is it? Someone says: 11:40.","noteUa":"Ночь, она очень устала. Она спрашивает: «Который час?» Ей отвечают: «11:40».","around":[[1862.88,1864.24,"I just get so tired."],[1864.24,1865.2,"Like, it’s too late."],[1866.08,1867.6,"11:40."]]},
     {"v":"t0uOd5i2a5E","s":478.26,"e":479.16,"line":"What time is it?","note":"A man is alone in a prison cell. There is no clock, so he asks: What time is it?","noteUa":"Мужчина один в тюремной камере. Часов нет, поэтому он спрашивает: «Который час?»","around":[[475.36,478.2,"I’ve been down here 2 days now."]],"hidden":true},
-    {"v":"RVTwOIYLSro","s":80.32,"e":81.28,"line":"What time is it now?","note":"She has worked for a very long time today. She asks: What time is it now?","noteUa":"Она сегодня работает очень долго. Она спрашивает: «Который сейчас час?»","around":[[77.29,80.32,"I’ve been on this shift since…"]]}
+    {"v":"RVTwOIYLSro","s":80.32,"e":81.28,"line":"What time is it now?","note":"She has worked for a very long time today. She asks: What time is it now?","noteUa":"Она сегодня работает очень долго. Она спрашивает: «Который сейчас час?»","around":[[77.29,80.32,"I’ve been on this shift since…"]]},
+    {"v":"6nVAQaiLNkY","s":1301.28,"e":1302.16,"line":"What time is it?","note":"Rachel asks: What time is it? — 7:15.","noteUa":"Рейчел спрашивает: «Который час?» — «7:15».","around":[[1302.16,1303.92,"7:15."]]},
+    {"v":"4gsBBqr2iJs","s":3533.92,"e":3535.68,"line":"Oh, Leonard, what time is it?","note":"Someone is woken up very early: Leonard, what time is it? — 7 a.m. Sorry, it's early.","noteUa":"Человека будят очень рано: «Леонард, который час?» — «Семь утра. Извини, что так рано».","around":[[3535.68,3536.32,"7:00 a.m."]]}
   ]
 }

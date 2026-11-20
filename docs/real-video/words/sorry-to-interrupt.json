@@ -3,7 +3,7 @@
   "ua": "Вибачте, що перебиваю.",
   "pic": "✋",
   "hl": "sorry to interrupt",
-  "together": {"Teach for America":"«Навчай для Америки» (програма для молодих учителів)","go down to":"поїхати в","inner city":"бідні райони в центрі міста"},
+  "together": {"Teach for America":"«Навчай для Америки» (програма для молодих учителів)","go down to":"поїхати в","inner city":"бідні райони в центрі міста","love fest":"ніжності (жартома)"},
   "gloss": {
     "sorry": "вибачте",
     "interrupt": "перебивати",
@@ -25,9 +25,20 @@
     "teach": "навчати",
     "kids": "дітей",
     "about": "про (teach about computers = вчити комп’ютерів)",
-    "computers": "комп’ютери"
+    "computers": "комп’ютери",
+    "the": "the — ці ваші (ніжності)",
+    "but": "але",
+    "could": "могли б (Could you…? = Чи не могли б ви…?)",
+    "you": "ви",
+    "hand": "подати",
+    "me": "мені",
+    "that": "ту",
+    "folder": "папку",
+    "there": "(that folder there = ось ту папку)",
+    "please": "будь ласка"
   },
   "clips": [
-    {"v":"RFQRM1B2AKA","s":12.72,"e":16.32,"line":"Hey guys, uh, sorry to interrupt. I just want to say goodbye to everyone.","note":"Everyone in the office is busy with something. Nick, the IT guy, comes in and politely breaks in: he wants to say goodbye.","noteUa":"В офісі всі зайняті своїми справами. Нік, айтішник, заходить і ввічливо перебиває: він хоче попрощатися.","around":[[16.32,19.6,"Through Teach for America, I’m gonna go down to Detroit and teach, uh, inner city kids about computers."]]}
+    {"v":"RFQRM1B2AKA","s":12.72,"e":16.32,"line":"Hey guys, uh, sorry to interrupt. I just want to say goodbye to everyone.","note":"Everyone in the office is busy with something. Nick, the IT guy, comes in and politely breaks in: he wants to say goodbye.","noteUa":"В офісі всі зайняті своїми справами. Нік, айтішник, заходить і ввічливо перебиває: він хоче попрощатися.","around":[[16.32,19.6,"Through Teach for America, I’m gonna go down to Detroit and teach, uh, inner city kids about computers."]]},
+    {"v":"bAeggx5tKvU","s":2618.6,"e":2623.16,"line":"Hey, sorry to interrupt the love fest, but could you hand me that folder there, please?","note":"Two people are talking about getting married. A coworker politely breaks in: Sorry to interrupt… could you pass me that folder?","noteUa":"Двоє говорять про весілля. Колега ввічливо перебиває: «Вибачте, що перебиваю…» — і просить подати папку."}
   ]
 }

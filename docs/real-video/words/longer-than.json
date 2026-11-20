@@ -3,7 +3,7 @@
   "ua": "довший, ніж",
   "pic": "📏",
   "hl": "longer than",
-  "together": {"never mind":"нічого, байдуже","a little bit":"трохи","take it apart":"розібрати"},
+  "together": {"never mind":"нічого, байдуже","a little bit":"трохи","take it apart":"розібрати","no one":"ніхто","up there":"там нагорі","call down":"гукнути вниз"},
   "gloss": {
     "longer": "довший",
     "than": "ніж",
@@ -19,13 +19,13 @@
     "camera": "камера",
     "on": "на",
     "very": "дуже",
-    "long": "довгій",
+    "long": {"*": "довгій", "how long": "(how long = як довго)"},
     "stick": "палиці",
     "i": "я",
     "think": "думаю",
     "it’ll": "it’ll = it will: це (займе)",
     "take": "займе (it’ll take you = у тебе займе)",
-    "you": "тебе",
+    "you": {"*": "тебе", "were you": "ти"},
     "that": "те (longer than that = довше, ніж це)",
     "well": "ну",
     "hope": "сподіваюся",
@@ -38,10 +38,23 @@
     "in": "за (in about 5 minutes = хвилин за 5)",
     "about": "приблизно",
     "5": "п’ять",
-    "minutes": "хвилин"
+    "minutes": "хвилин",
+    "would": "(would have liked = хотілося б)",
+    "have": "(would have liked = хотілося б)",
+    "liked": "хотілося б",
+    "molly": "Моллі (ім’я)",
+    "how": "як",
+    "were": "(were you hanging = ти висіла)",
+    "hanging": "висіла",
+    "tried": "намагалася",
+    "could": "могла",
+    "hear": "почути",
+    "me": "мене",
+    "to": "to — перед дієсловом: to call = гукнути"
   },
   "clips": [
     {"v":"hCZwH5CSlEY","s":86.56,"e":88.3,"line":"longer than mine, but never mind.","note":"Many people film with cameras on long sticks. Someone's stick is longer than his.","noteUa":"Багато хто знімає камерою на довгій палиці. В когось палиця довша, ніж у нього.","around":[[82,86.4,"maybe a small GoPro, maybe a 360 camera on a very long stick…"]]},
-    {"v":"Xnk4seEHmgw","s":27.86,"e":29.8,"line":"I think it’ll take you a little bit longer than that.","note":"Jim has played a trick on Dwight. Dwight says he'll take it apart in 5 minutes. Jim thinks it will take a bit longer.","noteUa":"Джим розіграв Дуайта. Дуайт каже, що розбере все за 5 хвилин. Джим думає, що це займе трохи більше часу.","around":[[23.74,27.86,"Well, I hope it was worth it, ’cause I’m gonna take it apart in about 5 minutes."]]}
+    {"v":"Xnk4seEHmgw","s":27.86,"e":29.8,"line":"I think it’ll take you a little bit longer than that.","note":"Jim has played a trick on Dwight. Dwight says he'll take it apart in 5 minutes. Jim thinks it will take a bit longer.","noteUa":"Джим розіграв Дуайта. Дуайт каже, що розбере все за 5 хвилин. Джим думає, що це займе трохи більше часу.","around":[[23.74,27.86,"Well, I hope it was worth it, ’cause I’m gonna take it apart in about 5 minutes."]]},
+    {"v":"Vm_hhD9QQbg","s":3320.27,"e":3322.17,"line":"Longer than I would have liked.","note":"Molly was hanging up high during a show. How long? Longer than she wanted!","noteUa":"Моллі висіла під стелею під час шоу. Як довго? Довше, ніж їй хотілося б!","around":[[3318.73,3320.27,"Molly, how long were you hanging up there?"],[3322.17,3324.73,"I tried to call down, but no one could hear me."]]}
   ]
 }

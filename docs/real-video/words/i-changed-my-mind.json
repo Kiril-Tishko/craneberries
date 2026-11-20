@@ -3,14 +3,14 @@
   "ua": "Я передумала.",
   "pic": "🔄",
   "hl": "I changed my mind",
-  "together": {"get out of":"звільни, вийди з"},
+  "together": {"get out of":"звільни, вийди з","all of a sudden":"раптом"},
   "gloss": {
     "i": "я",
     "changed": "змінив (від change)",
     "my": "мою, мій",
     "mind": "думка (change my mind = передумати)",
     "get": "(get out of = звільни, вийди з)",
-    "out": "(get out of = звільни, вийди з)",
+    "out": {"*": "(get out of = звільни, вийди з)", "you’re out": "(you’re out = ти відмовляєшся, тебе немає)"},
     "of": "(get out of = звільни, вийди з)",
     "spot": "місце",
     "there’s": "there’s = there is: є",
@@ -29,10 +29,26 @@
     "friend": "подруги, друга",
     "katie’s": "Katie’s = Кеті (чий? — Кеті)",
     "phone": "телефон",
-    "number": "номер"
+    "number": "номер",
+    "well": "ну",
+    "and": "і",
+    "then": "потім",
+    "you’re": "you’re = you are: ти",
+    "yeah": "так",
+    "see": "бачиш",
+    "you": "ти",
+    "said": "сказав",
+    "you’d": "you’d = you would: ти (зробиш)",
+    "do": "зробити",
+    "it": "це",
+    "i’m": "I’m = I am: я",
+    "going": "йду",
+    "home": "додому"
   },
   "clips": [
     {"v":"RoyEqN1nKME","s":546.56,"e":547.8,"line":"I changed my mind.","note":"Sheldon let his friend sit in his spot. Now he says: I changed my mind. Get out of my spot.","noteUa":"Шелдон дозволив другу сісти на своє місце. А тепер: «Я передумав. Звільни моє місце».","around":[[547.8,549,"Get out of my spot."]]},
-    {"v":"C6OH9l-lDFE","s":537.28,"e":538.6,"line":"I changed my mind.","note":"Jake changes his decision: I changed my mind. Can I have your friend's phone number?","noteUa":"Джейк змінює рішення: «Я передумав. Можна номер твоєї подруги Кеті?»","around":[[530,532.6,"There’s more than one right way to make paella, Jake."],[543,545,"Can I have your friend Katie’s phone number?"]]}
+    {"v":"C6OH9l-lDFE","s":537.28,"e":538.6,"line":"I changed my mind.","note":"Jake changes his decision: I changed my mind. Can I have your friend's phone number?","noteUa":"Джейк змінює рішення: «Я передумав. Можна номер твоєї подруги Кеті?»","around":[[530,532.6,"There’s more than one right way to make paella, Jake."],[543,545,"Can I have your friend Katie’s phone number?"]]},
+    {"v":"K7ZN4V2xxf0","s":891.44,"e":893.04,"line":"Well, I changed my mind.","note":"Everyone was excited about a plan, and then she suddenly said no. Why? Well, I changed my mind.","noteUa":"Усі раділи плану, а потім вона раптом відмовилася. Чому? «Ну, я передумала».","around":[[889.76,891.44,"And then all of a sudden, you’re out."]]},
+    {"v":"YANOlnB6-Rw","s":2718.72,"e":2720.56,"line":"Yeah, well, I changed my mind.","note":"He said he would do it, but now he doesn't want to: Yeah, well, I changed my mind. I'm going home.","noteUa":"Він обіцяв це зробити, а тепер не хоче: «Ну, я передумав. Я йду додому».","around":[[2716.4,2718.72,"See, you said you’d do it."],[2720.64,2722,"I’m going home."]]}
   ]
 }

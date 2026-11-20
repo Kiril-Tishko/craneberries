@@ -204,7 +204,12 @@ huggingface.co, about 15 min per hour of audio).
     says why it's there), the yellow word whole (its `ua`), `together` phrases whole. `gloss` covers every word of every
     clip's line and lines around (same shape as the song pages' gloss, context keys for grammar words), so **when you
     add a clip or its lines around, add glosses for its new words** (and `together` for phrasal verbs / set phrases).
-    `words/index.json` lists them for the search: after changing word files run `python3 tools/real-video/build_index.py`.
+    `words/index.json` lists them for the search: after changing word files run `python3 tools/real-video/build_index.py`
+    (on his PC, which has no Python: `perl tools/real-video/helpers/index-update.pl <slug>…`). Other helpers there
+    (Perl, kept in the repo because the scratchpad gets wiped): `cands.pl` (index candidates a word doesn't use yet),
+    `entries.pl` (ready entries with their lines around), `frames.pl` (a numbered sheet of YouTube's timeline pictures
+    to check each clip's picture without playing it, no sound), `add-clips.pl` (adds clips and glosses in the files' own
+    layout; `--show` lists reused glosses to check), `gloss-context.pl` (a gloss for one line), `glosscheck.pl`.
     `words/groups.json` = the topics of the whole-library page (`[{name, pic, words: [slugs]}]`; Nov 20, he wanted the
     phrases grouped): put every new word in one topic (a word in none shows under "More"). On a phone the topics and
     the words each scroll sideways in one row, so the video stays near the top; a lesson's `?words` list isn't grouped.

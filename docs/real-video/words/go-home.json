@@ -3,7 +3,7 @@
   "ua": "йти додому",
   "pic": "🏠",
   "hl": "go home",
-  "together": {"have no say":"не маю права голосу","who cares":"кого це хвилює"},
+  "together": {"have no say":"не маю права голосу","who cares":"кого це хвилює","until further notice":"до подальшого розпорядження"},
   "gloss": {
     "go": "йти",
     "home": "додому",
@@ -12,7 +12,7 @@
     "to": "to — перед дієсловом: want to go = хочу йти",
     "let’s": "let’s = let us: давай(те)",
     "is": "is — дієслово be (питання): Is no one…? = Невже ніхто…?",
-    "no": "жоден (no one = ніхто)",
+    "no": {"*": "жоден (no one = ніхто)", "no, i can’t": "ні"},
     "one": "(no one = ніхто)",
     "listening": "слухає",
     "me": "мене",
@@ -30,10 +30,16 @@
     "means": "означає",
     "something": "щось",
     "get": "(get something to eat = взяти щось поїсти)",
-    "eat": "поїсти"
+    "eat": "поїсти",
+    "leslie": "Леслі (ім’я)",
+    "can’t": "can’t = cannot: не можу",
+    "you’re": "you’re = you are: тебе (you’re suspended = тебе відсторонено)",
+    "suspended": "відсторонено"
   },
   "clips": [
     {"v":"aS3io24Gumw","s":188.36,"e":189.6,"line":"I want to go home.","note":"Sheldon is in hospital. He doesn't want to stay there: I want to go home.","noteUa":"Шелдон у лікарні. Він не хоче там лишатися: «Я хочу додому».","around":[[186,187.8,"Is no one listening to me?"],[190,192.6,"I’m listening, but I have no say in this."]]},
-    {"v":"FO0yZagkA-E","s":1563.92,"e":1565.2,"line":"Let’s go home.","note":"Two friends are tired after a long night of work: Let's go home.","noteUa":"Двоє друзів утомилися після довгої ночі роботи: «Ходімо додому».","around":[[1561,1562.4,"Who cares what stupid 43 means?"],[1567,1568.6,"Want to get something to eat?"]]}
+    {"v":"FO0yZagkA-E","s":1563.92,"e":1565.2,"line":"Let’s go home.","note":"Two friends are tired after a long night of work: Let's go home.","noteUa":"Двоє друзів утомилися після довгої ночі роботи: «Ходімо додому».","around":[[1561,1562.4,"Who cares what stupid 43 means?"],[1567,1568.6,"Want to get something to eat?"]]},
+    {"v":"IpUe0ElcTAk","s":838.48,"e":839.44,"line":"Leslie, go home.","note":"Leslie is told to go home and rest. She says: No, I can't.","noteUa":"Леслі кажуть іти додому відпочити. Вона відповідає: «Ні, не можу».","around":[[839.44,840,"No, I can’t."]]},
+    {"v":"sIlIvGZbqyQ","s":61.44,"e":61.92,"line":"Go home.","note":"The captain tells Jake: Go home. You're suspended (you can't work for now).","noteUa":"Капітан каже Джейку: «Йди додому. Тебе відсторонено» (поки що працювати не можна).","around":[[61.92,64.24,"You’re suspended until further notice."]]}
   ]
 }

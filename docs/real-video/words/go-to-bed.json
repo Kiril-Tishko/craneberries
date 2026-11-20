@@ -3,7 +3,7 @@
   "ua": "Иди спать!",
   "pic": "😴",
   "hl": "go to bed",
-  "together": {"what the hell":"что, чёрт возьми (грубовато)","is going on":"происходит","all right":"ладно","that’s it":"всё, хватит!","right now":"прямо сейчас"},
+  "together": {"what the hell":"что, чёрт возьми (грубовато)","is going on":"происходит","all right":"ладно","that’s it":"всё, хватит!","right now":"прямо сейчас","get back in":"снова надень","ice cream":"мороженое","nothing but":"ничего, кроме"},
   "gloss": {
     "go": "иди",
     "to": {"*":"to — куда: to bed = в кровать","go to sleep":"go to sleep = ложись спать"},
@@ -25,11 +25,23 @@
     "you’re": "you’re = you are: ты",
     "like": "(you’re like … = ты такой: «…»)",
     "sleep": "спать (go to sleep = ложись спать)",
-    "yes": "да"
+    "yes": "да",
+    "jake": "Джейк (имя)",
+    "okay": "ладно",
+    "your": "свою",
+    "pajamas": "пижаму",
+    "eat": "ешь",
+    "gallons": "вёдрами (галлонами)",
+    "of": "(gallons of = вёдра)",
+    "and": "и",
+    "tons": "кучу (тонны)",
+    "pizza": "пиццы"
   },
   "clips": [
     {"v":"qnykUE5ibEU","s":26.84,"e":28.72,"line":"Liam, go to bed now.","note":"There is a fight at home at night. The big sister tells little Liam: Go to bed now.","noteUa":"Ночью дома ссора. Старшая сестра говорит маленькому Лиаму: «Иди спать, сейчас же».","around":[[25.28,26.84,"What the hell is going on?"]],"hidden":true},
     {"v":"Ekys_pfV3nU","s":2358.24,"e":2360.52,"line":"Go to bed.","note":"A dad is tired of the talk: That's it. Go to bed.","noteUa":"Папе надоел этот разговор: «Всё, хватит. Иди спать».","around":[[2357.6,2358.24,"All right. That’s it."]]},
-    {"v":"iU3PSAAgbrU","s":971.28,"e":972.08,"line":"Go to bed.","note":"TV hosts joke about a show that ends very late at night. It says to you: Go to bed!","noteUa":"Ведущие шутят про шоу, которое заканчивается очень поздно. Оно как будто говорит тебе: «Иди спать!»","around":[[966.96,971.2,"Anyway, that’s when you’re like, go to sleep right now."],[972.32,972.56,"Yes."]]}
+    {"v":"iU3PSAAgbrU","s":971.28,"e":972.08,"line":"Go to bed.","note":"TV hosts joke about a show that ends very late at night. It says to you: Go to bed!","noteUa":"Ведущие шутят про шоу, которое заканчивается очень поздно. Оно как будто говорит тебе: «Иди спать!»","around":[[966.96,971.2,"Anyway, that’s when you’re like, go to sleep right now."],[972.32,972.56,"Yes."]]},
+    {"v":"hNNfvFTlmsk","s":298.09,"e":299.29,"line":"Go to bed, Jake.","note":"It's late, and Jake is sent to bed: Go to bed, Jake. — Okay.","noteUa":"Уже поздно, и Джейка отправляют спать: «Иди спать, Джейк». — «Ладно».","around":[[299.89,300.69,"Okay."]]},
+    {"v":"K7ZN4V2xxf0","s":316.32,"e":316.88,"line":"Go to bed.","note":"Mother and daughter joke about a lazy day at home: Get back in your pajamas. Go to bed. Eat ice cream and pizza.","noteUa":"Мама и дочь шутят про ленивый день дома: «Надень обратно пижаму. Иди спать. Ешь мороженое и пиццу».","around":[[314.88,316.32,"Get back in your pajamas."],[316.88,319.84,"Eat nothing but gallons of ice cream and tons of pizza."]]}
   ]
 }

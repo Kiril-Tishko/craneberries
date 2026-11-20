@@ -3,7 +3,7 @@
   "ua": "Зрештою я… (опинився, зробив)",
   "pic": "🧭",
   "hl": "ended up",
-  "together": {"for a while":"на якийсь час","coffee shop":"кав’ярня"},
+  "together": {"for a while":"на якийсь час","coffee shop":"кав’ярня","got me dressed up":"гарно мене вбрали"},
   "gloss": {
     "ended": "(ended up = зрештою опинився, у підсумку)",
     "up": "(ended up = зрештою опинився)",
@@ -21,7 +21,7 @@
     "recommendations": "поради, рекомендації",
     "in": "в",
     "croatia": "Хорватія",
-    "a": "a — якийсь (a while = якийсь час)",
+    "a": {"*": "a — якийсь (a while = якийсь час)", "a lollipop": "a — один (льодяник)"},
     "while": "час, деякий час",
     "originally": "взагалі-то, родом",
     "i’m": "I’m = I am: я",
@@ -32,10 +32,16 @@
     "school": "школа, університет (в Америці)",
     "santa": "Санта-Крус (місто в Каліфорнії)",
     "cruz": "Санта-Крус (місто в Каліфорнії)",
-    "then": "потім"
+    "then": "потім",
+    "they": "вони",
+    "gave": "дали",
+    "me": "мені",
+    "lollipop": "льодяник",
+    "here": "тут"
   },
   "clips": [
     {"v":"ZVkIjPrVcl0","s":143.12,"e":145,"line":"So I ended up at Paper Coffee.","note":"She asked a new friend where to get coffee. In the end she went to Paper Coffee.","noteUa":"Вона спитала нову знайому, куди піти на каву. Зрештою опинилася в Paper Coffee.","around":[[139,142.9,"and I was asking her for coffee shop recommendations."]]},
-    {"v":"FMMRzFFCKJ0","s":3233.32,"e":3235.5,"line":"I ended up in Croatia for a while.","note":"A game developer tells his story: he is from LA, studied in California, and then ended up in Croatia.","noteUa":"Розробник ігор розповідає: він з Лос-Анджелеса, вчився в Каліфорнії, а потім опинився в Хорватії.","around":[[3225,3227.8,"So originally, I’m from LA."],[3228,3233.2,"I went to school at Santa Cruz, and then"]]}
+    {"v":"FMMRzFFCKJ0","s":3233.32,"e":3235.5,"line":"I ended up in Croatia for a while.","note":"A game developer tells his story: he is from LA, studied in California, and then ended up in Croatia.","noteUa":"Розробник ігор розповідає: він з Лос-Анджелеса, вчився в Каліфорнії, а потім опинився в Хорватії.","around":[[3225,3227.8,"So originally, I’m from LA."],[3228,3233.2,"I went to school at Santa Cruz, and then"]]},
+    {"v":"QUWXQVqcZaM","s":1638.44,"e":1639.64,"line":"I ended up here.","note":"A funny story: they dressed me up, gave me a lollipop, and I ended up here (not where I wanted to be).","noteUa":"Смішна історія: «Мене гарно вбрали, дали льодяник — і зрештою я опинилася тут» (зовсім не там, де хотілося).","around":[[1636.76,1638.44,"They got me dressed up, gave me a lollipop."]]}
   ]
 }
