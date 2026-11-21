@@ -234,8 +234,13 @@ sub player {
   if ($p eq '/' || $p eq '/index.html') {
     my $h = player_file('index.html');
     return reply($c, 500, 'text/plain', "the clip player is missing ($PLAYER)") unless length $h;
-    # The page has its own Previous / Next under the video (his wish, Nov 21): no arrows beside the video here.
-    $h =~ s{</head>}{<style>/* site.pl */ .side{display:none!important}</style></head>};
+    # Here (his wishes, Nov 21): no arrows beside the video and no speed buttons; Previous / Like / Next go in the row
+    # with "With context" (the script added to app.js puts them there; the results page answers them).
+    $h =~ s{</head>}{<style>/* site.pl */ .side,#speed,#cdots{display:none!important}
+.tools .group{flex-wrap:nowrap!important}.ci-nav{display:inline-flex;gap:8px;align-items:center}.ci-prev,.ci-next{min-width:44px;justify-content:center;font-size:16px}.ci-like{white-space:nowrap}
+.ci-nav .btn:disabled{opacity:.35;pointer-events:none}
+.ci-like[aria-pressed="true"]{background:#e0245e!important;border-color:#e0245e!important;color:#fff!important}
+</style></head>};
     utf8::encode($h);
     return reply($c, 200, 'text/html; charset=utf-8', $h);
   }
@@ -255,6 +260,16 @@ sub player {
     if (!document.body.classList.contains('single')) { document.body.classList.add('single'); if (typeof window.fitEmbed === 'function') window.fitEmbed(); }
   };
   document.body.classList.add('single');
+})();
+// ◀ Previous, ♡ Like, Next ▶ in the row with "With context"; the results page (parent.CI) does the work and tells
+// them what to show (CI_Buttons.set).
+(function () {
+  const row = document.querySelector('.tools .group'); if (!row) return;
+  const ci = () => (window.parent !== window && window.parent.CI) || null;
+  const mk = (cls, text, title, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + cls; b.textContent = text; b.title = title; b.onclick = () => { const c = ci(); if (c) c[fn](); }; return b; };
+  const prev = mk('ci-prev', '◀', 'Previous clip', 'prev'), like = mk('ci-like', '♡ Like', 'Like this clip', 'like'), next = mk('ci-next', '▶', 'Next clip', 'next');
+  const box = document.createElement('span'); box.className = 'ci-nav'; box.append(prev, like, next); row.appendChild(box);
+  window.CI_Buttons = { set(o) { prev.disabled = !o.prev; next.disabled = !o.next; like.setAttribute('aria-pressed', o.liked ? 'true' : 'false'); like.textContent = o.liked ? '♥ Liked' : '♡ Like'; } };
 })();
 JS
     utf8::encode($js);
