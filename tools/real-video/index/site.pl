@@ -25,7 +25,17 @@ my $DIR = data_dir();
 my $PLAYER = -d "$BIN/player" ? "$BIN/player" : "$BIN/../../../docs/real-video";
 my $LIVE = 'https://kiril-tishko.github.io/craneberries/real-video/';   # the live clip library (sub player_file)
 open my $lock, '>>', "$DIR/site-$port.lock" or die "can't open $DIR/site-$port.lock: $!\n";   # one copy a port
-if (!flock($lock, LOCK_EX | LOCK_NB)) { print "The page is already running: http://localhost:$port\n"; exit 0 }
+if (!flock($lock, LOCK_EX | LOCK_NB)) {
+  # Another copy has the port. If it answers, it is running; if not, it hung while starting (once, Nov 21, when
+  # --install restarted everything): stop it and take its place, so the hourly task mends the page by itself.
+  if (IO::Socket::INET->new(PeerAddr => '127.0.0.1', PeerPort => $port, Timeout => 3)) { print "The page is already running: http://localhost:$port\n"; exit 0 }
+  my $old = slurp("$DIR/site-$port.pid") =~ /(\d+)/ ? $1 : 0;
+  kill 'KILL', $old if $old && $old != $$;
+  my $got = 0;
+  for (1 .. 20) { if (flock($lock, LOCK_EX | LOCK_NB)) { $got = 1; last } select undef, undef, undef, 0.5 }
+  if (!$got) { print "The page's port is taken by a copy that doesn't answer (pid $old).\n"; exit 1 }
+}
+if (open my $pf, '>', "$DIR/site-$port.pid") { print $pf "$$\n"; close $pf }   # for the check above
 # ♥ kept and 🙈 hidden clips, his own start / end, his edited caption lines (CaptionIndex.pm: page_tables).
 page_tables();
 # His phone on the home Wi-Fi may open it too (his wish, Nov 21), with a PIN: it listens on every network, but answers
