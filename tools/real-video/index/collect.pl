@@ -691,9 +691,10 @@ sub round {
   @unlisted = ((grep { $first{$_} } @unlisted), (grep { !$first{$_} } @unlisted));
   my $row = sub { my %v; @v{qw(k id channel tries lines views)} = @{$_[0]}; \%v };
   # Longest videos first (of each channel's most-viewed): one caption request gives up to 3 hours of speech.
-  # "first" channels (a show a student loves): 12 of their videos at a time, before anything else.
+  # "first" channels (a show a student loves, songs): 12 of their videos at a time, before anything else, the
+  # channels taking turns (a long show doesn't keep the songs waiting).
   my $in = join ',', map { sql_quote($_) } grep { $known->{$_} } keys %first;
-  my @batch = $in ? map { $row->($_) } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM videos WHERE status='todo' AND channel IN ($in) ORDER BY dur IS NOT NULL, dur DESC, views DESC, k LIMIT 12;") : ();
+  my @batch = $in ? map { $row->($_) } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY dur IS NOT NULL, dur DESC, views DESC, k) r FROM videos WHERE status='todo' AND channel IN ($in)) ORDER BY r, dur IS NOT NULL, dur DESC LIMIT 12;") : ();
   @batch = map { $row->($_) } grep { $known->{$_->[2]} } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY dur IS NULL, dur DESC, views DESC, k) r FROM videos WHERE status='todo') WHERE r=1;")
     unless @batch;
   if (@unlisted && $first{$unlisted[0]}) { $run->{since_list} = 12 }   # a "first" channel is listed at once
