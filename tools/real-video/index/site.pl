@@ -364,7 +364,10 @@ sub status {
   my $running = do { open my $l, '>>', "$DIR/collector.lock"; my $free = $l && flock($l, LOCK_EX | LOCK_NB); flock($l, LOCK_UN) if $free; $l && !$free };
   my $db = db_path();
   my $ip = lan_ip();
-  {videos => $n{done} // 0, phone => ($ip ? "http://$ip:$port" : undef), pin => $PIN, human => $k{human} // 0, auto => $k{auto} // 0, lines => $lines, hours => $hours,
+  # Tailscale (once he has it on this PC): its own address, for his phone anywhere.
+  my $tsx = 'C:/Program Files/Tailscale/tailscale.exe';
+  my $ts = -e $tsx ? (`"$tsx" ip -4 2>&1` =~ /^(100\.\d+\.\d+\.\d+)/m)[0] : undef;
+  {videos => $n{done} // 0, phone => ($ip ? "http://$ip:$port" : undef), anywhere => ($ts ? "http://$ts:$port" : undef), pin => $PIN, human => $k{human} // 0, auto => $k{auto} // 0, lines => $lines, hours => $hours,
    todo => $n{todo} // 0, none => $n{none} // 0, gone => $n{gone} // 0, failed => $n{error} // 0,
    channels_listed => $listed, channels => $all, last_hour => $last_hour,
    running => ($running ? JSON::PP::true : JSON::PP::false), stopped => (-e "$DIR/stop" ? JSON::PP::true : JSON::PP::false),

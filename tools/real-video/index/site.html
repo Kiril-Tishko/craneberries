@@ -201,7 +201,7 @@ async function loadStatus() {
     else if (s.running) { dot = 'on'; state = 'collecting'; }
     $('#stat').innerHTML = `<b>${fmt(s.videos)}</b> videos · <b>${fmt(s.lines)}</b> lines · <span class="dot ${dot}"></span>${esc(state)} · ${fmt(s.todo)} to fetch`;
     $('#info').innerHTML = `<div class="shows">${s.shows.map(x => `<button type="button" class="chip${$('#show').value === x.show ? ' on' : ''}" data-show="${esc(x.show)}">${esc(x.show)}<small>${fmt(x.videos)}${x.todo ? ' / ' + fmt(x.videos + x.todo) : ''}</small></button>`).join('')}</div>
-      ${s.phone ? `<div class="phone">📱 On your phone (same Wi-Fi): <code>${esc(s.phone)}</code> · PIN <code>${esc(s.pin)}</code></div>` : ''}
+      ${s.phone ? `<div class="phone">📱 On your phone (same Wi-Fi): <code>${esc(s.phone)}</code>${s.anywhere ? ` · anywhere (Tailscale): <code>${esc(s.anywhere)}</code>` : ''} · PIN <code>${esc(s.pin)}</code> · your picks online: <a href="https://kiril-tishko.github.io/craneberries/real-video/picks/" target="_blank" rel="noopener">picks page</a></div>` : ''}
       <table><tr><th>Channel</th><th>Searchable</th><th>To fetch</th></tr>${s.channel_list.map(c => `<tr><td>${esc(c.name)}</td><td>${fmt(c.videos)}</td><td>${fmt(c.todo)}</td></tr>`).join('')}</table>`;
     const sel = $('#show'), keep = sel.value;
     sel.innerHTML = '<option value="">All shows and channels</option>' + s.shows.map(x => `<option value="${esc(x.show)}">${esc(x.show)}</option>`).join('');
