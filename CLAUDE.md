@@ -254,6 +254,10 @@ huggingface.co, about 15 min per hour of audio).
   3 clips a word. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
   you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
+  - **He uses it as a page on his PC: http://localhost:8770** (Nov 21; `site.pl` + `site.html`, started hidden at
+    logon by the "Caption index page" task, only this PC can open it, nothing is published): a search box with the
+    same syntax, a show filter, each clip played at its second (or with the lines around it), "Copy clip entry", and
+    how far the collector has got. `search.pl --json` feeds it.
   - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do
     you mean" [how many, default 10]` prints results like the Caption Search tool (channel, title, youtu.be link with
     the time, exact start and end, the line with two before and after; plus `words` times where YouTube gave them,

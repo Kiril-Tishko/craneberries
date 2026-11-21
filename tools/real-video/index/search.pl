@@ -42,7 +42,7 @@ while (@ARGV) {
   my $arg = shift @ARGV;
   if ($arg =~ /^--(page|channel|not|show)$/) { push @{$opt{$1}}, shift @ARGV }
   elsif ($arg =~ /^--(page|channel|not|show)=(.*)$/) { push @{$opt{$1}}, $2 }
-  elsif ($arg =~ /^--(human|all|no-check|channels|shows|clip|help)$/) { $opt{$1} = 1 }
+  elsif ($arg =~ /^--(human|all|no-check|channels|shows|clip|json|help)$/) { $opt{$1} = 1 }
   elsif ($arg =~ /^--/) { die "unknown option $arg (see the top of $0)\n" }
   else { push @args, $arg }
 }
@@ -233,6 +233,7 @@ while (grep { @{$by{$_}} } @order) { for (@order) { push @list, shift @{$by{$_}}
 
 my $from = ($page - 1) * $limit;
 my @pagev = @list[$from .. min($from + $limit, scalar @list) - 1];
+json_out() if $opt{json};
 my $s = state_note();
 printf "(index: %s videos%s; \"%s\": %d matches in %d videos%s from %d channels%s)\n", commas($indexed), $s, $shown,
   $total, $nvideos, ($nvideos > @videos ? sprintf(', %d scenes', scalar @videos) : ''), scalar keys %by,
@@ -287,6 +288,39 @@ sub clip_json {
 print "(more: --page " . ($page + 1) . ")\n" if @list > $from + @pagev;
 
 sub commas { my $x = reverse int(shift // 0); $x =~ s/(\d{3})(?=\d)/$1,/g; scalar reverse $x }
+
+# --json: the same results as data, for the private page on his PC (site.pl). Prints one JSON object and exits.
+sub json_out {
+  my %ctx2;
+  if (@pagev) {
+    my @r = map { my $bm = $_->{best}; my $base = $_->{k} * 100000; sprintf "id BETWEEN %d AND %d", max($base, $bm->{lid} - 2), $bm->{lid} + 3 + ($bm->{spans} ? 1 : 0) } @pagev;
+    $ctx2{$_->[0]} = $_ for sql("SELECT id, s, e, text FROM lines WHERE " . join(' OR ', @r) . ";");
+    %ctx = %ctx2;
+    check_online(@pagev) unless $opt{'no-check'};
+  }
+  my $sec = sub { defined $_[0] && $_[0] ne '' ? 0 + sprintf('%.2f', $_[0] / 1000) : undef };
+  my $n = $from;
+  my @res;
+  for my $v (@pagev) {
+    my $bm = $v->{best};
+    my $base = $v->{k} * 100000;
+    my $last = $bm->{lid} + ($bm->{spans} ? 1 : 0);
+    my @lines = map { my $l = $ctx2{$_}; $l ? {s => $sec->($l->[1]), e => $sec->($l->[2]), text => $l->[3],
+      hit => ($_ >= $bm->{lid} && $_ <= $last ? JSON::PP::true : JSON::PP::false)} : () } max($base, $bm->{lid} - 2) .. $last + 2;
+    push @res, {n => ++$n, channel => $v->{cname}, title => $v->{title}, id => $v->{id}, s => $sec->($bm->{s}),
+      e => $sec->($bm->{e}), ws => $sec->($bm->{ws}), we => $sec->($bm->{we}), kind => $v->{kind},
+      alive => ($v->{alive} eq '' ? undef : 0 + $v->{alive}), more => $v->{more},
+      same => [map { $_->{id} } @{$v->{same} || []}], lines => \@lines,
+      clip => JSON::PP->new->decode(clip_json($v, $bm, $base, $last))};
+  }
+  my $st = read_state();
+  print JSON::PP->new->canonical->encode({indexed => 0 + $indexed, query => $shown, total => $total,
+    videos => $nvideos, scenes => scalar @videos, channels => scalar keys %by, from => $from, page => $page,
+    limit => $limit, count => scalar @list, more => (@list > $from + @pagev ? JSON::PP::true : JSON::PP::false),
+    paused_until => ($st->{paused_until} // 0) > time ? $st->{paused_until} : undef,
+    pause_reason => ($st->{paused_until} // 0) > time ? $st->{pause_reason} : undef, results => \@res}), "\n";
+  exit;
+}
 
 sub state_note {
   my $s = read_state();

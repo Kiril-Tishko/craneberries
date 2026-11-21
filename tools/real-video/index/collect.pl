@@ -55,6 +55,7 @@ $opt{per} = 400 unless $opt{per} =~ /^\d+$/;
 my $DIR = data_dir();
 my $LOG = "$DIR/collector.log";
 my $TASK = 'Caption index collector';
+my $SITE_TASK = 'Caption index page';   # site.pl: the index as a page on this PC (http://localhost:8770)
 my $CONFIG = "$BIN/channels.json";
 $ENV{PYTHONIOENCODING} = 'utf-8'; $ENV{PYTHONUTF8} = '1';
 
@@ -597,6 +598,7 @@ sub status {
   $state .= sprintf ', paused until %s (%s)', $when->($s->{paused_until}), $s->{pause_reason} // '' if ($s->{paused_until} // 0) > time;
   $state .= sprintf '; last video %s (%s)', $when->($s->{last_video_at}), $s->{last_video} // '' if $s->{last_video_at};
   print "Collector: $state\n";
+  print "Page: http://localhost:8770 (search and play the clips; only on this PC)\n";
   my %n = map { $_->[0] => $_->[1] } sql("SELECT status, count(*) FROM videos GROUP BY status;");
   my %k = map { $_->[0] => $_->[1] } sql("SELECT kind, count(*) FROM videos WHERE status='done' GROUP BY kind;");
   my ($lines) = map { $_->[0] } sql("SELECT ifnull(sum(lines),0) FROM videos WHERE status='done';");
@@ -638,19 +640,32 @@ sub start_task {
 sub install {
   my $to = win_path($ENV{LOCALAPPDATA} // die "no LOCALAPPDATA\n") . '/Programs/caption-index';
   make_path($to);
-  for my $f (qw(collect.pl search.pl CaptionIndex.pm channels.json)) {
+  for my $f (qw(collect.pl search.pl CaptionIndex.pm channels.json site.pl site.html)) {
     copy("$BIN/$f", "$to/$f") or die "can't copy $f to $to: $!\n";
   }
-  print "Copied the collector to $to\n";
+  print "Copied the collector and the page to $to\n";
+  hidden_task($to, $TASK, 'collect.pl', 'run-hidden.vbs',
+    'Private caption index (craneberries tools/real-video/index): fetches YouTube captions slowly, logged out. Stop: perl collect.pl --stop');
+  print "Scheduled task \"$TASK\" made (at logon and every hour, hidden).\n";
+  hidden_task($to, $SITE_TASK, 'site.pl', 'run-site.vbs',
+    'The private caption index as a page on this PC only: http://localhost:8770 (site.pl)');
+  print "Scheduled task \"$SITE_TASK\" made: the page is at http://localhost:8770 (at logon and every hour, hidden).\n";
+  local $ENV{MSYS_NO_PATHCONV} = 1; local $ENV{MSYS2_ARG_CONV_EXCL} = '*';
+  `schtasks /run /tn "$SITE_TASK" 2>&1`;   # the page now; a second copy just exits, the old one keeps the port
+}
+
+# A scheduled task that runs one of these scripts with no window, at logon and again every hour if it stopped.
+sub hidden_task {
+  my ($to, $name, $file, $vbsfile, $desc) = @_;
   my $perl = -x '/usr/bin/perl.exe' ? `cygpath -w /usr/bin/perl.exe` : $^X;   # Git for Windows' Perl
   chomp $perl;
   die "can't find perl.exe (got $perl)\n" unless $perl =~ /^[A-Za-z]:\\.*perl\.exe$/i;
-  (my $script = "$to/collect.pl") =~ s{/}{\\}g;
+  (my $script = "$to/$file") =~ s{/}{\\}g;
   # Perl is a console program: wscript starts it with no window at all (0) and waits for it (True), so the task
-  # shows as running while it collects. (conhost --headless doesn't start anything from the Task Scheduler.)
-  (my $vbs = "$to/run-hidden.vbs") =~ s{/}{\\}g;
-  open my $v, '>', "$to/run-hidden.vbs" or die "can't write $to/run-hidden.vbs: $!\n";
-  print $v qq{' Starts the caption index collector with no window (made by collect.pl --install)\r\n},
+  # shows as running while it works. (conhost --headless doesn't start anything from the Task Scheduler.)
+  (my $vbs = "$to/$vbsfile") =~ s{/}{\\}g;
+  open my $v, '>', "$to/$vbsfile" or die "can't write $to/$vbsfile: $!\n";
+  print $v qq{' Starts $file with no window (made by collect.pl --install)\r\n},
     qq{CreateObject("WScript.Shell").Run """$perl"" ""$script""", 0, True\r\n};
   close $v;
   my $ps = <<"PS";
@@ -661,11 +676,10 @@ sub install {
 \$t2 = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Hours 1)
 \$s = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([TimeSpan]::Zero) -Priority 7
 \$p = New-ScheduledTaskPrincipal -UserId \$me -LogonType Interactive -RunLevel Limited
-Register-ScheduledTask -TaskName '$TASK' -Action \$a -Trigger \$t1,\$t2 -Settings \$s -Principal \$p -Force -Description 'Private caption index (craneberries tools/real-video/index): fetches YouTube captions slowly, logged out. Stop: perl collect.pl --stop' | Out-Null
+Register-ScheduledTask -TaskName '$name' -Action \$a -Trigger \$t1,\$t2 -Settings \$s -Principal \$p -Force -Description '$desc' | Out-Null
 PS
   require Encode; require MIME::Base64;
   my $b64 = MIME::Base64::encode_base64(Encode::encode('UTF-16LE', $ps), '');
   system('powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', $b64);
-  die "Making the scheduled task failed.\n" if $?;
-  print "Scheduled task \"$TASK\" made (at logon and every hour, hidden).\n";
+  die "Making the scheduled task \"$name\" failed.\n" if $?;
 }
