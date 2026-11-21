@@ -1,4 +1,5 @@
 [
+  {"slug":"announce","en":"announce · announced","ua":"оголошувати, оголосити","pic":"📢","n":2},
   {"slug":"as-far-as-i-know","en":"as far as I know","ua":"наскільки я знаю","pic":"💭","n":3},
   {"slug":"at-least","en":"at least","ua":"принаймні, хоча б","pic":"👍","n":3},
   {"slug":"bless-you","en":"Bless you!","ua":"Будь здоровий!","pic":"🤧","n":1},
@@ -30,6 +31,7 @@
   {"slug":"i-dont-have-time","en":"I don’t have time.","ua":"У мене немає часу.","pic":"⏰","n":2},
   {"slug":"i-ended-up","en":"I ended up …","ua":"Зрештою я… (опинився, зробив)","pic":"🧭","n":3},
   {"slug":"i-guess-so","en":"I guess so.","ua":"Мабуть, так.","pic":"🤔","n":3},
+  {"slug":"i-have-an-announcement","en":"I have an announcement (to make).","ua":"У мене є оголошення.","pic":"📣","n":3},
   {"slug":"i-have-no-idea","en":"I have no idea.","ua":"Гадки не маю.","pic":"🤷","n":3},
   {"slug":"made-it-up","en":"I made it up.","ua":"Я це вигадав.","pic":"🤥","n":3},
   {"slug":"i-owe-you-one","en":"I owe you one.","ua":"Я твій боржник.","pic":"🙏","n":3},

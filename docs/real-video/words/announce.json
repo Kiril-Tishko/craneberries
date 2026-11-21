@@ -1,0 +1,42 @@
+{
+  "en": "announce · announced",
+  "ua": "оголошувати, оголосити",
+  "pic": "📢",
+  "hl": "announc(e|es|ed|ing|ement)",
+  "together": {"going to be coming":"мало з’явитися","Major League Baseball":"Головна ліга бейсболу (MLB)","a lot of":"багато"},
+  "gloss": {
+    "announce": "оголошувати",
+    "announced": "оголосили",
+    "announcement": "оголошення (made the announcement = оголосили)",
+    "and": "і",
+    "on": "у (on Monday = у понеділок)",
+    "monday": "понеділок",
+    "they": "вони",
+    "that": "що",
+    "had": "(had found = знайшли)",
+    "found": "знайшли",
+    "it": "його (сигнал)",
+    "now": "отже, ну",
+    "when": "коли",
+    "this": "це",
+    "in": "у",
+    "2014": "2014 (році)",
+    "was": "(was going to be coming = мало з’явитися)",
+    "to": "в (coming to = з’явитися в)",
+    "also": "також",
+    "made": "(made the announcement = оголосили)",
+    "the": "the — (це саме) оголошення",
+    "is": "is — дієслово be: this is = це (є)",
+    "seven": "сім",
+    "terabytes": "терабайтів",
+    "of": "(of data = даних)",
+    "data": "даних",
+    "every": "кожну",
+    "game": "гру",
+    "that’s": "that’s = that is: це"
+  },
+  "clips": [
+    {"v":"ZdDjexbxVzM","s":207.68,"e":211.22,"line":"And on Monday, they announced that they had found it.","note":"A physicist talks about scientists who looked for a signal from the early universe. On Monday, they announced that they had found it.","noteUa":"Фізик розповідає про вчених, які шукали сигнал із раннього Всесвіту. У понеділок вони оголосили, що знайшли його."},
+    {"v":"wu2twZdrM-E","s":2717.08,"e":2729.06,"line":"Now, when they announced this in 2014 that this was going to be coming to Major League Baseball, they also made the announcement that this is seven terabytes of data every game.","note":"A talk about baseball and big data. In 2014 they announced a new system for the league, and they also said it gives 7 terabytes of data every game.","noteUa":"Лекція про бейсбол і великі дані. У 2014 році оголосили про нову систему для ліги й також повідомили, що вона дає 7 терабайтів даних за кожну гру.","around":[[2729.06,2730.52,"Now, that’s a lot of data."]]}
+  ]
+}

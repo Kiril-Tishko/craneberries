@@ -1,0 +1,42 @@
+{
+  "en": "I have an announcement (to make).",
+  "ua": "У мене є оголошення.",
+  "pic": "📣",
+  "hl": "I have an announcement( to make)?",
+  "together": {"stepping down":"йде у відставку","the Supreme Court":"Верховний суд","for a few more years":"ще кілька років (не скоро)","going to be":"буде"},
+  "gloss": {
+    "i": "я",
+    "have": "маю (I have = у мене є)",
+    "an": "an — одне (оголошення)",
+    "announcement": "оголошення",
+    "to": "(to make = щоб зробити)",
+    "make": "зробити (make an announcement = оголосити)",
+    "i’ve": "I’ve = I have: мене (I’ve been notified = мені повідомили)",
+    "been": "(I’ve been notified = мені повідомили)",
+    "notified": "повідомили",
+    "that": "що",
+    "judge": "суддя",
+    "souter": "Сутер (прізвище)",
+    "is": {"*": "is — дієслово be: is stepping down = йде", "is going to be": "is — дієслово be: is going to be = буде"},
+    "from": "з",
+    "well": "що ж, ну",
+    "do": "do — слово для питання: Do they? = Справді?",
+    "they": "вони",
+    "it’s": "it’s = it is: це",
+    "not": "не",
+    "and": "і",
+    "today": "сьогодні",
+    "am": "am — дієслово be: I am announcing = я оголошую",
+    "announcing": "оголошую",
+    "next": "наступний",
+    "season": "сезон",
+    "19": "19-й",
+    "my": "мій",
+    "last": "останній"
+  },
+  "clips": [
+    {"v":"mS2d62g1kr4","s":1917.53,"e":1920.5,"line":"I have an announcement to make.","note":"At a White House press briefing, the press secretary tells the reporters: I have an announcement to make. A Supreme Court judge is stepping down.","noteUa":"На брифінгу в Білому домі прессекретар звертається до журналістів: «У мене є оголошення». Суддя Верховного суду йде у відставку.","around":[[1920.5,1924.77,"I’ve been notified that Judge Souter is stepping down from the Supreme Court."]]},
+    {"v":"IZNT-VgSggA","s":791.88,"e":793.02,"line":"Well, I have an announcement.","note":"A YouTube couple read a funny article about themselves: fans want them to have kids soon. One of them: Well, I have an announcement… It's not going to be for a few more years.","noteUa":"Пара ютуберів читає смішну статтю про себе: фанати хочуть, щоб у них скоро були діти. Один із них: «Що ж, у мене є оголошення…» Це буде ще не скоро.","around":[[791.05,791.88,"Do they?"],[794.12,796.4,"It’s not going to be for a few more years."]]},
+    {"v":"rv7qH8xxK6g","s":28.51,"e":37.41,"line":"And today I have an announcement to make. Today I am announcing that next season, season 19, is going to be my last season.","note":"Ellen DeGeneres shares big news: the next season of her show will be the last one.","noteUa":"Еллен Дедженерес повідомляє велику новину: наступний сезон її шоу буде останнім."}
+  ]
+}
