@@ -89,6 +89,16 @@
       else { const t = moved[0].at; b.s = Math.min(b.s, Math.max(t, a.s + 0.1)); a.e = Math.max(a.s + 0.1, Math.min(a.e, t)); fix(a); }
       fix(b);
     }
+    // ⤒ / ⤓ Join: the line's words go into the line above / below, which keeps its own start and end (his wish,
+    // Nov 21: he joins a line because those words are said in the other line, so no time may change; the clip's
+    // line keeps its Start / End). The moved words take that line's span.
+    function joinInto(from, to) {
+      const a = L[from], b = L[to]; if (!a || !b) return;
+      const moved = a.words.map(w => ({x: w.x, at: Math.min(Math.max(w.at, b.s), b.e)}));
+      if (to < from) b.words.push(...moved); else b.words.unshift(...moved);
+      if (star === from) star = to;
+      gone(from);
+    }
     const hits = l => hl.some(re => { re.lastIndex = 0; return re.test(textOf(l)); });
     // A new line from word j on (the clip's own stays with the part that has the searched words).
     function split(i, j) {
@@ -148,8 +158,8 @@
           <button type="button" class="ce-t" data-a="play" title="Play from here">${tenth(l.s)}</button>
           <div class="ce-x">${i === typing ? `<textarea class="ce-in" rows="1" aria-label="The line's words">${esc(textOf(l))}</textarea>` : wordsHtml(l, i)}</div>
           <span class="ce-acts">
-            <button type="button" class="ce-a" data-a="joinup" ${i > 0 ? '' : 'disabled'} title="Join with the line above">⤒</button>
-            <button type="button" class="ce-a" data-a="joindown" ${i < L.length - 1 ? '' : 'disabled'} title="Join with the line below">⤓</button>
+            <button type="button" class="ce-a" data-a="joinup" ${i > 0 ? '' : 'disabled'} title="Join with the line above (its times stay)">⤒</button>
+            <button type="button" class="ce-a" data-a="joindown" ${i < L.length - 1 ? '' : 'disabled'} title="Join with the line below (its times stay)">⤓</button>
             <button type="button" class="ce-a" data-a="type" title="Type this line">✎</button>
             <button type="button" class="ce-a${i === star ? ' on' : ''}" data-a="star" title="${i === star ? 'The clip’s own line' : 'Make this the clip’s own line'}">${i === star ? '★' : '☆'}</button>
           </span></li>`).join('')}</ol></div>`;
@@ -185,8 +195,8 @@
         if (a === 'reset') { if (opt.onReset) opt.onReset(); return; }
         if (i < 0) return;
         if (a === 'play') return opt.onPlay && opt.onPlay(L[i].s, i === star);
-        if (a === 'joinup') return change(() => up(i, L[i].words.length - 1));
-        if (a === 'joindown') return change(() => down(i, 0));
+        if (a === 'joinup') return change(() => joinInto(i, i - 1));
+        if (a === 'joindown') return change(() => joinInto(i, i + 1));
         if (a === 'star') return change(() => { star = i; });
         if (a === 'type') { sel = null; typing = typing === i ? -1 : i; draw(); return; }
         return;
