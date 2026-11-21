@@ -9,6 +9,7 @@
 #                                                        and (re)make the scheduled task that runs them
 #   perl tools/real-video/index/collect.pl               run in this window (what the scheduled task runs)
 #   perl tools/real-video/index/collect.pl --once <video id>   fetch one video now (a test)
+#   perl tools/real-video/index/collect.pl --drop <video id>   take a video out of the index (not a scene, not a song)
 #   options: --per-channel 400 (most-viewed videos taken from each channel), --gap 40 (seconds per video, at least),
 #            --round 120 --rest 4 (a rest of 4 hours after every 120 caption files)
 #
@@ -42,7 +43,7 @@ my @args;
 while (@ARGV) {
   my $a = shift @ARGV;
   if ($a =~ /^--(per-channel|gap|round|rest)$/) { $opt{$1 eq 'per-channel' ? 'per' : $1} = shift @ARGV }
-  elsif ($a =~ /^--(status|stop|start|install|once|list|help)$/) { $opt{$1} = 1 }
+  elsif ($a =~ /^--(status|stop|start|install|once|list|drop|help)$/) { $opt{$1} = 1 }
   elsif ($a eq '-v') { $opt{v} = 1 }
   else { push @args, $a }
 }
@@ -74,6 +75,7 @@ if ($opt{stop}) {
 if ($opt{start}) { unlink "$DIR/stop"; start_task(); exit }
 if ($opt{install}) { install(); exit }
 if ($opt{once}) { init_db(); sync_channels(); my $id = $args[0] or die "--once needs a video id\n"; once($id); exit }
+if ($opt{drop}) { init_db(); my $id = $args[0] or die "--drop needs a video id\n"; drop($id); exit }
 if ($opt{list}) { init_db(); sync_channels(); my ($c) = grep { $_->{key} eq ($args[0] // '') } channels(); die "no channel $args[0]\n" unless $c; list_channel($c); exit }
 run();
 exit;
@@ -245,16 +247,13 @@ sub list_channel {
     sql(sprintf "UPDATE channels SET listed_at=%d, note=%s WHERE key=%s;", time - 29 * 86400, sql_quote($failed), sql_quote($c->{key}));
     return;
   }
-  my $re = $c->{titles} ? qr/$c->{titles}/ : undef;
-  my $no = $c->{skip} ? qr/$c->{skip}/ : undef;   # e.g. a show's interviews, panels and music: not scenes
   my @s = ('BEGIN;');
   my ($keep, $skip) = (0, 0);
   for my $x (@e) {
     my $d = $x->{duration};
     my $ok = (!defined $d || ($d >= 60 && $d <= 3 * 3600))
       && ($x->{live_status} // '') !~ /^(is_live|is_upcoming)$/
-      && (!$re || ($x->{title} // '') =~ $re)
-      && (!$no || ($x->{title} // '') !~ $no);
+      && title_ok($c, $x->{title});
     $ok ? $keep++ : $skip++;
     push @s, sprintf("INSERT INTO videos(id, channel, title, dur, views, status) VALUES(%s, %s, %s, %s, %d, %s) ON CONFLICT(id) DO UPDATE SET views=max(excluded.views, ifnull(videos.views, 0)), title=ifnull(excluded.title, videos.title) WHERE videos.channel=excluded.channel;",
       sql_quote($x->{id}), sql_quote($c->{key}), sql_quote($x->{title}), defined $d ? int $d : 'NULL', int($x->{view_count} // 0), sql_quote($ok ? 'later' : 'skip'));
@@ -267,6 +266,35 @@ sub list_channel {
 
 # Queues the most-viewed videos of a channel, up to --per-channel.
 sub per_channel { my $key = shift; my $c = first { $_->{key} eq $key } channels(); $c && $c->{per} ? $c->{per} : $opt{per} }
+# A channel's "titles" (must match) and "skip" (must not: a show's interviews, panels and music, a singer's
+# chats and premieres) for a video title.
+sub title_ok {
+  my ($c, $t) = @_; $t //= '';
+  (!$c->{titles} || $t =~ /$c->{titles}/) && (!$c->{skip} || $t !~ /$c->{skip}/);
+}
+# After channels.json changes: queued videos whose titles no longer pass are skipped (fetched ones stay; --drop).
+sub refilter {
+  for my $c (grep { $_->{titles} || $_->{skip} } channels()) {
+    my @k = map { $_->[0] } grep { !title_ok($c, $_->[1]) }
+      sql(sprintf "SELECT k, title FROM videos WHERE channel=%s AND status IN ('todo','later');", sql_quote($c->{key}));
+    next unless @k;
+    sql(sprintf "UPDATE videos SET status='skip' WHERE k IN (%s);", join ',', @k);
+    logl("$c->{name}: " . @k . " queued videos skipped (channels.json titles / skip)");
+  }
+}
+# Takes one video out of the index: its lines go, and it is skipped from now on.
+sub drop {
+  my $id = shift;
+  my ($r) = sql(sprintf "SELECT k, channel, ifnull(title,''), ifnull(lines,0) FROM videos WHERE id=%s;", sql_quote($id));
+  die "$id is not in the index\n" unless $r;
+  my ($k, $ch, $t, $l) = @$r; my $base = $k * 100000;
+  sql(join "\n", 'BEGIN;',
+    "DELETE FROM win WHERE rowid BETWEEN $base AND " . ($base + 99_999) . ';',
+    "DELETE FROM lines WHERE id BETWEEN $base AND " . ($base + 99_999) . ';',
+    sprintf("UPDATE videos SET status='skip', lines=0, note='dropped by hand' WHERE k=%d;", $k), 'COMMIT;');
+  logl("dropped $ch · $id ($l lines): $t");
+  print "Dropped $ch · $id ($l lines): $t\n";
+}
 sub promote {
   my $key = shift;
   my ($n) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE channel=%s AND status NOT IN ('later','skip');", sql_quote($key));
@@ -665,6 +693,7 @@ sub run {
   if (stop_asked()) { print "The collector was stopped with --stop; start it again with --start.\n"; exit 0 }
   $SIG{__DIE__} = sub { logl("stopped by an error: $_[0]") unless $^S };
   init_db(); sync_channels();
+  refilter();
   promote($_->{key}) for channels();
   state_set(pid => $$, running => 1, started => int time);
   logl("started (pid $$, " . scalar(channels()) . " channels, up to $opt{per} videos each)");
