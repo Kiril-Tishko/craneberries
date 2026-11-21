@@ -14,7 +14,7 @@
   {"slug":"dont-interrupt-me","en":"Don’t interrupt me.","ua":"Не перебивай мене.","pic":"🤫","n":4},
   {"slug":"excuse","en":"excuse","ua":"відмовка, виправдання","pic":"🙈","n":5},
   {"slug":"fail","en":"fail","ua":"провалитися, не вдатися","pic":"❌","n":3},
-  {"slug":"file-a-lawsuit","en":"file a lawsuit","ua":"подати позов (до суду)","pic":"⚖️","n":0},
+  {"slug":"file-a-lawsuit","en":"file a lawsuit","ua":"подати позов (до суду)","pic":"⚖️","n":3},
   {"slug":"go-home","en":"go home","ua":"йти додому","pic":"🏠","n":4},
   {"slug":"go-to-bed","en":"Go to bed!","ua":"Іди спати!","pic":"😴","n":4},
   {"slug":"good-morning","en":"Good morning!","ua":"Доброго ранку!","pic":"☀️","n":3},
