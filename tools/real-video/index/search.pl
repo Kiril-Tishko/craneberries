@@ -236,6 +236,8 @@ for (values %by) { @$_ = sort { $a->{best}{score} <=> $b->{best}{score} || $b->{
 my @order = sort { $by{$a}[0]{best}{score} <=> $by{$b}[0]{best}{score} || @{$by{$b}} <=> @{$by{$a}} } keys %by;
 my @list;
 while (grep { @{$by{$_}} } @order) { for (@order) { push @list, shift @{$by{$_}} if @{$by{$_}} } }
+# Clips he liked (♥ on the page) come first.
+@list = ((grep { $keep{$_->{best}{lid}} } @list), (grep { !$keep{$_->{best}{lid}} } @list));
 
 my $from = ($page - 1) * $limit;
 my @pagev = @list[$from .. min($from + $limit, scalar @list) - 1];
@@ -305,6 +307,8 @@ sub json_out {
     check_online(@pagev) unless $opt{'no-check'};
   }
   my $sec = sub { defined $_[0] && $_[0] ne '' ? 0 + sprintf('%.2f', $_[0] / 1000) : undef };
+  # His own start and end for a clip, where he moved them on the page (the clip entry uses them).
+  my %times = map { $_->[0] => [0 + $_->[1], 0 + $_->[2]] } eval { sql("SELECT lid, s, e FROM times;") };
   my $n = $from;
   my @res;
   for my $v (@pagev) {
@@ -321,6 +325,7 @@ sub json_out {
       scene => [0 + $bm->{lid}, map { 0 + $_->{best}{lid} } @{$v->{same} || []}],
       kept => ($keep{$bm->{lid}} ? JSON::PP::true : JSON::PP::false),
       clip => JSON::PP->new->decode(clip_json($v, $bm, $base, $last))};
+    if (my $t = $times{$bm->{lid}}) { @{$res[-1]{clip}}{qw(s e)} = @$t; $res[-1]{timed} = JSON::PP::true }
   }
   my $st = read_state();
   print JSON::PP->new->canonical->encode({indexed => 0 + $indexed, query => $shown, total => $total,

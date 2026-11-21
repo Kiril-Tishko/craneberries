@@ -9,18 +9,18 @@
 :root {
   --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1f; --soft: #5f6368; --faint: #8a8f96; --line: #e4e2dc;
   --accent: #2f5bd3; --accent-ink: #ffffff; --hit: #fff3b0; --hit-ink: #1d1d1f; --ok: #2e7d4f; --warn: #a15c00; --bad: #b3261e;
-  --chip: #eceae4; --star: #d99a00;
+  --chip: #eceae4; --like: #e0245e; --like-ink: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #141517; --card: #1d1f22; --ink: #ececec; --soft: #a9adb3; --faint: #7c8187; --line: #2d3034;
     --accent: #7aa2ff; --accent-ink: #0f1115; --hit: #5c4d00; --hit-ink: #fff6cc; --ok: #6cc796; --warn: #e0a85a; --bad: #ff8a80;
-    --chip: #272a2e; --star: #ffc94a;
+    --chip: #272a2e; --like: #ff4f86; --like-ink: #ffffff;
   }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-main { max-width: 880px; margin: 0 auto; padding: 20px 16px 60px; }
+main { max-width: 880px; margin: 0 auto; padding: 20px 16px 60px; position: relative; }
 h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
 .sub { color: var(--soft); font-size: 14px; margin: 0 0 16px; }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: 14px; }
@@ -44,12 +44,7 @@ button.go { font: inherit; padding: 10px 16px; border-radius: 10px; border: 0; b
 .help code { background: var(--chip); padding: 1px 5px; border-radius: 5px; color: var(--soft); }
 .summary { color: var(--soft); font-size: 14px; margin: 8px 0 12px; min-height: 20px; }
 .error { color: var(--bad); }
-/* The player: the clip library's own (site.pl /player), one for the whole list, staying in view at the top. */
-#stage { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 6px 0 8px; margin: 0 0 8px; }
-#stage iframe { display: block; width: 100%; height: min(calc(56vw + 240px), 620px, 68vh); border: 0; border-radius: 10px; }
-#stage .bar { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--soft); padding: 4px 2px 0; }
-#stage .bar button { font: inherit; font-size: 13px; background: none; border: 0; color: var(--soft); cursor: pointer; padding: 2px 6px; }
-article { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; scroll-margin-top: calc(min(calc(56vw + 240px), 620px, 68vh) + 40px); }
+article { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; scroll-margin-top: 8px; }
 article.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 article.gone { padding: 8px 14px; color: var(--faint); font-size: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 article.gone button { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--soft); padding: 4px 10px; cursor: pointer; }
@@ -67,7 +62,7 @@ mark { background: var(--hit); color: var(--hit-ink); border-radius: 3px; paddin
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .actions button { font: inherit; font-size: 14px; line-height: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
 .actions button.play { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.actions button.keep[aria-pressed="true"] { color: var(--star); border-color: var(--star); }
+.actions button.like[aria-pressed="true"] { color: var(--like); border-color: var(--like); }
 .info { font-size: 13px; color: var(--faint); }
 .info .bad { color: var(--bad); }
 .more { display: block; margin: 16px auto 0; font: inherit; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
@@ -77,16 +72,39 @@ details summary { cursor: pointer; color: var(--soft); font-size: 13px; }
 table { border-collapse: collapse; font-size: 13px; margin-top: 6px; width: 100%; }
 td, th { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 th { color: var(--faint); font-weight: 500; }
-/* ⭐ Picked */
+
+/* The player: the clip library's own (site.pl /player), one frame for the whole list. It sits over a placeholder
+   (.ph) inside the card that plays, in the page's normal flow, so it scrolls with the page and is never reloaded
+   when the next clip comes. Under it: big Previous / Like / Next, then the clip's start and end. */
+#player { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 0; border-radius: 10px; display: none; z-index: 2; background: #000; }
+.ph { margin: 10px 0 8px; border-radius: 10px; background: #000; flex: 1 0 100%; }
+.ctl { margin: 0 0 12px; flex: 1 0 100%; }
+.nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+.nav button { font: inherit; font-size: 17px; font-weight: 600; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.nav button:disabled { opacity: .35; cursor: default; }
+.nav .prev { justify-self: start; } .nav .next { justify-self: end; }
+.nav .like { font-size: 22px; padding: 14px 30px; min-width: 170px; border: 2px solid var(--like); color: var(--like); background: transparent; border-radius: 999px; }
+.nav .like[aria-pressed="true"] { background: var(--like); color: var(--like-ink); }
+.cnt { text-align: center; color: var(--faint); font-size: 13px; margin-top: 6px; }
+.cnt button { font: inherit; font-size: 13px; background: none; border: 0; color: var(--soft); cursor: pointer; padding: 0 4px; }
+.timing { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; align-items: center; margin-top: 10px; font-size: 14px; color: var(--soft); }
+.timing .grp { display: flex; gap: 4px; align-items: center; }
+.timing b { font-variant-numeric: tabular-nums; min-width: 62px; text-align: center; color: var(--ink); font-weight: 600; }
+.timing button { font: inherit; font-size: 14px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.timing .saved { color: var(--ok); font-size: 13px; width: 64px; display: inline-block; }
+/* ♥ Liked */
 #picked h2 { font-size: 15px; margin: 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 #picked h2 span { flex: 1; }
-#picked h2 button, #picked li button { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+#picked h2 button, #picked li > button { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
 #picked ol { list-style: none; margin: 8px 0 0; padding: 0; }
 #picked li { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
 #picked li .what { flex: 1 1 240px; min-width: 0; }
 #picked li .what small { display: block; color: var(--faint); font-size: 12px; overflow-wrap: anywhere; }
 #picked li.now .what { color: var(--accent); }
-@media (max-width: 560px) { ol.lines button.t { min-width: 44px; } h1 { font-size: 20px; } .actions button { padding: 8px 10px; } }
+@media (max-width: 560px) {
+  ol.lines button.t { min-width: 44px; } h1 { font-size: 20px; } .actions button { padding: 8px 10px; }
+  .nav button { font-size: 15px; padding: 12px 12px; } .nav .like { font-size: 19px; padding: 12px 18px; min-width: 120px; }
+}
 </style>
 </head>
 <body>
@@ -106,10 +124,9 @@ th { color: var(--faint); font-weight: 500; }
   <p class="help"><code>a | b</code> either one · <code>call ~3 back</code> words near each other · <code>tire*</code> word start (tired, tiring)</p>
 
   <div class="summary" id="summary"></div>
-  <section id="stage" hidden aria-label="Player"><iframe title="Clip player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
-    <div class="bar"><span id="stagewhat"></span><button type="button" id="stageclose">Close ✕</button></div></section>
   <div id="results"></div>
   <button class="more" id="more" hidden>More results</button>
+  <iframe id="player" title="Clip player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
 </main>
 <script>
 const $ = s => document.querySelector(s);
@@ -117,9 +134,12 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const fmt = n => Number(n || 0).toLocaleString('en-US');
 const clock = sec => { sec = Math.floor(sec || 0); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s = sec % 60;
   return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
+const tenth = sec => { const m = Math.floor(sec / 60), x = sec - m * 60; return m + ':' + x.toFixed(1).padStart(4, '0'); };
 const when = t => { const d = new Date(t * 1000), now = new Date();
   const hm = d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
   return d.toDateString() === now.toDateString() ? hm : d.toLocaleDateString([], {weekday: 'short'}) + ' ' + hm; };
+// A clip entry as the library keeps it (the page's own extra fields left out).
+const entry = c => ({v: c.v, s: c.s, e: c.e, line: c.line, note: c.note || '', around: c.around || []});
 // A signed-out phone gets 401: reload, and the server shows the PIN page.
 async function api(path) {
   const r = await fetch(path, {headers: {'X-CI': '1'}});
@@ -205,7 +225,7 @@ function params() {
 }
 async function go(more) {
   const p = params(); if (!p.get('q')) return;
-  if (!more) { page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); $('#results').innerHTML = ''; if (stage.list === 'results') closeStage(); }
+  if (!more) { page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); if (P.list === 'results') closePlayer(); $('#results').innerHTML = ''; }
   p.set('page', page); p.set('n', 10);
   $('#summary').textContent = more ? 'Loading more…' : 'Searching…';
   $('#more').hidden = true;
@@ -224,12 +244,14 @@ async function go(more) {
   $('#results').insertAdjacentHTML('beforeend', d.results.map((r, k) => card(r, from + k, res)).join(''));
   $('#more').hidden = !d.more;
 }
+const likeLabel = on => on ? '♥ Liked' : '♡ Like';
 function card(r, i, res) {
   const info = [r.kind === 'human' ? 'exact captions' : 'auto captions'];
   if (r.alive === 404) info.push('<span class="bad">video gone</span>');
   else if (r.alive === 401 || r.alive === 403) info.push('<span class="bad">private or can’t be embedded</span>');
   if (r.more) info.push(`${r.more} more in this video`);
   if (r.same.length) info.push('same scene in ' + r.same.length + ' more video' + (r.same.length > 1 ? 's' : ''));
+  if (r.timed) info.push('your own times');
   const lines = r.lines.map(l => `<li class="${l.hit ? 'hit' : ''}"><button class="t" type="button" data-at="${l.s}" title="Play from here">${clock(l.s)}</button><span>${l.hit ? highlight(l.text, res) : esc(l.text)}</span></li>`).join('');
   return `<article data-i="${i}">
     <div class="meta"><span class="n">${r.n}.</span><span class="chan">${esc(r.channel)}</span>
@@ -237,7 +259,7 @@ function card(r, i, res) {
     <ol class="lines">${lines}</ol>
     <div class="actions">
       <button type="button" class="play" data-act="play">▶ Play</button>
-      <button type="button" class="keep" data-act="keep" aria-pressed="${r.kept ? 'true' : 'false'}" title="Keep it on the Picked list">${r.kept ? '★ Kept' : '☆ Keep'}</button>
+      <button type="button" class="like" data-act="like" aria-pressed="${r.kept ? 'true' : 'false'}">${likeLabel(r.kept)}</button>
       <button type="button" data-act="hide" title="Never show this clip (and the same scene) again">🙈 Hide</button>
       <button type="button" data-act="copy">Copy clip entry</button>
       <span class="info">${info.join(' · ')}</span>
@@ -245,20 +267,16 @@ function card(r, i, res) {
 }
 $('#results').addEventListener('click', async e => {
   const art = e.target.closest('article'); if (!art) return;
-  const b = e.target.closest('button'); if (!b) return;
+  const b = e.target.closest('button'); if (!b || b.closest('.ctl')) return;
   const i = Number(art.dataset.i), r = items[i];
   if (b.dataset.at !== undefined) return play('results', i, Number(b.dataset.at));
   switch (b.dataset.act) {
     case 'play': return play('results', i);
-    case 'copy': return copyButton(b, JSON.stringify(r.clip), 'Copy clip entry');
-    case 'keep': {
-      const on = b.getAttribute('aria-pressed') !== 'true';
-      await mark(r, on ? 'keep' : 'none');
-      r.kept = on; b.setAttribute('aria-pressed', on); b.textContent = on ? '★ Kept' : '☆ Keep';
-      return loadPicked();
-    }
+    case 'copy': return copyButton(b, JSON.stringify(entry(r.clip)), 'Copy clip entry');
+    case 'like': return like(r);
     case 'hide': {
       await mark(r, 'hide');
+      if (P.list === 'results' && P.i === i) closePlayer();
       art.dataset.html = art.innerHTML;
       art.classList.add('gone');
       art.innerHTML = `<span>🙈 Hidden: ${esc(r.lines.find(l => l.hit)?.text || r.title)}</span><button type="button" data-act="unhide">Undo</button>`;
@@ -271,89 +289,190 @@ $('#results').addEventListener('click', async e => {
   }
 });
 function mark(r, kind) {
-  const p = new URLSearchParams({lid: r.lid, last: r.last, kind, q: (current && current.query) || ''});
+  const p = new URLSearchParams({lid: r.lid, last: r.last, kind, q: (current && current.query) || r.query || ''});
   if (kind !== 'keep') p.set('scene', (r.scene || []).join(','));
   return api('/api/mark?' + p.toString());
+}
+// ♥ Like: remembered (the Liked list at the top; liked clips come first in searches).
+async function like(r) {
+  const on = !r.kept;
+  await mark(r, on ? 'keep' : 'none');
+  r.kept = on;
+  for (const x of items) if (x.lid === r.lid) x.kept = on;
+  document.querySelectorAll('article').forEach(a => {
+    const x = items[Number(a.dataset.i)]; const b = a.querySelector('.actions .like');
+    if (x && b) { b.setAttribute('aria-pressed', x.kept); b.textContent = likeLabel(x.kept); }
+  });
+  drawControls();
+  loadPicked();
 }
 $('#more').addEventListener('click', () => { page++; go(true); });
 $('#f').addEventListener('submit', e => { e.preventDefault(); go(); });
 $('#show').addEventListener('change', () => { loadStatus(); if ($('#q').value.trim()) go(); });
 $('#human').addEventListener('change', () => { if ($('#q').value.trim()) go(); });
 
-// ---- the player: the clip library's own, holding the whole list, so its ‹ › arrows go through the results ----
-const stage = {list: null, slug: null};
+// ---- the player ----
+const P = {list: null, slug: null, i: -1};
+let ph = null, ctl = null;
+const rowsOf = list => list === 'liked' ? picks : items;
+const rowEl = (list, i) => list === 'liked' ? document.querySelector(`#picked li[data-i="${i}"]`) : document.querySelector(`article[data-i="${i}"]`);
 function wordsOf(q) {
   return (q || '').split(/\s*\|\s*|\s*~\d*\s*/).map(a => (a.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, '').match(/[a-z0-9]+/g) || []).join('-')).filter(Boolean);
 }
 function slugOf(list) {
-  const rows = list === 'picked' ? picks : items;
-  const alts = list === 'picked' ? [] : wordsOf((current && current.query) || $('#q').value);
-  return rows.map(r => `c-${r.lid}-${r.last}`).join('-') + (alts.length ? '-q-' + alts.join('-qq-') : '');
+  const alts = list === 'liked' ? [] : wordsOf((current && current.query) || $('#q').value);
+  return rowsOf(list).map(r => `c-${r.lid}-${r.last}`).join('-') + (alts.length ? '-q-' + alts.join('-qq-') : '');
 }
-function playerApp() { const f = $('#stage iframe'); return f.contentWindow && f.contentWindow.CI_App; }
-function play(list, i, at) {
-  const slug = slugOf(list);
-  const go = () => {
+function playerApp() { const f = $('#player'); try { return f.contentWindow && f.contentWindow.CI_App; } catch (e) { return null; } }
+// The frame lies over the placeholder: same place, same size, whenever anything on the page moves.
+const height = w => Math.round(Math.min(w * 9 / 16 + 178, innerHeight * 0.86));
+function place() {
+  const f = $('#player');
+  if (!ph || !ph.isConnected) { f.style.display = 'none'; return; }
+  const h = height(ph.getBoundingClientRect().width);
+  if (ph.style.height !== h + 'px') ph.style.height = h + 'px';
+  const m = $('main').getBoundingClientRect(), r = ph.getBoundingClientRect();
+  Object.assign(f.style, {display: 'block', left: (r.left - m.left) + 'px', top: (r.top - m.top) + 'px', width: r.width + 'px', height: h + 'px'});
+}
+let placing = 0;
+const later = () => { cancelAnimationFrame(placing); placing = requestAnimationFrame(place); };
+new ResizeObserver(later).observe($('main'));
+new MutationObserver(later).observe($('main'), {childList: true, subtree: true});
+addEventListener('resize', later);
+
+async function play(list, i, at) {
+  const rows = rowsOf(list);
+  if (!rows[i]) return;
+  const el = rowEl(list, i); if (!el) return;
+  if (list === 'liked') { const d = $('#picked details'); if (d) d.open = true; }
+  if (!ph) { ph = document.createElement('div'); ph.className = 'ph'; ctl = document.createElement('div'); ctl.className = 'ctl'; }
+  (list === 'liked' ? el.querySelector('.what') : el.querySelector('.meta')).after(ph);
+  ph.after(ctl);
+  document.querySelectorAll('.now').forEach(x => x.classList.remove('now'));
+  el.classList.add('now');
+  P.i = i;
+  drawControls();
+  place();
+  el.scrollIntoView({block: 'start', behavior: 'smooth'});
+  const start = () => {
     const A = playerApp();
-    if (!A || !A.word) return false;
-    A.onClip = () => follow(list, A.clipN);
-    if (at !== undefined) { A.clipN = i; A.showClip(false); A.playClip(at); }
-    else { A.clipN = i; A.showClip(true); }
-    follow(list, i);
+    if (!A || !A.word || A.word.clips.length !== rows.length) return false;
+    A.onClip = showTimes;
+    A.clipN = i;
+    if (at !== undefined) { A.showClip(false); A.playClip(at); } else A.showClip(true);
+    showTimes();
     return true;
   };
-  $('#stage').hidden = false;
-  if (stage.slug === slug && go()) return;
-  stage.list = list; stage.slug = slug;
-  const f = $('#stage iframe');
+  const slug = slugOf(list);
+  if (P.slug === slug && P.list === list && start()) return;
+  P.list = list; P.slug = slug;
+  const f = $('#player');
   let tries = 0;
-  const wait = () => { if (!go() && ++tries < 100) setTimeout(wait, 100); };
+  const wait = () => { if (!start() && ++tries < 100) setTimeout(wait, 100); };
   f.onload = wait;
   f.src = '/player/?words=' + encodeURIComponent(slug) + '&embed';
 }
-// The card (or Picked row) of the clip that plays is outlined and kept in view under the player.
-function follow(list, i) {
-  document.querySelectorAll('article.now, #picked li.now').forEach(x => x.classList.remove('now'));
-  const el = list === 'picked' ? document.querySelector(`#picked li[data-i="${i}"]`) : document.querySelector(`article[data-i="${i}"]`);
-  const rows = list === 'picked' ? picks : items;
-  $('#stagewhat').textContent = rows[i] ? `${i + 1} of ${rows.length}${list === 'picked' ? ' picked' : ''} · ${rows[i].channel}` : '';
-  if (!el) return;
-  el.classList.add('now');
-  const r = el.getBoundingClientRect(), top = $('#stage').getBoundingClientRect().bottom;
-  if (list === 'results' && (r.top < top || r.bottom > innerHeight)) el.scrollIntoView({block: 'start', behavior: 'smooth'});
+function closePlayer() {
+  if (ph) ph.remove(); if (ctl) ctl.remove();
+  $('#player').src = 'about:blank'; $('#player').style.display = 'none';
+  P.list = P.slug = null; P.i = -1;
+  document.querySelectorAll('.now').forEach(x => x.classList.remove('now'));
 }
-function closeStage() {
-  $('#stage').hidden = true; $('#stage iframe').src = 'about:blank'; stage.list = stage.slug = null;
-  document.querySelectorAll('article.now, #picked li.now').forEach(x => x.classList.remove('now'));
+// Big Previous / ♥ Like / Next under the video, the count, and the clip's start and end.
+function drawControls() {
+  if (!ctl || P.i < 0) return;
+  const rows = rowsOf(P.list), r = rows[P.i]; if (!r) return;
+  const liked = P.list === 'liked' ? true : !!r.kept;
+  const canNext = P.i < rows.length - 1 || (P.list === 'results' && current && current.more);
+  ctl.innerHTML = `<div class="nav">
+      <button type="button" class="prev" data-c="prev" ${P.i <= 0 ? 'disabled' : ''}>◀ Previous</button>
+      <button type="button" class="like" data-c="like" aria-pressed="${liked}">${liked ? '♥ Liked' : '♡ Like'}</button>
+      <button type="button" class="next" data-c="next" ${canNext ? '' : 'disabled'}>Next ▶</button>
+    </div>
+    <div class="cnt">${P.i + 1} of ${rows.length}${P.list === 'liked' ? ' liked' : ''} · <button type="button" data-c="close">close the player ✕</button></div>
+    <div class="timing" aria-label="The clip's start and end">
+      <span class="grp">Start <button type="button" data-c="s-" title="0.1 s earlier">−</button><b id="ts">…</b><button type="button" data-c="s+" title="0.1 s later">+</button><button type="button" data-c="s=" title="Start where the video is now">⏱ now</button></span>
+      <span class="grp">End <button type="button" data-c="e-" title="0.1 s earlier">−</button><b id="te">…</b><button type="button" data-c="e+" title="0.1 s later">+</button><button type="button" data-c="e=" title="End where the video is now">⏱ now</button></span>
+      <button type="button" data-c="reset" class="rs" style="visibility:hidden">↺ Original times</button><span class="saved" id="tsaved"></span>
+    </div>`;
+  showTimes();
 }
-$('#stageclose').addEventListener('click', closeStage);
+const curClip = () => { const A = playerApp(); return A && A.word ? A.word.clips[A.clipN] : null; };
+function showTimes() {
+  const c = curClip(); if (!c || !ctl || !ctl.isConnected) return;
+  const ts = ctl.querySelector('#ts'), te = ctl.querySelector('#te'), rs = ctl.querySelector('[data-c=reset]');
+  if (ts) ts.textContent = tenth(c.s); if (te) te.textContent = tenth(c.e);
+  if (rs) rs.style.visibility = Math.abs(c.s - c.start0) < 0.01 && Math.abs(c.e - c.end0) < 0.01 ? 'hidden' : 'visible';   // keeps its room: nothing moves
+}
+// Moving the start replays from the new start; moving the end replays its last 1.5 s. Saved after a moment.
+function setTime(which, v) {
+  const A = playerApp(), c = curClip(); if (!A || !c) return;
+  v = Math.max(0, Math.round(v * 10) / 10);
+  if (which === 's') c.s = Math.min(v, Math.round((c.e - 0.2) * 10) / 10); else c.e = Math.max(v, Math.round((c.s + 0.2) * 10) / 10);
+  A.refresh();
+  if (which === 's') A.playClip(); else A.playClip(Math.max(c.s, c.e - 1.5));
+  showTimes(); saveTimes(c);
+}
+let saveT = 0;
+function saveTimes(c, reset) {
+  clearTimeout(saveT);
+  const out = ctl && ctl.querySelector('#tsaved'); if (out) out.textContent = '…';
+  saveT = setTimeout(async () => {
+    await api(`/api/times?lid=${c.lid}` + (reset ? '&reset=1' : `&s=${c.s}&e=${c.e}`));
+    for (const r of [...items, ...picks]) if (r.lid === c.lid) { r.clip.s = c.s; r.clip.e = c.e; r.timed = !reset; }
+    const o = ctl && ctl.querySelector('#tsaved'); if (o) { o.textContent = 'Saved ✓'; setTimeout(() => { if (o.isConnected) o.textContent = ''; }, 1500); }
+  }, reset ? 0 : 700);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('.ctl button'); if (!b) return;
+  const A = playerApp(), c = curClip(), rows = rowsOf(P.list);
+  switch (b.dataset.c) {
+    case 'prev': return play(P.list, P.i - 1);
+    case 'next':
+      if (P.i >= rows.length - 1 && P.list === 'results' && current && current.more) { const n = P.i + 1; page++; await go(true); return play('results', n); }
+      return play(P.list, P.i + 1);
+    case 'like': {
+      const r = rows[P.i];
+      if (P.list === 'liked') { await mark(r, 'none'); const x = items.find(y => y.lid === r.lid); if (x) await like(Object.assign(x, {kept: true})); else loadPicked(); closePlayer(); return; }
+      return like(r);
+    }
+    case 'close': return closePlayer();
+    case 's-': return c && setTime('s', c.s - 0.1);
+    case 's+': return c && setTime('s', c.s + 0.1);
+    case 's=': return A && setTime('s', A.now());
+    case 'e-': return c && setTime('e', c.e - 0.1);
+    case 'e+': return c && setTime('e', c.e + 0.1);
+    case 'e=': return A && setTime('e', A.now());
+    case 'reset': if (c) { c.s = c.start0; c.e = c.end0; A.refresh(); A.playClip(); showTimes(); saveTimes(c, true); } return;
+  }
+});
 
-// ---- ⭐ Picked ----
+// ---- ♥ Liked ----
 async function loadPicked() {
   try { picks = (await api('/api/kept')).kept || []; } catch (e) { return; }
   const box = $('#picked');
+  if (P.list === 'liked') closePlayer();
   box.hidden = !picks.length;
-  if (!picks.length) { if (stage.list === 'picked') closeStage(); return; }
-  box.innerHTML = `<h2><span>⭐ Picked (${picks.length})</span><button type="button" data-act="playall">▶ Play them</button><button type="button" data-act="copyall">Copy all entries</button></h2>
+  if (!picks.length) return;
+  box.innerHTML = `<h2><span>♥ Liked (${picks.length})</span><button type="button" data-act="playall">▶ Play them</button><button type="button" data-act="copyall">Copy all entries</button></h2>
     <details${picks.length <= 6 ? ' open' : ''}><summary>The clips</summary><ol>${picks.map((r, i) => `<li data-i="${i}"><span class="what">${esc(r.line)}<small>${esc(r.channel)} · ${esc(r.title)}${r.query ? ' · searched: ' + esc(r.query) : ''}</small></span>
-      <button type="button" data-act="play">▶</button><button type="button" data-act="copy">Copy</button><button type="button" data-act="unkeep" title="Take it off the list">✕</button></li>`).join('')}</ol></details>`;
-  if (stage.list === 'picked') stage.slug = null;   // the list changed: the player reloads on the next ▶
+      <button type="button" data-act="play">▶</button><button type="button" data-act="copy">Copy</button><button type="button" data-act="unlike" title="Take it off the list">✕</button></li>`).join('')}</ol></details>`;
 }
 $('#picked').addEventListener('click', async e => {
-  const b = e.target.closest('button'); if (!b) return;
+  const b = e.target.closest('button'); if (!b || b.closest('.ctl')) return;
   const li = b.closest('li'), i = li ? Number(li.dataset.i) : 0;
   switch (b.dataset.act) {
-    case 'playall': return play('picked', 0);
-    case 'copyall': return copyButton(b, picks.map(r => JSON.stringify(r.clip)).join(',\n'), 'Copy all entries');
-    case 'play': return play('picked', i);
-    case 'copy': return copyButton(b, JSON.stringify(picks[i].clip), 'Copy');
-    case 'unkeep': {
-      await mark(picks[i], 'none');
-      const k = items.find(r => r.lid === picks[i].lid);
-      if (k) { k.kept = false; const btn = document.querySelector(`article[data-i="${items.indexOf(k)}"] .keep`); if (btn) { btn.setAttribute('aria-pressed', 'false'); btn.textContent = '☆ Keep'; } }
-      return loadPicked();
+    case 'playall': box(); return play('liked', 0);
+    case 'copyall': return copyButton(b, picks.map(r => JSON.stringify(entry(r.clip))).join(',\n'), 'Copy all entries');
+    case 'play': return play('liked', i);
+    case 'copy': return copyButton(b, JSON.stringify(entry(picks[i].clip)), 'Copy');
+    case 'unlike': {
+      const x = items.find(y => y.lid === picks[i].lid);
+      if (x) return like(x);
+      await mark(picks[i], 'none'); return loadPicked();
     }
   }
+  function box() { const d = $('#picked details'); if (d) d.open = true; }
 });
 
 // ---- start: the address can carry a search (?q=it+depends&show=Breaking+Bad) ----

@@ -28,6 +28,8 @@ open my $lock, '>>', "$DIR/site-$port.lock" or die "can't open $DIR/site-$port.l
 if (!flock($lock, LOCK_EX | LOCK_NB)) { print "The page is already running: http://localhost:$port\n"; exit 0 }
 # ⭐ kept and 🙈 hidden clips (the page's buttons; search.pl leaves hidden ones out).
 sql("CREATE TABLE IF NOT EXISTS marks(lid INTEGER PRIMARY KEY, last INTEGER, kind TEXT NOT NULL, query TEXT, at INTEGER);");
+# A clip's own start and end where he moved them on the page (seconds); the player and its clip entry use them.
+sql("CREATE TABLE IF NOT EXISTS times(lid INTEGER PRIMARY KEY, s REAL NOT NULL, e REAL NOT NULL, at INTEGER);");
 # His phone on the home Wi-Fi may open it too (his wish, Nov 21), with a PIN: it listens on every network, but answers
 # only this PC and devices on the private home network (10.x, 172.16-31.x, 192.168.x), and those only after the PIN.
 # Windows asks once whether perl may accept connections: "Allow" on private networks only.
@@ -98,8 +100,9 @@ sub handle {
     return login($c, \%q, $path) unless ($ck{ci} // '') eq $TOKEN;
   }
   # Changes come only from the page's own script (another website can't send this header to it).
-  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark)} && ($h{'x-ci'} // '') ne '1';
+  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark|times)} && ($h{'x-ci'} // '') ne '1';
   return json($c, mark(\%q)) if $path eq '/api/mark';
+  return json($c, set_times(\%q)) if $path eq '/api/times';
   return json($c, kept()) if $path eq '/api/kept';
   if ($path eq '/') {
     my $html = slurp("$BIN/site.html");
@@ -177,7 +180,19 @@ sub mark {
   {ok => JSON::PP::true, kind => $kind};
 }
 
-# The ⭐ Picked list, newest first: each with its line, the lines around and its ready clip entry.
+# A clip's start and end, moved on the page (s, e in seconds), or back to the captions' own (reset=1).
+sub set_times {
+  my $q = shift;
+  my $lid = ($q->{lid} // '') =~ /^\d+$/ ? $q->{lid} : return {error => 'no clip'};
+  if ($q->{reset}) { sql("DELETE FROM times WHERE lid=$lid;"); return {ok => JSON::PP::true} }
+  my ($s, $e) = map { ($q->{$_} // '') =~ /^\d+(?:\.\d+)?$/ ? $q->{$_} : undef } qw(s e);
+  return {error => 'start and end in seconds'} unless defined $s && defined $e && $e > $s;
+  sql(sprintf "INSERT OR REPLACE INTO times(lid, s, e, at) VALUES(%d, %.2f, %.2f, %d);", $lid, $s, $e, time);
+  {ok => JSON::PP::true};
+}
+
+# The ♥ Liked list (stored as marks of kind keep), newest first: each with its line, the lines around and its ready
+# clip entry (with his own times where he moved them).
 sub kept {
   my @out;
   for my $r (sql("SELECT m.lid, m.last, ifnull(m.query,''), m.at, v.id, ifnull(v.title,''), ifnull(c.name, v.channel), ifnull(v.kind,'') FROM marks m JOIN videos v ON v.k = m.lid / 100000 LEFT JOIN channels c ON c.key = v.channel WHERE m.kind='keep' ORDER BY m.at DESC;")) {
@@ -219,13 +234,29 @@ sub player {
   if ($p eq '/' || $p eq '/index.html') {
     my $h = player_file('index.html');
     return reply($c, 500, 'text/plain', "the clip player is missing ($PLAYER)") unless length $h;
+    # The page has its own Previous / Next under the video (his wish, Nov 21): no arrows beside the video here.
+    $h =~ s{</head>}{<style>/* site.pl */ .side{display:none!important}</style></head>};
     utf8::encode($h);
     return reply($c, 200, 'text/html; charset=utf-8', $h);
   }
   if ($p eq '/app.js') {
     my $js = player_file('app.js');
     return reply($c, 500, 'text/plain', "the clip player is missing ($PLAYER)") unless length $js;
-    $js .= "\n;window.CI_App = App;   // added by site.pl: the results page starts a clip with CI_App.playClip()\n";
+    # Added by site.pl: the results page drives the player (CI_App.playClip(), clipN, showClip()), and the player
+    # always lays out as for one clip ("single": no arrows), so the video keeps the frame's whole width.
+    $js .= <<'JS';
+
+;window.CI_App = App;
+(function () {
+  const draw = window.drawCount;
+  if (typeof draw !== 'function') return;
+  window.drawCount = function (n, i) {
+    draw(n, i);
+    if (!document.body.classList.contains('single')) { document.body.classList.add('single'); if (typeof window.fitEmbed === 'function') window.fitEmbed(); }
+  };
+  document.body.classList.add('single');
+})();
+JS
     utf8::encode($js);
     return reply($c, 200, 'text/javascript; charset=utf-8', $js);
   }
@@ -252,7 +283,10 @@ sub clip_word {
     next unless $by{$lid} && $by{$last};
     my $line = join ' ', map { $by{$_} ? $by{$_}[3] : () } $lid .. $last;
     my @around = map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2;
-    push @clips, {v => $by{$lid}[4], s => $sec->($by{$lid}[1]), e => $sec->($by{$last}[2]), line => $line, note => '', around => \@around};
+    my ($ts, $te) = map { @$_ } sql("SELECT s, e FROM times WHERE lid=$lid;");
+    push @clips, {v => $by{$lid}[4], s => defined $ts ? 0 + $ts : $sec->($by{$lid}[1]), e => defined $te ? 0 + $te : $sec->($by{$last}[2]),
+      line => $line, note => '', around => \@around, lid => 0 + $lid, last => 0 + $last,
+      start0 => $sec->($by{$lid}[1]), end0 => $sec->($by{$last}[2])};
   }
   (my $words = $q // '') =~ s/^-q-//;
   my @alts = grep { length } map { join '[^a-z0-9]+', grep { length } split /-/ } split /-qq-/, $words;

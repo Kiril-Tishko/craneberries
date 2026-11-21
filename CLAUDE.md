@@ -261,10 +261,14 @@ huggingface.co, about 15 min per hour of audio).
     Nov 21: it stops at the line's end, ↻ plays the line again, With context, the caption bar, the yellow part of the
     timeline): `site.pl` serves the live `docs/real-video/index.html` + `app.js` from GitHub Pages (kept 6 hours; an
     installed copy without internet) at `/player/?words=c-<line>-<last line>-c-…-q-<words>&embed`, making that
-    "word" from the index on the fly; no edit.js there, so nothing can be saved from it. One player for the whole list,
-    at the top: its ‹ › arrows go through the results and the card that plays is outlined. ⭐ Keep puts a clip on the
-    page's Picked list (play them, copy all their clip entries; the `marks` table, kind keep); 🙈 Hide drops it and
-    the same scene in other videos from every search (kind hide). Short scene clips rank before long compilations.
+    "word" from the index on the fly; no edit.js there, so nothing can be saved from it. One player frame for the whole
+    list, laid over a placeholder **inside the card that plays** (never stuck at the top: he hated it scrolling over
+    the list), the video the card's whole width with no arrows beside it; under it big ◀ Previous / **♥ Like** / Next ▶
+    and the clip's Start / End (− / + 0.1 s, ⏱ now, ↺ original; the `times` table; the clip entry uses them).
+    **Every player for him gets a big ♥ Like that is remembered** (his rule, Nov 21: "always"); here a like goes on the
+    page's Liked list (play them, copy all their clip entries; `marks`, kind keep) and liked clips come first in
+    searches. 🙈 Hide drops a clip and the same scene in other videos from every search (kind hide). Short scene clips
+    rank before long compilations.
     **His phone** on the home Wi-Fi opens it too: `http://<PC's address>:8770` and a PIN (both shown on the page),
     then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait.
   - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do
