@@ -1,33 +1,33 @@
 {
   "en": "It’s late.",
-  "ua": "Уже поздно.",
+  "ua": "Уже пізно.",
   "pic": "🌙",
   "hl": "it[’']s late",
   "gloss": {
-    "it’s": "it’s = it is: It’s late = Уже поздно",
-    "late": "поздно",
-    "honey": "милый, дорогой (ласково)",
-    "please": "пожалуйста",
+    "it’s": "it’s = it is: It’s late = Уже пізно",
+    "late": "пізно",
+    "honey": "любий, дорогий (лагідно)",
+    "please": "будь ласка",
     "i": "я",
-    "have": "у меня (есть)",
-    "a": "a — один: a big day = важный день",
-    "big": "большой, важный",
+    "have": "у мене (є)",
+    "a": "a — один: a big day = важливий день",
+    "big": "великий, важливий",
     "day": "день",
     "tomorrow": "завтра",
     "mom": "мама",
-    "no": "нет",
-    "you": "ты",
-    "can’t": "can’t = cannot: не можешь",
-    "speak": "поговорить",
-    "to": "с (speak to = поговорить с)",
-    "sheldon": "Шелдон (имя)",
-    "he’s": "he’s = he is: он",
-    "in": "в",
-    "bed": "кровати"
+    "no": "ні",
+    "you": "ти",
+    "can’t": "can’t = cannot: не можеш",
+    "speak": "поговорити",
+    "to": "з (speak to = поговорити з)",
+    "sheldon": "Шелдон (ім’я)",
+    "he’s": "he’s = he is: він",
+    "in": "у",
+    "bed": "ліжку"
   },
   "clips": [
-    {"v":"SzafPFYd724","s":433.24,"e":434.32,"line":"Honey, please. It’s late.","note":"It is night. She wants to stop and go to sleep: Honey, please, it's late.","noteUa":"Ночь. Он хочет закончить и лечь спать: «Милая, пожалуйста, уже поздно»."},
-    {"v":"MCpz8UuGndM","s":311.16,"e":312,"line":"It’s late.","note":"Rory wants to go to sleep: it's late, and tomorrow is a big day.","noteUa":"Рори хочет спать: уже поздно, а завтра важный день.","around":[[312,313.4,"I have a big day tomorrow, Mom."]]},
-    {"v":"VDRorIuHd6Q","s":1289.76,"e":1290.24,"line":"It’s late.","note":"Someone wants to talk to Sheldon. His mom says: It's late. He's in bed.","noteUa":"Кто-то хочет поговорить с Шелдоном. Мама отвечает: «Уже поздно. Он в кровати».","around":[[1288.16,1289.76,"No, you can’t speak to Sheldon."],[1290.24,1291.44,"He’s in bed."]]}
+    {"v":"SzafPFYd724","s":433.24,"e":434.32,"line":"Honey, please. It’s late.","note":"It is night. She wants to stop and go to sleep: Honey, please, it's late.","noteUa":"Ніч. Він хоче закінчити й лягти спати: «Люба, будь ласка, вже пізно»."},
+    {"v":"MCpz8UuGndM","s":311.16,"e":312,"line":"It’s late.","note":"Rory wants to go to sleep: it's late, and tomorrow is a big day.","noteUa":"Рорі хоче спати: вже пізно, а завтра важливий день.","around":[[312,313.4,"I have a big day tomorrow, Mom."]]},
+    {"v":"VDRorIuHd6Q","s":1289.76,"e":1290.24,"line":"It’s late.","note":"Someone wants to talk to Sheldon. His mom says: It's late. He's in bed.","noteUa":"Хтось хоче поговорити з Шелдоном. Мама відповідає: «Уже пізно. Він у ліжку».","around":[[1288.16,1289.76,"No, you can’t speak to Sheldon."],[1290.24,1291.44,"He’s in bed."]]}
   ]
 }
