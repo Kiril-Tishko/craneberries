@@ -261,6 +261,19 @@ sub player {
   };
   document.body.classList.add('single');
 })();
+// Every time here is exact (from the captions, or set to the tenth on the page), but the player takes a start on a
+// whole second (79.0) for YouGlish's rough times: it then plays 1.2 s past the end and lets it run past the next line
+// (his bug, Nov 21: +0.1 s at the end added a whole second). So it always gets an exact start here.
+(function () {
+  const range = window.rangeOf;
+  if (typeof range !== 'function') return;
+  window.rangeOf = function (c, longer) {
+    if (!c || !Number.isInteger(c.s)) return range(c, longer);
+    const r = range(Object.assign({}, c, {s: c.s + 0.0001}), longer);
+    r.c = c;
+    return r;
+  };
+})();
 // ◀ Previous, ♡ Like, Next ▶ in the row with "With context"; the results page (parent.CI) does the work and tells
 // them what to show (CI_Buttons.set).
 (function () {
