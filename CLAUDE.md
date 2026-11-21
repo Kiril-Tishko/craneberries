@@ -269,7 +269,7 @@ huggingface.co, about 15 min per hour of audio).
     under it: they took too much room). Under the video, small: what plays and the clip's Start / End (− / + 0.1 s,
     ⏱ now, ↺ original; the `times` table; the clip entry uses them). **Every player for him gets a Like that is
     remembered** (his rule, Nov 21: "always"); here likes are `marks` of kind keep, liked clips come first in
-    searches. Hidden clips (kind hide, from before) stay out of searches. Short scene clips rank before compilations.
+    searches. A small 🙈 on a result hides it and the same scene in other videos from every search (kind hide; Undo in place). Short scene clips rank before compilations.
     **His phone** on the home Wi-Fi opens it too: `http://<PC's address>:8770` and a PIN (both shown on the page),
     then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait.
   - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do

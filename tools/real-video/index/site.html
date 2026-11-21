@@ -85,14 +85,18 @@ ol.list { list-style: none; margin: 0; padding: 4px 6px 10px; }
 .item .row { display: flex; gap: 10px; align-items: flex-start; }
 .thumb { flex: none; width: 112px; aspect-ratio: 16 / 9; border-radius: 7px; background: var(--chip) center / cover no-repeat; position: relative; }
 .thumb .tm { position: absolute; right: 4px; bottom: 4px; background: rgba(0,0,0,.75); color: #fff; font-size: 11px; padding: 0 4px; border-radius: 4px; font-variant-numeric: tabular-nums; }
-.item .meta { min-width: 0; flex: 1; padding-right: 26px; }
+.item .meta { min-width: 0; flex: 1; padding-right: 50px; }
 .item .chan { font-weight: 600; font-size: 13px; }
 .item .title { font-size: 12.5px; color: var(--soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .item .info { font-size: 11.5px; color: var(--faint); margin-top: 2px; }
 .item .info .liked { color: var(--like); }
 .item .info .bad { color: var(--bad); }
-.item .cp { position: absolute; top: 6px; right: 6px; border: 0; background: none; color: var(--faint); cursor: pointer; padding: 3px 5px; border-radius: 6px; font-size: 13px; }
-.item .cp:hover { background: var(--chip); color: var(--ink); }
+.item .cp, .item .hd { position: absolute; top: 6px; right: 6px; border: 0; background: none; color: var(--faint); cursor: pointer; padding: 3px 5px; border-radius: 6px; font-size: 13px; line-height: 1.2; }
+.item .hd { right: 30px; opacity: .55; }
+.item .cp:hover, .item .hd:hover { background: var(--chip); color: var(--ink); opacity: 1; }
+.item.gone { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 6px 10px; font-size: 12.5px; color: var(--faint); cursor: default; }
+.item.gone span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.item.gone .undo { flex: none; border: 1px solid var(--line); background: var(--bg); border-radius: 7px; padding: 3px 9px; font-size: 12px; cursor: pointer; }
 .caps { margin: 6px 0 0; font-size: 13px; color: var(--soft); }
 .caps p { margin: 0; padding: 1px 0; }
 .caps p.hit { color: var(--ink); font-weight: 500; }
@@ -288,6 +292,8 @@ function setTab(t) {
 }
 $('.tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); });
 function item(r, i, res) {
+  // 🙈 hidden: a thin row with Undo (gone from every search from now on).
+  if (r.hidden) return `<li class="item gone" data-i="${i}"><span>🙈 Hidden: ${esc((r.lines || []).find(l => l.hit)?.text || r.title || '')}</span><button type="button" class="undo">Undo</button></li>`;
   const info = [clock(r.s), r.kind === 'human' ? 'exact captions' : 'auto captions'];
   if (r.alive === 404) info.push('<span class="bad">video gone</span>');
   if (r.timed) info.push('your times');
@@ -302,7 +308,7 @@ function item(r, i, res) {
     <div class="row"><div class="thumb" style="background-image:url('https://i.ytimg.com/vi/${encodeURIComponent(r.id)}/mqdefault.jpg')"><span class="tm">${clock(r.s)}</span></div>
       <div class="meta"><div class="chan">${esc(r.channel)}</div><div class="title">${esc(r.title || r.id)}</div><div class="info">${info.join(' · ')}</div></div></div>
     <div class="caps">${caps}</div>
-    <button type="button" class="cp" title="Copy clip entry">⧉</button></li>`;
+    <button type="button" class="cp" title="Copy clip entry">⧉</button>${tab === 'results' ? '<button type="button" class="hd" title="Hide: never show this clip (or the same scene) in a search again">🙈</button>' : ''}</li>`;
 }
 function drawList() {
   const rows = rowsOf(tab);
@@ -321,6 +327,8 @@ $('#list').addEventListener('click', e => {
   const li = e.target.closest('.item'); if (!li) return;
   const i = Number(li.dataset.i), r = rowsOf(tab)[i];
   if (e.target.closest('.cp')) return copyText(JSON.stringify(entry(r.clip)));
+  if (e.target.closest('.hd, .undo')) return hide(r, li, !r.hidden);
+  if (r.hidden) return;
   const p = e.target.closest('p[data-at]');
   play(tab, i, p ? Number(p.dataset.at) : undefined);
 });
@@ -390,6 +398,15 @@ window.CI = {
     drawNow(); if (tab === 'results') drawList();
   },
 };
+// 🙈 Hide (or Undo): this line and the same scene in the other videos; the row turns thin in place, nothing moves.
+async function hide(r, li, on) {
+  await api('/api/mark?' + new URLSearchParams({lid: r.lid, last: r.last, kind: on ? 'hide' : 'none',
+    q: (current && current.query) || '', scene: (r.scene || []).join(',')}).toString());
+  r.hidden = on;
+  const res = current ? patterns(current.query || $('#q').value) : [];
+  li.outerHTML = item(r, Number(li.dataset.i), res);
+  markNow();
+}
 function mark(r, kind) {
   const p = new URLSearchParams({lid: r.lid, last: r.last, kind, q: (current && current.query) || r.query || ''});
   return api('/api/mark?' + p.toString());
