@@ -9,7 +9,7 @@ import pathlib
 words = pathlib.Path(__file__).resolve().parents[2] / 'docs' / 'real-video' / 'words'
 items = []
 for f in sorted(words.glob('*.json')):
-    if f.name == 'index.json':
+    if f.name in ('index.json', 'groups.json'):   # groups.json = the library page's topics, not a word
         continue
     w = json.loads(f.read_text(encoding='utf-8'))
     items.append({'slug': f.stem, 'en': w.get('en') or f.stem, 'ua': w.get('ua', ''), 'pic': w.get('pic', ''),
