@@ -53,6 +53,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* A part kept in reserve ({extra: true}): only a dashed ➕ tab until it is opened during the lesson. */
 .tab.more{border:2px dashed var(--line);color:var(--accent);padding:5px 11px}
 .tab.more:hover{border-color:var(--accent)}
+.tab .shut{display:inline-block;margin:-4px -6px -4px 4px;padding:4px 6px;border-radius:99px;opacity:.75;font-size:12px}
+.tab .shut:hover{opacity:1;background:rgba(127,127,127,.25)}
 .dots{display:flex;gap:5px;justify-content:center;flex:none;padding:4px 0 2px}
 .dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
 .dots i.on{background:var(--accent);width:22px;border-radius:99px}
@@ -459,41 +461,60 @@ function view(s){
 
 /* ---------- parts kept in reserve ----------
    A part with extra: true (e.g. more tense drills, his wish Nov 21) stays out of the way: no tab, Next goes past it,
-   only a dashed "➕ <label>" tab where it would be. A tap on it opens the part for the rest of the lesson (this tab
-   remembers it after a reload), and a jump there (the teacher's Lead) opens it too. */
+   only a dashed "➕ <label>" tab where it would be. A tap on it opens the part (this tab remembers it after a reload),
+   and so does a jump there (the teacher's Lead); the ✕ on its tab puts it away again, as often as he likes. On the
+   student site the teacher's open / closed parts reach the student's page while he leads (live.js:
+   Lesson.extras(), Lesson.setExtras(list), Lesson.onExtras). */
 const EXTRA_KEY = `lesson-extra:${location.pathname}`;
 const opened = new Set((() => { try { return JSON.parse(sessionStorage.getItem(EXTRA_KEY) || '[]'); } catch (e) { return []; } })());
 const isOpen = (n) => !!SECTIONS[n] && (!SECTIONS[n].extra || opened.has(n));
+const keepOpened = () => { try { sessionStorage.setItem(EXTRA_KEY, JSON.stringify([...opened])); } catch (e) {} };
 function openPart(n){
   if (!SECTIONS[n] || isOpen(n)) return;
-  opened.add(n);
-  try { sessionStorage.setItem(EXTRA_KEY, JSON.stringify([...opened])); } catch (e) {}
+  opened.add(n); keepOpened();
 }
 const nextOpen = (n, d) => { for (let k = n + d; k >= 0 && k < SECTIONS.length; k += d) if (isOpen(k)) return k; return -1; };
+// Put a part away again. Standing on it, the lesson goes on where it would have without it (the next part).
+function closePart(n){
+  if (!SECTIONS[n] || !SECTIONS[n].extra || !opened.has(n)) return;
+  opened.delete(n); keepOpened();
+  if (sec === n){
+    const f = nextOpen(n, 1), b = nextOpen(n, -1);
+    if (f >= 0){ sec = f; idx = 0; } else if (b >= 0){ sec = b; idx = SECTIONS[b].slides.length - 1; }
+    else { opened.add(n); keepOpened(); return; }   // nothing else to show: keep it
+    render();
+  } else drawBar();
+  if (window.Lesson && window.Lesson.onExtras) window.Lesson.onExtras();
+}
 function render(){
   if (!isOpen(sec)) openPart(sec);
   const slides = SECTIONS[sec].slides;
-  const tabsEl = document.getElementById('tabs'), keepX = tabsEl.scrollLeft;   // the bar keeps where it was scrolled
-  tabsEl.innerHTML = SECTIONS.map((s, n) => isOpen(n)
-    ? `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}</button>`
-    : `<button class="tab more" data-more="${n}" title="Open this part">➕ ${esc(s.label)}</button>`).join('');
-  tabsEl.scrollLeft = keepX;
-  const onTab = tabsEl.querySelector('[aria-selected="true"]');   // and always shows the part that is open
-  if (onTab && (onTab.offsetLeft < tabsEl.scrollLeft + 28 || onTab.offsetLeft + onTab.offsetWidth > tabsEl.scrollLeft + tabsEl.clientWidth - 28))
-    tabsEl.scrollLeft = onTab.offsetLeft - (tabsEl.clientWidth - onTab.offsetWidth) / 2;
-  tabFades();
+  drawBar();
   document.getElementById('dots').innerHTML = slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '';
   jawDeg = 0; G = { cur: null, right: 0, total: 0 };
   card.innerHTML = view(slides[idx]);
   card.classList.toggle('full', !!(window.LESSON_KEY && slides[idx].t === 'clips'));   // the clips fill the screen
   card.classList.remove('in'); void card.offsetWidth; card.classList.add('in');
   Clips.render();
+  stopAll();
+  if (window.Lesson && window.Lesson.onMove) window.Lesson.onMove(sec, idx);
+}
+// The part tabs and Back / Next (which parts are open decides where Next goes).
+function drawBar(){
+  const slides = SECTIONS[sec].slides;
+  const tabsEl = document.getElementById('tabs'), keepX = tabsEl.scrollLeft;   // the bar keeps where it was scrolled
+  tabsEl.innerHTML = SECTIONS.map((s, n) => !isOpen(n)
+    ? `<button class="tab more" data-more="${n}" title="Open this part">➕ ${esc(s.label)}</button>`
+    : `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}${s.extra ? `<span class="shut" data-shut="${n}" title="Put this part away">✕</span>` : ''}</button>`).join('');
+  tabsEl.scrollLeft = keepX;
+  const onTab = tabsEl.querySelector('[aria-selected="true"]');   // and always shows the part that is open
+  if (onTab && (onTab.offsetLeft < tabsEl.scrollLeft + 28 || onTab.offsetLeft + onTab.offsetWidth > tabsEl.scrollLeft + tabsEl.clientWidth - 28))
+    tabsEl.scrollLeft = onTab.offsetLeft - (tabsEl.clientWidth - onTab.offsetWidth) / 2;
+  tabFades();
   const after = nextOpen(sec, 1), last = after < 0 && idx === slides.length - 1;
   document.getElementById('back').disabled = nextOpen(sec, -1) < 0 && idx === 0;
   document.getElementById('next').disabled = last;
   document.getElementById('next').textContent = idx === slides.length - 1 && !last ? `${SECTIONS[after].label} →` : 'Next →';
-  stopAll();
-  if (window.Lesson && window.Lesson.onMove) window.Lesson.onMove(sec, idx);
 }
 /* ---------- clips screens load ahead (student site) ----------
    A clips screen's page (/clips/…&embed=1, with YouTube players) takes a few seconds to load, so it loads before the
@@ -580,6 +601,14 @@ function go(d){
 window.Lesson = Object.assign(window.Lesson || {}, {
   at: () => [sec, idx],
   jump(s, i){ if ((s === sec && i === idx) || !SECTIONS[s] || !SECTIONS[s].slides[i]) return; sec = s; idx = i; render(); },
+  // parts kept in reserve that are open now; setExtras makes these the open ones (the part on show stays open)
+  extras: () => [...opened].filter((n) => SECTIONS[n] && SECTIONS[n].extra).sort((a, b) => a - b),
+  setExtras(list){
+    const want = new Set((list || []).filter((n) => SECTIONS[n] && SECTIONS[n].extra));
+    if (SECTIONS[sec].extra) want.add(sec);
+    if (want.size === opened.size && [...want].every((n) => opened.has(n))) return;
+    opened.clear(); want.forEach((n) => opened.add(n)); keepOpened(); drawBar();
+  },
 });
 
 /* ---------- events ---------- */
@@ -616,6 +645,8 @@ tabBar.addEventListener('click', (e) => {
   if (tabDragged){ tabDragged = false; e.stopImmediatePropagation(); e.preventDefault(); }   // a drag is not a tap
 }, true);
 tabBar.addEventListener('click', (e) => {
+  const x = e.target.closest('[data-shut]');
+  if (x){ closePart(Number(x.dataset.shut)); return; }
   const m = e.target.closest('[data-more]');
   if (m){ sec = Number(m.dataset.more); idx = 0; openPart(sec); render(); return; }
   const b = e.target.closest('[data-sec]'); if (!b) return;

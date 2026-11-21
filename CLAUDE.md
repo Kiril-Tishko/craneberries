@@ -383,8 +383,8 @@ huggingface.co, about 15 min per hour of audio).
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
   - One thing per screen, an "All together" screen at the end of each part, no scrolling.
   - **Extra drills in reserve** (Nov 21, his wish): a part with `extra: true` (`{label:'More drills', extra:true,
-    slides:[…]}`) has no tab and Next goes past it; a dashed "➕ More drills" tab sits where it is, and a tap opens it for
-    the rest of the lesson (a 📡 Lead jump there opens it on the student's page too). When he asks for "more exercises if
+    slides:[…]}`) has no tab and Next goes past it; a dashed "➕ More drills" tab sits where it is: a tap opens it, the ✕ on
+    its tab puts it away again, as often as he likes (with 📡 Lead his ➕ / ✕ change the student's page too). When he asks for "more exercises if
     we need them", add one (e.g. another big tense drills part with its own "All together" screens) before "Before you
     go"; qa.js checks it too.
   - No "change one word" drills that only swap numbers or days: he finds them pointless. Use **change the time**
