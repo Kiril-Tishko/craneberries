@@ -8,7 +8,7 @@
 //   #w=excuse                              open this word first
 //   ?mute                                  plays without sound (for testing)
 //   &listen                                listen first: each clip plays with its caption hidden (blurred), which
-//                                          shows when the clip ends (or on a tap on it)
+//                                          shows only on a tap on it (not at the clip's end: his rule, Nov 21)
 //   &embed                                 inside a lesson screen (below)
 // CC beside the timeline hides the subtitles (blurred) everywhere: every clip, every lesson, after a reload too, until
 // CC is tapped again (kept in this browser). A tap on the blurred line shows just that one.
@@ -46,7 +46,7 @@ if (EMBED) { addEventListener('resize', fitEmbed); if (document.fonts) document.
 const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 // Hidden subtitles: the caption is blurred (it keeps its place, so nothing moves); a tap on it shows it at once.
-// ?listen: every clip starts hidden and its caption shows when the clip has played to its end.
+// ?listen: every clip starts hidden and its caption stays hidden at the end too, until it is tapped (Nov 21).
 // CC: hides them for this clip and the next ones (they stay hidden at the end), until CC is tapped again.
 // capHidden = the caption shown now is blurred; subsOff = CC is on, so each new clip starts blurred. Edit mode always shows it.
 const LISTEN = Q.has('listen');
@@ -483,10 +483,8 @@ setInterval(() => {
   if (playing && (t < range.from - 0.5 || t > range.to + 0.5)) { P().seekTo(range.from, true); return; }
   if (playing && t >= range.to - 0.06) {
     P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
-    // Listen first: the caption comes once the clip has played (with CC on, it stays hidden until tapped).
-    const reveal = capHidden && LISTEN && !subsOff;
-    if (reveal) { capHidden = false; drawCC(); }
-    if (range.lines || reveal) { showLine(range.c.line); shown = null; }
+    // Listen first: the caption stays hidden at the end too; only a tap on it shows it (his rule, Nov 21).
+    if (range.lines) { showLine(range.c.line); shown = null; }
     drawTimeline(range.to); setCover(); return;
   }
   if (!ended && !dragging) drawTimeline(t);

@@ -229,7 +229,8 @@ huggingface.co, about 15 min per hour of audio).
     never overwrite his edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian;
-    `listen: true` = listen first: each clip starts with its caption blurred, which shows when it ends or on a tap;
+    `listen: true` = listen first: each clip starts with its caption blurred, which shows only on a tap (not when the
+    clip ends: his rule, Nov 21);
     CC beside the timeline blurs the subtitles (a "censored" look) everywhere, every clip, screen and lesson, after a
     reload too, until it is tapped again (his rule, Nov 19; kept in the browser);
     inside a lesson the clip page takes the lesson's look: its colors, rounded buttons, progress dots, no box inside
@@ -250,7 +251,8 @@ huggingface.co, about 15 min per hour of audio).
   - **A YouTube link with a time from him** (youtu.be/…?t=83): open it in Chrome, read the lines around that second
     (YouTube's "Show transcript"), and add the clip with exact times, the lines around it and a note.
   **How he wants clips in a lesson** (Nov 16): the word or phrase on its own screen as usual, then right after it one
-  clips screen with `listen: true` (first no subtitles, then subtitles), 💡 notes in Ukrainian for A2 students, about
+  clips screen with `listen: true` (no subtitles until tapped), 💡 notes in Ukrainian for A2 students unless their `brief`
+  says English (then the notes are simple A2 English: short sentences, everyday words), about
   3 clips a word. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
   you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
