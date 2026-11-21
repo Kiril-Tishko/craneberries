@@ -261,7 +261,13 @@ huggingface.co, about 15 min per hour of audio).
     (uploaded captions only, exact text), `--channel office,friends`, `--not snl`, `"a | b"` (either), `"call ~3
     back"` (near), `"tire*"`; `--channels` lists them; `--clip` adds each result's ready clip entry for `words/`
     (`v`, `s`, `e`, `line`, `around`; write the note after watching). A scene found in several videos (a compilation
-    and its own clip) shows once, with "same scene also in …". It holds only the 36 American channels he picked
+    and its own clip) shows once, with "same scene also in …". **A student's favorite show**: `--show breaking-bad`
+    gives clips from that show only (`--shows` lists them and how much of each is in). To add a show, add its official
+    channel to `channels.json` with `show`, `"first": true` (listed and fetched before everything else), `per`,
+    `titles` and `skip` (interviews, panels, music: not scenes); official channels only, never full-episode reuploads
+    (they get taken down). Breaking Bad (Nov 21): the official "Breaking Bad & Beyond" channel, 750 scenes and
+    compilations, 67 h (the series is ~49 h): its famous scenes many times over, not every line of the show; uploaded
+    captions on most scenes. It holds only the American channels he picked
     (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
     scheduled task runs `collect.pl` logged out (no cookies), each channel's longest videos first, one caption
     request a video, a 4-hour rest after every 120 (YouTube said 429 after about 160 twice on Nov 19), about 400-500

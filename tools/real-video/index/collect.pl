@@ -33,7 +33,7 @@ use strict; use warnings; use utf8;
 our $BIN; BEGIN { ($BIN = __FILE__) =~ tr{\\}{/}; $BIN =~ s{/[^/]*$}{} or $BIN = '.'; unshift @INC, $BIN }
 use CaptionIndex;
 use JSON::PP; use Fcntl qw(:flock); use Time::HiRes qw(sleep time); use File::Path qw(make_path remove_tree);
-use File::Copy qw(copy); use POSIX qw(strftime WNOHANG _exit); use List::Util qw(shuffle min max sum0);
+use File::Copy qw(copy); use POSIX qw(strftime WNOHANG _exit); use List::Util qw(shuffle min max sum0 first);
 binmode STDOUT, ':encoding(UTF-8)'; binmode STDERR, ':encoding(UTF-8)';
 $| = 1;
 
@@ -91,12 +91,16 @@ sub channels { @CHANNELS = load_channels($CONFIG) unless @CHANNELS; @CHANNELS }
 
 sub sync_channels {
   my @s;
+  # "show" came on Nov 21 (a show's clips can be searched on their own: search.pl --show breaking-bad).
+  push @s, 'ALTER TABLE channels ADD COLUMN show TEXT;' unless grep { $_->[1] eq 'show' } sql('PRAGMA table_info(channels);');
   for my $c (channels()) {
-    push @s, sprintf("INSERT INTO channels(key, id, name, handle) VALUES(%s, %s, %s, %s) ON CONFLICT(key) DO UPDATE SET id=excluded.id, name=excluded.name, handle=excluded.handle;",
-      map { sql_quote($_) } $c->{key}, $c->{id}, $c->{name}, $c->{handle} // '');
+    push @s, sprintf("INSERT INTO channels(key, id, name, handle, show) VALUES(%s, %s, %s, %s, %s) ON CONFLICT(key) DO UPDATE SET id=excluded.id, name=excluded.name, handle=excluded.handle, show=excluded.show;",
+      map { sql_quote($_) } $c->{key}, $c->{id}, $c->{name}, $c->{handle} // '', $c->{show});
   }
   sql(join "\n", @s);
 }
+# Channels marked "first" (a show a student loves) are listed and fetched before all the others.
+sub first_keys { map { $_->{key} } grep { $_->{first} } channels() }
 
 sub state_set { my %kv = @_; my $s = read_state(); @$s{keys %kv} = values %kv; write_state($s); $s }
 
@@ -237,13 +241,15 @@ sub list_channel {
     return;
   }
   my $re = $c->{titles} ? qr/$c->{titles}/ : undef;
+  my $no = $c->{skip} ? qr/$c->{skip}/ : undef;   # e.g. a show's interviews, panels and music: not scenes
   my @s = ('BEGIN;');
   my ($keep, $skip) = (0, 0);
   for my $x (@e) {
     my $d = $x->{duration};
     my $ok = (!defined $d || ($d >= 60 && $d <= 3 * 3600))
       && ($x->{live_status} // '') !~ /^(is_live|is_upcoming)$/
-      && (!$re || ($x->{title} // '') =~ $re);
+      && (!$re || ($x->{title} // '') =~ $re)
+      && (!$no || ($x->{title} // '') !~ $no);
     $ok ? $keep++ : $skip++;
     push @s, sprintf("INSERT INTO videos(id, channel, title, dur, views, status) VALUES(%s, %s, %s, %s, %d, %s) ON CONFLICT(id) DO UPDATE SET views=excluded.views, title=excluded.title WHERE videos.channel=excluded.channel;",
       sql_quote($x->{id}), sql_quote($c->{key}), sql_quote($x->{title}), defined $d ? int $d : 'NULL', int($x->{view_count} // 0), sql_quote($ok ? 'later' : 'skip'));
@@ -255,10 +261,11 @@ sub list_channel {
 }
 
 # Queues the most-viewed videos of a channel, up to --per-channel.
+sub per_channel { my $key = shift; my $c = first { $_->{key} eq $key } channels(); $c && $c->{per} ? $c->{per} : $opt{per} }
 sub promote {
   my $key = shift;
   my ($n) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE channel=%s AND status NOT IN ('later','skip');", sql_quote($key));
-  my $room = $opt{per} - ($n // 0);
+  my $room = per_channel($key) - ($n // 0);
   return 0 if $room <= 0;
   sql(sprintf "UPDATE videos SET status='todo' WHERE k IN (SELECT k FROM videos WHERE channel=%s AND status='later' ORDER BY views DESC LIMIT %d);", sql_quote($key), $room);
   my ($m) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE channel=%s AND status='todo';", sql_quote($key));
@@ -445,10 +452,17 @@ sub fetch_video {
   my %f = (title => $i->{title}, dur => int($i->{duration} // 0), views => int($i->{view_count} || $v->{views} || 0),
     uploaded => $i->{upload_date}, lang => $i->{language},
     embed => (ref $i->{playable_in_embed} ? ($i->{playable_in_embed} ? 1 : 0) : undef));
-  my $has = sub { my ($subs, $l) = @_; grep { ($_->{ext} // '') eq 'json3' } @{(ref $subs eq 'HASH' ? $subs : {})->{$l} || []} };
+  # A track YouTube translated from another language (tlang= in its address) is never kept: a video with dubbed
+  # audio (Jubilee, Dhar Mann) calls its Bangla-to-English translation "en" and the English original "en-orig".
+  my $has = sub { my ($subs, $l) = @_;
+    grep { ($_->{ext} // '') eq 'json3' && ($_->{url} // '') !~ /[?&]tlang=/ } @{(ref $subs eq 'HASH' ? $subs : {})->{$l} || []} };
   my ($lang, $kind);
-  for my $l ('en', 'en-US', 'en-CA', 'en-GB', 'en-AU') { if ($has->($i->{subtitles}, $l)) { ($lang, $kind) = ($l, 'human'); last } }
-  if (!$lang && $has->($i->{automatic_captions}, 'en') && ($i->{language} // 'en') =~ /^en/) { ($lang, $kind) = ('en', 'auto') }
+  # Uploaded tracks can also be called "en-eEY6OEpapPo" (Breaking Bad's channel): any other en-… track comes next.
+  my @en = grep { /^en-/ && !/^en-(US|CA|GB|AU)$/ } sort keys %{ref $i->{subtitles} eq 'HASH' ? $i->{subtitles} : {}};
+  for my $l ('en', 'en-US', 'en-CA', 'en-GB', 'en-AU', @en) { if ($has->($i->{subtitles}, $l)) { ($lang, $kind) = ($l, 'human'); last } }
+  if (!$lang && ($i->{language} // 'en') =~ /^en/) {
+    for my $l ('en-orig', 'en', 'en-US-orig', 'en-US') { if ($has->($i->{automatic_captions}, $l)) { ($lang, $kind) = ($l, 'auto'); last } }
+  }
   if (!$lang) {
     set_video($v->{k}, %f, status => 'none', fetched_at => int time,
       note => ($i->{language} && $i->{language} !~ /^en/ ? "spoken language: $i->{language}" : 'no English captions'));
@@ -517,10 +531,17 @@ sub round {
   wait_if_paused();
   update_ytdlp();
   my $old = time - 30 * 86400;
+  my %first = map { $_ => 1 } first_keys();
   my @unlisted = grep { $known->{$_} } map { $_->[0] } sql("SELECT key FROM channels WHERE listed_at IS NULL OR listed_at < $old ORDER BY listed_at IS NOT NULL, listed_at, rowid;");
-  my @batch = map { my %v; @v{qw(k id channel tries lines views)} = @$_; \%v }
-    grep { $known->{$_->[2]} } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY dur IS NULL, dur DESC, views DESC, k) r FROM videos WHERE status='todo') WHERE r=1;");
+  @unlisted = ((grep { $first{$_} } @unlisted), (grep { !$first{$_} } @unlisted));
+  my $row = sub { my %v; @v{qw(k id channel tries lines views)} = @{$_[0]}; \%v };
   # Longest videos first (of each channel's most-viewed): one caption request gives up to 3 hours of speech.
+  # "first" channels (a show a student loves): 12 of their videos at a time, before anything else.
+  my $in = join ',', map { sql_quote($_) } grep { $known->{$_} } keys %first;
+  my @batch = $in ? map { $row->($_) } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM videos WHERE status='todo' AND channel IN ($in) ORDER BY dur IS NULL, dur DESC, views DESC, k LIMIT 12;") : ();
+  @batch = map { $row->($_) } grep { $known->{$_->[2]} } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY dur IS NULL, dur DESC, views DESC, k) r FROM videos WHERE status='todo') WHERE r=1;")
+    unless @batch;
+  if (@unlisted && $first{$unlisted[0]}) { $run->{since_list} = 12 }   # a "first" channel is listed at once
   if (@unlisted && ($run->{since_list} >= 12 || !@batch)) {   # a new channel after every 12 videos
     my ($c) = grep { $_->{key} eq $unlisted[0] } channels();
     my $t0 = time;
@@ -582,6 +603,11 @@ sub status {
   my ($last_hour) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE fetched_at > %d;", time - 3600);
   printf "Queue: %s to fetch (the %d most-viewed of each channel); %d of %d channels listed; %s fetched in the last hour\n",
     commas($n{todo}), $opt{per}, $listed, $all, commas($last_hour);
+  for my $c (grep { $_->{first} } channels()) {
+    my ($done, $todo, $hours, $listed_at) = map { @$_ } sql(sprintf "SELECT sum(v.status='done'), sum(v.status='todo'), round(sum(CASE WHEN v.status='done' THEN v.dur END) / 3600.0, 1), c.listed_at FROM channels c LEFT JOIN videos v ON v.channel=c.key WHERE c.key=%s;", sql_quote($c->{key}));
+    printf "First: %s: %s videos searchable (%s h), %s to fetch%s\n", $c->{name}, $done || 0, $hours || 0, $todo || 0,
+      $listed_at ? '' : ' (not listed yet: it is listed first)';
+  }
   my $g = max($opt{gap}, $s->{gap} // $opt{gap});
   my $left = ($n{todo} // 0) + ($all - $listed) * $opt{per} * 0.9;   # channels not listed yet: about 360 each
   my $size = min($opt{round}, $s->{round_size} // $opt{round});

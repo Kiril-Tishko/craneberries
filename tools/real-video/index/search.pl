@@ -17,6 +17,8 @@
 #   --channel office,friends   only these channels (part of the name is enough); --not snl,colbert leaves them out
 #   --all           also videos that can't be embedded or were found gone (the clip page can't play them)
 #   --no-check      skip the online check (YouTube oEmbed: 200 = online, 404 = gone, 401/403 = private or no embed)
+#   --show breaking-bad   only this TV show (a student's favorite; part of the name is enough, "-" = a space);
+#                   --shows lists the shows and how much of each is searchable
 #   --channels      the channels in the index and how many of their videos are searchable
 #   --clip          under each result, its clip entry for docs/real-video/words/<word>.json (v, s, e, line, an empty
 #                   note, around = one line before and after), ready to paste once the clip is watched
@@ -38,15 +40,16 @@ my (%opt, @args);
 @ARGV = map { my $x = $_; utf8::decode($x); $x } @ARGV;
 while (@ARGV) {
   my $arg = shift @ARGV;
-  if ($arg =~ /^--(page|channel|not)$/) { push @{$opt{$1}}, shift @ARGV }
-  elsif ($arg =~ /^--(page|channel|not)=(.*)$/) { push @{$opt{$1}}, $2 }
-  elsif ($arg =~ /^--(human|all|no-check|channels|clip|help)$/) { $opt{$1} = 1 }
+  if ($arg =~ /^--(page|channel|not|show)$/) { push @{$opt{$1}}, shift @ARGV }
+  elsif ($arg =~ /^--(page|channel|not|show)=(.*)$/) { push @{$opt{$1}}, $2 }
+  elsif ($arg =~ /^--(human|all|no-check|channels|shows|clip|help)$/) { $opt{$1} = 1 }
   elsif ($arg =~ /^--/) { die "unknown option $arg (see the top of $0)\n" }
   else { push @args, $arg }
 }
 my $db = db_path();
 die "No caption index yet ($db). Start the collector: perl tools/real-video/index/collect.pl --install\n" unless -e $db;
 if ($opt{channels}) { list_channels(); exit }
+if ($opt{shows}) { list_shows(); exit }
 my ($query, $limit) = @args;
 die "usage: perl tools/real-video/index/search.pl \"phrase\" [how many] [--page N] [--human] [--channel x,y] [--not x] [--all] [--no-check]\n"
   unless defined $query && $query =~ /\S/;
@@ -108,6 +111,10 @@ my $chan = sub {
 };
 push @where, '(' . $chan->(@{$opt{channel}}) . ')' if $opt{channel} && $chan->(@{$opt{channel}});
 push @where, 'NOT (' . $chan->(@{$opt{not}}) . ')' if $opt{not} && $chan->(@{$opt{not}});
+if ($opt{show}) {
+  my @s = map { my $x = lc; $x =~ s/[-_]+/ /g; $x =~ s/'/''/g; $x =~ s/[%]//g; $x } grep { length } map { split /\s*,\s*/ } @{$opt{show}};
+  push @where, '(' . join(' OR ', map { "lower(ifnull(c.show,'')) LIKE '%$_%'" } @s) . ')' if @s;
+}
 (my $ftsq = $fts) =~ s/'/''/g;
 my @rows = sql(<<"SQL");
 SELECT l.id, l.s, l.e, l.text, ifnull(l.w,''), ifnull(n.text,''), ifnull(n.e,''), ifnull(n.w,''), ifnull(n.s,''),
@@ -309,6 +316,13 @@ sub check_online {
   eval { sql(join "\n", 'BEGIN;', @upd, 'COMMIT;') } if @upd;
 }
 
+sub list_shows {   # one show can come from several channels
+  printf "%-28s %8s %8s %8s %9s\n", 'show', 'videos', 'human', 'hours', 'to fetch';
+  for (sql("SELECT c.show, sum(v.status='done'), sum(v.status='done' AND v.kind='human'), round(sum(CASE WHEN v.status='done' THEN v.dur END) / 3600.0, 1), sum(v.status='todo') FROM channels c LEFT JOIN videos v ON v.channel=c.key WHERE ifnull(c.show,'') <> '' GROUP BY c.show ORDER BY c.show;")) {
+    printf "%-28s %8d %8d %8s %9d\n", $_->[0], $_->[1] || 0, $_->[2] || 0, $_->[3] || 0, $_->[4] || 0;
+  }
+  print "(search one of them with --show, e.g. --show breaking-bad)\n";
+}
 sub list_channels {
   printf "%-40s %8s %8s %8s\n", 'channel', 'videos', 'human', 'auto';
   for (sql("SELECT c.name, c.handle, sum(v.status='done'), sum(v.status='done' AND v.kind='human'), sum(v.status='done' AND v.kind='auto') FROM channels c LEFT JOIN videos v ON v.channel=c.key GROUP BY c.key ORDER BY c.rowid;")) {
