@@ -643,6 +643,11 @@ sub install {
   for my $f (qw(collect.pl search.pl CaptionIndex.pm channels.json site.pl site.html)) {
     copy("$BIN/$f", "$to/$f") or die "can't copy $f to $to: $!\n";
   }
+  # The clip library's player, for the page when there is no internet (site.pl takes the live one when it can).
+  make_path("$to/player");
+  for my $f (qw(index.html app.js)) {
+    copy("$BIN/../../../docs/real-video/$f", "$to/player/$f") or warn "can't copy the clip player's $f: $!\n";
+  }
   print "Copied the collector and the page to $to\n";
   hidden_task($to, $TASK, 'collect.pl', 'run-hidden.vbs',
     'Private caption index (craneberries tools/real-video/index): fetches YouTube captions slowly, logged out. Stop: perl collect.pl --stop');

@@ -13,7 +13,7 @@ use strict; use warnings; use utf8;
 our $BIN; BEGIN { ($BIN = __FILE__) =~ tr{\\}{/}; $BIN =~ s{/[^/]*$}{} or $BIN = '.'; unshift @INC, $BIN }
 use CaptionIndex;
 use IO::Socket::INET; use JSON::PP; use Fcntl qw(:flock); use IPC::Open3 qw(open3); use Symbol qw(gensym);
-use List::Util qw(min max sum0); use POSIX qw(_exit);
+use List::Util qw(min max sum0 first); use POSIX qw(_exit);
 
 $| = 1;
 my $port = 8770;
@@ -21,7 +21,10 @@ while (@ARGV) { my $a = shift @ARGV; if ($a eq '--port') { $port = shift @ARGV }
 die "bad port\n" unless $port =~ /^\d+$/;
 
 my $DIR = data_dir();
-open my $lock, '>>', "$DIR/site.lock" or die "can't open $DIR/site.lock: $!\n";
+# The clip library's player (see sub player): the installed copy next to this script, else the repo's docs/real-video.
+my $PLAYER = -d "$BIN/player" ? "$BIN/player" : "$BIN/../../../docs/real-video";
+my $LIVE = 'https://kiril-tishko.github.io/craneberries/real-video/';   # the live clip library (sub player_file)
+open my $lock, '>>', "$DIR/site-$port.lock" or die "can't open $DIR/site-$port.lock: $!\n";   # one copy a port
 if (!flock($lock, LOCK_EX | LOCK_NB)) { print "The page is already running: http://localhost:$port\n"; exit 0 }
 my $srv = IO::Socket::INET->new(LocalAddr => '127.0.0.1', LocalPort => $port, Listen => 20, ReuseAddr => 1, Proto => 'tcp')
   or die "can't listen on 127.0.0.1:$port: $@\n";
@@ -35,6 +38,7 @@ while (1) {
   if ($pid) { close $c; next }
   # One child per connection, so a browser's idle spare connection never holds up the next one.
   close $srv;
+  $SIG{CHLD} = 'DEFAULT';   # this child waits for its own programs (curl, search.pl) and needs their exit codes
   local $SIG{ALRM} = sub { _exit(0) };
   alarm 90;
   eval { handle($c) };
@@ -62,6 +66,7 @@ sub handle {
   }
   return json($c, status()) if $path eq '/api/status';
   return json($c, search(\%q)) if $path eq '/api/search';
+  return player($c, $1 // '/') if $path =~ m{^/player(/.*)?$};
   return reply($c, 204, 'text/plain', '') if $path eq '/favicon.ico';
   reply($c, 404, 'text/plain', 'not found');
 }
@@ -75,6 +80,67 @@ sub reply {
     "\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: strict-origin-when-cross-origin\r\nConnection: close\r\n\r\n$body";
 }
 sub json { my ($c, $d) = @_; reply($c, 200, 'application/json; charset=utf-8', JSON::PP->new->utf8->canonical->encode($d)) }
+
+# The clip library's own player (docs/real-video: index.html + app.js, the one he likes: it stops at the line's end,
+# "With context", the caption bar, the phrase's part of the timeline in yellow) plays a search result here:
+# /player/?words=c-<line id>-<last line id>-q-<query words>&embed. Its "word" is made from the index on the fly and
+# never saved; there is no edit.js here, so nothing can be edited or committed from this page.
+# collect.pl --install copies the player next to this script (player/); run from the repo, it uses docs/real-video.
+# The player's two files come from the live clip library (GitHub Pages), so it is always the one he uses there; they
+# are kept for 6 hours, and the installed copy is used when there is no internet.
+sub player_file {
+  my $f = shift;
+  my $cache = "$DIR/player/$f";
+  if (!-e $cache || -M $cache > 0.25) {
+    mkdir "$DIR/player";
+    # Why a fetch failed goes to player/fetch.log (the page then uses the installed copy).
+    open my $keep, '>&', \*STDERR; open STDERR, '>>', "$DIR/player/fetch.log";
+    my $curl = first { -x $_ } map({ "$_/curl.exe" } split /;/, $ENV{PATH} // ''), 'C:/Windows/System32/curl.exe', '/mingw64/bin/curl', '/usr/bin/curl';
+    system($curl // 'curl', '-sS', '-f', '--max-time', '8', '-o', "$cache.tmp", "$LIVE$f");
+    my $rc = $?;
+    open STDERR, '>&', $keep;
+    if ($rc == 0 && (-s "$cache.tmp" // 0) > 1000) { rename "$cache.tmp", $cache } else { unlink "$cache.tmp" }
+  }
+  my $t = -s $cache ? slurp($cache) : '';
+  length $t ? $t : slurp("$PLAYER/$f");
+}
+sub player {
+  my ($c, $p) = @_;
+  if ($p eq '/' || $p eq '/index.html') {
+    my $h = player_file('index.html');
+    return reply($c, 500, 'text/plain', "the clip player is missing ($PLAYER)") unless length $h;
+    utf8::encode($h);
+    return reply($c, 200, 'text/html; charset=utf-8', $h);
+  }
+  if ($p eq '/app.js') {
+    my $js = player_file('app.js');
+    return reply($c, 500, 'text/plain', "the clip player is missing ($PLAYER)") unless length $js;
+    $js .= "\n;window.CI_App = App;   // added by site.pl: the results page starts a clip with CI_App.playClip()\n";
+    utf8::encode($js);
+    return reply($c, 200, 'text/javascript; charset=utf-8', $js);
+  }
+  return reply($c, 200, 'application/json; charset=utf-8', '[]') if $p eq '/words/index.json';
+  return json($c, clip_word($1, $2, $3)) if $p =~ m{^/words/c-(\d+)-(\d+)((?:-[a-z0-9]+)*)\.json$};
+  reply($c, 404, 'text/plain', 'not found');
+}
+# One search result as a library "word" with one clip: its line (both lines when the phrase runs on), exact times,
+# two lines before and after (for "With context"), and the searched words in yellow (hl).
+sub clip_word {
+  my ($lid, $last, $q) = @_;
+  my $k = int($lid / 100000);
+  return {clips => []} unless int($last / 100000) == $k && $last >= $lid && $last - $lid <= 3;
+  my %by = map { $_->[0] => $_ } sql(sprintf "SELECT l.id, l.s, l.e, l.text, v.id FROM lines l JOIN videos v ON v.k = %d WHERE l.id BETWEEN %d AND %d ORDER BY l.id;",
+    $k, max($k * 100000, $lid - 2), $last + 2);
+  return {clips => []} unless $by{$lid};
+  my $sec = sub { 0 + sprintf('%.2f', $_[0] / 1000) };
+  my $line = join ' ', map { $by{$_} ? $by{$_}[3] : () } $lid .. $last;
+  my @around = map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2;
+  (my $words = $q // '') =~ s/^-q-//;
+  my @alts = grep { length } map { join '[^a-z0-9]+', grep { length } split /-/ } split /-qq-/, $words;
+  {en => (join(' ', split /-/, (split /-qq-/, $words)[0] // '') || $line), ua => '', pic => '',
+   (@alts ? (hl => '\b(?:' . join('|', @alts) . ')\b') : ()),
+   clips => [{v => $by{$lid}[4], s => $sec->($by{$lid}[1]), e => $sec->($by{$last}[2]), line => $line, note => '', around => \@around}]};
+}
 
 # search.pl --json does the work, so the page and the command line always find the same clips.
 sub search {

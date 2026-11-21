@@ -256,8 +256,12 @@ huggingface.co, about 15 min per hour of audio).
   Pick the clips before the lesson, never live:
   - **He uses it as a page on his PC: http://localhost:8770** (Nov 21; `site.pl` + `site.html`, started hidden at
     logon by the "Caption index page" task, only this PC can open it, nothing is published): a search box with the
-    same syntax, a show filter, each clip played at its second (or with the lines around it), "Copy clip entry", and
-    how far the collector has got. `search.pl --json` feeds it.
+    same syntax, a show filter, "Copy clip entry", and how far the collector has got; `search.pl --json` feeds it.
+    Its results stay a plain list (he likes that), but **each clip plays in the clip library's own player** (his wish,
+    Nov 21: it stops at the line's end, ↻ plays the line again, With context, the caption bar, the yellow part of the
+    timeline): `site.pl` serves the live `docs/real-video/index.html` + `app.js` from GitHub Pages (kept 6 hours; an
+    installed copy without internet) at `/player/?words=c-<line>-<last line>-q-<words>&embed`, making that "word"
+    from the index on the fly; no edit.js there, so nothing can be saved from it.
   - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do
     you mean" [how many, default 10]` prints results like the Caption Search tool (channel, title, youtu.be link with
     the time, exact start and end, the line with two before and after; plus `words` times where YouTube gave them,

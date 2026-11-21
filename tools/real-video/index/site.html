@@ -48,8 +48,10 @@ article { background: var(--card); border: 1px solid var(--line); border-radius:
 .meta .chan { color: var(--ink); font-weight: 600; }
 .meta a { color: var(--soft); text-decoration: none; overflow-wrap: anywhere; }
 .meta a:hover { text-decoration: underline; }
-.player { margin: 10px 0 4px; position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; }
-.player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+/* The clip library's player in its lesson look (?embed): the video sizes itself to this frame's height. */
+.player { margin: 10px 0 4px; border-radius: 10px; overflow: hidden; }
+.player iframe { display: block; width: 100%; height: min(calc(52vw + 190px), 640px, 86vh); border: 0; }
+@media (min-width: 880px) { .player iframe { height: min(640px, 86vh); } }
 ol.lines { list-style: none; margin: 10px 0 8px; padding: 0; }
 ol.lines li { display: flex; gap: 10px; padding: 3px 0; color: var(--soft); }
 ol.lines li.hit { color: var(--ink); font-weight: 500; }
@@ -189,15 +191,13 @@ function card(r, res) {
   if (r.more) info.push(`${r.more} more in this video`);
   if (r.same.length) info.push('same scene in ' + r.same.length + ' more video' + (r.same.length > 1 ? 's' : ''));
   const lines = r.lines.map(l => `<li class="${l.hit ? 'hit' : ''}"><button class="t" type="button" data-s="${l.s}" data-e="${l.e}" title="Play from here">${clock(l.s)}</button><span>${l.hit ? highlight(l.text, res) : esc(l.text)}</span></li>`).join('');
-  const first = r.lines[0] || r, last = r.lines[r.lines.length - 1] || r;
-  return `<article data-id="${esc(r.id)}" data-clip='${esc(JSON.stringify(r.clip))}'>
+  return `<article data-id="${esc(r.id)}" data-slug="${esc(slugFor(r))}" data-clip='${esc(JSON.stringify(r.clip))}'>
     <div class="meta"><span class="n">${r.n}.</span><span class="chan">${esc(r.channel)}</span>
       <a href="https://youtu.be/${esc(r.id)}?t=${Math.floor(r.s)}" target="_blank" rel="noopener">${esc(r.title || r.id)}</a></div>
     <div class="player" hidden></div>
     <ol class="lines">${lines}</ol>
     <div class="actions">
-      <button type="button" class="play" data-s="${r.s}" data-e="${r.e}">▶ Play the line</button>
-      <button type="button" data-s="${first.s}" data-e="${last.e}">▶ With context</button>
+      <button type="button" class="play" data-play="1">▶ Play</button>
       <button type="button" class="copy">Copy clip entry</button>
       <span class="info">${info.join(' · ')}</span>
     </div></article>`;
@@ -211,16 +211,35 @@ $('#results').addEventListener('click', async e => {
     setTimeout(() => b.textContent = 'Copy clip entry', 1600);
     return;
   }
-  if (b.dataset.s === undefined) return;
-  play(art, Number(b.dataset.s), Number(b.dataset.e));
+  if (b.dataset.play) play(art);
+  else if (b.dataset.s !== undefined) play(art, Number(b.dataset.s));
 });
-function play(art, s, e) {
+// The searched words, for the player's yellow highlight: c-<line>-<last line>-q-<words>[-qq-<other phrase>…]
+function slugFor(r) {
+  const q = (current && current.query) || $('#q').value;
+  const alts = q.split(/\s*\|\s*|\s*~\d*\s*/).map(a => (a.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, '').match(/[a-z0-9]+/g) || []).join('-')).filter(Boolean);
+  return `c-${r.lid}-${r.last}` + (alts.length ? '-q-' + alts.join('-qq-') : '');
+}
+// The clip library's own player (served here from a copy, see site.pl): it stops at the line's end, plays again from
+// the line's start, has "With context", the caption bar and the phrase's part of the timeline in yellow.
+// One player at a time; a time in the lines plays from that line.
+function play(art, at) {
   document.querySelectorAll('.player').forEach(p => { if (p.closest('article') !== art) { p.hidden = true; p.innerHTML = ''; } });
   const p = art.querySelector('.player');
-  // YouTube takes whole seconds: start a moment early and stop a moment late, so no word is cut.
-  const start = Math.max(0, Math.floor(s - 1)), end = Math.ceil(e) + 1;
-  p.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(art.dataset.id)}?start=${start}&end=${end}&autoplay=1&rel=0&playsinline=1&hl=en&cc_load_policy=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="Clip"></iframe>`;
+  let f = p.querySelector('iframe');
+  const start = () => {
+    const A = f.contentWindow && f.contentWindow.CI_App;
+    if (!A || !A.word) return false;
+    A.playClip(at); return true;
+  };
+  if (f) { start(); return; }
+  p.innerHTML = `<iframe src="/player/?words=${encodeURIComponent(art.dataset.slug)}&embed" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="Clip"></iframe>`;
+  f = p.querySelector('iframe');
   p.hidden = false;
+  // The player loads its clip after the page: try until it is there (about 10 s at most).
+  let tries = 0;
+  const wait = () => { if (!start() && ++tries < 100) setTimeout(wait, 100); };
+  f.addEventListener('load', wait, {once: true});
   p.scrollIntoView({block: 'nearest', behavior: 'smooth'});
 }
 $('#more').addEventListener('click', () => { page++; go(true); });

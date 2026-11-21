@@ -307,7 +307,7 @@ sub json_out {
     my $last = $bm->{lid} + ($bm->{spans} ? 1 : 0);
     my @lines = map { my $l = $ctx2{$_}; $l ? {s => $sec->($l->[1]), e => $sec->($l->[2]), text => $l->[3],
       hit => ($_ >= $bm->{lid} && $_ <= $last ? JSON::PP::true : JSON::PP::false)} : () } max($base, $bm->{lid} - 2) .. $last + 2;
-    push @res, {n => ++$n, channel => $v->{cname}, title => $v->{title}, id => $v->{id}, s => $sec->($bm->{s}),
+    push @res, {n => ++$n, lid => 0 + $bm->{lid}, last => 0 + $last, channel => $v->{cname}, title => $v->{title}, id => $v->{id}, s => $sec->($bm->{s}),
       e => $sec->($bm->{e}), ws => $sec->($bm->{ws}), we => $sec->($bm->{we}), kind => $v->{kind},
       alive => ($v->{alive} eq '' ? undef : 0 + $v->{alive}), more => $v->{more},
       same => [map { $_->{id} } @{$v->{same} || []}], lines => \@lines,
