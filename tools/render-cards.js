@@ -26,6 +26,10 @@ const esc = (s = '') => String(s)
 const mark = (s = '') => esc(s).replace(/\[([^\]]+)\]/g, '<span class="hl">$1</span>');
 // A word card's `en` may hold "\n": the rest starts on a new line ("It takes me …\nIt took me …").
 const brk = (s = '') => esc(s).replace(/\n/g, '<br>');
+// A word or phrase on a words card: all of it highlighted, or only the [bracketed] part ("[I want to] relax.").
+const hlw = (s = '') => (String(s).includes('[') ? mark(s).replace(/\n/g, '<br>') : `<span class="hl">${brk(s)}</span>`);
+// `say`: how it sounds, in the student's letters ("«уил си»"), shown small under the word; never IPA.
+const sayl = (w) => (w.say ? `<span class="sayl">🔊 ${esc(w.say)}</span>` : '');
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const [y, m, d] = lesson.date.split('-').map(Number);
@@ -54,10 +58,10 @@ const body = {
   // kid, or grid: true → picture tiles (big emoji, the word, Ukrainian only if given); cols: 3 → three smaller tiles a row (for 6+ items)
   words: (c) => (kid || c.grid) ? `<div class="kgrid${kid ? '' : ' flat'}${c.cols === 3 ? ' c3' : ''}">${c.items.map((w, i) => `
     <div class="ktile t${i % 6}">${w.svg ? `<span class="kemo ksvg">${w.svg}</span>` : `<span class="kemo">${esc(w.emoji || '')}</span>`}
-      <span class="kword"${tileFit(w.en, c.cols === 3)}><span class="hl">${brk(w.en)}</span></span>${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
+      <span class="kword"${tileFit(w.en.replace(/[\[\]]/g, ''), c.cols === 3)}>${hlw(w.en)}</span>${sayl(w)}${w.ua ? `<span class="ua">${esc(w.ua)}</span>` : ''}</div>`).join('')}</div>`
     : c.items.some((w) => w.emoji || w.svg) ? `<div class="prows">${c.items.map((w) => `
     <div class="prow">${w.svg ? `<span class="pemo psvg">${w.svg}</span>` : `<span class="pemo">${esc(w.emoji || '')}</span>`}
-      <div class="wk"><span class="en big"><span class="hl">${brk(w.en)}</span></span><span class="ua">${esc(w.ua)}</span>
+      <div class="wk"><span class="en big">${hlw(w.en)}</span>${sayl(w)}<span class="ua">${esc(w.ua)}</span>
       ${w.ex ? `<span class="ex">${esc(w.ex)}</span>` : ''}</div></div>`).join('')}</div>` : `<ol class="words">${c.items.map((w) => `
     <li><span class="ua">${esc(w.ua)}</span>
       <span class="en"><span class="hl">${brk(w.en)}</span></span>
@@ -262,6 +266,7 @@ const html = `<!doctype html>
   .kemo{font-family:"Noto Color Emoji",sans-serif;font-size:76px;line-height:1}
   .kemo.md{font-size:50px;flex:none}
   .kemo.sm{font-size:46px}
+  .sayl{display:block;font-size:17px;color:#4a5875;margin-top:2px}
   .kgrid{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
   .ktile{border-radius:28px;padding:18px 10px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
   .ktile:nth-child(4n+1),.ktile:nth-child(4n+4){transform:rotate(-1.6deg)}

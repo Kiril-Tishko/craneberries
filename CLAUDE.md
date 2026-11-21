@@ -463,7 +463,9 @@ studentCards[] one of:
                     items with `emoji` render as big picture rows; with `kid`, as a grid of colored picture tiles;
                     `grid: true` gives the tile grid in the adult look (no reading needed; `cols: 3` for 6+ items keeps it phone-sized); an item's `svg` replaces
                     the emoji when no emoji fits (🍴 shows a fork AND a knife, 🍽️ a plate with cutlery);
-                    "\n" in `en` starts a new line ("It takes me …\nIt took me …": each form on its own line)
+                    "\n" in `en` starts a new line ("It takes me …\nIt took me …": each form on its own line);
+                    `[brackets]` in `en` highlight only that part ("[I want to] relax."); `say` = how it sounds in the
+                    student's letters, small under the word ("We'll see." · `say: "«уил си»"`), never IPA
   {type: "phrases", kicker, title, sub, items[{en, note, emoji?}]}   emoji shows in front of each phrase
                     `{break: true}` between items leaves a gap: unlabeled groups (weekly review sheet)
                     (with `kid`: colored bubbles, big emoji)
