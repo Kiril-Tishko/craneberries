@@ -417,6 +417,132 @@ sub store_lines {
   sql(join "\n", @s);
 }
 
+# ---- songs ------------------------------------------------------------------------------------------------------
+# Song channels ("song": true in channels.json, official music videos only): auto-captions mishear singing, and big
+# hits often have no captions at all, so the words come from lrclib.net's synced lyrics (the same source as the song
+# pages), and the auto-captions only tell where each line really is in this video (music videos add intros, skits,
+# pauses). Uploaded (human) captions, when a video has them, are used as they are. The lyrics stay in the private
+# index: never in the repo (CLAUDE.md), so sync.pl puts song picks online with their times only.
+sub is_song { my $key = shift; my $c = first { $_->{key} eq $key } channels(); $c && $c->{song} ? 1 : 0 }
+sub uri { my $s = shift; utf8::encode($s) if utf8::is_utf8($s); $s =~ s/([^A-Za-z0-9\-_.~])/sprintf '%%%02X', ord $1/ge; $s }
+# "Taylor Swift - Opalite (Official Music Video)" -> (Taylor Swift, Opalite)
+sub song_of {
+  my ($title, $artist) = @_;
+  my $t = $title // '';
+  $t =~ s/\s*[\(\[][^\)\]]*[\)\]]//g;
+  $t =~ s/\s+(?:ft\.?|feat\.?|featuring)\s.*$//i;
+  my ($art, $trk) = $t =~ /^(.*?)\s+[-\x{2013}\x{2014}]\s+(.+)$/ ? ($1, $2) : ($artist, $t);
+  $art =~ s/\s*(?:,|&|\bx\b|\band\b)\s.*$//i;
+  s/^\s+|\s+$//g for $art, $trk;
+  ($art, $trk);
+}
+# The song's synced lyrics: {dur => seconds, lines => [[ms, text], …]} (empty lines are kept: they end the line before).
+sub lyrics_for {
+  my $i = shift;
+  my ($art, $trk) = song_of($i->{title}, $i->{artist} || $i->{channel});
+  return unless length $art && length $trk;
+  my $tmp = "$DIR/tmp"; make_path($tmp);
+  my $curl = first { -x $_ } 'C:/Windows/System32/curl.exe', '/mingw64/bin/curl', '/usr/bin/curl';
+  run_cmd([$curl // 'curl', '-s', '-f', '--max-time', '20', '-A', 'caption-index/1.0 (private use)', '-o', "$tmp/lrclib.json",
+    'https://lrclib.net/api/search?artist_name=' . uri($art) . '&track_name=' . uri($trk)], 40, "$tmp/lrclib.out", "$tmp/lrclib.err");
+  my $res = eval { JSON::PP->new->decode(slurp("$tmp/lrclib.json")) };
+  unlink "$tmp/lrclib.json";
+  return unless ref $res eq 'ARRAY';
+  my @c = grep { !$_->{instrumental} && ($_->{syncedLyrics} // '') =~ /^\[\d+:\d/m } @$res;
+  return unless @c;
+  # The version closest to this video's length (a music video is often longer than the record).
+  my ($best) = sort { abs(($a->{duration} // 0) - ($i->{duration} // 0)) <=> abs(($b->{duration} // 0) - ($i->{duration} // 0)) } @c[0 .. min($#c, 5)];
+  my @l;
+  for (split /\n/, $best->{syncedLyrics}) { push @l, [int((($1 * 60) + $2) * 1000), $3] if /^\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*?)\s*$/ }
+  @l ? {dur => $best->{duration} // 0, lines => \@l, artist => $art, track => $trk} : undef;
+}
+# Every token the auto-captions heard, with its time: [[token, ms], …]
+sub auto_words {
+  my $d = shift;
+  my @w;
+  for my $ev (@{$d->{events} || []}) {
+    next if $ev->{aAppend} || ref $ev->{segs} ne 'ARRAY';
+    my $t0 = $ev->{tStartMs} // 0;
+    for my $sg (@{$ev->{segs}}) { my $ms = $t0 + ($sg->{tOffsetMs} // 0); push @w, [$_, $ms] for tokens($sg->{utf8} // '') }
+  }
+  \@w;
+}
+# Where each lyric line is in this video. The start of a line (its first three words) found in the auto-captions
+# gives a possible shift for that line; a chorus is found again later, so most lines have several. The shifts that
+# at least two lines share are the choices, and one pass over the whole song picks a shift for every line: each line
+# found at its shift counts 1, changing the shift (an intro, a skit, a pause in the video) costs 2.5, so a change
+# needs about three lines that agree, and the lines stay in order (a later chorus can't pull a line forward,
+# Nov 21: "You better show me now" landed a minute late). Then each found line takes its own exact time.
+# Returns the shift (ms) for each line, or nothing when too few lines are found.
+sub align_lyrics {
+  my ($ly, $w) = @_;
+  return unless @$w;
+  my %at; push @{$at{$w->[$_][0]}}, $_ for 0 .. $#$w;
+  my (@cand, @all);
+  for my $n (0 .. $#$ly) {
+    my @t = tokens($ly->[$n][1]);
+    my $k = min(3, scalar @t);
+    next if $k < 2;
+    for my $p (@{$at{$t[0]} || []}) {
+      next if $p + $k - 1 > $#$w;
+      next if grep { $w->[$p + $_][0] ne $t[$_] } 1 .. $k - 1;
+      my $o = $w->[$p][1] - $ly->[$n][0];
+      push @{$cand[$n]}, $o; push @all, $o;
+    }
+  }
+  my $found = grep { $cand[$_] && @{$cand[$_]} } 0 .. $#$ly;
+  my $lines = grep { $_->[1] =~ /\S/ } @$ly;
+  return if $found < 3 || $found < $lines * 0.15;
+  # The choices: shifts that at least two lines share (within 0.8 s), each the middle of its group.
+  my @g;
+  for my $o (sort { $a <=> $b } @all) {
+    if (@g && $o - $g[-1][-1] <= 800) { push @{$g[-1]}, $o } else { push @g, [$o] }
+  }
+  my @C = map { $_->[int(@$_ / 2)] } grep { @$_ >= 2 } @g;
+  return unless @C;
+  my $near = sub { my ($n, $c) = @_; my ($x) = sort { abs($a - $c) <=> abs($b - $c) } @{$cand[$n] || []}; defined $x && abs($x - $c) <= 1000 ? $x : undef };
+  my @hit = map { my $n = $_; [map { defined $near->($n, $_) ? 1 : 0 } @C] } 0 .. $#$ly;
+  my $JUMP = 2.5;
+  my (@score, @back);
+  $score[0] = [@{$hit[0]}];
+  for my $n (1 .. $#$ly) {
+    for my $k (0 .. $#C) {
+      my ($best, $bj) = (-1e9, $k);
+      for my $j (0 .. $#C) {
+        # In order: after a change of shift this line can't start before the line before it.
+        next if $j != $k && $ly->[$n][0] + $C[$k] < $ly->[$n - 1][0] + $C[$j];
+        my $v = $score[$n - 1][$j] - ($j == $k ? 0 : $JUMP);
+        ($best, $bj) = ($v, $j) if $v > $best;
+      }
+      $score[$n][$k] = $best + $hit[$n][$k];
+      $back[$n][$k] = $bj;
+    }
+  }
+  my $k = 0;
+  for (1 .. $#C) { $k = $_ if $score[$#$ly][$_] > $score[$#$ly][$k] }
+  my @path;
+  for (my $n = $#$ly; $n >= 0; $n--) { $path[$n] = $k; $k = $back[$n][$k] if $n > 0 }
+  my $matched = grep { $hit[$_][$path[$_]] } 0 .. $#$ly;
+  return if $matched < 3 || $matched < $lines * 0.15;
+  # Each found line its own exact shift; the others the shift of their part of the video.
+  [map { my $c = $C[$path[$_]]; $near->($_, $c) // $c } 0 .. $#$ly];
+}
+# The lyric lines as index lines: each from its time (shifted) to the next line's (an empty lyric line ends it), at
+# most 10 s; the words as the lyrics write them.
+sub lyric_lines {
+  my ($ly, $off) = @_;
+  my @L;
+  for my $n (0 .. $#$ly) {
+    next unless $ly->[$n][1] =~ /\S/;
+    my $s = $ly->[$n][0] + $off->[$n];
+    next if $s < 0;
+    my $e = $n < $#$ly ? $ly->[$n + 1][0] + $off->[$n + 1] : $s + 5000;
+    $e = $s + 10000 if $e > $s + 10000 || $e <= $s;
+    push @L, {s => int $s, e => int $e, text => $ly->[$n][1], w => undef};
+  }
+  \@L;
+}
+
 sub errors { join "\n", grep { !/ffmpeg not found|Incomplete data received|re-fetching using API/ } split /\n/, slurp(shift) }
 sub first_error { my @l = split /\n/, shift; (grep { /ERROR/ } @l)[0] // (grep { /\S/ } @l)[0] }
 sub pushed_back {
@@ -468,9 +594,23 @@ sub fetch_video {
   if (!$lang && ($i->{language} // 'en') =~ /^en/) {
     for my $l ('en-orig', 'en', 'en-US-orig', 'en-US') { if ($has->($i->{automatic_captions}, $l)) { ($lang, $kind) = ($l, 'auto'); last } }
   }
+  # A song with no captions at all (big hits often have none): its synced lyrics, when the video is the record itself
+  # (same length); a music video with a different cut can't be lined up without captions.
+  my $song = is_song($v->{channel});
+  if (!$lang && $song) {
+    my $ly = lyrics_for($i);
+    if ($ly && abs(($ly->{dur} // 0) - ($i->{duration} // 0)) <= 2) {
+      my $lines = lyric_lines($ly->{lines}, [map { 0 } @{$ly->{lines}}]);
+      if (@$lines) {
+        store_lines($v, $lines, %f, kind => 'lyrics');
+        logl(sprintf '%s · %s · lyrics (no captions; same length as the record) · %d lines · %s', $v->{channel}, $id, scalar @$lines, $i->{title} // '');
+        return 'done';
+      }
+    }
+  }
   if (!$lang) {
     set_video($v->{k}, %f, status => 'none', fetched_at => int time,
-      note => ($i->{language} && $i->{language} !~ /^en/ ? "spoken language: $i->{language}" : 'no English captions'));
+      note => ($i->{language} && $i->{language} !~ /^en/ ? "spoken language: $i->{language}" : $song ? 'no captions, and no lyrics of the same length' : 'no English captions'));
     return 'none';
   }
   # Without its watch-page address, yt-dlp can't fall back to fetching the whole video again when the caption file
@@ -489,6 +629,16 @@ sub fetch_video {
   my $d = -e $file ? eval { JSON::PP->new->decode(slurp($file)) } : undef;
   return failed($v, 'captions not downloaded: ' . (first_error($err) // "yt-dlp exit $rc")) unless $d;
   my $lines = $kind eq 'auto' ? auto_lines($d) : human_lines($d);
+  # A song with only auto-captions (they mishear singing): the real lyrics, lined up with the captions' word times.
+  if ($song && $kind eq 'auto') {
+    my $ly = lyrics_for($i);
+    my $off = $ly ? align_lyrics($ly->{lines}, auto_words($d)) : undef;
+    if ($off) {
+      my $ll = lyric_lines($ly->{lines}, $off);
+      if (@$ll >= 4) { $lines = $ll; $kind = 'lyrics' }
+    }
+    logl("$v->{channel} · $id · " . ($ly ? ($kind eq 'lyrics' ? 'lyrics lined up with the auto-captions' : "lyrics found but they don't line up: auto-captions kept") : 'no lyrics on lrclib: auto-captions kept'));
+  }
   if (!@$lines) { set_video($v->{k}, %f, status => 'none', fetched_at => int time, note => 'empty captions'); return 'none' }
   store_lines($v, $lines, %f, kind => $kind);
   logl(sprintf '%s · %s · %s · %d lines · %s', $v->{channel}, $id, $kind, scalar @$lines, $i->{title} // '');

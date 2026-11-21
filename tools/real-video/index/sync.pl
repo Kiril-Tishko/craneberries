@@ -100,7 +100,9 @@ sub entry {
    v => $v->[0], s => $p->{timed} ? $p->{s} : $s0, e => $p->{timed} ? $p->{e} : $e0, s0 => $s0, e0 => $e0,
    line => join(' ', map { $by{$_}[3] } $lid .. $last),
    around => [map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2],
-   channel => $v->[2], show => $v->[3], title => $v->[1], kind => $v->[4]};
+   channel => $v->[2], show => $v->[3], title => $v->[1], kind => $v->[4],
+   # A song's lines are lyrics: never in the repo (CLAUDE.md), so a song pick goes online with its times only.
+   ($v->[3] =~ /^Songs\b/ ? (song => JSON::PP::true, line => "\x{266A}", around => []) : ())};
 }
 # A change made online (newer than the PC's) goes into the index.
 sub apply_remote {

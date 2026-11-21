@@ -300,7 +300,14 @@ huggingface.co, about 15 min per hour of audio).
     channel, e.g. a fan's "all cutscenes" movie; most of them show the game's subtitles in the picture, which makes a
     clip useless, so check frames first (the video's storyboard images in its yt-dlp details) and take one without.
     GTA 5 = "The Movie (Cutscenes Only)", 3 h, good auto captions; GTA 6 (out Nov 19) had no upload without
-    subtitles yet on Nov 21: look again later. It holds only the American channels he picked
+    subtitles yet on Nov 21: look again later. **Songs** (Nov 21, he loved a Taylor Swift line in a talk show; pop
+    first, any style later): `"song": true` channels (show "Songs · <artist>", 14 pop artists' own channels),
+    official music videos only (lyric videos have the words in the picture, audio uploads a still image). Uploaded
+    lyrics captions are used as they are; otherwise the words come from lrclib.net's synced lyrics, lined up with the
+    auto-captions' word times (one pass over the whole song, so a chorus can't pull a line a minute off; kind
+    `lyrics`); with no captions at all only when the video is as long as the record. Taylor Swift's music videos had
+    no captions and longer cuts (Nov 21): left out. Lyrics stay in the private index: **never in the repo**, so song
+    picks go online with their times only (`song: true`, line "♪"), and a song clip can't go into `words/` with its line. It holds only the American channels he picked
     (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
     scheduled task runs `collect.pl` logged out (no cookies), each channel's longest videos first, one caption
     request a video, a 4-hour rest after every 120 (YouTube said 429 after about 160 twice on Nov 19), about 400-500

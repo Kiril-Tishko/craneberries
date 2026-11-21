@@ -294,7 +294,7 @@ $('.tabs').addEventListener('click', e => { const b = e.target.closest('button')
 function item(r, i, res) {
   // 🙈 hidden: a thin row with Undo (gone from every search from now on).
   if (r.hidden) return `<li class="item gone" data-i="${i}"><span>🙈 Hidden: ${esc((r.lines || []).find(l => l.hit)?.text || r.title || '')}</span><button type="button" class="undo">Undo</button></li>`;
-  const info = [clock(r.s), r.kind === 'human' ? 'exact captions' : 'auto captions'];
+  const info = [clock(r.s), r.kind === 'human' ? 'exact captions' : r.kind === 'lyrics' ? '♪ lyrics' : 'auto captions'];
   if (r.alive === 404) info.push('<span class="bad">video gone</span>');
   if (r.timed) info.push('your times');
   if (r.kept || tab === 'liked') info.push('<span class="liked">♥ liked</span>');

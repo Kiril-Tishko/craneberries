@@ -103,7 +103,7 @@ my $shown = join ' | ', map { my $q = $_; join($q->{near} ? " ~$q->{near} " : ' 
 # ---- candidates -----------------------------------------------------------------------------------------------
 
 my @where = ("v.status='done'");
-push @where, "v.kind='human'" if $opt{human};
+push @where, "v.kind IN ('human','lyrics')" if $opt{human};   # exact words: uploaded captions, or a song's lyrics
 push @where, "(v.embed IS NULL OR v.embed=1)", "(v.alive IS NULL OR v.alive=200)" unless $opt{all};
 my $chan = sub {
   my @n = map { my $x = lc; $x =~ s/'/''/g; $x =~ s/[%_]//g; $x } grep { length } map { split /\s*,\s*/ } @_;
@@ -263,7 +263,7 @@ my $n = $from;
 for my $v (@pagev) {
   my $bm = $v->{best};
   my $yt = "https://youtu.be/$v->{id}?t=" . int($bm->{s} / 1000);
-  my @info = ($v->{kind} eq 'human' ? 'human captions' : 'auto captions');
+  my @info = ($v->{kind} eq 'human' ? 'human captions' : $v->{kind} eq 'lyrics' ? 'song lyrics (lined up)' : 'auto captions');
   push @info, $v->{alive} eq '200' ? 'online' : $v->{alive} eq '404' ? 'GONE (404)' : $v->{alive} =~ /^40[13]$/ ? "private or no embed ($v->{alive})" : $v->{alive} ? "online check: $v->{alive}" : ()
     unless $opt{'no-check'} && !$v->{alive};
   push @info, "+$v->{more} more in this video" if $v->{more};

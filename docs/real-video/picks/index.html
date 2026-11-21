@@ -220,7 +220,7 @@ function draw() {
     if (c.liked) info.push('<span class="liked">♥</span>');
     if (c.timed) info.push('your times');
     return `<li class="item${c.liked || c.timed ? '' : ' off'}" data-i="${i}"><div class="thumb" style="background-image:url('https://i.ytimg.com/vi/${encodeURIComponent(c.v)}/mqdefault.jpg')"><span class="tm">${clock(c.s)}</span></div>
-      <div class="meta"><div class="line">${hl(c.line, c.q)}</div><div class="info">${info.join(' · ')}</div><div class="info">${esc(c.title)}</div></div></li>`;
+      <div class="meta"><div class="line">${c.song ? '♪ ' + esc(c.title) : hl(c.line, c.q)}</div><div class="info">${info.join(' · ')}</div><div class="info">${esc(c.title)}</div></div></li>`;
   }).join('')}</ol></section>`).join('') || '<p class="empty">No picks yet: ♥ Like or re-time clips on the caption index page on your PC.</p>';
   const liked = picks.filter(c => c.liked).length, timed = picks.filter(c => c.timed).length;
   $('#stat').textContent = `${liked} liked · ${timed} re-timed`;
@@ -290,7 +290,7 @@ function drawCap(t) {
   const c = clip(); if (!c) return;
   let text = c.line, own = true;
   if (range && range.lines) { const l = range.lines.filter(x => x[0] <= t + 0.05).pop() || range.lines[0]; text = l[2]; own = l[0] === c.s; }
-  $('#cap').innerHTML = own ? hl(text, c.q) : esc(text);
+  $('#cap').innerHTML = c.song ? '♪ (the lyrics stay on your PC)' : own ? hl(text, c.q) : esc(text);
 }
 setInterval(() => {
   if (!ytReady || !range || !clip() || !yt.getCurrentTime) return;
