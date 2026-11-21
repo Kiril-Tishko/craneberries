@@ -308,7 +308,7 @@ sub json_out {
   }
   my $sec = sub { defined $_[0] && $_[0] ne '' ? 0 + sprintf('%.2f', $_[0] / 1000) : undef };
   # His own start and end for a clip, where he moved them on the page (the clip entry uses them).
-  my %times = map { $_->[0] => [0 + $_->[1], 0 + $_->[2]] } eval { sql("SELECT lid, s, e FROM times;") };
+  my %times = map { $_->[0] => [0 + $_->[1], 0 + $_->[2]] } eval { sql("SELECT lid, s, e FROM times WHERE s >= 0;") };
   my $n = $from;
   my @res;
   for my $v (@pagev) {

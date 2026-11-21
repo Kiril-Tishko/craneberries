@@ -30,6 +30,7 @@ if (!flock($lock, LOCK_EX | LOCK_NB)) { print "The page is already running: http
 sql("CREATE TABLE IF NOT EXISTS marks(lid INTEGER PRIMARY KEY, last INTEGER, kind TEXT NOT NULL, query TEXT, at INTEGER);");
 # A clip's own start and end where he moved them on the page (seconds); the player and its clip entry use them.
 sql("CREATE TABLE IF NOT EXISTS times(lid INTEGER PRIMARY KEY, s REAL NOT NULL, e REAL NOT NULL, at INTEGER);");
+sql('ALTER TABLE times ADD COLUMN last INTEGER;') unless grep { $_->[1] eq 'last' } sql('PRAGMA table_info(times);');
 # His phone on the home Wi-Fi may open it too (his wish, Nov 21), with a PIN: it listens on every network, but answers
 # only this PC and devices on the private home network (10.x, 172.16-31.x, 192.168.x), and those only after the PIN.
 # Windows asks once whether perl may accept connections: "Allow" on private networks only.
@@ -60,7 +61,8 @@ sub lan_ip {
   my $ip = $s->sockhost;
   $ip && $ip ne '0.0.0.0' && private($ip) ? $ip : undef;
 }
-sub private { (shift // '') =~ /^(?:10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+)$/ }
+# The home network, and Tailscale (100.64-127.x.x: his own devices, from anywhere, after the PIN).
+sub private { (shift // '') =~ /^(?:10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d+\.\d+)$/ }
 
 while (1) {
   my $c = $srv->accept or next;
@@ -90,7 +92,7 @@ sub handle {
   my $local = $peer eq '127.0.0.1' || $peer eq '::1';
   return reply($c, 403, 'text/plain', 'only this PC and the home network') unless $local || private($peer);
   (my $host = $h{host} // '') =~ s/:\d+$//;
-  return reply($c, 403, 'text/plain', 'open it as http://localhost') unless $host =~ /^(localhost|127\.0\.0\.1)$/i || private($host);
+  return reply($c, 403, 'text/plain', 'open it as http://localhost') unless $host =~ /^(localhost|127\.0\.0\.1)$/i || private($host) || $host =~ /^[a-z0-9-]+(\.[a-z0-9-]+)*\.ts\.net$/i;   # *.ts.net: Tailscale's names
   return reply($c, 405, 'text/plain', 'GET only') unless $method eq 'GET';
   my ($path, $qs) = split /\?/, $target, 2;
   my %q = map { my ($k, $v) = split /=/, $_, 2; (unesc($k) => unesc($v // '')) } grep { length } split /&/, $qs // '';
@@ -173,7 +175,8 @@ sub mark {
   my $last = ($q->{last} // '') =~ /^\d+$/ ? $q->{last} : $lid;
   my @lids = ($lid, grep { /^\d+$/ } split /,/, $q->{scene} // '');
   my $query = sql_quote(do { my $t = $q->{q} // ''; utf8::decode($t); $t });
-  if ($kind eq 'none') { sql(sprintf "DELETE FROM marks WHERE lid IN (%s);", join ',', @lids) }
+  # Undone marks stay as kind 'none' with their time, so the sync with the online copy knows which side is newer.
+  if ($kind eq 'none') { sql(join "\n", 'BEGIN;', (map { sprintf "INSERT INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'none', %s, %d) ON CONFLICT(lid) DO UPDATE SET kind='none', at=excluded.at;", $_, $_ == $lid ? $last : $_, $query, time } @lids), 'COMMIT;') }
   elsif ($kind eq 'keep') { sql(sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'keep', %s, %d);", $lid, $last, $query, time) }
   elsif ($kind eq 'hide') { sql(join "\n", 'BEGIN;', (map { sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'hide', %s, %d);", $_, $_ == $lid ? $last : $_, $query, time } @lids), 'COMMIT;') }
   else { return {error => 'keep, hide or none'} }
@@ -184,10 +187,12 @@ sub mark {
 sub set_times {
   my $q = shift;
   my $lid = ($q->{lid} // '') =~ /^\d+$/ ? $q->{lid} : return {error => 'no clip'};
-  if ($q->{reset}) { sql("DELETE FROM times WHERE lid=$lid;"); return {ok => JSON::PP::true} }
+  my $last = ($q->{last} // '') =~ /^\d+$/ ? $q->{last} : $lid;
+  # Back to the original times: kept as s = e = -1 with its time (for the sync), not deleted.
+  if ($q->{reset}) { sql(sprintf "INSERT OR REPLACE INTO times(lid, s, e, at, last) VALUES(%d, -1, -1, %d, %d);", $lid, time, $last); return {ok => JSON::PP::true} }
   my ($s, $e) = map { ($q->{$_} // '') =~ /^\d+(?:\.\d+)?$/ ? $q->{$_} : undef } qw(s e);
   return {error => 'start and end in seconds'} unless defined $s && defined $e && $e > $s;
-  sql(sprintf "INSERT OR REPLACE INTO times(lid, s, e, at) VALUES(%d, %.2f, %.2f, %d);", $lid, $s, $e, time);
+  sql(sprintf "INSERT OR REPLACE INTO times(lid, s, e, at, last) VALUES(%d, %.2f, %.2f, %d, %d);", $lid, $s, $e, time, $last);
   {ok => JSON::PP::true};
 }
 
@@ -311,7 +316,7 @@ sub clip_word {
     next unless $by{$lid} && $by{$last};
     my $line = join ' ', map { $by{$_} ? $by{$_}[3] : () } $lid .. $last;
     my @around = map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2;
-    my ($ts, $te) = map { @$_ } sql("SELECT s, e FROM times WHERE lid=$lid;");
+    my ($ts, $te) = map { @$_ } sql("SELECT s, e FROM times WHERE lid=$lid AND s >= 0;");
     push @clips, {v => $by{$lid}[4], s => defined $ts ? 0 + $ts : $sec->($by{$lid}[1]), e => defined $te ? 0 + $te : $sec->($by{$last}[2]),
       line => $line, note => '', around => \@around, lid => 0 + $lid, last => 0 + $last,
       start0 => $sec->($by{$lid}[1]), end0 => $sec->($by{$last}[2])};

@@ -432,7 +432,7 @@ let saveT = 0;
 function saveTimes(c, reset) {
   clearTimeout(saveT); $('#tsaved').textContent = '…';
   saveT = setTimeout(async () => {
-    await api(`/api/times?lid=${c.lid}` + (reset ? '&reset=1' : `&s=${c.s}&e=${c.e}`));
+    await api(`/api/times?lid=${c.lid}&last=${c.last || c.lid}` + (reset ? '&reset=1' : `&s=${c.s}&e=${c.e}`));
     for (const r of [...items, ...picks]) if (r.lid === c.lid) { r.clip.s = c.s; r.clip.e = c.e; r.timed = !reset; }
     $('#tsaved').textContent = 'Saved ✓'; setTimeout(() => $('#tsaved').textContent = '', 1500);
   }, reset ? 0 : 700);

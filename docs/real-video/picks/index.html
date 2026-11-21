@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Clip Picks</title>
+<!-- His picks from the private caption index on his PC (picks.json here, synced both ways by tools/real-video/index/
+     sync.pl): every clip he liked or re-timed there. Play them, change their start / end, unlike; saving writes
+     picks.json with his GitHub key (the same one the clip library's editor keeps in this browser), and his PC takes
+     the change back within minutes. Other sessions read picks.json to put these clips into lessons. -->
+<style>
+:root {
+  --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1f; --soft: #5f6368; --faint: #8a8f96; --line: #e4e2dc;
+  --accent: #2f5bd3; --accent-ink: #ffffff; --hit: #fff3b0; --hit-ink: #1d1d1f; --ok: #2e7d4f; --bad: #b3261e;
+  --chip: #eceae4; --now: #e8eefc; --like: #e0245e; --video: #0f1012;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141517; --card: #1d1f22; --ink: #ececec; --soft: #a9adb3; --faint: #7c8187; --line: #2d3034;
+    --accent: #7aa2ff; --accent-ink: #0f1115; --hit: #5c4d00; --hit-ink: #fff6cc; --ok: #6cc796; --bad: #ff8a80;
+    --chip: #272a2e; --now: #222a3d; --like: #ff4f86; --video: #000;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+button { font: inherit; color: inherit; }
+header { flex: none; display: flex; gap: 8px 14px; align-items: center; flex-wrap: wrap; padding: 9px 16px; border-bottom: 1px solid var(--line); background: var(--card); }
+h1 { font-size: 17px; margin: 0; }
+.stat { font-size: 13px; color: var(--soft); }
+header input[type=search] { margin-left: auto; flex: 0 1 260px; min-width: 0; font: inherit; padding: 6px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.keybar { flex-basis: 100%; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--soft); }
+.keybar input { flex: 1 1 220px; min-width: 0; font: inherit; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.small { font-size: 12.5px; padding: 4px 8px; border-radius: 7px; border: 1px solid var(--line); background: var(--card); cursor: pointer; line-height: 1.2; }
+.app { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); }
+.stage { min-height: 0; display: flex; flex-direction: column; padding: 10px 14px 10px 16px; gap: 8px; }
+.video { position: relative; flex: 1; min-height: 160px; background: var(--video); border-radius: 10px; overflow: hidden; }
+.video .box { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.video .frame { aspect-ratio: 16 / 9; max-width: 100%; max-height: 100%; width: 100%; position: relative; }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.cover { position: absolute; inset: 0; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.cover.dark { background: rgba(0,0,0,.55); }
+.cover .big { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.88); color: #111; display: grid; place-items: center; font-size: 26px; opacity: 0; transition: opacity .15s; }
+.cover.show .big { opacity: 1; }
+.bar { flex: none; display: flex; gap: 10px; align-items: center; }
+.pp { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; font-size: 16px; flex: none; }
+.tl { flex: 1; height: 26px; position: relative; cursor: pointer; }
+.tl .track { position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 4px; background: var(--line); }
+.tl .word { position: absolute; top: 11px; height: 4px; background: #f2c200; border-radius: 4px; }
+.tl .fill { position: absolute; left: 0; top: 11px; height: 4px; border-radius: 4px; background: var(--accent); }
+.time { font-size: 12.5px; color: var(--soft); font-variant-numeric: tabular-nums; min-width: 70px; text-align: right; }
+.cap { flex: none; text-align: center; font-size: 19px; font-weight: 600; min-height: 2.8em; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+.cap mark { background: var(--hit); color: var(--hit-ink); border-radius: 4px; padding: 0 3px; }
+.row { flex: none; display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.btn { padding: 8px 13px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); cursor: pointer; }
+.btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: .35; cursor: default; }
+.nav { display: flex; gap: 8px; }
+.like[aria-pressed="true"] { background: var(--like); border-color: var(--like); color: #fff; }
+.under { flex: none; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; font-size: 13px; color: var(--soft); }
+.under .what { min-width: 0; flex: 1 1 240px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.under .what b { color: var(--ink); } .under .what a { color: var(--soft); }
+.timing { display: flex; gap: 4px 12px; align-items: center; flex-wrap: wrap; }
+.timing .grp { display: flex; gap: 3px; align-items: center; }
+.timing b { font-variant-numeric: tabular-nums; min-width: 56px; text-align: center; color: var(--ink); }
+.saved { min-width: 74px; display: inline-block; }
+.saved.ok { color: var(--ok); } .saved.bad { color: var(--bad); }
+.empty { flex: 1; display: grid; place-items: center; color: var(--soft); text-align: center; padding: 20px; }
+.side { min-height: 0; overflow-y: auto; border-left: 1px solid var(--line); background: var(--card); overscroll-behavior: contain; }
+.group h2 { position: sticky; top: 0; z-index: 1; margin: 0; padding: 8px 12px; font-size: 13.5px; background: var(--card); border-bottom: 1px solid var(--line); }
+.group h2 small { color: var(--faint); font-weight: 400; }
+ol.list { list-style: none; margin: 0; padding: 4px 6px 8px; }
+.item { padding: 8px; border-radius: 10px; cursor: pointer; display: flex; gap: 10px; }
+.item:hover { background: var(--bg); }
+.item.now { background: var(--now); }
+.item.off { opacity: .55; }
+.thumb { flex: none; width: 104px; aspect-ratio: 16 / 9; border-radius: 7px; background: var(--chip) center / cover no-repeat; position: relative; }
+.thumb .tm { position: absolute; right: 4px; bottom: 4px; background: rgba(0,0,0,.75); color: #fff; font-size: 11px; padding: 0 4px; border-radius: 4px; }
+.item .meta { min-width: 0; flex: 1; }
+.item .chan { font-weight: 600; font-size: 13px; }
+.item .line { font-size: 13px; margin-top: 2px; }
+.item .line mark { background: var(--hit); color: var(--hit-ink); border-radius: 3px; padding: 0 2px; }
+.item .info { font-size: 11.5px; color: var(--faint); margin-top: 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.item .info .liked { color: var(--like); }
+.copied { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 9px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 9; }
+.copied.on { opacity: .92; }
+@media (max-width: 900px) {
+  header { padding: 7px 10px; }
+  header input[type=search] { flex: 1 1 100%; margin-left: 0; }
+  .app { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .stage { padding: 8px 10px 6px; gap: 6px; }
+  .video { flex: none; height: calc((100vw - 20px) * 9 / 16); min-height: 0; }
+  .cap { font-size: 16px; min-height: 2.6em; }
+  .under .what { display: none; }
+  .side { border-left: 0; border-top: 1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>My clip picks</h1>
+  <span class="stat" id="stat">Loading…</span>
+  <input type="search" id="filter" placeholder="Find in my picks…" aria-label="Find in my picks">
+  <div class="keybar" id="keybar" hidden>To save changes here (♥, start / end), paste your GitHub key once: the same one the clip library’s editor uses.
+    <input id="key" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="GitHub key"><button type="button" class="small" id="keysave">Keep it</button></div>
+</header>
+<div class="app">
+  <section class="stage" aria-label="Video">
+    <div class="empty" id="empty">Pick a clip in the list.</div>
+    <div class="video" id="video" hidden><div class="box"><div class="frame"><div id="yt"></div><button class="cover" id="cover" aria-label="Play"><span class="big" id="bigicon">▶</span></button></div></div></div>
+    <div class="bar" id="bar" hidden><button class="pp" id="pp" aria-label="Play / pause (Space)">▶</button>
+      <div class="tl" id="tl" title="Tap or drag to move"><div class="track"></div><div class="word" id="tlword" hidden></div><div class="fill" id="tlfill"></div></div>
+      <span class="time" id="time"></span></div>
+    <div class="cap" id="cap" hidden></div>
+    <div class="row" id="row" hidden>
+      <button type="button" class="btn" id="ctx" aria-pressed="false" title="Play the lines before and after it too">↔ With context</button>
+      <span class="nav"><button type="button" class="btn" id="prev" title="Previous clip">◀</button><button type="button" class="btn like" id="like" aria-pressed="false">♡ Like</button><button type="button" class="btn" id="next" title="Next clip">▶</button></span>
+    </div>
+    <div class="under" id="under" hidden>
+      <span class="what" id="what"></span>
+      <span class="timing">
+        <span class="grp">Start <button type="button" class="small" data-c="s-">−</button><b id="ts">…</b><button type="button" class="small" data-c="s+">+</button><button type="button" class="small" data-c="s=" title="Start where the video is now">⏱</button></span>
+        <span class="grp">End <button type="button" class="small" data-c="e-">−</button><b id="te">…</b><button type="button" class="small" data-c="e+">+</button><button type="button" class="small" data-c="e=" title="End where the video is now">⏱</button></span>
+        <button type="button" class="small" data-c="reset" id="rs" style="visibility:hidden" title="Back to the captions' own times">↺</button>
+        <button type="button" class="small" data-c="copy" title="Copy this clip's entry for the clip library">⧉ Copy entry</button>
+        <span class="saved" id="saved"></span>
+      </span>
+    </div>
+  </section>
+  <aside class="side" id="side" aria-label="My picks"></aside>
+</div>
+<div class="copied" id="copied">Copied ✓</div>
+<script>
+'use strict';
+const REPO = 'kiril-tishko/craneberries', BRANCH = 'claude/vigilant-ptolemy-ltawsa', PATH = 'docs/real-video/picks/picks.json';
+const KEY = 'rv-github-token';   // the clip library editor's key in this browser (same site)
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clock = sec => { sec = Math.floor(sec || 0); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s = sec % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
+const tenth = sec => { const m = Math.floor(sec / 60), x = sec - m * 60; return m + ':' + x.toFixed(1).padStart(4, '0'); };
+const entry = c => ({v: c.v, s: c.s, e: c.e, line: c.line, note: '', around: c.around || []});
+let token = ''; try { token = localStorage.getItem(KEY) || ''; } catch (e) {}
+let picks = [], order = [], cur = -1;
+
+// ---- GitHub (the same calls as the clip library's editor) ----
+const b64 = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => { bin += String.fromCharCode(b); }); return btoa(bin); };
+const unb64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g, '')), c => c.charCodeAt(0)));
+function gh(opts = {}) {
+  const url = `https://api.github.com/repos/${REPO}/contents/${PATH}${opts.method ? '' : `?ref=${encodeURIComponent(BRANCH)}`}`;
+  const headers = {Accept: 'application/vnd.github+json', Authorization: `Bearer ${token}`};
+  if (opts.body) headers['Content-Type'] = 'application/json';
+  return fetch(url, {...opts, headers, cache: 'no-store'});
+}
+// With the key, the file straight from GitHub (the site shows a change only a minute later); without it, the site's.
+async function load() {
+  if (token) {
+    const r = await gh();
+    if (r.ok) { const j = await r.json(); return {doc: JSON.parse(unb64(j.content)), sha: j.sha}; }
+  }
+  const r = await fetch('picks.json', {cache: 'no-cache'});
+  return {doc: r.ok ? await r.json() : {clips: []}, sha: null};
+}
+function fileText(doc) {   // the same layout as sync.pl writes: one clip per line
+  const keys = o => Object.keys(o).sort().reduce((a, k) => (a[k] = o[k], a), {});
+  return '{\n  "_": ' + JSON.stringify(doc._ || '') + ',\n  "clips": [\n' + doc.clips.map(c => '    ' + JSON.stringify(keys(c))).join(',\n') + '\n  ]\n}\n';
+}
+// One clip changed: read the file fresh, put this clip in, write it back (once more if it changed meanwhile).
+let saving = Promise.resolve();
+function save(c, what) {
+  if (!token) { $('#keybar').hidden = false; say('Paste the key above to save', true); return; }
+  c.at = Math.floor(Date.now() / 1000);
+  const mine = JSON.parse(JSON.stringify(c));
+  say('Saving…');
+  saving = saving.then(async () => {
+    for (let k = 0; k < 2; k++) {
+      const g = await gh();
+      if (g.status === 401 || g.status === 403) { say('The GitHub key doesn’t work', true); return; }
+      const j = g.ok ? await g.json() : null;
+      const doc = j ? JSON.parse(unb64(j.content)) : {clips: []};
+      const i = doc.clips.findIndex(x => x.id === mine.id);
+      if (i >= 0) doc.clips[i] = mine; else doc.clips.push(mine);
+      const r = await gh({method: 'PUT', body: JSON.stringify({message: `Clip picks: ${what} (online)`, content: b64(fileText(doc)), branch: BRANCH, ...(j ? {sha: j.sha} : {})})});
+      if (r.ok) { say('Saved ✓'); return; }
+      if (r.status !== 409) { say('GitHub answered ' + r.status, true); return; }
+    }
+    say('Not saved: changed somewhere else; reload', true);
+  }).catch(e => say('Not saved: ' + (e.message || e), true));
+}
+function say(t, bad) { const s = $('#saved'); s.textContent = t; s.className = 'saved' + (bad ? ' bad' : t.includes('✓') ? ' ok' : ''); if (t.includes('✓')) setTimeout(() => { if (s.textContent === t) s.textContent = ''; }, 1600); }
+$('#keysave').addEventListener('click', () => {
+  token = $('#key').value.trim(); try { localStorage.setItem(KEY, token); } catch (e) {}
+  $('#keybar').hidden = !!token; say(token ? 'Key kept on this device' : '');
+});
+
+// ---- the list: grouped by the phrase searched, the newest change first ----
+function words(q) { return (q || '').toLowerCase().match(/[a-z0-9]+/g) || []; }
+function hl(text, q) {
+  const w = words(q); if (!w.length) return esc(text);
+  const re = new RegExp('(?<![a-z0-9])' + w.join('[^a-z0-9]+') + '(?![a-z0-9])', 'gi');
+  let out = '', at = 0, m;
+  while ((m = re.exec(text))) { out += esc(text.slice(at, m.index)) + '<mark>' + esc(m[0]) + '</mark>'; at = m.index + m[0].length; if (!m[0]) re.lastIndex++; }
+  return out + esc(text.slice(at));
+}
+function draw() {
+  const f = $('#filter').value.trim().toLowerCase();
+  const shown = picks.filter(c => (c.liked || c.timed || c._touched) && (!f || [c.q, c.line, c.channel, c.title].join(' ').toLowerCase().includes(f)));
+  const groups = {};
+  for (const c of shown) (groups[c.q || ''] ||= []).push(c);
+  const names = Object.keys(groups).sort((a, b) => Math.max(...groups[b].map(c => c.at)) - Math.max(...groups[a].map(c => c.at)));
+  order = names.flatMap(n => groups[n].sort((a, b) => b.at - a.at));
+  $('#side').innerHTML = names.map(n => `<section class="group"><h2>${esc(n || 'Other clips')} <small>${groups[n].length}</small></h2><ol class="list">${groups[n].map(c => {
+    const i = order.indexOf(c);
+    const info = [esc(c.channel), clock(c.s)];
+    if (c.liked) info.push('<span class="liked">♥</span>');
+    if (c.timed) info.push('your times');
+    return `<li class="item${c.liked || c.timed ? '' : ' off'}" data-i="${i}"><div class="thumb" style="background-image:url('https://i.ytimg.com/vi/${encodeURIComponent(c.v)}/mqdefault.jpg')"><span class="tm">${clock(c.s)}</span></div>
+      <div class="meta"><div class="line">${hl(c.line, c.q)}</div><div class="info">${info.join(' · ')}</div><div class="info">${esc(c.title)}</div></div></li>`;
+  }).join('')}</ol></section>`).join('') || '<p class="empty">No picks yet: ♥ Like or re-time clips on the caption index page on your PC.</p>';
+  const liked = picks.filter(c => c.liked).length, timed = picks.filter(c => c.timed).length;
+  $('#stat').textContent = `${liked} liked · ${timed} re-timed`;
+  mark();
+}
+function mark() {
+  document.querySelectorAll('.item.now').forEach(x => x.classList.remove('now'));
+  const el = document.querySelector(`.item[data-i="${cur}"]`);
+  if (el) { el.classList.add('now'); el.scrollIntoView({block: 'nearest'}); }
+}
+$('#side').addEventListener('click', e => { const li = e.target.closest('.item'); if (li) pick(Number(li.dataset.i), true); });
+$('#filter').addEventListener('input', () => { const c = order[cur]; draw(); cur = c ? order.indexOf(c) : -1; mark(); });
+
+// ---- the player: our own over YouTube's (no YouTube buttons); it stops at the line's end ----
+let yt = null, ytReady = false, want = null, ctx = false, range = null, ended = false, playing = false;
+window.onYouTubeIframeAPIReady = () => {
+  yt = new YT.Player('yt', {width: '100%', height: '100%', host: 'https://www.youtube-nocookie.com',
+    playerVars: {controls: 0, disablekb: 1, rel: 0, playsinline: 1, iv_load_policy: 3, fs: 0, cc_load_policy: 0, hl: 'en'},
+    events: {onReady: () => { ytReady = true; if (want) { const w = want; want = null; start(w); } },
+      onStateChange: e => { playing = e.data === 1; drawPP(); }}});
+};
+const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+const clip = () => order[cur];
+function rangeOf(c) {
+  const around = c.around || [], before = around.filter(l => l[0] < c.s), after = around.filter(l => l[0] > c.s);
+  if (ctx && around.length) { const lines = [...before, [c.s, c.e, c.line], ...after]; return {from: Math.max(0, lines[0][0] - 0.1), to: lines[lines.length - 1][1] + 0.1, lines}; }
+  let to = c.e + 0.12;
+  if (after.length && c.e <= after[0][0]) to = Math.min(to, after[0][0]);
+  return {from: Math.max(0, c.s - 0.1), to: Math.max(to, c.s + 0.3), lines: null};
+}
+let loadedId = null;
+function start(at) {
+  const c = clip(); if (!c) return;
+  if (!ytReady) { want = at; return; }
+  range = rangeOf(c); ended = false;
+  const from = at ?? range.from;
+  if (loadedId === c.v) { yt.seekTo(from, true); yt.playVideo(); }
+  else { loadedId = c.v; yt.loadVideoById({videoId: c.v, startSeconds: from}); }
+  drawPP();
+}
+function pick(i, play) {
+  if (!order[i]) return;
+  cur = i; mark();
+  ['#video', '#bar', '#cap', '#row', '#under'].forEach(x => $(x).hidden = false); $('#empty').hidden = true;
+  const c = clip(); range = rangeOf(c); ended = false;
+  $('#what').innerHTML = `<b>${esc(c.channel)}</b> · <a href="https://youtu.be/${esc(c.v)}?t=${Math.floor(c.s)}" target="_blank" rel="noopener">${esc(c.title)}</a> · ${esc(c.q || '')}`;
+  drawLike(); drawTimes(); drawCap(c.s);
+  $('#prev').disabled = cur <= 0; $('#next').disabled = cur >= order.length - 1;
+  if (play) start(); else if (ytReady) { if (loadedId !== c.v) { loadedId = c.v; yt.cueVideoById({videoId: c.v, startSeconds: range.from}); } else yt.seekTo(range.from, true); }
+}
+function drawPP() { const on = playing && !ended; $('#pp').textContent = ended ? '↻' : on ? '❚❚' : '▶'; $('#bigicon').textContent = ended ? '↻' : '▶';
+  $('#cover').classList.toggle('show', !on); $('#cover').classList.toggle('dark', !on && !ended && !playing && (!yt || !yt.getCurrentTime || yt.getCurrentTime() < 0.5)); }
+function toggle() { if (!clip()) return; if (ended || !range) return start(); if (playing) yt.pauseVideo(); else yt.playVideo(); }
+$('#pp').addEventListener('click', toggle); $('#cover').addEventListener('click', toggle);
+function drawCap(t) {
+  const c = clip(); if (!c) return;
+  let text = c.line, own = true;
+  if (range && range.lines) { const l = range.lines.filter(x => x[0] <= t + 0.05).pop() || range.lines[0]; text = l[2]; own = l[0] === c.s; }
+  $('#cap').innerHTML = own ? hl(text, c.q) : esc(text);
+}
+setInterval(() => {
+  if (!ytReady || !range || !clip() || !yt.getCurrentTime) return;
+  const t = yt.getCurrentTime();
+  if (playing && !ended && t >= range.to) { yt.pauseVideo(); ended = true; drawPP(); }
+  const p = Math.min(1, Math.max(0, (t - range.from) / (range.to - range.from)));
+  $('#tlfill').style.width = (p * 100) + '%';
+  $('#time').textContent = `${Math.max(0, t - range.from).toFixed(1)} / ${(range.to - range.from).toFixed(1)} s`;
+  const c = clip(), w = $('#tlword');
+  w.hidden = !range.lines;
+  if (range.lines) { const a = (c.s - range.from) / (range.to - range.from), b = (c.e - range.from) / (range.to - range.from); w.style.left = (a * 100) + '%'; w.style.width = (Math.max(0, b - a) * 100) + '%'; }
+  drawCap(t);
+}, 50);
+function seekFrom(e) { const r = $('#tl').getBoundingClientRect(); const p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); start(range.from + p * (range.to - range.from)); }
+$('#tl').addEventListener('pointerdown', seekFrom);
+$('#ctx').addEventListener('click', () => { ctx = !ctx; $('#ctx').setAttribute('aria-pressed', ctx); start(); });
+$('#prev').addEventListener('click', () => pick(cur - 1, true));
+$('#next').addEventListener('click', () => pick(cur + 1, true));
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input')) return;
+  if (e.code === 'Space') { e.preventDefault(); toggle(); }
+  else if (e.key === 'ArrowLeft' && ytReady) start(Math.max(range.from, yt.getCurrentTime() - 1));
+  else if (e.key === 'ArrowRight' && ytReady) start(Math.min(range.to - 0.2, yt.getCurrentTime() + 1));
+});
+
+// ---- ♥ and the clip's start / end, saved to GitHub ----
+function drawLike() { const c = clip(); const b = $('#like'); b.setAttribute('aria-pressed', !!c.liked); b.textContent = c.liked ? '♥ Liked' : '♡ Like'; }
+$('#like').addEventListener('click', () => { const c = clip(); if (!c) return; c.liked = !c.liked; c._touched = true; drawLike(); const keep = c; draw(); cur = order.indexOf(keep); mark(); save(strip(c), c.liked ? 'liked' : 'unliked'); });
+function strip(c) { const o = {...c}; delete o._touched; return o; }
+function drawTimes() { const c = clip(); $('#ts').textContent = tenth(c.s); $('#te').textContent = tenth(c.e);
+  $('#rs').style.visibility = Math.abs(c.s - c.s0) < 0.01 && Math.abs(c.e - c.e0) < 0.01 ? 'hidden' : 'visible'; }
+let timeT = 0;
+function setTime(which, v) {
+  const c = clip(); if (!c) return;
+  v = Math.max(0, Math.round(v * 10) / 10);
+  if (which === 's') c.s = Math.min(v, Math.round((c.e - 0.2) * 10) / 10); else c.e = Math.max(v, Math.round((c.s + 0.2) * 10) / 10);
+  c.timed = Math.abs(c.s - c.s0) >= 0.01 || Math.abs(c.e - c.e0) >= 0.01; c._touched = true;
+  range = rangeOf(c);
+  if (which === 's') start(); else start(Math.max(range.from, c.e - 1.5));
+  drawTimes(); clearTimeout(timeT); say('…'); timeT = setTimeout(() => save(strip(c), 'new times'), 900);
+}
+$('#under').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const c = clip(); if (!c) return;
+  const now = () => (ytReady && yt.getCurrentTime ? yt.getCurrentTime() : c.s);
+  switch (b.dataset.c) {
+    case 's-': return setTime('s', c.s - 0.1); case 's+': return setTime('s', c.s + 0.1); case 's=': return setTime('s', now());
+    case 'e-': return setTime('e', c.e - 0.1); case 'e+': return setTime('e', c.e + 0.1); case 'e=': return setTime('e', now());
+    case 'reset': c.s = c.s0; c.e = c.e0; c.timed = false; range = rangeOf(c); start(); drawTimes(); save(strip(c), 'original times'); return;
+    case 'copy': return copy(JSON.stringify(entry(c)));
+  }
+});
+async function copy(t) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {
+    const a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { ok = document.execCommand('copy'); } catch (e2) {} a.remove();
+  }
+  const el = $('#copied'); el.textContent = ok ? 'Copied ✓' : 'Can’t copy here'; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 1300);
+}
+
+(async () => {
+  try { const {doc} = await load(); picks = (doc.clips || []).filter(c => c && c.v); }
+  catch (e) { $('#stat').textContent = 'Couldn’t load the picks.'; return; }
+  if (!token) $('#keybar').hidden = false;
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -271,7 +271,18 @@ huggingface.co, about 15 min per hour of audio).
     remembered** (his rule, Nov 21: "always"); here likes are `marks` of kind keep, liked clips come first in
     searches. A small 🙈 on a result hides it and the same scene in other videos from every search (kind hide; Undo in place). Short scene clips rank before compilations.
     **His phone** on the home Wi-Fi opens it too: `http://<PC's address>:8770` and a PIN (both shown on the page),
-    then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait.
+    then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait. With **Tailscale** (free,
+    on his PC and phone) the same page opens from anywhere at the PC's Tailscale address (100.x.y.z or its .ts.net
+    name), PIN too. The whole index never goes online (his choice, Nov 21: public transcripts, 1-2 GB, GitHub limits).
+  - **His picks online** (Nov 21): every clip he ♥ liked or re-timed there is in `docs/real-video/picks/picks.json`
+    (one clip per line: `id` = its line in his index, `q` = the phrase he searched, `liked`, `timed`, `v`, `s`, `e`
+    (his times), `s0` / `e0` (the captions'), `line`, `around`, `channel`, `show`, `title`, `kind`, `at`). The hidden
+    "Caption index sync" task (`sync.pl`) keeps it the same as his PC **both ways**, the newer change winning per clip.
+    **https://kiril-tishko.github.io/craneberries/real-video/picks/** plays them in our own player (it stops at the
+    line's end, With context, ◀ ♡ Like ▶) and saves ♥ and Start / End to picks.json with his GitHub key (the clip
+    editor's, same site). **To put his picks into a lesson**: read picks.json (the phrase he searched tells which
+    word it is for), take `v`, `s`, `e`, `line`, `around` into that word's file in `words/`, then the note and
+    glosses as usual; never edit picks.json by hand (his PC syncs it).
   - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do
     you mean" [how many, default 10]` prints results like the Caption Search tool (channel, title, youtu.be link with
     the time, exact start and end, the line with two before and after; plus `words` times where YouTube gave them,

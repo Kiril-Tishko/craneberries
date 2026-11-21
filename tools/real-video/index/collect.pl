@@ -56,6 +56,7 @@ my $DIR = data_dir();
 my $LOG = "$DIR/collector.log";
 my $TASK = 'Caption index collector';
 my $SITE_TASK = 'Caption index page';   # site.pl: the index as a page on this PC (http://localhost:8770)
+my $SYNC_TASK = 'Caption index sync';   # sync.pl: his picks, both ways with docs/real-video/picks/picks.json
 my $CONFIG = "$BIN/channels.json";
 $ENV{PYTHONIOENCODING} = 'utf-8'; $ENV{PYTHONUTF8} = '1';
 
@@ -640,7 +641,11 @@ sub start_task {
 sub install {
   my $to = win_path($ENV{LOCALAPPDATA} // die "no LOCALAPPDATA\n") . '/Programs/caption-index';
   make_path($to);
-  for my $f (qw(collect.pl search.pl CaptionIndex.pm channels.json site.pl site.html)) {
+  # The page and the sync run all the time: stop them first, so the new copies start below (the collector is left
+  # running: its new copy starts at its next start, as before).
+  system('powershell.exe', '-NoProfile', '-NonInteractive', '-Command',
+    q{Get-CimInstance Win32_Process -Filter "Name='perl.exe'" | Where-Object { $_.CommandLine -match 'caption-index\\\\(site|sync)\.pl' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }});
+  for my $f (qw(collect.pl search.pl CaptionIndex.pm channels.json site.pl site.html sync.pl)) {
     copy("$BIN/$f", "$to/$f") or die "can't copy $f to $to: $!\n";
   }
   # The clip library's player, for the page when there is no internet (site.pl takes the live one when it can).
@@ -655,8 +660,12 @@ sub install {
   hidden_task($to, $SITE_TASK, 'site.pl', 'run-site.vbs',
     'The private caption index as a page on this PC only: http://localhost:8770 (site.pl)');
   print "Scheduled task \"$SITE_TASK\" made: the page is at http://localhost:8770 (at logon and every hour, hidden).\n";
+  hidden_task($to, $SYNC_TASK, 'sync.pl', 'run-sync.vbs',
+    'His liked and re-timed clips, synced both ways with docs/real-video/picks/picks.json on GitHub (sync.pl)');
+  print "Scheduled task \"$SYNC_TASK\" made: liked and re-timed clips go online by themselves.\n";
   local $ENV{MSYS_NO_PATHCONV} = 1; local $ENV{MSYS2_ARG_CONV_EXCL} = '*';
-  `schtasks /run /tn "$SITE_TASK" 2>&1`;   # the page now; a second copy just exits, the old one keeps the port
+  `schtasks /run /tn "$SITE_TASK" 2>&1`;   # now (a second copy just exits)
+  `schtasks /run /tn "$SYNC_TASK" 2>&1`;
 }
 
 # A scheduled task that runs one of these scripts with no window, at logon and again every hour if it stopped.
