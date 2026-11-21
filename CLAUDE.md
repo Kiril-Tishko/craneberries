@@ -81,7 +81,8 @@ huggingface.co, about 15 min per hour of audio).
   `python3 tools/audio/sound-check.py <work-dir>` (after transcribe.py: `--words <prefix>.json --audio <file>`; setup
   in the file's header). A sound recognizer writes down the sounds it hears and compares them with Whisper's words:
   `sounds.txt` = per speaker, the share of sounds that came out differently, the swaps that repeat across different
-  words (æ → ɛ: "pan" sounds like "pen") with times, every word that sounded off; `tone.txt` = talk-time share,
+  words (æ → ɛ: "pan" sounds like "pen") with times, every word that sounded off (about 1% of sounds for a native
+  speaker, 10% for a learner reading); `tone.txt` = talk-time share,
   speed and tone of voice (calm, happy, nervous…). Use it for the pronunciation notes and the teacher's own
   pronunciation: one word is still `confidence: check`; a swap that repeats in many different words is worth naming.
   It only sees mistakes where Whisper understood the meant word. Tone is rough: at most a line in the teacher report,

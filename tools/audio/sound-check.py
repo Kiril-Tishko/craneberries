@@ -16,52 +16,29 @@ Writes into <work-dir> (outside the repo: it holds student speech):
   tone.txt     per speaker: speed, share of talk time, tone of voice (calm, happy, sad, angry…) and the turns
                where it was clearly not calm
 
-How: a phoneme recognizer (wav2vec2 trained on espeak IPA, ~1.3 GB from huggingface.co once) writes down the
-sounds it hears, with no dictionary behind it, so "pan" said as "pen" comes out as p ɛ n. espeak-ng (en-us) gives
+How: a phoneme recognizer (wav2vec2 trained on espeak IPA, ~1.3 GB from huggingface.co once, into its usual cache)
+writes down the sounds it hears, with no dictionary behind it, so "pan" said as "pen" comes out as p ɛ n. espeak-ng (en-us) gives
 the sounds Whisper's words should have, the two are lined up, and a sound counts as off only when the recognizer is
 clearly surer of the other sound. Tone: emotion2vec+ base (~1.1 GB).
 
 Limits, say them in the report:
 - It checks the words Whisper wrote. When Whisper writes the word the student actually said ("pen"), nothing is off;
   it catches the cases where Whisper understood the meant word ("pan") from context.
-- Tested on speechocean762 (adult learners reading sentences, clean audio; human marks for every sound): it finds
-  most of the sounds humans marked wrong, but also flags sounds humans let pass as a light accent. Zoom audio and
-  free speech are rougher. One flagged word is a hint (`confidence: check`); a swap that repeats in many different
-  words is a pattern worth listening to.
+- Tested Nov 21 on read speech with clean audio: LibriSpeech (native readers) and speechocean762 (adult learners,
+  human marks for every sound). It marks 0.8% of a native speaker's sounds and 10% of a learner's; it flags 83% of
+  the words humans marked wrong, but of the words it flags humans called only 41% accented or wrong (much of the
+  rest look like typical accent traits the markers let pass: the → "ze", h → х, think → sink). Zoom audio and free speech
+  are rougher. One flagged word is a hint (`confidence: check`); a swap that repeats in many different words is a
+  pattern worth listening to. The "% of sounds" compares lessons only when they were recorded the same way.
 - Not reported (accent-neutral or recognizer noise): extra sounds, a dropped r after a vowel (fine in international
-  English), dropped schwas, vowel changes outside the stressed syllable, t/d between vowels (American flap).
+  English), dropped schwas, vowel changes outside the stressed syllable, t/d between vowels (American flap), and in
+  short words natives reduce (of, them, and, to…) anything but a consonant swap (the → "ze" still counts).
 - Turns where most sounds differ are skipped as "not English": Whisper (language=en) TRANSLATES Ukrainian speech, so
   those lines are never anyone's English.
-- Tone of voice from a model trained mostly on actors and Chinese/English speech: a rough read, most turns come out
-  calm. Never put it on anything a student sees."""
+- Tone of voice comes from a model never trained on lessons or Ukrainian speakers: a rough read, most turns come
+  out calm. Never put it on anything a student sees."""
 import argparse, collections, json, logging, os, re, subprocess, sys
 import numpy as np, soundfile as sf
-
-ap = argparse.ArgumentParser()
-ap.add_argument('out')
-ap.add_argument('--words', help='transcribe.py json (default: <out>/words.json from lesson-audio.py)')
-ap.add_argument('--audio', help='the recording (default: <out>/pc.wav)')
-ap.add_argument('--who', help='only these speakers, e.g. S or S,T')
-ap.add_argument('--no-tone', action='store_true')
-ap.add_argument('--model', default='facebook/wav2vec2-lv-60-espeak-cv-ft')
-ap.add_argument('--margin', type=float, default=2.0, help='how much surer (log) the recognizer must be of the other sound')
-a = ap.parse_args()
-J = lambda n: os.path.join(a.out, n)
-
-# ---------- words and audio ----------
-src = a.words or J('words.json')
-raw = json.load(open(src))
-if raw and isinstance(raw[0], dict):      # transcribe.py: segments with words [start, end, word, prob]
-    rows = [[w[0], w[1], w[2].strip(), w[3], '?'] for s in raw for w in s['words']]
-else:                                     # lesson-audio.py: [start, end, word, conf, speaker]
-    rows = [list(r) for r in raw]
-rows.sort(key=lambda r: r[0])
-if a.who: rows = [r for r in rows if r[4] in a.who.split(',')]
-aud = a.audio or J('pc.wav')
-if not aud.endswith('.wav') or sf.info(aud).samplerate != 16000 or sf.info(aud).channels != 1:
-    tmp = J('sound-check.wav')
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', aud, '-ac', '1', '-ar', '16000', tmp], check=True); aud = tmp
-audio, SR = sf.read(aud, dtype='float32')
 
 def turns(rows, gap=0.8, longest=12.0):
     """Consecutive words of one speaker with no long pause, at most `longest` seconds."""
@@ -73,6 +50,7 @@ def turns(rows, gap=0.8, longest=12.0):
         cur.append(r)
     if cur: out.append(cur)
     return out
+
 
 # ---------- the ear: phonemes heard vs phonemes expected ----------
 import torch
@@ -87,6 +65,10 @@ NORM = {'ɐ': 'ə', 'ᵻ': 'ɪ', 'ɚ': 'ɝ', 'ɜ': 'ɝ', 'ɾ': 't', 'ɒ': 'ɑ', 
 SHOW = {'ɐ': 'ə', 'ᵻ': 'ɪ', 'ɜ': 'ɝ', 'ɾ': 't̬', 'ɫ': 'l'}            # American-style IPA for the report
 VOWELS = set('aeiouæɑɒɔəɛɪʊʌɝɐᵻɜɨøœɯɤy')
 REDUCED = {'ə', 'ɪ', 'i', 'ʌ', 'u', 'ʊ', 'eɪ', 'ɝ', 'ɑ', 'oʊ', 'a', 'ɛ', 'e', 'o'}
+# Short words natives reduce ("of" → ə, "them" → əm, "and" → n): only their consonant swaps count (the → "ze").
+FUNC = set('''a an the to of and or but for at from in on by with as than that this these those them they their there
+ then can could would should will shall was were is are am be been have has had do does did you your he him his she her we
+ us our me my i it its what who some just not so if your'''.split())
 # English sounds, plus a few a Ukrainian speaker may put in their place (x, r, ʋ, a, ɨ…). Everything else the
 # multilingual recognizer knows (Chinese tones, aspirated stops…) is masked out.
 ALLOW = set('''p b t d k ɡ f v θ ð s z ʃ ʒ h tʃ dʒ m n ŋ l ɹ j w i iː ɪ e eɪ ɛ æ ɑ ɑː ɒ ɔ ɔː o oʊ ʊ u uː ʌ ə ɚ ɜː
@@ -154,7 +136,7 @@ def align(exp, hrd):
         else: path.append((None, j - 1)); j -= 1
     return path[::-1]
 
-def check(ear, x, words, margin_min, miss_max=np.log(0.05)):
+def check(ear, x, words, margin_min=3.0, miss_max=-4.0):
     lp = ear.logprobs(x)
     exp_w = ear.expected(words)
     exp = [p for w in exp_w for p, _ in w]; stress = [s for w in exp_w for _, s in w]
@@ -168,15 +150,17 @@ def check(ear, x, words, margin_min, miss_max=np.log(0.05)):
         if i is None: continue
         e, ne = exp[i], norm(exp[i]); prev = norm(exp[i - 1]) if i else ''; nxt_e = norm(exp[i + 1]) if i + 1 < len(exp) else ''
         eid = ear.vocab.get(e)
+        func = re.sub(r"[^a-z']", '', words[owner[i]].lower()) in FUNC
         if j is None:
-            if ne == 'ə' or (ne == 'ɹ' and is_vowel(prev)): continue
+            if func or ne == 'ə' or (ne == 'ɹ' and is_vowel(prev)): continue
             nxt = next((hrd[jj][1] for _, jj in path[pi + 1:] if jj is not None), lp.shape[0] - 1)
             if eid is not None and lp[last_f:nxt + 1, eid].max() > miss_max: continue
             off += 1; res[owner[i]]['off'].append([e, None]); continue
         h, f, hid = hrd[j]; nh = norm(h)
         if nh == ne: continue
-        if is_vowel(ne) and not stress[i] and ne in REDUCED: continue
+        if is_vowel(ne) and (func or (not stress[i] and ne in REDUCED)): continue
         if {ne, nh} <= {'t', 'd'} and is_vowel(prev) and is_vowel(nxt_e): continue
+        if nxt_e == 'ɹ' and is_vowel(ne) and (nh == 'ɝ' or {ne, nh} <= {'ɑ', 'o'}): continue   # four, your, more
         lo, hi = max(0, f - 1), min(lp.shape[0], f + 2)
         if lp[f, hid] - (lp[lo:hi, eid].max() if eid is not None else -20) < margin_min: continue
         off += 1; res[owner[i]]['off'].append([e, h])
@@ -205,79 +189,114 @@ def describe(e, h):
 mmss = lambda t: f'{int(t // 60):02d}:{int(t % 60):02d}'
 WHO = {'S': 'Student', 'T': 'Teacher', '?': 'Speaker unknown'}
 
-ear = Ear(a.model)
-T = turns(rows); checked, skipped = [], collections.Counter()
-for n, tw in enumerate(T):
-    s0, s1 = max(0, tw[0][0] - 0.1), min(len(audio) / SR, tw[-1][1] + 0.1)
-    x = audio[int(s0 * SR):int(s1 * SR)]
-    if len(x) < 0.3 * SR: continue
-    res, share = check(ear, x, [r[2] for r in tw], a.margin)
-    if share > 0.4 and len(tw) >= 2:                 # mostly different: Ukrainian (translated by Whisper) or noise
-        skipped[tw[0][4]] += len(tw); continue
-    for r, w in zip(tw, res):
-        checked.append({'t': round(r[0], 2), 'who': r[4], 'word': w['word'], 'whisper': r[3],
-                        'expected': ' '.join(show(p) for p in w['exp']), 'heard': ' '.join(show(p) for p in w['heard']), 'off': w['off']})
-    if n % 50 == 0: print(f'{n}/{len(T)} turns', flush=True)
-json.dump(checked, open(J('sounds.json'), 'w'), ensure_ascii=False)
 
-out = []
-for who in sorted({c['who'] for c in checked}, key='STU?'.index):
-    ws = [c for c in checked if c['who'] == who]
-    nphones = sum(len(c['expected'].split()) for c in ws); noff = sum(len(c['off']) for c in ws)
-    out.append(f'== {WHO[who]}: {len(ws)} English words checked, {noff} sounds off ({100 * noff / max(1, nphones):.1f}% of sounds)'
-               + (f'; {skipped[who]} words skipped as not English' if skipped[who] else ''))
-    pat = collections.defaultdict(list)
-    for c in ws:
-        for e, h in c['off']: pat[(norm(e), norm(h) if h else None)].append(c)
-    rep = sorted(((k, v) for k, v in pat.items() if len({c['word'].lower() for c in v}) >= 2),
-                 key=lambda kv: (-len({c['word'].lower() for c in kv[1]}), -len(kv[1])))
-    if rep:
-        out.append('Repeated swaps (in different words; listen to a few before you trust one):')
-        for (e, h), v in rep[:12]:
-            ex = ', '.join(f'{c["word"].strip(".,?!")} {mmss(c["t"])}' for c in v[:6])
-            tot = sum(1 for c in ws if norm(e) in [norm(p) for p in c['expected'].split()])
-            out.append(f'  {describe(e, h)}  ·  {len(v)} of {tot} times  ·  {ex}')
-    else:
-        out.append('No swap repeats across different words.')
-    offw = [c for c in ws if c['off']]
-    if offw:
-        out.append('Words that sounded off (expected /…/ heard /…/):')
-        for c in offw[:60]:
-            out.append(f'  {mmss(c["t"])}  {c["word"].strip(".,?!"):<14} /{c["expected"].replace(" ", "")}/  heard /{c["heard"].replace(" ", "")}/  ·  '
-                       + '; '.join(describe(e, h) for e, h in c['off']))
-        if len(offw) > 60: out.append(f'  … {len(offw) - 60} more in sounds.json')
-    out.append('')
-open(J('sounds.txt'), 'w').write('\n'.join(out))
-print('\n'.join(out[:40]))
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('out')
+    ap.add_argument('--words', help='transcribe.py json (default: <out>/words.json from lesson-audio.py)')
+    ap.add_argument('--audio', help='the recording (default: <out>/pc.wav)')
+    ap.add_argument('--who', help='only these speakers, e.g. S or S,T')
+    ap.add_argument('--no-tone', action='store_true')
+    ap.add_argument('--model', default='facebook/wav2vec2-lv-60-espeak-cv-ft')
+    ap.add_argument('--margin', type=float, default=3.0, help='how much surer (log) the recognizer must be of the other sound')
+    a = ap.parse_args()
+    J = lambda n: os.path.join(a.out, n)
 
-# ---------- tone of voice ----------
-if a.no_tone: sys.exit()
-logging.disable(logging.INFO)
-from funasr import AutoModel
-from huggingface_hub import snapshot_download
-emo = AutoModel(model=snapshot_download('emotion2vec/emotion2vec_plus_base'), disable_update=True, device='cpu', disable_pbar=True, log_level='ERROR')
-NAMES = {'angry': 'angry', 'disgusted': 'disgusted', 'fearful': 'nervous', 'happy': 'happy', 'neutral': 'calm',
-         'other': 'other', 'sad': 'sad', 'surprised': 'surprised'}
-tone = []
-for tw in turns(rows, gap=1.5, longest=20.0):
-    s0, s1 = tw[0][0], tw[-1][1]
-    if s1 - s0 < 1.5: continue
-    r = emo.generate(audio[int(s0 * SR):int(s1 * SR)], granularity='utterance', extract_embedding=False, disable_pbar=True)[0]
-    sc = {l.split('/')[-1]: s for l, s in zip(r['labels'], r['scores']) if '/' in l}
-    best = max(sc, key=sc.get)
-    tone.append({'t': s0, 'dur': s1 - s0, 'who': tw[0][4], 'tone': NAMES.get(best, best), 'p': sc[best], 'text': ' '.join(w[2] for w in tw)})
-lines = []
-for who in sorted({t['who'] for t in tone}, key='STU?'.index):
-    ts = [t for t in tone if t['who'] == who]; dur = sum(t['dur'] for t in ts)
-    words = sum(len(t['text'].split()) for t in ts)
-    share = 100 * dur / max(1, sum(t['dur'] for t in tone))
-    mix = collections.Counter()
-    for t in ts: mix[t['tone']] += t['dur']
-    lines.append(f'== {WHO[who]}: {round(dur / 60, 1)} min of speech ({share:.0f}% of talk time), {round(60 * words / max(1, dur))} words a minute')
-    lines.append('  tone: ' + ', '.join(f'{k} {100 * v / dur:.0f}%' for k, v in mix.most_common()))
-    loud = [t for t in ts if t['tone'] not in ('calm', 'other') and t['p'] >= 0.6]
-    for t in loud[:25]:
-        lines.append(f'  {mmss(t["t"])}  {t["tone"]} ({t["p"]:.0%})  {t["text"][:90]}')
-    lines.append('')
-open(J('tone.txt'), 'w').write('\n'.join(lines))
-print('\n'.join(lines)); print('wrote', J('sounds.txt'), J('sounds.json'), J('tone.txt'))
+    # ---------- words and audio ----------
+    src = a.words or J('words.json')
+    raw = json.load(open(src))
+    if raw and isinstance(raw[0], dict):      # transcribe.py: segments with words [start, end, word, prob]
+        rows = [[w[0], w[1], w[2].strip(), w[3], '?'] for s in raw for w in s['words']]
+    else:                                     # lesson-audio.py: [start, end, word, conf, speaker]
+        rows = [list(r) for r in raw]
+    rows.sort(key=lambda r: r[0])
+    if a.who: rows = [r for r in rows if r[4] in a.who.split(',')]
+    aud = a.audio or J('pc.wav')
+    if not aud.endswith('.wav') or sf.info(aud).samplerate != 16000 or sf.info(aud).channels != 1:
+        tmp = J('sound-check.wav')
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', aud, '-ac', '1', '-ar', '16000', tmp], check=True); aud = tmp
+    audio, SR = sf.read(aud, dtype='float32')
+    ear = Ear(a.model)
+    T = turns(rows); checked, skipped = [], collections.Counter()
+    for n, tw in enumerate(T):
+        s0, s1 = max(0, tw[0][0] - 0.1), min(len(audio) / SR, tw[-1][1] + 0.1)
+        x = audio[int(s0 * SR):int(s1 * SR)]
+        if len(x) < 0.3 * SR: continue
+        res, share = check(ear, x, [r[2] for r in tw], a.margin)
+        if share > 0.4 and len(tw) >= 2:                 # mostly different: Ukrainian (translated by Whisper) or noise
+            skipped[tw[0][4]] += len(tw); continue
+        for k, (r, w) in enumerate(zip(tw, res)):
+            # Leave out words Whisper itself was unsure of and names it made up: the comparison means nothing there.
+            name = w['word'][:1].isupper() and k > 0 and not re.match(r"I\b|I'", w['word']) and not tw[k - 1][2].endswith(('.', '?', '!'))
+            if r[3] < 0.2 or name: continue
+            checked.append({'t': round(r[0], 2), 'who': r[4], 'word': w['word'], 'whisper': r[3], 'phones': [norm(p) for p in w['exp']],
+                            'expected': ' '.join(show(p) for p in w['exp']), 'heard': ' '.join(show(p) for p in w['heard']), 'off': w['off']})
+        if n and n % 100 == 0: print(f'{n}/{len(T)} turns', flush=True)
+    json.dump(checked, open(J('sounds.json'), 'w'), ensure_ascii=False)
+
+    out = []
+    for who in sorted({c['who'] for c in checked}, key='STU?'.index):
+        ws = [c for c in checked if c['who'] == who]
+        nphones = sum(len(c['phones']) for c in ws); noff = sum(len(c['off']) for c in ws)
+        out.append(f'== {WHO[who]}: {len(ws)} English words checked, {noff} sounds off ({100 * noff / max(1, nphones):.1f}% of sounds)'
+                   + (f'; {skipped[who]} words skipped as not English' if skipped[who] else ''))
+        pat = collections.defaultdict(list)
+        for c in ws:
+            for e, h in c['off']: pat[(norm(e), norm(h) if h else None)].append(c)
+        rep = sorted(((k, v) for k, v in pat.items() if len({c['word'].lower() for c in v}) >= 2),
+                     key=lambda kv: (-len({c['word'].lower() for c in kv[1]}), -len(kv[1])))
+        if rep:
+            out.append('Repeated swaps (in different words; listen to a few before you trust one):')
+            for (e, h), v in rep[:12]:
+                ex = ', '.join(f'{c["word"].strip(".,?!")} {mmss(c["t"])}' for c in v[:6])
+                tot = sum(c['phones'].count(e) for c in ws)
+                out.append(f'  {describe(e, h)}  ·  {len(v)} of {tot} times  ·  {ex}')
+        else:
+            out.append('No swap repeats across different words.')
+        offw = [c for c in ws if c['off']]
+        if offw:
+            out.append('Words that sounded off (expected /…/ heard /…/):')
+            for c in offw[:60]:
+                out.append(f'  {mmss(c["t"])}  {c["word"].strip(".,?!"):<14} /{c["expected"].replace(" ", "")}/  heard /{c["heard"].replace(" ", "")}/  ·  '
+                           + '; '.join(describe(e, h) for e, h in c['off']))
+            if len(offw) > 60: out.append(f'  … {len(offw) - 60} more in sounds.json')
+        out.append('')
+    open(J('sounds.txt'), 'w').write('\n'.join(out))
+    print('\n'.join(out[:40]))
+
+    # ---------- tone of voice ----------
+    if a.no_tone: return
+    logging.disable(logging.WARNING)
+    import contextlib, io
+    with contextlib.redirect_stdout(io.StringIO()): from funasr import AutoModel
+    from huggingface_hub import snapshot_download
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        emo = AutoModel(model=snapshot_download('emotion2vec/emotion2vec_plus_base'), disable_update=True, device='cpu', disable_pbar=True, log_level='ERROR')
+    NAMES = {'angry': 'angry', 'disgusted': 'disgusted', 'fearful': 'nervous', 'happy': 'happy', 'neutral': 'calm',
+             'other': 'other', 'sad': 'sad', 'surprised': 'surprised'}
+    tone = []
+    for tw in turns(rows, gap=1.5, longest=20.0):
+        s0, s1 = tw[0][0], tw[-1][1]
+        if s1 - s0 < 1.5: continue
+        r = emo.generate(audio[int(s0 * SR):int(s1 * SR)], granularity='utterance', extract_embedding=False, disable_pbar=True)[0]
+        sc = {l.split('/')[-1]: s for l, s in zip(r['labels'], r['scores']) if '/' in l}
+        best = max(sc, key=sc.get)
+        tone.append({'t': s0, 'dur': s1 - s0, 'who': tw[0][4], 'tone': NAMES.get(best, best), 'p': sc[best], 'text': ' '.join(w[2] for w in tw)})
+    lines = []
+    for who in sorted({t['who'] for t in tone}, key='STU?'.index):
+        ts = [t for t in tone if t['who'] == who]; dur = sum(t['dur'] for t in ts)
+        words = sum(len(t['text'].split()) for t in ts)
+        share = 100 * dur / max(1, sum(t['dur'] for t in tone))
+        mix = collections.Counter()
+        for t in ts: mix[t['tone']] += t['dur']
+        lines.append(f'== {WHO[who]}: {round(dur / 60, 1)} min of speech ({share:.0f}% of talk time), {round(60 * words / max(1, dur))} words a minute')
+        lines.append('  tone: ' + ', '.join(f'{k} {100 * v / dur:.0f}%' for k, v in mix.most_common()))
+        loud = [t for t in ts if t['tone'] not in ('calm', 'other') and t['p'] >= 0.6]
+        for t in loud[:25]:
+            lines.append(f'  {mmss(t["t"])}  {t["tone"]} ({t["p"]:.0%})  {t["text"][:90]}')
+        lines.append('')
+    open(J('tone.txt'), 'w').write('\n'.join(lines))
+    print('\n'.join(lines)); print('wrote', J('sounds.txt'), J('sounds.json'), J('tone.txt'))
+
+if __name__ == '__main__':
+    main()
