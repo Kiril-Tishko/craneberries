@@ -119,7 +119,7 @@ if ($opt{show}) {
 my @rows = sql(<<"SQL");
 SELECT l.id, l.s, l.e, l.text, ifnull(l.w,''), ifnull(n.text,''), ifnull(n.e,''), ifnull(n.w,''), ifnull(n.s,''),
   v.k, v.id, ifnull(v.title,''), ifnull(v.views,0), ifnull(v.kind,''), ifnull(v.alive,''), ifnull(v.checked_at,0),
-  v.channel, ifnull(c.name, v.channel)
+  v.channel, ifnull(c.name, v.channel), ifnull(v.dur, 0)
 FROM win JOIN lines l ON l.id = win.rowid JOIN videos v ON v.k = l.id / 100000
 LEFT JOIN channels c ON c.key = v.channel LEFT JOIN lines n ON n.id = l.id + 1
 WHERE win MATCH '$ftsq' AND @{[join ' AND ', @where]}
@@ -174,16 +174,22 @@ sub matches {
   grep { $_->[0] < $n0 && !$seen{"$_->[0]"}++ } sort { $a->[0] <=> $b->[0] } @m;
 }
 
+# Clips he marked on the page (site.pl): 🙈 hidden ones never come back; ⭐ kept ones are marked in the results.
+my %hide = map { $_->[0] => 1 } eval { sql("SELECT lid FROM marks WHERE kind='hide';") };
+my %keep = map { $_->[0] => 1 } eval { sql("SELECT lid FROM marks WHERE kind='keep';") };
 my %video;
 for my $r (@rows) {
-  my ($lid, $s, $e, $text, $w, $ntext, $ne, $nw, $ns, $k, $vid, $title, $views, $kind, $alive, $checked, $ckey, $cname) = @$r;
+  my ($lid, $s, $e, $text, $w, $ntext, $ne, $nw, $ns, $k, $vid, $title, $views, $kind, $alive, $checked, $ckey, $cname, $dur) = @$r;
+  next if $hide{$lid};
   my @t1 = line_tokens($text);
   my @t2 = map { [$_->[0], $_->[1], 1] } line_tokens($ntext);
   my @T = ((map { [@$_, 0] } @t1), @t2);
   for my $m (matches(\@T, scalar @t1)) {
     my $spans = $T[$m->[1]][2];
     my $words = scalar(() = $text =~ /\S+/g);
-    my $score = $words + ($spans ? 4 : 0) + ($kind eq 'auto' ? 1 : 0);
+    # Short lines first; short scene clips before long compilations (they repeat the same scenes and are harder to
+    # watch): up to 10 minutes +0, up to 30 minutes +3, longer +6.
+    my $score = $words + ($spans ? 4 : 0) + ($kind eq 'auto' ? 1 : 0) + ($dur > 1800 ? 6 : $dur > 600 ? 3 : 0);
     # The words' own times, where the captions have them: first word's start to the next word's start.
     my ($ws, $we);
     my @off1 = split ' ', $w; my @off2 = split ' ', $nw;
@@ -311,6 +317,9 @@ sub json_out {
       e => $sec->($bm->{e}), ws => $sec->($bm->{ws}), we => $sec->($bm->{we}), kind => $v->{kind},
       alive => ($v->{alive} eq '' ? undef : 0 + $v->{alive}), more => $v->{more},
       same => [map { $_->{id} } @{$v->{same} || []}], lines => \@lines,
+      # 🙈 on the page hides this line and the same scene in the other videos; ⭐ = kept already
+      scene => [0 + $bm->{lid}, map { 0 + $_->{best}{lid} } @{$v->{same} || []}],
+      kept => ($keep{$bm->{lid}} ? JSON::PP::true : JSON::PP::false),
       clip => JSON::PP->new->decode(clip_json($v, $bm, $base, $last))};
   }
   my $st = read_state();

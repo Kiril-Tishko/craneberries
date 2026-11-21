@@ -9,13 +9,13 @@
 :root {
   --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1f; --soft: #5f6368; --faint: #8a8f96; --line: #e4e2dc;
   --accent: #2f5bd3; --accent-ink: #ffffff; --hit: #fff3b0; --hit-ink: #1d1d1f; --ok: #2e7d4f; --warn: #a15c00; --bad: #b3261e;
-  --chip: #eceae4;
+  --chip: #eceae4; --star: #d99a00;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #141517; --card: #1d1f22; --ink: #ececec; --soft: #a9adb3; --faint: #7c8187; --line: #2d3034;
     --accent: #7aa2ff; --accent-ink: #0f1115; --hit: #5c4d00; --hit-ink: #fff6cc; --ok: #6cc796; --warn: #e0a85a; --bad: #ff8a80;
-    --chip: #272a2e;
+    --chip: #272a2e; --star: #ffc94a;
   }
 }
 * { box-sizing: border-box; }
@@ -23,9 +23,9 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 syst
 main { max-width: 880px; margin: 0 auto; padding: 20px 16px 60px; }
 h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
 .sub { color: var(--soft); font-size: 14px; margin: 0 0 16px; }
-.status { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: 14px; }
-.status .row { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; }
-.status b { font-variant-numeric: tabular-nums; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; }
+.panel b { font-variant-numeric: tabular-nums; }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--faint); vertical-align: 1px; }
 .dot.on { background: var(--ok); } .dot.rest { background: var(--warn); } .dot.off { background: var(--bad); }
 .shows { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -33,6 +33,8 @@ h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
 .chip small { color: var(--soft); margin-left: 4px; font-variant-numeric: tabular-nums; }
 .chip.on { background: var(--accent); color: var(--accent-ink); }
 .chip.on small { color: var(--accent-ink); opacity: .8; }
+.phone { margin-top: 8px; color: var(--soft); }
+.phone code { background: var(--chip); padding: 1px 6px; border-radius: 6px; color: var(--ink); }
 form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }
 input[type=search] { flex: 1 1 260px; min-width: 0; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
 select { font: inherit; padding: 9px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; }
@@ -42,16 +44,20 @@ button.go { font: inherit; padding: 10px 16px; border-radius: 10px; border: 0; b
 .help code { background: var(--chip); padding: 1px 5px; border-radius: 5px; color: var(--soft); }
 .summary { color: var(--soft); font-size: 14px; margin: 8px 0 12px; min-height: 20px; }
 .error { color: var(--bad); }
-article { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+/* The player: the clip library's own (site.pl /player), one for the whole list, staying in view at the top. */
+#stage { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 6px 0 8px; margin: 0 0 8px; }
+#stage iframe { display: block; width: 100%; height: min(calc(56vw + 240px), 620px, 68vh); border: 0; border-radius: 10px; }
+#stage .bar { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--soft); padding: 4px 2px 0; }
+#stage .bar button { font: inherit; font-size: 13px; background: none; border: 0; color: var(--soft); cursor: pointer; padding: 2px 6px; }
+article { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; scroll-margin-top: calc(min(calc(56vw + 240px), 620px, 68vh) + 40px); }
+article.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+article.gone { padding: 8px 14px; color: var(--faint); font-size: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+article.gone button { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--soft); padding: 4px 10px; cursor: pointer; }
 .meta { font-size: 14px; color: var(--soft); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .meta .n { color: var(--faint); font-variant-numeric: tabular-nums; }
 .meta .chan { color: var(--ink); font-weight: 600; }
 .meta a { color: var(--soft); text-decoration: none; overflow-wrap: anywhere; }
 .meta a:hover { text-decoration: underline; }
-/* The clip library's player in its lesson look (?embed): the video sizes itself to this frame's height. */
-.player { margin: 10px 0 4px; border-radius: 10px; overflow: hidden; }
-.player iframe { display: block; width: 100%; height: min(calc(52vw + 190px), 640px, 86vh); border: 0; }
-@media (min-width: 880px) { .player iframe { height: min(640px, 86vh); } }
 ol.lines { list-style: none; margin: 10px 0 8px; padding: 0; }
 ol.lines li { display: flex; gap: 10px; padding: 3px 0; color: var(--soft); }
 ol.lines li.hit { color: var(--ink); font-weight: 500; }
@@ -59,10 +65,11 @@ ol.lines button.t { flex: 0 0 auto; font: 12px/1.9 ui-monospace, Consolas, monos
 ol.lines button.t:hover { color: var(--accent); }
 mark { background: var(--hit); color: var(--hit-ink); border-radius: 3px; padding: 0 2px; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.actions button { font: 14px/1 inherit; font-size: 14px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.actions button { font: inherit; font-size: 14px; line-height: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
 .actions button.play { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.actions button.keep[aria-pressed="true"] { color: var(--star); border-color: var(--star); }
 .info { font-size: 13px; color: var(--faint); }
-.info .gone { color: var(--bad); }
+.info .bad { color: var(--bad); }
 .more { display: block; margin: 16px auto 0; font: inherit; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
 .examples { display: flex; flex-wrap: wrap; gap: 6px; }
 details { margin-top: 10px; }
@@ -70,15 +77,25 @@ details summary { cursor: pointer; color: var(--soft); font-size: 13px; }
 table { border-collapse: collapse; font-size: 13px; margin-top: 6px; width: 100%; }
 td, th { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 th { color: var(--faint); font-weight: 500; }
-@media (max-width: 560px) { ol.lines button.t { min-width: 44px; } h1 { font-size: 20px; } }
+/* ⭐ Picked */
+#picked h2 { font-size: 15px; margin: 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+#picked h2 span { flex: 1; }
+#picked h2 button, #picked li button { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+#picked ol { list-style: none; margin: 8px 0 0; padding: 0; }
+#picked li { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+#picked li .what { flex: 1 1 240px; min-width: 0; }
+#picked li .what small { display: block; color: var(--faint); font-size: 12px; overflow-wrap: anywhere; }
+#picked li.now .what { color: var(--accent); }
+@media (max-width: 560px) { ol.lines button.t { min-width: 44px; } h1 { font-size: 20px; } .actions button { padding: 8px 10px; } }
 </style>
 </head>
 <body>
 <main>
   <h1>Caption index</h1>
-  <p class="sub">Your private clip finder. It runs only on this PC, and nothing here is online.</p>
+  <p class="sub">Your private clip finder. Only this PC (and your phone, with the PIN) can open it.</p>
 
-  <section class="status" id="status" aria-live="polite">Loading…</section>
+  <section class="panel" id="status" aria-live="polite">Loading…</section>
+  <section class="panel" id="picked" hidden></section>
 
   <form id="f" autocomplete="off">
     <input type="search" id="q" name="q" placeholder="Search a phrase, e.g. it depends" aria-label="Phrase to find">
@@ -89,6 +106,8 @@ th { color: var(--faint); font-weight: 500; }
   <p class="help"><code>a | b</code> either one · <code>call ~3 back</code> words near each other · <code>tire*</code> word start (tired, tiring)</p>
 
   <div class="summary" id="summary"></div>
+  <section id="stage" hidden aria-label="Player"><iframe title="Clip player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    <div class="bar"><span id="stagewhat"></span><button type="button" id="stageclose">Close ✕</button></div></section>
   <div id="results"></div>
   <button class="more" id="more" hidden>More results</button>
 </main>
@@ -101,12 +120,18 @@ const clock = sec => { sec = Math.floor(sec || 0); const h = Math.floor(sec / 36
 const when = t => { const d = new Date(t * 1000), now = new Date();
   const hm = d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
   return d.toDateString() === now.toDateString() ? hm : d.toLocaleDateString([], {weekday: 'short'}) + ' ' + hm; };
-let page = 1, current = null, status = null;
+// A signed-out phone gets 401: reload, and the server shows the PIN page.
+async function api(path) {
+  const r = await fetch(path, {headers: {'X-CI': '1'}});
+  if (r.status === 401) { location.reload(); throw new Error('PIN'); }
+  return r.json();
+}
+let page = 1, current = null, items = [], picks = [];
 
 // ---- status and shows ----
 async function loadStatus() {
   try {
-    const s = status = await (await fetch('/api/status')).json();
+    const s = await api('/api/status');
     let dot = 'off', state = 'not running';
     if (s.stopped) { state = 'stopped (collect.pl --start starts it again)'; }
     else if (s.paused_until) { dot = 'rest'; state = (/planned rest/.test(s.pause_reason || '') ? 'resting until ' : 'paused by YouTube until ') + when(s.paused_until); }
@@ -120,6 +145,7 @@ async function loadStatus() {
         <span>${fmt(s.todo)} videos still to fetch</span>
       </div>
       <div class="shows">${shows}</div>
+      ${s.phone ? `<div class="phone">📱 On your phone (same Wi-Fi): <code>${esc(s.phone)}</code> · PIN <code>${esc(s.pin)}</code></div>` : ''}
       <details><summary>All channels (${s.channels_listed} of ${s.channels} listed)</summary>
         <table><tr><th>Channel</th><th>Searchable</th><th>To fetch</th></tr>
         ${s.channel_list.map(c => `<tr><td>${esc(c.name)}</td><td>${fmt(c.videos)}</td><td>${fmt(c.todo)}</td></tr>`).join('')}</table>
@@ -127,7 +153,7 @@ async function loadStatus() {
     const sel = $('#show'), keep = sel.value;
     sel.innerHTML = '<option value="">All shows and channels</option>' + s.shows.map(x => `<option value="${esc(x.show)}">${esc(x.show)}</option>`).join('');
     sel.value = keep;
-  } catch (e) { $('#status').textContent = 'Can’t reach the index. Is site.pl running?'; }
+  } catch (e) { if (e.message !== 'PIN') $('#status').textContent = 'Can’t reach the index. Is site.pl running?'; }
 }
 $('#status').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
@@ -157,6 +183,18 @@ function highlight(text, res) {
   return out + esc(text.slice(at));
 }
 
+// ---- copy (also on the phone, where the page isn't "secure" and the clipboard API is off) ----
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {}
+  const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0';
+  document.body.appendChild(a); a.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+  a.remove(); return ok;
+}
+async function copyButton(b, t, label) {
+  b.textContent = (await copyText(t)) ? 'Copied ✓' : 'Can’t copy here';
+  setTimeout(() => b.textContent = label, 1600);
+}
+
 // ---- search ----
 function params() {
   const p = new URLSearchParams();
@@ -167,12 +205,12 @@ function params() {
 }
 async function go(more) {
   const p = params(); if (!p.get('q')) return;
-  if (!more) { page = 1; history.replaceState(null, '', '?' + p.toString()); $('#results').innerHTML = ''; }
+  if (!more) { page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); $('#results').innerHTML = ''; if (stage.list === 'results') closeStage(); }
   p.set('page', page); p.set('n', 10);
   $('#summary').textContent = more ? 'Loading more…' : 'Searching…';
   $('#more').hidden = true;
   let d;
-  try { d = await (await fetch('/api/search?' + p.toString())).json(); }
+  try { d = await api('/api/search?' + p.toString()); }
   catch (e) { d = {error: 'Can’t reach the index. Is site.pl running?'}; }
   if (d.error) { $('#summary').innerHTML = '<span class="error">' + esc(d.error) + '</span>'; return; }
   current = d;
@@ -181,77 +219,149 @@ async function go(more) {
   $('#summary').textContent = d.count
     ? `${fmt(d.total)} matches in ${fmt(d.videos)} videos${scenes} from ${fmt(d.channels)} channel${d.channels === 1 ? '' : 's'} · showing 1–${d.from + d.results.length}`
     : 'No matches' + (p.get('human') ? ' with exact captions' : '') + (d.indexed ? ` in ${fmt(d.indexed)} videos yet.` : '.');
-  $('#results').insertAdjacentHTML('beforeend', d.results.map(r => card(r, res)).join(''));
+  const from = items.length;
+  items.push(...d.results);
+  $('#results').insertAdjacentHTML('beforeend', d.results.map((r, k) => card(r, from + k, res)).join(''));
   $('#more').hidden = !d.more;
 }
-function card(r, res) {
+function card(r, i, res) {
   const info = [r.kind === 'human' ? 'exact captions' : 'auto captions'];
-  if (r.alive === 404) info.push('<span class="gone">video gone</span>');
-  else if (r.alive === 401 || r.alive === 403) info.push('<span class="gone">private or can’t be embedded</span>');
+  if (r.alive === 404) info.push('<span class="bad">video gone</span>');
+  else if (r.alive === 401 || r.alive === 403) info.push('<span class="bad">private or can’t be embedded</span>');
   if (r.more) info.push(`${r.more} more in this video`);
   if (r.same.length) info.push('same scene in ' + r.same.length + ' more video' + (r.same.length > 1 ? 's' : ''));
-  const lines = r.lines.map(l => `<li class="${l.hit ? 'hit' : ''}"><button class="t" type="button" data-s="${l.s}" data-e="${l.e}" title="Play from here">${clock(l.s)}</button><span>${l.hit ? highlight(l.text, res) : esc(l.text)}</span></li>`).join('');
-  return `<article data-id="${esc(r.id)}" data-slug="${esc(slugFor(r))}" data-clip='${esc(JSON.stringify(r.clip))}'>
+  const lines = r.lines.map(l => `<li class="${l.hit ? 'hit' : ''}"><button class="t" type="button" data-at="${l.s}" title="Play from here">${clock(l.s)}</button><span>${l.hit ? highlight(l.text, res) : esc(l.text)}</span></li>`).join('');
+  return `<article data-i="${i}">
     <div class="meta"><span class="n">${r.n}.</span><span class="chan">${esc(r.channel)}</span>
       <a href="https://youtu.be/${esc(r.id)}?t=${Math.floor(r.s)}" target="_blank" rel="noopener">${esc(r.title || r.id)}</a></div>
-    <div class="player" hidden></div>
     <ol class="lines">${lines}</ol>
     <div class="actions">
-      <button type="button" class="play" data-play="1">▶ Play</button>
-      <button type="button" class="copy">Copy clip entry</button>
+      <button type="button" class="play" data-act="play">▶ Play</button>
+      <button type="button" class="keep" data-act="keep" aria-pressed="${r.kept ? 'true' : 'false'}" title="Keep it on the Picked list">${r.kept ? '★ Kept' : '☆ Keep'}</button>
+      <button type="button" data-act="hide" title="Never show this clip (and the same scene) again">🙈 Hide</button>
+      <button type="button" data-act="copy">Copy clip entry</button>
       <span class="info">${info.join(' · ')}</span>
     </div></article>`;
 }
 $('#results').addEventListener('click', async e => {
   const art = e.target.closest('article'); if (!art) return;
   const b = e.target.closest('button'); if (!b) return;
-  if (b.classList.contains('copy')) {
-    try { await navigator.clipboard.writeText(art.dataset.clip); b.textContent = 'Copied ✓'; }
-    catch (err) { b.textContent = 'Can’t copy here'; }
-    setTimeout(() => b.textContent = 'Copy clip entry', 1600);
-    return;
+  const i = Number(art.dataset.i), r = items[i];
+  if (b.dataset.at !== undefined) return play('results', i, Number(b.dataset.at));
+  switch (b.dataset.act) {
+    case 'play': return play('results', i);
+    case 'copy': return copyButton(b, JSON.stringify(r.clip), 'Copy clip entry');
+    case 'keep': {
+      const on = b.getAttribute('aria-pressed') !== 'true';
+      await mark(r, on ? 'keep' : 'none');
+      r.kept = on; b.setAttribute('aria-pressed', on); b.textContent = on ? '★ Kept' : '☆ Keep';
+      return loadPicked();
+    }
+    case 'hide': {
+      await mark(r, 'hide');
+      art.dataset.html = art.innerHTML;
+      art.classList.add('gone');
+      art.innerHTML = `<span>🙈 Hidden: ${esc(r.lines.find(l => l.hit)?.text || r.title)}</span><button type="button" data-act="unhide">Undo</button>`;
+      return;
+    }
+    case 'unhide': {
+      await mark(r, 'none');
+      art.classList.remove('gone'); art.innerHTML = art.dataset.html; return;
+    }
   }
-  if (b.dataset.play) play(art);
-  else if (b.dataset.s !== undefined) play(art, Number(b.dataset.s));
 });
-// The searched words, for the player's yellow highlight: c-<line>-<last line>-q-<words>[-qq-<other phrase>…]
-function slugFor(r) {
-  const q = (current && current.query) || $('#q').value;
-  const alts = q.split(/\s*\|\s*|\s*~\d*\s*/).map(a => (a.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, '').match(/[a-z0-9]+/g) || []).join('-')).filter(Boolean);
-  return `c-${r.lid}-${r.last}` + (alts.length ? '-q-' + alts.join('-qq-') : '');
-}
-// The clip library's own player (served here from a copy, see site.pl): it stops at the line's end, plays again from
-// the line's start, has "With context", the caption bar and the phrase's part of the timeline in yellow.
-// One player at a time; a time in the lines plays from that line.
-function play(art, at) {
-  document.querySelectorAll('.player').forEach(p => { if (p.closest('article') !== art) { p.hidden = true; p.innerHTML = ''; } });
-  const p = art.querySelector('.player');
-  let f = p.querySelector('iframe');
-  const start = () => {
-    const A = f.contentWindow && f.contentWindow.CI_App;
-    if (!A || !A.word) return false;
-    A.playClip(at); return true;
-  };
-  if (f) { start(); return; }
-  p.innerHTML = `<iframe src="/player/?words=${encodeURIComponent(art.dataset.slug)}&embed" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="Clip"></iframe>`;
-  f = p.querySelector('iframe');
-  p.hidden = false;
-  // The player loads its clip after the page: try until it is there (about 10 s at most).
-  let tries = 0;
-  const wait = () => { if (!start() && ++tries < 100) setTimeout(wait, 100); };
-  f.addEventListener('load', wait, {once: true});
-  p.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+function mark(r, kind) {
+  const p = new URLSearchParams({lid: r.lid, last: r.last, kind, q: (current && current.query) || ''});
+  if (kind !== 'keep') p.set('scene', (r.scene || []).join(','));
+  return api('/api/mark?' + p.toString());
 }
 $('#more').addEventListener('click', () => { page++; go(true); });
 $('#f').addEventListener('submit', e => { e.preventDefault(); go(); });
 $('#show').addEventListener('change', () => { loadStatus(); if ($('#q').value.trim()) go(); });
 $('#human').addEventListener('change', () => { if ($('#q').value.trim()) go(); });
 
+// ---- the player: the clip library's own, holding the whole list, so its ‹ › arrows go through the results ----
+const stage = {list: null, slug: null};
+function wordsOf(q) {
+  return (q || '').split(/\s*\|\s*|\s*~\d*\s*/).map(a => (a.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, '').match(/[a-z0-9]+/g) || []).join('-')).filter(Boolean);
+}
+function slugOf(list) {
+  const rows = list === 'picked' ? picks : items;
+  const alts = list === 'picked' ? [] : wordsOf((current && current.query) || $('#q').value);
+  return rows.map(r => `c-${r.lid}-${r.last}`).join('-') + (alts.length ? '-q-' + alts.join('-qq-') : '');
+}
+function playerApp() { const f = $('#stage iframe'); return f.contentWindow && f.contentWindow.CI_App; }
+function play(list, i, at) {
+  const slug = slugOf(list);
+  const go = () => {
+    const A = playerApp();
+    if (!A || !A.word) return false;
+    A.onClip = () => follow(list, A.clipN);
+    if (at !== undefined) { A.clipN = i; A.showClip(false); A.playClip(at); }
+    else { A.clipN = i; A.showClip(true); }
+    follow(list, i);
+    return true;
+  };
+  $('#stage').hidden = false;
+  if (stage.slug === slug && go()) return;
+  stage.list = list; stage.slug = slug;
+  const f = $('#stage iframe');
+  let tries = 0;
+  const wait = () => { if (!go() && ++tries < 100) setTimeout(wait, 100); };
+  f.onload = wait;
+  f.src = '/player/?words=' + encodeURIComponent(slug) + '&embed';
+}
+// The card (or Picked row) of the clip that plays is outlined and kept in view under the player.
+function follow(list, i) {
+  document.querySelectorAll('article.now, #picked li.now').forEach(x => x.classList.remove('now'));
+  const el = list === 'picked' ? document.querySelector(`#picked li[data-i="${i}"]`) : document.querySelector(`article[data-i="${i}"]`);
+  const rows = list === 'picked' ? picks : items;
+  $('#stagewhat').textContent = rows[i] ? `${i + 1} of ${rows.length}${list === 'picked' ? ' picked' : ''} · ${rows[i].channel}` : '';
+  if (!el) return;
+  el.classList.add('now');
+  const r = el.getBoundingClientRect(), top = $('#stage').getBoundingClientRect().bottom;
+  if (list === 'results' && (r.top < top || r.bottom > innerHeight)) el.scrollIntoView({block: 'start', behavior: 'smooth'});
+}
+function closeStage() {
+  $('#stage').hidden = true; $('#stage iframe').src = 'about:blank'; stage.list = stage.slug = null;
+  document.querySelectorAll('article.now, #picked li.now').forEach(x => x.classList.remove('now'));
+}
+$('#stageclose').addEventListener('click', closeStage);
+
+// ---- ⭐ Picked ----
+async function loadPicked() {
+  try { picks = (await api('/api/kept')).kept || []; } catch (e) { return; }
+  const box = $('#picked');
+  box.hidden = !picks.length;
+  if (!picks.length) { if (stage.list === 'picked') closeStage(); return; }
+  box.innerHTML = `<h2><span>⭐ Picked (${picks.length})</span><button type="button" data-act="playall">▶ Play them</button><button type="button" data-act="copyall">Copy all entries</button></h2>
+    <details${picks.length <= 6 ? ' open' : ''}><summary>The clips</summary><ol>${picks.map((r, i) => `<li data-i="${i}"><span class="what">${esc(r.line)}<small>${esc(r.channel)} · ${esc(r.title)}${r.query ? ' · searched: ' + esc(r.query) : ''}</small></span>
+      <button type="button" data-act="play">▶</button><button type="button" data-act="copy">Copy</button><button type="button" data-act="unkeep" title="Take it off the list">✕</button></li>`).join('')}</ol></details>`;
+  if (stage.list === 'picked') stage.slug = null;   // the list changed: the player reloads on the next ▶
+}
+$('#picked').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const li = b.closest('li'), i = li ? Number(li.dataset.i) : 0;
+  switch (b.dataset.act) {
+    case 'playall': return play('picked', 0);
+    case 'copyall': return copyButton(b, picks.map(r => JSON.stringify(r.clip)).join(',\n'), 'Copy all entries');
+    case 'play': return play('picked', i);
+    case 'copy': return copyButton(b, JSON.stringify(picks[i].clip), 'Copy');
+    case 'unkeep': {
+      await mark(picks[i], 'none');
+      const k = items.find(r => r.lid === picks[i].lid);
+      if (k) { k.kept = false; const btn = document.querySelector(`article[data-i="${items.indexOf(k)}"] .keep`); if (btn) { btn.setAttribute('aria-pressed', 'false'); btn.textContent = '☆ Keep'; } }
+      return loadPicked();
+    }
+  }
+});
+
 // ---- start: the address can carry a search (?q=it+depends&show=Breaking+Bad) ----
 (async () => {
   const u = new URLSearchParams(location.search);
   $('#q').value = u.get('q') || ''; $('#human').checked = u.get('human') === '1';
   await loadStatus();
+  loadPicked();
   if (u.get('show')) { $('#show').value = u.get('show'); loadStatus(); }
   if ($('#q').value) go(); else {
     $('#summary').innerHTML = 'Try: <span class="examples">' + ['what do you mean', 'it depends', 'are you kidding me', 'I’m tired', 'can I call you back'].map(x => `<button type="button" class="chip ex">${esc(x)}</button>`).join('') + '</span>';

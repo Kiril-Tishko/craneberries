@@ -26,10 +26,39 @@ my $PLAYER = -d "$BIN/player" ? "$BIN/player" : "$BIN/../../../docs/real-video";
 my $LIVE = 'https://kiril-tishko.github.io/craneberries/real-video/';   # the live clip library (sub player_file)
 open my $lock, '>>', "$DIR/site-$port.lock" or die "can't open $DIR/site-$port.lock: $!\n";   # one copy a port
 if (!flock($lock, LOCK_EX | LOCK_NB)) { print "The page is already running: http://localhost:$port\n"; exit 0 }
-my $srv = IO::Socket::INET->new(LocalAddr => '127.0.0.1', LocalPort => $port, Listen => 20, ReuseAddr => 1, Proto => 'tcp')
-  or die "can't listen on 127.0.0.1:$port: $@\n";
+# ⭐ kept and 🙈 hidden clips (the page's buttons; search.pl leaves hidden ones out).
+sql("CREATE TABLE IF NOT EXISTS marks(lid INTEGER PRIMARY KEY, last INTEGER, kind TEXT NOT NULL, query TEXT, at INTEGER);");
+# His phone on the home Wi-Fi may open it too (his wish, Nov 21), with a PIN: it listens on every network, but answers
+# only this PC and devices on the private home network (10.x, 172.16-31.x, 192.168.x), and those only after the PIN.
+# Windows asks once whether perl may accept connections: "Allow" on private networks only.
+my $PIN = secret('site-pin.txt', sub { sprintf '%06d', rand_int(1_000_000) });
+my $TOKEN = secret('site-token.txt', sub { join '', map { sprintf '%02x', rand_int(256) } 1 .. 20 });
+my $srv = IO::Socket::INET->new(LocalAddr => '0.0.0.0', LocalPort => $port, Listen => 20, ReuseAddr => 1, Proto => 'tcp')
+  or die "can't listen on port $port: $@\n";
 $SIG{CHLD} = 'IGNORE'; $SIG{PIPE} = 'IGNORE';
-print "Caption index page: http://localhost:$port\n";
+print "Caption index page: http://localhost:$port (phone on the home Wi-Fi: http://" . (lan_ip() // '?') . ":$port, PIN $PIN)\n";
+
+sub rand_int {   # from the system's random source when there is one
+  my $n = shift;
+  if (open my $r, '<:raw', '/dev/urandom') { read $r, my $b, 4; return unpack('N', $b) % $n }
+  int rand $n;
+}
+sub secret {   # a small file in the data folder, made once
+  my ($name, $make) = @_;
+  my $f = "$DIR/$name";
+  my $v = slurp($f); $v =~ s/\s+//g;
+  return $v if length $v;
+  $v = $make->();
+  open my $h, '>', $f or die "can't write $f: $!\n"; print $h "$v\n"; close $h;
+  $v;
+}
+# This PC's address on the home network (no packet is sent: a UDP "connect" only picks the way out).
+sub lan_ip {
+  my $s = IO::Socket::INET->new(PeerAddr => '192.168.0.1', PeerPort => 9, Proto => 'udp') or return;
+  my $ip = $s->sockhost;
+  $ip && $ip ne '0.0.0.0' && private($ip) ? $ip : undef;
+}
+sub private { (shift // '') =~ /^(?:10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+)$/ }
 
 while (1) {
   my $c = $srv->accept or next;
@@ -53,11 +82,25 @@ sub handle {
   my ($method, $target) = $req =~ m{^(\w+) (\S+) HTTP/} or return reply($c, 400, 'text/plain', 'bad request');
   my %h;
   while (defined(my $l = <$c>)) { last if $l =~ /^\r?\n$/; $h{lc $1} = $2 if $l =~ /^([^:]+):\s*(.*?)\r?\n$/ }
-  # Only pages opened as localhost (stops another website from reading it through a DNS trick).
-  return reply($c, 403, 'text/plain', 'only http://localhost') unless ($h{host} // '') =~ /^(localhost|127\.0\.0\.1)(:\d+)?$/i;
+  # Only this PC and the home network; only addresses as the page's name (stops another website from reading it
+  # through a DNS trick).
+  my $peer = $c->peerhost // '';
+  my $local = $peer eq '127.0.0.1' || $peer eq '::1';
+  return reply($c, 403, 'text/plain', 'only this PC and the home network') unless $local || private($peer);
+  (my $host = $h{host} // '') =~ s/:\d+$//;
+  return reply($c, 403, 'text/plain', 'open it as http://localhost') unless $host =~ /^(localhost|127\.0\.0\.1)$/i || private($host);
   return reply($c, 405, 'text/plain', 'GET only') unless $method eq 'GET';
   my ($path, $qs) = split /\?/, $target, 2;
   my %q = map { my ($k, $v) = split /=/, $_, 2; (unesc($k) => unesc($v // '')) } grep { length } split /&/, $qs // '';
+  # Another device (his phone): the PIN first, then a cookie keeps it signed in for 30 days.
+  if (!$local) {
+    my %ck = map { /^\s*([^=]+)=(.*)$/ ? ($1 => $2) : () } split /;/, $h{cookie} // '';
+    return login($c, \%q, $path) unless ($ck{ci} // '') eq $TOKEN;
+  }
+  # Changes come only from the page's own script (another website can't send this header to it).
+  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark)} && ($h{'x-ci'} // '') ne '1';
+  return json($c, mark(\%q)) if $path eq '/api/mark';
+  return json($c, kept()) if $path eq '/api/kept';
   if ($path eq '/') {
     my $html = slurp("$BIN/site.html");
     return reply($c, 500, 'text/plain', "site.html is missing next to site.pl") unless length $html;
@@ -74,10 +117,77 @@ sub handle {
 sub unesc { my $s = shift; $s =~ tr/+/ /; $s =~ s/%([0-9A-Fa-f]{2})/chr hex $1/ge; $s }   # bytes (UTF-8)
 
 sub reply {
-  my ($c, $code, $type, $body) = @_;
-  my %text = (200 => 'OK', 204 => 'No Content', 400 => 'Bad Request', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 500 => 'Server Error');
+  my ($c, $code, $type, $body, @extra) = @_;
+  my %text = (200 => 'OK', 204 => 'No Content', 303 => 'See Other', 400 => 'Bad Request', 401 => 'Unauthorized', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 429 => 'Too Many Requests', 500 => 'Server Error');
   print $c "HTTP/1.1 $code " . ($text{$code} // 'OK') . "\r\nContent-Type: $type\r\nContent-Length: " . length($body) .
-    "\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: strict-origin-when-cross-origin\r\nConnection: close\r\n\r\n$body";
+    "\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: strict-origin-when-cross-origin\r\n" .
+    join('', map { "$_\r\n" } @extra) . "Connection: close\r\n\r\n$body";
+}
+
+# The PIN page for another device. Five wrong PINs in a row: no more tries for 15 minutes.
+sub login {
+  my ($c, $q, $path) = @_;
+  my $f = "$DIR/site-fails.json";
+  open my $fh, '+>>', $f or return reply($c, 500, 'text/plain', "can't open $f");
+  flock($fh, LOCK_EX); seek $fh, 0, 0;
+  my $st = eval { JSON::PP->new->decode(do { local $/; <$fh> } // '') } || {n => 0, until => 0};
+  my $save = sub { seek $fh, 0, 0; truncate $fh, 0; print $fh JSON::PP->new->encode($st) };
+  my $msg = '';
+  if ($path eq '/login' && defined $q->{pin}) {
+    if (($st->{until} // 0) > time) { $msg = sprintf 'Too many wrong PINs. Try again in %d minutes.', ($st->{until} - time) / 60 + 1 }
+    elsif ($q->{pin} =~ /^\s*\Q$PIN\E\s*$/) {
+      $st = {n => 0, until => 0}; $save->(); close $fh;
+      return reply($c, 303, 'text/plain', 'ok', 'Location: /', "Set-Cookie: ci=$TOKEN; Max-Age=2592000; Path=/; HttpOnly; SameSite=Strict");
+    }
+    else {
+      $st->{n}++;
+      if ($st->{n} >= 5) { $st = {n => 0, until => time + 900}; $msg = 'Too many wrong PINs. Try again in 15 minutes.' }
+      else { $msg = 'That PIN is not right.' }
+      $save->();
+    }
+  }
+  close $fh;
+  return reply($c, 401, 'application/json; charset=utf-8', '{"error":"PIN needed: open the page again"}') if $path =~ m{^/(api|player)/};
+  my $html = <<"HTML";
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caption Index</title><style>body{margin:0;font:17px/1.4 system-ui,sans-serif;background:#141517;color:#ececec;display:grid;place-items:center;min-height:100vh}
+form{background:#1d1f22;border:1px solid #2d3034;border-radius:14px;padding:22px;width:min(92vw,340px)}h1{font-size:20px;margin:0 0 6px}
+p{color:#a9adb3;font-size:14px;margin:0 0 14px}input{font:inherit;font-size:24px;letter-spacing:.2em;width:100%;box-sizing:border-box;padding:10px;border-radius:10px;border:1px solid #2d3034;background:#141517;color:#ececec;text-align:center}
+button{margin-top:12px;width:100%;font:inherit;padding:11px;border:0;border-radius:10px;background:#7aa2ff;color:#0f1115}.e{color:#ff8a80;font-size:14px;margin-top:10px}</style></head>
+<body><form method="get" action="/login"><h1>Caption index</h1><p>Type the PIN shown on the page on your PC.</p>
+<input name="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus aria-label="PIN"><button>Open</button>
+@{[ $msg ? qq{<div class="e">$msg</div>} : '' ]}</form></body></html>
+HTML
+  utf8::encode($html);
+  reply($c, 401, 'text/html; charset=utf-8', $html);
+}
+
+# ⭐ keep / 🙈 hide / none (undo) a clip. Hide covers the same scene in the other videos too (scene = their lines).
+sub mark {
+  my $q = shift;
+  my $kind = $q->{kind} // '';
+  my $lid = ($q->{lid} // '') =~ /^\d+$/ ? $q->{lid} : return {error => 'no clip'};
+  my $last = ($q->{last} // '') =~ /^\d+$/ ? $q->{last} : $lid;
+  my @lids = ($lid, grep { /^\d+$/ } split /,/, $q->{scene} // '');
+  my $query = sql_quote(do { my $t = $q->{q} // ''; utf8::decode($t); $t });
+  if ($kind eq 'none') { sql(sprintf "DELETE FROM marks WHERE lid IN (%s);", join ',', @lids) }
+  elsif ($kind eq 'keep') { sql(sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'keep', %s, %d);", $lid, $last, $query, time) }
+  elsif ($kind eq 'hide') { sql(join "\n", 'BEGIN;', (map { sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'hide', %s, %d);", $_, $_ == $lid ? $last : $_, $query, time } @lids), 'COMMIT;') }
+  else { return {error => 'keep, hide or none'} }
+  {ok => JSON::PP::true, kind => $kind};
+}
+
+# The ⭐ Picked list, newest first: each with its line, the lines around and its ready clip entry.
+sub kept {
+  my @out;
+  for my $r (sql("SELECT m.lid, m.last, ifnull(m.query,''), m.at, v.id, ifnull(v.title,''), ifnull(c.name, v.channel), ifnull(v.kind,'') FROM marks m JOIN videos v ON v.k = m.lid / 100000 LEFT JOIN channels c ON c.key = v.channel WHERE m.kind='keep' ORDER BY m.at DESC;")) {
+    my ($lid, $last, $query, $at, $vid, $title, $channel, $kind) = @$r;
+    my $w = clip_word([[$lid, $last]], '');
+    my $clip = $w->{clips}[0] or next;
+    push @out, {lid => 0 + $lid, last => 0 + $last, query => $query, at => 0 + $at, id => $vid, title => $title,
+      channel => $channel, kind => $kind, line => $clip->{line}, s => $clip->{s}, e => $clip->{e}, clip => $clip};
+  }
+  {kept => \@out};
 }
 sub json { my ($c, $d) = @_; reply($c, 200, 'application/json; charset=utf-8', JSON::PP->new->utf8->canonical->encode($d)) }
 
@@ -120,26 +230,34 @@ sub player {
     return reply($c, 200, 'text/javascript; charset=utf-8', $js);
   }
   return reply($c, 200, 'application/json; charset=utf-8', '[]') if $p eq '/words/index.json';
-  return json($c, clip_word($1, $2, $3)) if $p =~ m{^/words/c-(\d+)-(\d+)((?:-[a-z0-9]+)*)\.json$};
+  # c-<line>-<last line>… (one clip, or several: the results in a row), then -q-<the searched words>
+  if ($p =~ m{^/words/c-((?:\d+-\d+)(?:-c-\d+-\d+)*)((?:-q-[a-z0-9-]+)?)\.json$}) {
+    my @pairs = map { [split /-/] } split /-c-/, $1;
+    return json($c, clip_word([@pairs[0 .. min($#pairs, 99)]], $2));
+  }
   reply($c, 404, 'text/plain', 'not found');
 }
-# One search result as a library "word" with one clip: its line (both lines when the phrase runs on), exact times,
+# Search results as one library "word": a clip each, with its line (both lines when the phrase runs on), exact times,
 # two lines before and after (for "With context"), and the searched words in yellow (hl).
 sub clip_word {
-  my ($lid, $last, $q) = @_;
-  my $k = int($lid / 100000);
-  return {clips => []} unless int($last / 100000) == $k && $last >= $lid && $last - $lid <= 3;
-  my %by = map { $_->[0] => $_ } sql(sprintf "SELECT l.id, l.s, l.e, l.text, v.id FROM lines l JOIN videos v ON v.k = %d WHERE l.id BETWEEN %d AND %d ORDER BY l.id;",
-    $k, max($k * 100000, $lid - 2), $last + 2);
-  return {clips => []} unless $by{$lid};
+  my ($pairs, $q) = @_;
   my $sec = sub { 0 + sprintf('%.2f', $_[0] / 1000) };
-  my $line = join ' ', map { $by{$_} ? $by{$_}[3] : () } $lid .. $last;
-  my @around = map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2;
+  my @clips;
+  for (@$pairs) {
+    my ($lid, $last) = @$_;
+    my $k = int($lid / 100000);
+    next unless int($last / 100000) == $k && $last >= $lid && $last - $lid <= 3;
+    my %by = map { $_->[0] => $_ } sql(sprintf "SELECT l.id, l.s, l.e, l.text, v.id FROM lines l JOIN videos v ON v.k = %d WHERE l.id BETWEEN %d AND %d ORDER BY l.id;",
+      $k, max($k * 100000, $lid - 2), $last + 2);
+    next unless $by{$lid} && $by{$last};
+    my $line = join ' ', map { $by{$_} ? $by{$_}[3] : () } $lid .. $last;
+    my @around = map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2;
+    push @clips, {v => $by{$lid}[4], s => $sec->($by{$lid}[1]), e => $sec->($by{$last}[2]), line => $line, note => '', around => \@around};
+  }
   (my $words = $q // '') =~ s/^-q-//;
   my @alts = grep { length } map { join '[^a-z0-9]+', grep { length } split /-/ } split /-qq-/, $words;
-  {en => (join(' ', split /-/, (split /-qq-/, $words)[0] // '') || $line), ua => '', pic => '',
-   (@alts ? (hl => '\b(?:' . join('|', @alts) . ')\b') : ()),
-   clips => [{v => $by{$lid}[4], s => $sec->($by{$lid}[1]), e => $sec->($by{$last}[2]), line => $line, note => '', around => \@around}]};
+  {en => (join(' ', split /-/, (split /-qq-/, $words)[0] // '') || 'clips'), ua => '', pic => '',
+   (@alts ? (hl => '\b(?:' . join('|', @alts) . ')\b') : ()), clips => \@clips};
 }
 
 # search.pl --json does the work, so the page and the command line always find the same clips.
@@ -178,7 +296,8 @@ sub status {
   my $s = read_state();
   my $running = do { open my $l, '>>', "$DIR/collector.lock"; my $free = $l && flock($l, LOCK_EX | LOCK_NB); flock($l, LOCK_UN) if $free; $l && !$free };
   my $db = db_path();
-  {videos => $n{done} // 0, human => $k{human} // 0, auto => $k{auto} // 0, lines => $lines, hours => $hours,
+  my $ip = lan_ip();
+  {videos => $n{done} // 0, phone => ($ip ? "http://$ip:$port" : undef), pin => $PIN, human => $k{human} // 0, auto => $k{auto} // 0, lines => $lines, hours => $hours,
    todo => $n{todo} // 0, none => $n{none} // 0, gone => $n{gone} // 0, failed => $n{error} // 0,
    channels_listed => $listed, channels => $all, last_hour => $last_hour,
    running => ($running ? JSON::PP::true : JSON::PP::false), stopped => (-e "$DIR/stop" ? JSON::PP::true : JSON::PP::false),
