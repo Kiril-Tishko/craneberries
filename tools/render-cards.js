@@ -29,7 +29,7 @@ const brk = (s = '') => esc(s).replace(/\n/g, '<br>');
 // A word or phrase on a words card: all of it highlighted, or only the [bracketed] part ("[I want to] relax.").
 const hlw = (s = '') => (String(s).includes('[') ? mark(s).replace(/\n/g, '<br>') : `<span class="hl">${brk(s)}</span>`);
 // `say`: how it sounds, in the student's letters ("«уил си»"), shown small under the word; never IPA.
-const sayl = (w) => (w.say ? `<span class="sayl">🔊 ${esc(w.say)}</span>` : '');
+const sayl = (w) => (w.say ? `<span class="sayl">🔊\u00a0${esc(w.say)}</span>` : '');
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const [y, m, d] = lesson.date.split('-').map(Number);
@@ -267,6 +267,7 @@ const html = `<!doctype html>
   .kemo.md{font-size:50px;flex:none}
   .kemo.sm{font-size:46px}
   .sayl{display:block;font-size:17px;color:#4a5875;margin-top:2px}
+  .ktile .sayl{font-size:15px;white-space:nowrap}
   .kgrid{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
   .ktile{border-radius:28px;padding:18px 10px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
   .ktile:nth-child(4n+1),.ktile:nth-child(4n+4){transform:rotate(-1.6deg)}
