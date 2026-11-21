@@ -165,13 +165,16 @@ button.more { display: block; margin: 6px auto 16px; padding: 8px 16px; border-r
     <div class="tabs" role="tablist">
       <button type="button" role="tab" data-tab="results" aria-selected="true">Results <span id="nres"></span></button>
       <button type="button" role="tab" data-tab="liked" aria-selected="false">♥ Liked <span id="nlik"></span></button>
+      <button type="button" role="tab" data-tab="caps" aria-selected="false" title="Fix this clip's caption lines">✎ Captions</button>
     </div>
     <div class="summary" id="summary"></div>
     <ol class="list" id="list"></ol>
+    <div id="capsbox" hidden><div class="summary" id="capswhat"></div><div id="caps"></div><div class="summary" id="capssaved"></div></div>
     <button type="button" class="more" id="more" hidden>More results</button>
   </aside>
 </div>
 <div class="copied" id="copied">Copied ✓</div>
+<script src="/caps.js"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -288,6 +291,8 @@ function setTab(t) {
   document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
   $('#summary').hidden = t !== 'results';
   $('#more').hidden = t !== 'results' || !(current && current.more);
+  $('#list').hidden = t === 'caps'; $('#capsbox').hidden = t !== 'caps';
+  if (t === 'caps') return showCaps();
   drawList();
 }
 $('.tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); });
@@ -297,6 +302,7 @@ function item(r, i, res) {
   const info = [clock(r.s), r.kind === 'human' ? 'exact captions' : r.kind === 'lyrics' ? '♪ lyrics' : 'auto captions'];
   if (r.alive === 404) info.push('<span class="bad">video gone</span>');
   if (r.timed) info.push('your times');
+  if (r.edited) info.push('your captions');
   if (r.kept || tab === 'liked') info.push('<span class="liked">♥ liked</span>');
   let caps;
   if (r.lines) {
@@ -318,6 +324,7 @@ function drawList() {
   markNow();
 }
 function markNow() {
+  if (tab === 'caps') return;
   document.querySelectorAll('.item.now').forEach(x => x.classList.remove('now'));
   if (P.list !== tab) return;
   const el = document.querySelector(`.item[data-i="${P.i}"]`);
@@ -350,7 +357,7 @@ function play(list, i, at, ready) {
   const start = () => {
     const A = playerApp();
     if (!A || !A.word || A.word.clips.length !== rows.length) return false;
-    A.onClip = () => { showTimes(); };
+    A.onClip = () => { showTimes(); if (tab === 'caps') showCaps(); };
     A.clipN = i;
     if (ready) A.showClip(false);
     else if (at !== undefined) { A.showClip(false); A.playClip(at); }
@@ -374,6 +381,7 @@ function drawNow() {
   const B = (() => { try { return $('#player').contentWindow.CI_Buttons; } catch (e) { return null; } })();
   if (B) B.set({prev: P.i > 0, next: P.i < rows.length - 1 || (P.list === 'results' && current && current.more), liked: P.list === 'liked' || !!r.kept});
   showTimes();
+  if (tab === 'caps') showCaps();
 }
 // The player's row calls these (parent.CI).
 window.CI = {
@@ -451,6 +459,59 @@ $('#under').addEventListener('click', e => {
     case 'copy': if (c) copyText(JSON.stringify(entry(c))); return;
   }
 });
+
+// ---- ✎ Captions: the clip's lines, fixed here (caps.js); the video shows each change at once ----
+let capsFor = null, capsSaveT = 0, capsPending = null;
+const editor = CapsEdit.create($('#caps'), {
+  onChange(r) {
+    const A = playerApp(), c = curClip(); if (!A || !c) return;
+    Object.assign(c, {line: r.line, around: r.around, s: r.s, e: r.e, start0: r.s, end0: r.e, screens: r.screens, star: r.clip, edited: true, timed: false});
+    A.refresh(); showTimes();
+    saveCaps(c, {clip: r.clip, lines: r.screens.map(x => [x.s, x.e, x.t, x.w])});
+  },
+  onPlay(at) { const A = playerApp(); if (!A) return; if (A.playAt) A.playAt(at); else A.playClip(at); },
+  onReset() { const c = curClip(); if (c) saveCaps(c, null); },
+  edited: () => { const c = curClip(); return !!(c && c.edited); },
+});
+function showCaps() {
+  const c = curClip(), rows = rowsOf(P.list), r = rows[P.i];
+  if (!c || !r) { capsFor = null; $('#capswhat').textContent = 'Pick a clip first: its lines show here.'; $('#caps').innerHTML = ''; return; }
+  $('#capswhat').innerHTML = `<b>${esc(r.channel)}</b> · ${esc(r.title || r.id)}`;
+  const key = c.lid + ':' + c.v;
+  if (capsFor === key) return;
+  capsFor = key;
+  // The editor starts from what plays now (his own start / end on the clip's line).
+  const screens = (c.screens || [{s: c.s, e: c.e, t: c.line}]).map((x, k) => k === c.star ? {...x, s: c.s, e: c.e} : x);
+  editor.set(screens, c.star || 0, P.list === 'results' && current ? patterns(current.query || '') : []);
+}
+// Saved a moment after the last change (at once when another clip's lines are waiting); null = back to the original.
+function saveCaps(c, data) {
+  const job = {lid: c.lid, last: c.last || c.lid, data};
+  if (capsPending && capsPending.lid !== job.lid) { clearTimeout(capsSaveT); sendCaps(capsPending); }
+  capsPending = job; clearTimeout(capsSaveT); $('#capssaved').textContent = 'Saving…';
+  capsSaveT = setTimeout(() => sendCaps(job), data ? 600 : 0);
+}
+async function sendCaps(job) {
+  if (capsPending === job) capsPending = null;
+  const p = new URLSearchParams({lid: job.lid, last: job.last});
+  if (job.data) p.set('data', JSON.stringify(job.data)); else p.set('reset', '1');
+  let d;
+  try { d = await api('/api/caps?' + p.toString()); } catch (e) { d = {error: 'Can’t reach the index.'}; }
+  if (d.error || !d.clip) { $('#capssaved').innerHTML = '<span class="error">Not saved: ' + esc(d.error || '?') + '</span>'; return; }
+  const v = d.clip, lines = v.screens.map((x, k) => ({s: x.s, e: x.e, text: x.t, hit: k === v.star}));
+  for (const r of [...items, ...picks]) if (r.lid === job.lid) {
+    r.clip = {v: v.v, s: v.s, e: v.e, line: v.line, note: '', around: v.around}; r.lines = lines; r.line = v.line;
+    r.edited = !!v.edited; r.timed = !!v.timed; r.s = v.s;
+  }
+  // Back to the original: the player and the editor take the index's lines again.
+  const A = playerApp(), c = curClip();
+  if (!job.data && A && c && c.lid === job.lid) {
+    Object.assign(c, {line: v.line, around: v.around, s: v.s, e: v.e, start0: v.start0, end0: v.end0, screens: v.screens, star: v.star, edited: !!v.edited, timed: !!v.timed});
+    A.refresh(); showTimes(); capsFor = null; if (tab === 'caps') showCaps();
+  }
+  $('#capssaved').textContent = job.data ? 'Saved ✓ (your captions)' : 'Back to the original ✓';
+  setTimeout(() => { if (/✓/.test($('#capssaved').textContent)) $('#capssaved').textContent = ''; }, 2000);
+}
 
 // ---- ♥ Liked ----
 async function loadPicked() {

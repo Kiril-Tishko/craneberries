@@ -274,14 +274,23 @@ huggingface.co, about 15 min per hour of audio).
     then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait. With **Tailscale** (free,
     on his PC and phone) the same page opens from anywhere at the PC's Tailscale address (100.x.y.z or its .ts.net
     name), PIN too. The whole index never goes online (his choice, Nov 21: public transcripts, 1-2 GB, GitHub limits).
-  - **His picks online** (Nov 21): every clip he ♥ liked or re-timed there is in `docs/real-video/picks/picks.json`
-    (one clip per line: `id` = its line in his index, `q` = the phrase he searched, `liked`, `timed`, `v`, `s`, `e`
-    (his times), `s0` / `e0` (the captions'), `line`, `around`, `channel`, `show`, `title`, `kind`, `at`). The hidden
+    **✎ Captions** (third tab; his wish, Nov 21): he fixes the clip that plays: types a line (✎), taps a word and moves
+    it with the words before it to the line above or with the words after it to the line below, starts a new line at
+    a word (✂), joins lines (⤒ ⤓), picks the clip's own line (★), ↶ ↷ / Ctrl+Z, ↺ Original. A moved word keeps its
+    time (auto-captions' word times, else spread by letters), so line starts / ends follow; the player shows each
+    change at once. The editor is `docs/real-video/picks/caps.js` (shared with the picks page; `--install` copies it);
+    edits are the `caps` table (per clip, never the index's own lines), and every page, search and the sync use them
+    (`clip_views` in CaptionIndex.pm).
+  - **His picks online** (Nov 21): every clip he ♥ liked, re-timed or whose captions he fixed is in
+    `docs/real-video/picks/picks.json` (one clip per line: `id` = its line in his index, `q` = the phrase he searched,
+    `liked`, `timed`, `edited`, `v`, `s`, `e` (his times), `s0` / `e0` (the clip line's own), `line`, `around` (his
+    fixed lines when `edited`; `orig` = the index's), `channel`, `show`, `title`, `kind`, `at`). The hidden
     "Caption index sync" task (`sync.pl`) keeps it the same as his PC **both ways**, the newer change winning per clip.
     **https://kiril-tishko.github.io/craneberries/real-video/picks/** plays them in our own player (it stops at the
-    line's end, With context, ◀ ♡ Like ▶) and saves ♥ and Start / End to picks.json with his GitHub key (the clip
-    editor's, same site). **To put his picks into a lesson**: read picks.json (the phrase he searched tells which
-    word it is for), take `v`, `s`, `e`, `line`, `around` into that word's file in `words/`, then the note and
+    line's end, With context, ◀ ♡ Like ▶) and saves ♥, Start / End and ✎ Captions (same editor) to picks.json with
+    his GitHub key (the clip editor's, same site); a song's lines stay on his PC, so they are fixed there only.
+    **To put his picks into a lesson**: read picks.json (the phrase he searched tells which word it is for), take `v`,
+    `s`, `e`, `line`, `around` as they are (his fixes included) into that word's file in `words/`, then the note and
     glosses as usual; never edit picks.json by hand (his PC syncs it).
   - **On his PC, search the private caption index first** (Nov 19): `perl tools/real-video/index/search.pl "what do
     you mean" [how many, default 10]` prints results like the Caption Search tool (channel, title, youtu.be link with

@@ -71,7 +71,12 @@ header input[type=search] { margin-left: auto; flex: 0 1 260px; min-width: 0; fo
 .saved { min-width: 74px; display: inline-block; }
 .saved.ok { color: var(--ok); } .saved.bad { color: var(--bad); }
 .empty { flex: 1; display: grid; place-items: center; color: var(--soft); text-align: center; padding: 20px; }
-.side { min-height: 0; overflow-y: auto; border-left: 1px solid var(--line); background: var(--card); overscroll-behavior: contain; }
+.side { min-height: 0; display: flex; flex-direction: column; border-left: 1px solid var(--line); background: var(--card); }
+.side .tabs { flex: none; display: flex; gap: 4px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.side .tabs button { border: 0; background: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; color: var(--soft); font-size: 14px; }
+.side .tabs button[aria-selected="true"] { background: var(--chip); color: var(--ink); font-weight: 600; }
+#list, #capsbox { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.note { font-size: 12.5px; color: var(--soft); padding: 8px 12px 2px; }
 .group h2 { position: sticky; top: 0; z-index: 1; margin: 0; padding: 8px 12px; font-size: 13.5px; background: var(--card); border-bottom: 1px solid var(--line); }
 .group h2 small { color: var(--faint); font-weight: 400; }
 ol.list { list-style: none; margin: 0; padding: 4px 6px 8px; }
@@ -132,9 +137,14 @@ ol.list { list-style: none; margin: 0; padding: 4px 6px 8px; }
       </span>
     </div>
   </section>
-  <aside class="side" id="side" aria-label="My picks"></aside>
+  <aside class="side" aria-label="My picks">
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="list" aria-selected="true">My picks</button><button type="button" role="tab" data-tab="caps" aria-selected="false" title="Fix this clip's caption lines">✎ Captions</button></div>
+    <div id="list"></div>
+    <div id="capsbox" hidden><div class="note" id="capswhat"></div><div id="caps"></div></div>
+  </aside>
 </div>
 <div class="copied" id="copied">Copied ✓</div>
+<script src="caps.js?v=1"></script>
 <script>
 'use strict';
 const REPO = 'kiril-tishko/craneberries', BRANCH = 'claude/vigilant-ptolemy-ltawsa', PATH = 'docs/real-video/picks/picks.json';
@@ -209,29 +219,39 @@ function hl(text, q) {
 }
 function draw() {
   const f = $('#filter').value.trim().toLowerCase();
-  const shown = picks.filter(c => (c.liked || c.timed || c._touched) && (!f || [c.q, c.line, c.channel, c.title].join(' ').toLowerCase().includes(f)));
+  const shown = picks.filter(c => (c.liked || c.timed || c.edited || c._touched) && (!f || [c.q, c.line, c.channel, c.title].join(' ').toLowerCase().includes(f)));
   const groups = {};
   for (const c of shown) (groups[c.q || ''] ||= []).push(c);
   const names = Object.keys(groups).sort((a, b) => Math.max(...groups[b].map(c => c.at)) - Math.max(...groups[a].map(c => c.at)));
   order = names.flatMap(n => groups[n].sort((a, b) => b.at - a.at));
-  $('#side').innerHTML = names.map(n => `<section class="group"><h2>${esc(n || 'Other clips')} <small>${groups[n].length}</small></h2><ol class="list">${groups[n].map(c => {
+  $('#list').innerHTML = names.map(n => `<section class="group"><h2>${esc(n || 'Other clips')} <small>${groups[n].length}</small></h2><ol class="list">${groups[n].map(c => {
     const i = order.indexOf(c);
     const info = [esc(c.channel), clock(c.s)];
     if (c.liked) info.push('<span class="liked">♥</span>');
     if (c.timed) info.push('your times');
-    return `<li class="item${c.liked || c.timed ? '' : ' off'}" data-i="${i}"><div class="thumb" style="background-image:url('https://i.ytimg.com/vi/${encodeURIComponent(c.v)}/mqdefault.jpg')"><span class="tm">${clock(c.s)}</span></div>
+    if (c.edited) info.push('your captions');
+    return `<li class="item${c.liked || c.timed || c.edited ? '' : ' off'}" data-i="${i}"><div class="thumb" style="background-image:url('https://i.ytimg.com/vi/${encodeURIComponent(c.v)}/mqdefault.jpg')"><span class="tm">${clock(c.s)}</span></div>
       <div class="meta"><div class="line">${c.song ? '♪ ' + esc(c.title) : hl(c.line, c.q)}</div><div class="info">${info.join(' · ')}</div><div class="info">${esc(c.title)}</div></div></li>`;
   }).join('')}</ol></section>`).join('') || '<p class="empty">No picks yet: ♥ Like or re-time clips on the caption index page on your PC.</p>';
-  const liked = picks.filter(c => c.liked).length, timed = picks.filter(c => c.timed).length;
-  $('#stat').textContent = `${liked} liked · ${timed} re-timed`;
+  const liked = picks.filter(c => c.liked).length, timed = picks.filter(c => c.timed).length, edited = picks.filter(c => c.edited).length;
+  $('#stat').textContent = `${liked} liked · ${timed} re-timed` + (edited ? ` · ${edited} with your captions` : '');
   mark();
 }
+// My picks / ✎ Captions (the clip that plays now).
+let tab = 'list';
+function setTab(t) {
+  tab = t;
+  document.querySelectorAll('.side .tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  $('#list').hidden = t !== 'list'; $('#capsbox').hidden = t !== 'caps';
+  if (t === 'caps') showCaps(); else mark();
+}
+document.querySelector('.side .tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); });
 function mark() {
   document.querySelectorAll('.item.now').forEach(x => x.classList.remove('now'));
   const el = document.querySelector(`.item[data-i="${cur}"]`);
   if (el) { el.classList.add('now'); el.scrollIntoView({block: 'nearest'}); }
 }
-$('#side').addEventListener('click', e => { const li = e.target.closest('.item'); if (li) pick(Number(li.dataset.i), true); });
+$('#list').addEventListener('click', e => { const li = e.target.closest('.item'); if (li) pick(Number(li.dataset.i), true); });
 $('#filter').addEventListener('input', () => { const c = order[cur]; draw(); cur = c ? order.indexOf(c) : -1; mark(); });
 
 // ---- the player: our own over YouTube's (no YouTube buttons); it stops at the line's end ----
@@ -274,6 +294,7 @@ function pick(i, play) {
   $('#what').innerHTML = `<b>${esc(c.channel)}</b> · <a href="https://youtu.be/${esc(c.v)}?t=${Math.floor(c.s)}" target="_blank" rel="noopener">${esc(c.title)}</a> · ${esc(c.q || '')}`;
   drawLike(); drawTimes(); drawCap(c.s);
   $('#prev').disabled = cur <= 0; $('#next').disabled = cur >= order.length - 1;
+  if (tab === 'caps') showCaps();
   if (play) start(); else if (ytReady) { if (loadedId !== c.v) { loadedId = c.v; yt.cueVideoById({videoId: c.v, startSeconds: range.from}); } else yt.seekTo(range.from, true); }
 }
 // Dark before the clip starts, only dimmed when paused or ended, clear while it plays.
@@ -290,7 +311,8 @@ function drawCap(t) {
   const c = clip(); if (!c) return;
   let text = c.line, own = true;
   if (range && range.lines) { const l = range.lines.filter(x => x[0] <= t + 0.05).pop() || range.lines[0]; text = l[2]; own = l[0] === c.s; }
-  $('#cap').innerHTML = c.song ? '♪ (the lyrics stay on your PC)' : own ? hl(text, c.q) : esc(text);
+  // One span, so a long line wraps as text (the yellow phrase stays inside it).
+  $('#cap').innerHTML = '<span>' + (c.song ? '♪ (the lyrics stay on your PC)' : own ? hl(text, c.q) : esc(text)) + '</span>';
 }
 setInterval(() => {
   if (!ytReady || !range || !clip() || !yt.getCurrentTime) return;
@@ -310,7 +332,7 @@ $('#ctx').addEventListener('click', () => { ctx = !ctx; $('#ctx').setAttribute('
 $('#prev').addEventListener('click', () => pick(cur - 1, true));
 $('#next').addEventListener('click', () => pick(cur + 1, true));
 document.addEventListener('keydown', e => {
-  if (e.target.closest('input')) return;
+  if (e.target.closest('input, textarea, #caps')) return;
   if (e.code === 'Space') { e.preventDefault(); toggle(); }
   else if (e.key === 'ArrowLeft' && ytReady) start(Math.max(range.from, yt.getCurrentTime() - 1));
   else if (e.key === 'ArrowRight' && ytReady) start(Math.min(range.to - 0.2, yt.getCurrentTime() + 1));
@@ -342,6 +364,44 @@ $('#under').addEventListener('click', e => {
     case 'copy': return copy(JSON.stringify(entry(c)));
   }
 });
+// ---- ✎ Captions: fix the clip's lines (caps.js, shared with the caption index page on his PC) ----
+// A change is saved like ♥ (the clip in picks.json, with the index's own lines kept as orig) and his PC takes it into
+// the index. A song's lines stay on his PC, so they can't be fixed here.
+let capsFor = null, capsT = 0;
+const editor = CapsEdit.create($('#caps'), {
+  onChange(r) {
+    const c = clip(); if (!c) return;
+    if (!c.orig) c.orig = {s: c.s0, e: c.e0, line: c.line, around: c.around || []};
+    Object.assign(c, {line: r.line, around: r.around, s: r.s, e: r.e, s0: r.s, e0: r.e, timed: false, edited: true, _touched: true});
+    range = rangeOf(c); drawTimes(); drawCap(ytReady && yt.getCurrentTime ? yt.getCurrentTime() : c.s);
+    clearTimeout(capsT); say('…'); const keep = c; capsT = setTimeout(() => save(strip(keep), 'captions'), 900);
+  },
+  onPlay(at) {
+    const c = clip(); if (!c) return;
+    if ((at < c.s - 0.05 || at > c.e) && !ctx) { ctx = true; $('#ctx').setAttribute('aria-pressed', true); }
+    range = rangeOf(c); start(at);
+  },
+  onReset() {
+    const c = clip(); if (!c || !c.orig) return;
+    Object.assign(c, {line: c.orig.line, around: c.orig.around, s: c.orig.s, e: c.orig.e, s0: c.orig.s, e0: c.orig.e, timed: false, edited: false, _touched: true});
+    delete c.orig;
+    range = rangeOf(c); drawTimes(); capsFor = null; showCaps(); draw(); mark();
+    clearTimeout(capsT); save(strip(c), 'original captions');
+  },
+  edited: () => { const c = clip(); return !!(c && c.edited); },
+});
+function showCaps() {
+  const c = clip();
+  if (!c) { capsFor = null; $('#capswhat').textContent = 'Pick a clip first: its lines show here.'; $('#caps').innerHTML = ''; return; }
+  $('#capswhat').innerHTML = `<b>${esc(c.channel)}</b> · ${esc(c.title)}`;
+  if (c.song) { capsFor = null; $('#caps').innerHTML = '<p class="note">♪ A song’s lines stay on your PC: fix them on the caption index page there.</p>'; return; }
+  if (capsFor === c) return;
+  capsFor = c;
+  const around = c.around || [], before = around.filter(l => l[0] < c.s), after = around.filter(l => l[0] >= c.s);
+  const screens = [...before, [c.s, c.e, c.line], ...after].map(l => ({s: l[0], e: l[1], t: l[2]}));
+  const w = words(c.q);
+  editor.set(screens, before.length, w.length ? [new RegExp('(?<![a-z0-9])' + w.join('[^a-z0-9]+') + '(?![a-z0-9])', 'gi')] : []);
+}
 async function copy(t) {
   let ok = false;
   try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {

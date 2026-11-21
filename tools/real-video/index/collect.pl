@@ -830,6 +830,8 @@ sub install {
   }
   # The clip library's player, for the page when there is no internet (site.pl takes the live one when it can).
   make_path("$to/player");
+  # The caption editor (✎ Captions), shared with the picks page online.
+  copy("$BIN/../../../docs/real-video/picks/caps.js", "$to/caps.js") or warn "can't copy the caption editor caps.js: $!\n";
   for my $f (qw(index.html app.js)) {
     copy("$BIN/../../../docs/real-video/$f", "$to/player/$f") or warn "can't copy the clip player's $f: $!\n";
   }

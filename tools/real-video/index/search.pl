@@ -307,16 +307,20 @@ sub json_out {
     check_online(@pagev) unless $opt{'no-check'};
   }
   my $sec = sub { defined $_[0] && $_[0] ne '' ? 0 + sprintf('%.2f', $_[0] / 1000) : undef };
-  # His own start and end for a clip, where he moved them on the page (the clip entry uses them).
-  my %times = map { $_->[0] => [0 + $_->[1], 0 + $_->[2]] } eval { sql("SELECT lid, s, e FROM times WHERE s >= 0;") };
+  # Each clip as the page shows it: his edited lines where he changed them, his own start / end where he moved them.
+  my @views = clip_views(map { [$_->{best}{lid}, $_->{best}{lid} + ($_->{best}{spans} ? 1 : 0)] } @pagev);
   my $n = $from;
   my @res;
-  for my $v (@pagev) {
+  for my $x (0 .. $#pagev) {
+    my $v = $pagev[$x];
     my $bm = $v->{best};
     my $base = $v->{k} * 100000;
     my $last = $bm->{lid} + ($bm->{spans} ? 1 : 0);
     my @lines = map { my $l = $ctx2{$_}; $l ? {s => $sec->($l->[1]), e => $sec->($l->[2]), text => $l->[3],
       hit => ($_ >= $bm->{lid} && $_ <= $last ? JSON::PP::true : JSON::PP::false)} : () } max($base, $bm->{lid} - 2) .. $last + 2;
+    my $cv = $views[$x];
+    @lines = map { {s => $cv->{screens}[$_]{s}, e => $cv->{screens}[$_]{e}, text => $cv->{screens}[$_]{t},
+      hit => $_ == $cv->{clip} ? JSON::PP::true : JSON::PP::false} } 0 .. $#{$cv->{screens}} if $cv && $cv->{edited};
     push @res, {n => ++$n, lid => 0 + $bm->{lid}, last => 0 + $last, channel => $v->{cname}, title => $v->{title}, id => $v->{id}, s => $sec->($bm->{s}),
       e => $sec->($bm->{e}), ws => $sec->($bm->{ws}), we => $sec->($bm->{we}), kind => $v->{kind},
       alive => ($v->{alive} eq '' ? undef : 0 + $v->{alive}), more => $v->{more},
@@ -324,8 +328,10 @@ sub json_out {
       # 🙈 on the page hides this line and the same scene in the other videos; ⭐ = kept already
       scene => [0 + $bm->{lid}, map { 0 + $_->{best}{lid} } @{$v->{same} || []}],
       kept => ($keep{$bm->{lid}} ? JSON::PP::true : JSON::PP::false),
-      clip => JSON::PP->new->decode(clip_json($v, $bm, $base, $last))};
-    if (my $t = $times{$bm->{lid}}) { @{$res[-1]{clip}}{qw(s e)} = @$t; $res[-1]{timed} = JSON::PP::true }
+      clip => ($cv ? {v => $cv->{v}, s => $cv->{s}, e => $cv->{e}, line => $cv->{line}, note => '', around => $cv->{around}}
+        : JSON::PP->new->decode(clip_json($v, $bm, $base, $last)))};
+    $res[-1]{timed} = JSON::PP::true if $cv && $cv->{timed};
+    $res[-1]{edited} = JSON::PP::true if $cv && $cv->{edited};
   }
   my $st = read_state();
   print JSON::PP->new->canonical->encode({indexed => 0 + $indexed, query => $shown, total => $total,

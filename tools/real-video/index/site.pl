@@ -26,11 +26,8 @@ my $PLAYER = -d "$BIN/player" ? "$BIN/player" : "$BIN/../../../docs/real-video";
 my $LIVE = 'https://kiril-tishko.github.io/craneberries/real-video/';   # the live clip library (sub player_file)
 open my $lock, '>>', "$DIR/site-$port.lock" or die "can't open $DIR/site-$port.lock: $!\n";   # one copy a port
 if (!flock($lock, LOCK_EX | LOCK_NB)) { print "The page is already running: http://localhost:$port\n"; exit 0 }
-# ⭐ kept and 🙈 hidden clips (the page's buttons; search.pl leaves hidden ones out).
-sql("CREATE TABLE IF NOT EXISTS marks(lid INTEGER PRIMARY KEY, last INTEGER, kind TEXT NOT NULL, query TEXT, at INTEGER);");
-# A clip's own start and end where he moved them on the page (seconds); the player and its clip entry use them.
-sql("CREATE TABLE IF NOT EXISTS times(lid INTEGER PRIMARY KEY, s REAL NOT NULL, e REAL NOT NULL, at INTEGER);");
-sql('ALTER TABLE times ADD COLUMN last INTEGER;') unless grep { $_->[1] eq 'last' } sql('PRAGMA table_info(times);');
+# ♥ kept and 🙈 hidden clips, his own start / end, his edited caption lines (CaptionIndex.pm: page_tables).
+page_tables();
 # His phone on the home Wi-Fi may open it too (his wish, Nov 21), with a PIN: it listens on every network, but answers
 # only this PC and devices on the private home network (10.x, 172.16-31.x, 192.168.x), and those only after the PIN.
 # Windows asks once whether perl may accept connections: "Allow" on private networks only.
@@ -102,9 +99,11 @@ sub handle {
     return login($c, \%q, $path) unless ($ck{ci} // '') eq $TOKEN;
   }
   # Changes come only from the page's own script (another website can't send this header to it).
-  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark|times)} && ($h{'x-ci'} // '') ne '1';
+  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark|times|caps)} && ($h{'x-ci'} // '') ne '1';
   return json($c, mark(\%q)) if $path eq '/api/mark';
   return json($c, set_times(\%q)) if $path eq '/api/times';
+  return json($c, set_caps(\%q)) if $path eq '/api/caps';
+  return script($c) if $path eq '/caps.js';
   return json($c, kept()) if $path eq '/api/kept';
   if ($path eq '/') {
     my $html = slurp("$BIN/site.html");
@@ -196,16 +195,41 @@ sub set_times {
   {ok => JSON::PP::true};
 }
 
+# A clip's caption lines as he edited them on the page (data = {"clip": n, "lines": [[s, e, text, word times], …]}),
+# or back to the index's own (reset=1). His start / end, if he had moved them, are in the edited lines from now on
+# (the editor starts from them), so they are set back; −/+ after this makes new ones. Answers with the clip as it
+# is now.
+sub set_caps {
+  my $q = shift;
+  my $lid = ($q->{lid} // '') =~ /^\d+$/ ? $q->{lid} : return {error => 'no clip'};
+  my $last = ($q->{last} // '') =~ /^\d+$/ ? $q->{last} : $lid;
+  return {error => 'no such clip'} unless clip_view($lid, $last);
+  my $now = time;
+  if ($q->{reset}) {
+    sql(sprintf "INSERT OR REPLACE INTO caps(lid, last, data, at) VALUES(%d, %d, NULL, %d);", $lid, $last, $now);
+  } else {
+    my $d = clean_caps(eval { JSON::PP->new->utf8->decode($q->{data} // '') }) or return {error => 'those lines can’t be saved'};
+    sql(join "\n", 'BEGIN;',
+      sprintf("INSERT OR REPLACE INTO caps(lid, last, data, at) VALUES(%d, %d, %s, %d);", $lid, $last, sql_quote(JSON::PP->new->canonical->encode($d)), $now),
+      sprintf("UPDATE times SET s=-1, e=-1, at=%d WHERE lid=%d AND s >= 0;", $now, $lid), 'COMMIT;');
+  }
+  {ok => JSON::PP::true, clip => player_clip(clip_view($lid, $last))};
+}
+
 # The ♥ Liked list (stored as marks of kind keep), newest first: each with its line, the lines around and its ready
 # clip entry (with his own times where he moved them).
 sub kept {
+  my @m = sql("SELECT lid, last, ifnull(query,''), at FROM marks WHERE kind='keep' ORDER BY at DESC;");
+  my @v = clip_views(map { [$_->[0], $_->[1]] } @m);
   my @out;
-  for my $r (sql("SELECT m.lid, m.last, ifnull(m.query,''), m.at, v.id, ifnull(v.title,''), ifnull(c.name, v.channel), ifnull(v.kind,'') FROM marks m JOIN videos v ON v.k = m.lid / 100000 LEFT JOIN channels c ON c.key = v.channel WHERE m.kind='keep' ORDER BY m.at DESC;")) {
-    my ($lid, $last, $query, $at, $vid, $title, $channel, $kind) = @$r;
-    my $w = clip_word([[$lid, $last]], '');
-    my $clip = $w->{clips}[0] or next;
-    push @out, {lid => 0 + $lid, last => 0 + $last, query => $query, at => 0 + $at, id => $vid, title => $title,
-      channel => $channel, kind => $kind, line => $clip->{line}, s => $clip->{s}, e => $clip->{e}, clip => $clip};
+  for my $n (0 .. $#m) {
+    my ($lid, $last, $query, $at) = @{$m[$n]};
+    my $c = $v[$n] or next;
+    push @out, {lid => 0 + $lid, last => 0 + $c->{last}, query => $query, at => 0 + $at, id => $c->{v}, title => $c->{title},
+      channel => $c->{channel}, kind => $c->{kind}, line => $c->{line}, s => $c->{s}, e => $c->{e},
+      timed => $c->{timed} ? JSON::PP::true : JSON::PP::false, edited => $c->{edited} ? JSON::PP::true : JSON::PP::false,
+      lines => [map { {s => $c->{screens}[$_]{s}, e => $c->{screens}[$_]{e}, text => $c->{screens}[$_]{t}, hit => $_ == $c->{clip} ? JSON::PP::true : JSON::PP::false} } 0 .. $#{$c->{screens}}],
+      clip => player_clip($c)};
   }
   {kept => \@out};
 }
@@ -257,6 +281,12 @@ sub player {
     $js .= <<'JS';
 
 ;window.CI_App = App;
+// The caption editor's line times: a line outside the clip plays with "With context" on (the clip and its lines).
+App.playAt = (at) => {
+  const c = App.clip(); if (!c) return;
+  if ((at < c.s - 0.05 || at > c.e) && typeof window.setMode === 'function') window.setMode(true);
+  App.playClip(at);
+};
 (function () {
   const draw = window.drawCount;
   if (typeof draw !== 'function') return;
@@ -305,26 +335,29 @@ JS
 # two lines before and after (for "With context"), and the searched words in yellow (hl).
 sub clip_word {
   my ($pairs, $q) = @_;
-  my $sec = sub { 0 + sprintf('%.2f', $_[0] / 1000) };
-  my @clips;
-  for (@$pairs) {
-    my ($lid, $last) = @$_;
-    my $k = int($lid / 100000);
-    next unless int($last / 100000) == $k && $last >= $lid && $last - $lid <= 3;
-    my %by = map { $_->[0] => $_ } sql(sprintf "SELECT l.id, l.s, l.e, l.text, v.id FROM lines l JOIN videos v ON v.k = %d WHERE l.id BETWEEN %d AND %d ORDER BY l.id;",
-      $k, max($k * 100000, $lid - 2), $last + 2);
-    next unless $by{$lid} && $by{$last};
-    my $line = join ' ', map { $by{$_} ? $by{$_}[3] : () } $lid .. $last;
-    my @around = map { my $r = $by{$_}; $r ? [$sec->($r->[1]), $sec->($r->[2]), $r->[3]] : () } $lid - 2, $lid - 1, $last + 1, $last + 2;
-    my ($ts, $te) = map { @$_ } sql("SELECT s, e FROM times WHERE lid=$lid AND s >= 0;");
-    push @clips, {v => $by{$lid}[4], s => defined $ts ? 0 + $ts : $sec->($by{$lid}[1]), e => defined $te ? 0 + $te : $sec->($by{$last}[2]),
-      line => $line, note => '', around => \@around, lid => 0 + $lid, last => 0 + $last,
-      start0 => $sec->($by{$lid}[1]), end0 => $sec->($by{$last}[2])};
-  }
+  my @clips = map { player_clip($_) } grep { defined } clip_views(@$pairs);
   (my $words = $q // '') =~ s/^-q-//;
   my @alts = grep { length } map { join '[^a-z0-9]+', grep { length } split /-/ } split /-qq-/, $words;
   {en => (join(' ', split /-/, (split /-qq-/, $words)[0] // '') || 'clips'), ua => '', pic => '',
    (@alts ? (hl => '\b(?:' . join('|', @alts) . ')\b') : ()), clips => \@clips};
+}
+
+# A clip for the player (a clip in a library word file, plus what the page needs): his edited lines where he changed
+# them, his times where he moved them; start0 / end0 = the clip line's own times (for ↺); screens = all its lines in
+# order, screens[clip] = its own (the caption editor's).
+sub player_clip {
+  my $c = shift or return;
+  {v => $c->{v}, s => $c->{s}, e => $c->{e}, line => $c->{line}, note => '', around => $c->{around}, lid => $c->{lid}, last => $c->{last},
+   start0 => $c->{s0}, end0 => $c->{e0}, screens => $c->{screens}, star => $c->{clip},
+   edited => $c->{edited} ? JSON::PP::true : JSON::PP::false, timed => $c->{timed} ? JSON::PP::true : JSON::PP::false};
+}
+# The caption editor (shared with the picks page online): the installed copy, else the repo's.
+sub script {
+  my $c = shift;
+  my $js = slurp(-e "$BIN/caps.js" ? "$BIN/caps.js" : "$BIN/../../../docs/real-video/picks/caps.js");
+  return reply($c, 404, 'text/plain', 'caps.js is missing') unless length $js;
+  utf8::encode($js);
+  reply($c, 200, 'text/javascript; charset=utf-8', $js);
 }
 
 # search.pl --json does the work, so the page and the command line always find the same clips.
