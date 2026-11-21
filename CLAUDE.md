@@ -302,7 +302,9 @@ huggingface.co, about 15 min per hour of audio).
     GTA 5 = "The Movie (Cutscenes Only)", 3 h, good auto captions; GTA 6 (out Nov 19) had no upload without
     subtitles yet on Nov 21: look again later. **Songs** (Nov 21, he loved a Taylor Swift line in a talk show; pop
     first, any style later): `"song": true` channels (show "Songs · <artist>", 14 pop artists' own channels),
-    official music videos only (lyric videos have the words in the picture, audio uploads a still image). Uploaded
+    official music videos only (lyric videos have the words in the picture, audio uploads a still image; `skip` also
+    drops chats, premieres and making-of videos, and applies to the queue when the collector starts; `collect.pl --drop
+    <id>` takes a wrong video out of the index). Uploaded
     lyrics captions are used as they are; otherwise the words come from lrclib.net's synced lyrics, lined up with the
     auto-captions' word times (one pass over the whole song, so a chorus can't pull a line a minute off; kind
     `lyrics`); with no captions at all only when the video is as long as the record. Taylor Swift's music videos had
