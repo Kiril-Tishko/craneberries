@@ -77,6 +77,15 @@ huggingface.co, about 15 min per hour of audio).
 - Then the same steps as for a transcript, with `source: "audio"`.
 - Pronunciation notes for the student and the teacher: a word the recognizer got wrong or was unsure of is a hint,
   not proof. Mark it `confidence: check`.
+- **How it was said** (Nov 21, his choice: local, so no voice leaves the container): after the transcript, run
+  `python3 tools/audio/sound-check.py <work-dir>` (after transcribe.py: `--words <prefix>.json --audio <file>`; setup
+  in the file's header). A sound recognizer writes down the sounds it hears and compares them with Whisper's words:
+  `sounds.txt` = per speaker, the share of sounds that came out differently, the swaps that repeat across different
+  words (æ → ɛ: "pan" sounds like "pen") with times, every word that sounded off; `tone.txt` = talk-time share,
+  speed and tone of voice (calm, happy, nervous…). Use it for the pronunciation notes and the teacher's own
+  pronunciation: one word is still `confidence: check`; a swap that repeats in many different words is worth naming.
+  It only sees mistakes where Whisper understood the meant word. Tone is rough: at most a line in the teacher report,
+  never on anything a student sees.
 - Chat uploads are limited to 30 MB. Speech needs no more than mono 32 kbps (an hour ≈ 15 MB).
 
 ## What the teacher asked for
