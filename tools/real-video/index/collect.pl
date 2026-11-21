@@ -216,11 +216,14 @@ sub update_ytdlp {
 
 sub list_channel {
   my $c = shift;
-  my @urls = $c->{search}
-    ? map { (my $q = $_) =~ s/ /+/g; "https://www.youtube.com/channel/$c->{id}/search?query=$q" } @{$c->{search}}
+  # An entry with "videos" is a few chosen videos, not a channel (a game's cutscene movie, 3-10 hours long):
+  # nothing to list, and any length is fine.
+  my @urls = $c->{videos} ? ()
+    : $c->{search} ? map { (my $q = $_) =~ s/ /+/g; "https://www.youtube.com/channel/$c->{id}/search?query=$q" } @{$c->{search}}
     : ("https://www.youtube.com/channel/$c->{id}/videos");
   my $tmp = "$DIR/tmp"; make_path($tmp);
   my %seen; my @e; my $failed;
+  @e = map { {id => $_} } grep { !$seen{$_}++ } @{$c->{videos}} if $c->{videos};
   for my $url (@urls) {
     logl("listing $c->{name}: $url");
     my $rc = run_cmd([ytdlp_base(), '--flat-playlist', '--yes-playlist', '--sleep-requests', '2', '-I', '1:3000',
@@ -251,7 +254,7 @@ sub list_channel {
       && (!$re || ($x->{title} // '') =~ $re)
       && (!$no || ($x->{title} // '') !~ $no);
     $ok ? $keep++ : $skip++;
-    push @s, sprintf("INSERT INTO videos(id, channel, title, dur, views, status) VALUES(%s, %s, %s, %s, %d, %s) ON CONFLICT(id) DO UPDATE SET views=excluded.views, title=excluded.title WHERE videos.channel=excluded.channel;",
+    push @s, sprintf("INSERT INTO videos(id, channel, title, dur, views, status) VALUES(%s, %s, %s, %s, %d, %s) ON CONFLICT(id) DO UPDATE SET views=max(excluded.views, ifnull(videos.views, 0)), title=ifnull(excluded.title, videos.title) WHERE videos.channel=excluded.channel;",
       sql_quote($x->{id}), sql_quote($c->{key}), sql_quote($x->{title}), defined $d ? int $d : 'NULL', int($x->{view_count} // 0), sql_quote($ok ? 'later' : 'skip'));
   }
   push @s, sprintf("UPDATE channels SET listed_at=%d, listed=%d, note=NULL WHERE key=%s;", time, scalar @e, sql_quote($c->{key})), 'COMMIT;';
@@ -538,7 +541,7 @@ sub round {
   # Longest videos first (of each channel's most-viewed): one caption request gives up to 3 hours of speech.
   # "first" channels (a show a student loves): 12 of their videos at a time, before anything else.
   my $in = join ',', map { sql_quote($_) } grep { $known->{$_} } keys %first;
-  my @batch = $in ? map { $row->($_) } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM videos WHERE status='todo' AND channel IN ($in) ORDER BY dur IS NULL, dur DESC, views DESC, k LIMIT 12;") : ();
+  my @batch = $in ? map { $row->($_) } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM videos WHERE status='todo' AND channel IN ($in) ORDER BY dur IS NOT NULL, dur DESC, views DESC, k LIMIT 12;") : ();
   @batch = map { $row->($_) } grep { $known->{$_->[2]} } sql("SELECT k, id, channel, tries, ifnull(lines,0), views FROM (SELECT *, row_number() OVER (PARTITION BY channel ORDER BY dur IS NULL, dur DESC, views DESC, k) r FROM videos WHERE status='todo') WHERE r=1;")
     unless @batch;
   if (@unlisted && $first{$unlisted[0]}) { $run->{since_list} = 12 }   # a "first" channel is listed at once

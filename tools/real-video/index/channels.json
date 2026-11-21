@@ -1,5 +1,5 @@
 {
-  "_": "Channels for the private caption index (collect.pl), picked by him on Nov 19. Names and ids only, no index data (that stays on his PC). Don't rename an entry: its name is its key in the index. search = list these searches on the channel instead of all its videos; titles = keep only videos whose title matches this regex. show = the TV show (search.pl --show); first = list and fetch this channel before all the others (a show a student loves); per = how many of its videos to take (default 400); skip = leave out videos whose title matches this regex.",
+  "_": "Channels for the private caption index (collect.pl), picked by him on Nov 19. Names and ids only, no index data (that stays on his PC). Don't rename an entry: its name is its key in the index. search = list these searches on the channel instead of all its videos; titles = keep only videos whose title matches this regex. show = the TV show (search.pl --show); first = list and fetch this channel before all the others (a show a student loves); per = how many of its videos to take (default 400); skip = leave out videos whose title matches this regex. videos = chosen videos instead of a channel (no id: a game's cutscene movie, any length); about = a note for people.",
   "channels": [
     {"name": "The Office", "id": "UCa90xqK2odw1KV5wHU9WRhg", "handle": "@TheOffice", "show": "The Office"},
     {"name": "Friends", "id": "UCijVIIfFzspulKc7yWA2Qhg", "handle": "@Friends", "show": "Friends"},
@@ -37,6 +37,7 @@
     {"name": "Jubilee", "id": "UCJjSDX-jUChzOEyok9XYRJQ", "handle": "@jubilee"},
     {"name": "Smosh", "id": "UCY30JRSgfhYXA6i6xX1erWg", "handle": "@smosh"},
     {"name": "MKBHD", "id": "UCBJycsmduvYEL83R_U4JriQ", "handle": "@mkbhd"},
-    {"name": "Breaking Bad", "id": "UCc0YbtMkRdhcqwhu3Oad-lw", "handle": "@BreakingBadAndBeyond", "show": "Breaking Bad", "first": true, "per": 2000, "titles": "Breaking Bad", "skip": "Insider Podcast|Fireside Chat|Comic.?Con|\bPanel\b|10 Year Reunion|Music (To|from)|Table Read|Cast (And|&) Crew|Behind the Scenes|\bOn Playing\b|Trailer|Mobile Game|Q&A"}
+    {"name": "Breaking Bad", "id": "UCc0YbtMkRdhcqwhu3Oad-lw", "handle": "@BreakingBadAndBeyond", "show": "Breaking Bad", "first": true, "per": 2000, "titles": "Breaking Bad", "skip": "Insider Podcast|Fireside Chat|Comic.?Con|\bPanel\b|10 Year Reunion|Music (To|from)|Table Read|Cast (And|&) Crew|Behind the Scenes|\bOn Playing\b|Trailer|Mobile Game|Q&A"},
+    {"name": "GTA 5", "show": "GTA 5", "first": true, "videos": ["DN85igbWSkQ"], "about": "Grand Theft Auto 5: The Movie (Cutscenes Only), 51 Gaming, 3 h: a cut of the story, no subtitles in the picture (Nov 21). The full cutscene movies (5-12 h) all show the game's subtitles."}
   ]
 }

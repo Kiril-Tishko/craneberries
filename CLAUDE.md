@@ -267,7 +267,11 @@ huggingface.co, about 15 min per hour of audio).
     `titles` and `skip` (interviews, panels, music: not scenes); official channels only, never full-episode reuploads
     (they get taken down). Breaking Bad (Nov 21): the official "Breaking Bad & Beyond" channel, 750 scenes and
     compilations, 67 h (the series is ~49 h): its famous scenes many times over, not every line of the show; uploaded
-    captions on most scenes. It holds only the American channels he picked
+    captions on most scenes. **Games** (GTA 5, Nov 21): an entry with `videos` (chosen ids, any length) instead of a
+    channel, e.g. a fan's "all cutscenes" movie; most of them show the game's subtitles in the picture, which makes a
+    clip useless, so check frames first (the video's storyboard images in its yt-dlp details) and take one without.
+    GTA 5 = "The Movie (Cutscenes Only)", 3 h, good auto captions; GTA 6 (out Nov 19) had no upload without
+    subtitles yet on Nov 21: look again later. It holds only the American channels he picked
     (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
     scheduled task runs `collect.pl` logged out (no cookies), each channel's longest videos first, one caption
     request a video, a 4-hour rest after every 120 (YouTube said 429 after about 160 twice on Nov 19), about 400-500
