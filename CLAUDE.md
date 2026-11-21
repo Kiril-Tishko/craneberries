@@ -382,6 +382,11 @@ huggingface.co, about 15 min per hour of audio).
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
   - One thing per screen, an "All together" screen at the end of each part, no scrolling.
+  - **Extra drills in reserve** (Nov 21, his wish): a part with `extra: true` (`{label:'More drills', extra:true,
+    slides:[…]}`) has no tab and Next goes past it; a dashed "➕ More drills" tab sits where it is, and a tap opens it for
+    the rest of the lesson (a 📡 Lead jump there opens it on the student's page too). When he asks for "more exercises if
+    we need them", add one (e.g. another big tense drills part with its own "All together" screens) before "Before you
+    go"; qa.js checks it too.
   - No "change one word" drills that only swap numbers or days: he finds them pointless. Use **change the time**
     instead (`flip`: every day → now / yesterday / tomorrow) with the tenses the student has had.
   - When the student knows a rule but forgets it in speech (he/she + s), don't explain it: use
@@ -392,8 +397,8 @@ huggingface.co, about 15 min per hour of audio).
   - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`.
     The screen shows only the Ukrainian; one button gives three steps: 💡 Hint (the sentence with a blank, "Is it ____?"),
     💡 First letter ("Is it m________?"), Answer. Natural, everyday Ukrainian prompts (no odd words like «здирство»).
-    `hint: 1` on a recall (words from earlier weeks, his wish Nov 20) shows the gap line from the start, as if Hint
-    were already pressed; the button then gives the first letter.
+    `hint: 1` on a recall shows the gap line from the start, as if Hint were already pressed (the button then gives the
+    first letter). Only when he asks: on Nov 21 he wanted the older words' gap lines hidden again until Hint.
     The brackets cover the whole phrase being practiced, so the Hint line never gives away its main word ("The bank
     [won the lawsuit].", not "The bank [won] the lawsuit."; "He was [excited to meet] him.").
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not

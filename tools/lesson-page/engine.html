@@ -50,6 +50,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .card::-webkit-scrollbar{display:none}
 .tab{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;padding:7px 11px;border-radius:99px;white-space:nowrap}
 .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+/* A part kept in reserve ({extra: true}): only a dashed ➕ tab until it is opened during the lesson. */
+.tab.more{border:2px dashed var(--line);color:var(--accent);padding:5px 11px}
+.tab.more:hover{border-color:var(--accent)}
 .dots{display:flex;gap:5px;justify-content:center;flex:none;padding:4px 0 2px}
 .dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
 .dots i.on{background:var(--accent);width:22px;border-radius:99px}
@@ -454,11 +457,26 @@ function view(s){
   return '';
 }
 
+/* ---------- parts kept in reserve ----------
+   A part with extra: true (e.g. more tense drills, his wish Nov 21) stays out of the way: no tab, Next goes past it,
+   only a dashed "➕ <label>" tab where it would be. A tap on it opens the part for the rest of the lesson (this tab
+   remembers it after a reload), and a jump there (the teacher's Lead) opens it too. */
+const EXTRA_KEY = `lesson-extra:${location.pathname}`;
+const opened = new Set((() => { try { return JSON.parse(sessionStorage.getItem(EXTRA_KEY) || '[]'); } catch (e) { return []; } })());
+const isOpen = (n) => !!SECTIONS[n] && (!SECTIONS[n].extra || opened.has(n));
+function openPart(n){
+  if (!SECTIONS[n] || isOpen(n)) return;
+  opened.add(n);
+  try { sessionStorage.setItem(EXTRA_KEY, JSON.stringify([...opened])); } catch (e) {}
+}
+const nextOpen = (n, d) => { for (let k = n + d; k >= 0 && k < SECTIONS.length; k += d) if (isOpen(k)) return k; return -1; };
 function render(){
+  if (!isOpen(sec)) openPart(sec);
   const slides = SECTIONS[sec].slides;
   const tabsEl = document.getElementById('tabs'), keepX = tabsEl.scrollLeft;   // the bar keeps where it was scrolled
-  tabsEl.innerHTML = SECTIONS.map((s, n) =>
-    `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}</button>`).join('');
+  tabsEl.innerHTML = SECTIONS.map((s, n) => isOpen(n)
+    ? `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}</button>`
+    : `<button class="tab more" data-more="${n}" title="Open this part">➕ ${esc(s.label)}</button>`).join('');
   tabsEl.scrollLeft = keepX;
   const onTab = tabsEl.querySelector('[aria-selected="true"]');   // and always shows the part that is open
   if (onTab && (onTab.offsetLeft < tabsEl.scrollLeft + 28 || onTab.offsetLeft + onTab.offsetWidth > tabsEl.scrollLeft + tabsEl.clientWidth - 28))
@@ -470,10 +488,10 @@ function render(){
   card.classList.toggle('full', !!(window.LESSON_KEY && slides[idx].t === 'clips'));   // the clips fill the screen
   card.classList.remove('in'); void card.offsetWidth; card.classList.add('in');
   Clips.render();
-  document.getElementById('back').disabled = sec === 0 && idx === 0;
-  const last = sec === SECTIONS.length - 1 && idx === slides.length - 1;
+  const after = nextOpen(sec, 1), last = after < 0 && idx === slides.length - 1;
+  document.getElementById('back').disabled = nextOpen(sec, -1) < 0 && idx === 0;
   document.getElementById('next').disabled = last;
-  document.getElementById('next').textContent = idx === slides.length - 1 && !last ? `${SECTIONS[sec + 1].label} →` : 'Next →';
+  document.getElementById('next').textContent = idx === slides.length - 1 && !last ? `${SECTIONS[after].label} →` : 'Next →';
   stopAll();
   if (window.Lesson && window.Lesson.onMove) window.Lesson.onMove(sec, idx);
 }
@@ -552,8 +570,8 @@ const Clips = (() => {
 })();
 function go(d){
   const slides = SECTIONS[sec].slides;
-  if (d > 0){ if (idx < slides.length - 1) idx++; else if (sec < SECTIONS.length - 1){ sec++; idx = 0; } }
-  else { if (idx > 0) idx--; else if (sec > 0){ sec--; idx = SECTIONS[sec].slides.length - 1; } }
+  if (d > 0){ if (idx < slides.length - 1) idx++; else { const n = nextOpen(sec, 1); if (n >= 0){ sec = n; idx = 0; } } }
+  else { if (idx > 0) idx--; else { const n = nextOpen(sec, -1); if (n >= 0){ sec = n; idx = SECTIONS[sec].slides.length - 1; } } }
   render();
 }
 /* ---------- for the student site's live helper (kiril-tishko/lessons site/assets/live.js) ----------
@@ -598,6 +616,8 @@ tabBar.addEventListener('click', (e) => {
   if (tabDragged){ tabDragged = false; e.stopImmediatePropagation(); e.preventDefault(); }   // a drag is not a tap
 }, true);
 tabBar.addEventListener('click', (e) => {
+  const m = e.target.closest('[data-more]');
+  if (m){ sec = Number(m.dataset.more); idx = 0; openPart(sec); render(); return; }
   const b = e.target.closest('[data-sec]'); if (!b) return;
   sec = Number(b.dataset.sec); idx = 0; render();
 });

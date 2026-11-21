@@ -13,6 +13,9 @@ fs.writeFileSync(dir + '/qa.html', `<!doctype html><html><head><meta charset=utf
     const p = await b.newPage({ viewport: vp });
     p.on('pageerror', (e) => bad.push(`${name}: JS error ${e.message}`));
     await p.goto('file://' + dir + '/qa.html'); await p.waitForTimeout(700);
+    // parts kept in reserve (extra: true) get checked too: open each one, then start from the first screen
+    while (await p.$('#tabs [data-more]')) { await p.click('#tabs [data-more]'); await p.waitForTimeout(100); }
+    if (await p.$('#tabs [data-sec="0"]')) { await p.click('#tabs [data-sec="0"]'); await p.waitForTimeout(450); }
     let n = 0, taps = 0, clips = 0;
     const where = () => p.evaluate(() => document.getElementById('card').innerText.slice(0, 50).replace(/\n/g, ' | '));
     const over = async (what) => {
