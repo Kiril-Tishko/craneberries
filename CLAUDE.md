@@ -51,6 +51,14 @@ database, in the `brief` field of `students/<slug>` (list the `students` collect
    - `teacher/profile`: refresh `englishFocus`, `teachingFocus`, `lessonsReviewed`, `updated`.
    - `progress/<slug>`: the teacher moves units with the buttons. Read it; only if the lesson clearly
      finished the current unit and he hasn't moved it, mention it in the reply (don't move it yourself).
+   - `promises/<slug>` (Nov 22, his wish: "keep track of what I promise to students, what I said we will talk about
+     in the next lesson especially, so I can follow on it and not forget"): read it and `state/promises-<slug>` (his
+     ticks `done{id: true}` and the ones he added himself, `added[]`), then add every new promise **he** made in this
+     lesson: to talk about or do next time ("next time we'll…", "we'll definitely do more of these", "remind me to…"),
+     to send ("I'll send you the song"), to check or find out. `{id, date, what, kind: next|send|other, t}`: `what`
+     one short line in English (what he promised, in his words where they help), `t` = the time in the transcript.
+     Leave out what the student promised, what was done in the same lesson, and anything already in the list; never
+     mark one done and never write `state` (he ticks them on the page). Say the new ones in the reply, one line.
 5. Send the cards to the user with SendUserFile and give them the site link.
 
 **Text the teacher might forward to a student** (answers to a student's question, a message, a reading text)
@@ -379,7 +387,8 @@ huggingface.co, about 15 min per hour of audio).
   - **Ask him first, for every student**: before building a lesson page, ask what to include with AskUserQuestion
     (multiple choice, several answers allowed): offer the parts you would pick from the student's last lessons
     (forgotten words, corrected phrases, uncorrected mistakes, one sound, saved topics, her real situations), with
-    your pick first. Build only what he chose.
+    your pick first. Build only what he chose. **His open promises come first** (`promises/<slug>` without a tick in
+    `state/promises-<slug>`, "next lesson" ones above all): offer each one as an option, and put them in `nextLesson`.
   - **One topic per lesson** by default (e.g. "At the dentist"). When he lists the parts he wants, follow his
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
@@ -527,6 +536,10 @@ people, less, everyday, phrases, city, weather, food, home, event, grammar, soun
 `materials/<slug>` = `{items[{n, date, title, url, issue}]}`, newest first: links the teacher sent the student,
 with a short quality note (British usage, errors, overload). His "reviewed again" ticks live in
 `state/mat-<slug>`. Materials follow the student's English (see **Students**); flag British forms when you see them.
+`promises/<slug>` = what the teacher promised that student (`{items[{id, date, what, kind: next|send|other, t}]}`,
+Claude adds them from transcripts) and `state/promises-<slug>` = his side (`{done{id: true}, added[{id, date, what}]}`):
+the "Promised" list at the top of each student page (tick when done, add his own, ✕ his own) and "N promised" on the
+Students cards.
 `emails/<slug>` = real work emails a student sent or received, kept to build lessons from (`{note, items[{n, got, from,
 kind: received|hers, text, use[]}], plan[]}`; `use` = the lines worth teaching). Read it before a lesson for that
 student; never put an email on a page as it is: made-up versions only (other names, codes, customers, numbers).
