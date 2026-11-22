@@ -387,7 +387,9 @@ huggingface.co, about 15 min per hour of audio).
   - **Ask him first, for every student**: before building a lesson page, ask what to include with AskUserQuestion
     (multiple choice, several answers allowed): offer the parts you would pick from the student's last lessons
     (forgotten words, corrected phrases, uncorrected mistakes, one sound, saved topics, her real situations), with
-    your pick first. Build only what he chose. **His open promises come first** (`promises/<slug>` without a tick in
+    your pick first. Build only what he chose. **Her missed words open the lesson** (Nov 22, his choice): the words
+    she missed most in Practice in her 📖 dictionary on the student site (`python3 tools/missed-words.py <siteCode>` in
+    the lessons repo) go into the opening recall; offer them first in that question. **His open promises come first** (`promises/<slug>` without a tick in
     `state/promises-<slug>`, "next lesson" ones above all): offer each one as an option, and put them in `nextLesson`.
   - **One topic per lesson** by default (e.g. "At the dentist"). When he lists the parts he wants, follow his
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
