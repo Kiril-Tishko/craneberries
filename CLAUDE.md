@@ -136,6 +136,8 @@ huggingface.co, about 15 min per hour of audio).
   Make them sound like real people talking (contractions, short replies, "Kind of", "No way"), add an occasional
   emoji, and don't end with someone laughing. Use only words the student already knows or met in lessons; a word
   she asked about but never got taught (e.g. "interrupt") stays out until it has been taught.
+  The story comes first: one simple, clear plot she can retell in one sentence, with the target words in it, not a
+  string of drills (Nov 23: a student copied a text out several times and still couldn't say what it was about).
 - **Song and video lessons** (e.g. "Human", "The Bridge") need the video on the page, which Claude pages can't
   embed: they live in `docs/<lesson>/` (the lesson is `lesson.json`; `index.html` only loads the player) and share one player, `docs/video/player.js`
   + `player.css`, served by GitHub Pages (https://kiril-tishko.github.io/craneberries/). The player follows the real
