@@ -113,7 +113,8 @@ huggingface.co, about 15 min per hour of audio).
   - "Say it like this": the phrases that were corrected in the lesson.
   - Brand-new words and mistakes nobody corrected go to the next lesson: a "Next lesson · Words to review" card
     for the teacher, and a short list of phrases to talk about in the chat reply (teacher only).
-  - Pronunciation: give 3 card options so he can pick one.
+  - Pronunciation: give 3 card options so he can pick one, only sounds worked on in the lesson; a slip nobody
+    corrected (bus said like boss) waits for the next lesson (Nov 23).
   (Rule from Nov 11 on; earlier cards stay as they are.)
   For irregular verbs, show all three forms (catch – caught – caught) and put them at the end.
 - **"Say it like this"**: 3–4 phrases only; plain, everyday sentences from the lesson. Skip idioms, slang and jokes
