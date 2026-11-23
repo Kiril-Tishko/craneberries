@@ -435,7 +435,10 @@ huggingface.co, about 15 min per hour of audio).
   - **More drilling than new material**: few new words or phrases on a page (about 8 at most). Each one comes
     back at least three times in different sentences (gaps, answers, change the time, a final "Before you go"
     check), and words from earlier lessons are recycled inside the new sentences. The first part repeats only
-    what the student has already had: never open with something new.
+    what the student has already had: never open with something new. A word or phrase that came up only once in talk (not taught
+    on a page) counts as new: show it first (a `P` screen), then test it (Nov 23).
+  - **Ukrainian prompts and gender** (Nov 23): only the student's own "I" sentences follow the student's gender;
+    sentences to someone else ("А чого ти очікував?") or about other people mix he and she, never always feminine.
   - No notes about where a word is used («Так кажуть в Америці»): useless in a lesson. Some students need
     international English (see their `brief`): for them, avoid words that are US-only.
   - **Nothing to guess**: every exercise shows exactly what to say. Give the Ukrainian sentence itself, not a
