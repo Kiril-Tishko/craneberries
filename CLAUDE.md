@@ -391,6 +391,10 @@ huggingface.co, about 15 min per hour of audio).
     she missed most in Practice in her 📖 dictionary on the student site (`python3 tools/missed-words.py <siteCode>` in
     the lessons repo) go into the opening recall; offer them first in that question. **His open promises come first** (`promises/<slug>` without a tick in
     `state/promises-<slug>`, "next lesson" ones above all): offer each one as an option, and put them in `nextLesson`.
+    **Then ask again once it is built** (Nov 23, his wish: "I want to answer it every time"): before you hand over the
+    link, ask him about what you added (anything to cut or change) and what else to add, to the lesson and to its 🏠 homework
+    (AskUserQuestion, multiple choice, several answers allowed, an example under each option), then make his changes.
+    **"Make it fast"** = no questions, before or after: build with your own picks and give him the link.
   - **One topic per lesson** by default (e.g. "At the dentist"). When he lists the parts he wants, follow his
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
     earlier phrases: the Ukrainian prompt first, she says the English, then taps Answer.
