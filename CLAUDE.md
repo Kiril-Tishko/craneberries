@@ -422,6 +422,8 @@ huggingface.co, about 15 min per hour of audio).
     `hint: 1` on a recall shows the gap line from the start, as if Hint were already pressed (the button then gives the
     first letter). Only when he asks: on Nov 21 he wanted the older words' gap lines hidden again until Hint.
     The blanks have one place per letter: "a" or "I" gets one blank, never two (Nov 23).
+    **Give `hint: 1` to every recall whose Ukrainian has more than one fair English translation** (Nov 23, his rule):
+    «Я чекаю на дзвінок» could be "I'm waiting for a call", so the gap line shows from the start ("I'm ________ a call.").
     The brackets cover the whole phrase being practiced, so the Hint line never gives away its main word ("The bank
     [won the lawsuit].", not "The bank [won] the lawsuit."; "He was [excited to meet] him.").
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
