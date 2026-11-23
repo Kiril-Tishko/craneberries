@@ -396,8 +396,9 @@ function view(s){
     // 1) the sentence with a blank, 2) the blank with its first letter, 3) the answer.
     const plain = s.en.replace(/[\[\]]/g, '');
     const clean = (x) => x.replace(/[’'.,!?]/g, '');
-    const gap = (w) => w.split(' ').map((x) => '_'.repeat(Math.max(2, clean(x).length))).join(' ');
-    const first = (w) => w.split(' ').map((x) => x[0] + '_'.repeat(Math.max(1, clean(x).length - 1))).join(' ');
+    // one place per letter: a one-letter word ("a", "I") gets one blank, never two (his rule, Nov 23)
+    const gap = (w) => w.split(' ').map((x) => '_'.repeat(Math.max(1, clean(x).length))).join(' ');
+    const first = (w) => w.split(' ').map((x) => x[0] + '_'.repeat(Math.max(0, clean(x).length - 1))).join(' ');
     const line = (f) => esc(s.en).replace(/\[([^\]]+)\]/g, (m, w) => `<span class="gapw">${f(w)}</span>`);
     const hinted = /\[/.test(s.en);
     const h0 = hinted && s.hint ? 1 : 0;   // hint: 1 = the sentence with its gap shows from the start (older words)
