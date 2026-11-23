@@ -7,21 +7,21 @@
 /* One thing per screen. Big phrase in the middle, buttons at the bottom, no page scrolling. */
 :root{
   --bg:#EDF2F0; --surface:#FFFFFF; --ink:#10241F; --muted:#4F635D; --line:#D2DDD9;
-  --accent:#1E6B58; --accent-ink:#FFFFFF; --accent-soft:#DCEFE8;
+  --accent:#1E6B58; --accent-ink:#FFFFFF; --accent-soft:#DCEFE8; --home:#B45309; --home-ink:#FFFFFF;
   --swap:#C42A6B; --swap-bg:#FBE1EC; --hear:#2F5FB3; --hear-bg:#E2EBFB; --ua:#6B5A12; --ua-bg:#FFF4C9;
   --font:"Lexend","Segoe UI",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0E1916; --surface:#16241F; --ink:#E6F1ED; --muted:#9DB3AB; --line:#2A3B35;
-    --accent:#6FD1B4; --accent-ink:#0E1916; --accent-soft:#163A31;
+    --accent:#6FD1B4; --accent-ink:#0E1916; --accent-soft:#163A31; --home:#F5B454; --home-ink:#1F1405;
     --swap:#FF8DBB; --swap-bg:#3B1B2A; --hear:#9DBBFF; --hear-bg:#1B2A47; --ua:#F3DC85; --ua-bg:#3A3212;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1916; --surface:#16241F; --ink:#E6F1ED; --muted:#9DB3AB; --line:#2A3B35;
-  --accent:#6FD1B4; --accent-ink:#0E1916; --accent-soft:#163A31;
+  --accent:#6FD1B4; --accent-ink:#0E1916; --accent-soft:#163A31; --home:#F5B454; --home-ink:#1F1405;
   --swap:#FF8DBB; --swap-bg:#3B1B2A; --hear:#9DBBFF; --hear-bg:#1B2A47; --ua:#F3DC85; --ua-bg:#3A3212;
   color-scheme:dark;
 }
@@ -53,6 +53,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* A part kept in reserve ({extra: true}): only a dashed ➕ tab until it is opened during the lesson. */
 .tab.more{border:2px dashed var(--line);color:var(--accent);padding:5px 11px}
 .tab.more:hover{border-color:var(--accent)}
+/* Homework on the same page ({home: true} parts, his wish Nov 23): after a "🏠 At home" divider, in a warm color;
+   their screens say "🏠 At home" beside the dots. */
+.tabsep{flex:none;align-self:center;font-size:13px;font-weight:700;color:var(--home);white-space:nowrap;margin-left:6px;padding:3px 4px 3px 12px;border-left:2px solid var(--line)}
+.tab.home{color:var(--home)}
+.tab.home[aria-selected="true"]{background:var(--home);color:var(--home-ink)}
+.dots .hometag{font-size:12px;font-weight:700;color:var(--home);line-height:8px;margin-right:4px;white-space:nowrap}
+.dots.home i.on{background:var(--home)}
 .tab .shut{display:inline-block;margin:-4px -6px -4px 4px;padding:4px 6px;border-radius:99px;opacity:.75;font-size:12px}
 .tab .shut:hover{opacity:1;background:rgba(127,127,127,.25)}
 .dots{display:flex;gap:5px;justify-content:center;flex:none;padding:4px 0 2px}
@@ -426,7 +433,7 @@ function view(s){
   if (s.t === 'rule') return `
     <div class="who">${esc(s.label || '📌 How it works')}</div>
     <div class="rules">${s.rows.map(([icon, head, text, ex]) => `<div class="rulebox"><div class="rh">${icon} ${xs(head)}</div>
-      ${text ? `<div class="rt">${xs(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${xs(x)}</div>`).join('')}</div></div>`).join('')}</div>`;
+      ${text ? `<div class="rt">${xs(text)}</div>` : ''}<div class="rx">${ex.split(' · ').map((x) => `<div>${xs(x).replace(/\[([^\]]+)\]/g, '<span class="hlw">$1</span>')}</div>`).join('')}</div></div>`).join('')}</div>`;
   if (s.t === 'flip'){
     // The answer is shown where it was asked: when the prompt is the English sentence with a gap or only its
     // start, the full sentence takes its place (never both). A Ukrainian prompt or a crossed-out wrong form stays.
@@ -490,7 +497,10 @@ function render(){
   if (!isOpen(sec)) openPart(sec);
   const slides = SECTIONS[sec].slides;
   drawBar();
-  document.getElementById('dots').innerHTML = slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '';
+  const dotsEl = document.getElementById('dots'), home = !!SECTIONS[sec].home;
+  dotsEl.classList.toggle('home', home);
+  dotsEl.innerHTML = (home ? '<span class="hometag">🏠 At home</span>' : '')
+    + (slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '');
   jawDeg = 0; G = { cur: null, right: 0, total: 0 };
   card.innerHTML = view(slides[idx]);
   card.classList.toggle('full', !!(window.LESSON_KEY && slides[idx].t === 'clips'));   // the clips fill the screen
@@ -503,9 +513,10 @@ function render(){
 function drawBar(){
   const slides = SECTIONS[sec].slides;
   const tabsEl = document.getElementById('tabs'), keepX = tabsEl.scrollLeft;   // the bar keeps where it was scrolled
-  tabsEl.innerHTML = SECTIONS.map((s, n) => !isOpen(n)
+  const firstHome = SECTIONS.findIndex((s) => s.home);
+  tabsEl.innerHTML = SECTIONS.map((s, n) => (n === firstHome ? '<span class="tabsep">🏠 At home</span>' : '') + (!isOpen(n)
     ? `<button class="tab more" data-more="${n}" title="Open this part">➕ ${esc(s.label)}</button>`
-    : `<button class="tab" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}${s.extra ? `<span class="shut" data-shut="${n}" title="Put this part away">✕</span>` : ''}</button>`).join('');
+    : `<button class="tab${s.home ? ' home' : ''}" role="tab" data-sec="${n}" aria-selected="${n === sec}">${esc(s.label)}${s.extra ? `<span class="shut" data-shut="${n}" title="Put this part away">✕</span>` : ''}</button>`)).join('');
   tabsEl.scrollLeft = keepX;
   const onTab = tabsEl.querySelector('[aria-selected="true"]');   // and always shows the part that is open
   if (onTab && (onTab.offsetLeft < tabsEl.scrollLeft + 28 || onTab.offsetLeft + onTab.offsetWidth > tabsEl.scrollLeft + tabsEl.clientWidth - 28))
@@ -514,7 +525,8 @@ function drawBar(){
   const after = nextOpen(sec, 1), last = after < 0 && idx === slides.length - 1;
   document.getElementById('back').disabled = nextOpen(sec, -1) < 0 && idx === 0;
   document.getElementById('next').disabled = last;
-  document.getElementById('next').textContent = idx === slides.length - 1 && !last ? `${SECTIONS[after].label} →` : 'Next →';
+  document.getElementById('next').textContent = idx === slides.length - 1 && !last
+    ? `${SECTIONS[after].home && !SECTIONS[sec].home ? '🏠 ' : ''}${SECTIONS[after].label} →` : 'Next →';
 }
 /* ---------- clips screens load ahead (student site) ----------
    A clips screen's page (/clips/…&embed=1, with YouTube players) takes a few seconds to load, so it loads before the

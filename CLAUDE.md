@@ -400,6 +400,11 @@ huggingface.co, about 15 min per hour of audio).
     its tab puts it away again, as often as he likes (with 📡 Lead his ➕ / ✕ change the student's page too). When he asks for "more exercises if
     we need them", add one (e.g. another big tense drills part with its own "All together" screens) before "Before you
     go"; qa.js checks it too.
+  - **Homework on the same page** (Nov 23, his wish: clips can't be played in their lessons, so the student does them
+    afterwards; "not a separate page, but shown a bit separate"): parts with `home: true` go last, after My sentences.
+    The tab bar puts a "🏠 At home" divider before them and shows their tabs in a warm color, their screens say
+    "🏠 At home" beside the dots, and Next at the end of the lesson says "🏠 <part> →". Clips screens and extra tense
+    drills go there; qa.js checks them like any other part.
   - No "change one word" drills that only swap numbers or days: he finds them pointless. Use **change the time**
     instead (`flip`: every day → now / yesterday / tomorrow) with the tenses the student has had.
   - When the student knows a rule but forgets it in speech (he/she + s), don't explain it: use
