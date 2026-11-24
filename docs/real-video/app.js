@@ -43,7 +43,12 @@ function fitEmbed(){
   }
 }
 if (EMBED) { addEventListener('resize', fitEmbed); if (document.fonts) document.fonts.ready.then(fitEmbed); }
-const NOTES = Q.get('notes') === 'ua' ? 'ua' : 'en';
+const NOTES = ['ua', 'ru'].includes(Q.get('notes')) ? Q.get('notes') : 'en';
+// Russian (notes=ru): only for the one student whose lessons are in Russian (Nov 24): her 💡 notes (noteRu), the yellow
+// word (ru), the taps on every other word (glossRu, same shape as gloss) and on phrases kept together (togetherRu).
+// Everyone else keeps Ukrainian.
+const RU = NOTES === 'ru';
+const noteOf = (c) => (RU && c.noteRu ? c.noteRu : NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || '');
 const MUTE = Q.has('mute');   // …?mute plays without sound (for testing)
 // Hidden subtitles: the caption is blurred (it keeps its place, so nothing moves); a tap on it shows it at once.
 // ?listen: every clip starts hidden and its caption stays hidden at the end too, until it is tapped (Nov 21).
@@ -74,7 +79,12 @@ const WORDS = {};
 // hard: [...]} for the whole library (words and `together` phrases, written like gloss keys); a word file's own
 // "tags": {"word": "slang" | "vslang" | "rude" | "hard" | ""} wins for its clips ("" = nothing there).
 let TAGS = new Map();
-const TAG_SAY = {
+const TAG_SAY = RU ? {
+  slang: 'сленг · можно не учить',
+  vslang: 'очень сленговое · не учить',
+  rude: 'грубое слово · не использовать',
+  hard: 'сложное · можно не учить',
+} : {
   slang: 'сленг · можна не вчити',
   vslang: 'дуже сленгове · не вчити',
   rude: 'грубе слово · не вживати',
@@ -211,8 +221,8 @@ async function pick(slug, play){
 }
 App.pick = pick;
 function renderCard(){
-  $('pic').textContent = word.pic || ''; $('en').textContent = word.en || ''; $('ua').textContent = word.ua || '';
-  $('ua').hidden = !word.ua && !App.editing;
+  $('pic').textContent = word.pic || ''; $('en').textContent = word.en || ''; $('ua').textContent = (RU ? word.ru : word.ua) || '';
+  $('ua').hidden = !(RU ? word.ru : word.ua) && !App.editing;
 }
 App.renderCard = renderCard;
 
@@ -237,7 +247,7 @@ function showClip(play){
   }
   clipN = Math.min(Math.max(clipN, 0), L.length - 1);
   const c = L[clipN];
-  setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || '');
+  setNote(noteOf(c));
   capHidden = (LISTEN || subsOff) && !App.editing; drawCC();
   document.querySelector('.video').classList.toggle('tall', !!c.tall);   // a YouTube Short: index.html moves the crop up
   loadSong(c);
@@ -261,7 +271,7 @@ App.refresh = () => {
   const c = clip(); if (!c) { showClip(false); return; }
   range = rangeOf(c, longerMode); shown = null;
   if (!started) drawTimeline(range.from);
-  showLine(lineOf(c)); setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || ''); sizeCaption();
+  showLine(lineOf(c)); setNote(noteOf(c)); sizeCaption();
   drawCount(list().length, clipN);
 };
 // In edit mode the note is always open, so it can be clicked and typed in.
@@ -304,7 +314,7 @@ function findIn(text, phrases){              // → [[from, to, index]] where ea
   return out;
 }
 function glossFor(w, line, at){
-  const G = (word && word.gloss) || {};
+  const G = (word && (RU ? word.glossRu : word.gloss)) || {};
   let key = wbase(w).replace(/^’+|’+$/g, '');
   if (G[key] == null && G[key.replace(/’s$/, '')] != null) key = key.replace(/’s$/, '');
   const v = G[key];
@@ -337,11 +347,13 @@ function tapLine(text){
 }
 function tapGloss(el){
   const mk = el.closest('mark');
-  if (mk) return word.ua ? {en: mk.textContent, ua: word.ua, box: mk} : null;
+  const wt = RU ? word.ru : word.ua;
+  if (mk) return wt ? {en: mk.textContent, ua: wt, box: mk} : null;
   const ph = el.closest('.ph');
   if (ph) {
     const k = Object.keys(word.together || {}).find((x) => wbase(x) === wbase(ph.textContent));
-    if (k && word.together[k]) return {en: ph.textContent, ua: word.together[k], box: ph};
+    const tt = RU ? (word.togetherRu || {})[k] : word.together[k];
+    if (k && tt) return {en: ph.textContent, ua: tt, box: ph};
   }
   const cap = el.closest('#capbar > span'), r = document.createRange();
   r.selectNodeContents(cap); r.setEndBefore(el);

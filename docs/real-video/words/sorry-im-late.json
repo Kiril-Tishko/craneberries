@@ -2,8 +2,10 @@
   "en": "Sorry I’m late.",
   "ua": "Вибачте, я запізнилася.",
   "pic": "⏰",
+  "ru": "Извините, я опоздала.",
   "hl": "sorry I[’']m late",
   "together": {"no problem":"нічого страшного","what’s going on":"що відбувається?","all about":"про що (взагалі)"},
+  "togetherRu": {"no problem":"ничего страшного","what’s going on":"что происходит?","all about":"о чём (вообще)"},
   "gloss": {
     "sorry": "вибачте",
     "i’m": "I’m = I am: я",
@@ -27,9 +29,32 @@
     "going": "(what’s going on = що відбувається)",
     "on": "(what’s going on = що відбувається)"
   },
+  "glossRu": {
+    "sorry": "извините",
+    "i’m": "I’m = I am: я",
+    "late": "опоздал (I’m late = я опоздал)",
+    "hi": "привет",
+    "oh": "о",
+    "no": "никакой (no problem = ничего страшного)",
+    "problem": "проблема",
+    "hey": "привет, эй",
+    "everyone": "всем",
+    "so": "итак, ну",
+    "what’s": "what’s = what is: что",
+    "this": "эта",
+    "secret": "тайная",
+    "meeting": "встреча, совещание",
+    "all": "(all about = о чём)",
+    "about": "о (what’s it all about? = о чём это всё?)",
+    "boss": "шеф, босс",
+    "let’s": "let’s = let us: давайте",
+    "start": "начнём",
+    "going": "(what’s going on = что происходит)",
+    "on": "(what’s going on = что происходит)"
+  },
   "clips": [
-    {"v":"P-se2KQhQik","s":73.76,"e":75.1,"line":"Sorry I’m late.","note":"Someone comes to a date a bit late: Sorry I'm late. The answer: Oh, no problem.","noteUa":"Хтось трохи запізнюється на побачення: «Вибач, я запізнився». Відповідь: «Нічого страшного».","around":[[72.4,73.6,"Hi."],[75.1,76.4,"Oh, no problem."]]},
-    {"v":"zFvs8WSz0ic","s":1000.64,"e":1001.8,"line":"Sorry I’m late.","note":"Jake comes on crutches to a secret meeting: Sorry I'm late.","noteUa":"Джейк приходить на милицях на таємну зустріч: «Вибачте, я запізнився».","around":[[999,1000.5,"Hey, everyone."],[1001.8,1004,"So, what’s this secret meeting all about?"]]},
-    {"v":"3URyLOjWlPM","s":1123.78,"e":1125,"line":"Sorry I’m late, boss.","note":"The meeting is starting. He comes in: Sorry I'm late, boss.","noteUa":"Нарада вже починається. Він заходить: «Вибачте, я запізнився, шефе».","around":[[1121.5,1123.6,"Let’s start."],[1125,1126.4,"What’s going on?"]]}
+    {"v":"P-se2KQhQik","s":73.76,"e":75.1,"line":"Sorry I’m late.","note":"Someone comes to a date a bit late: Sorry I'm late. The answer: Oh, no problem.","noteUa":"Хтось трохи запізнюється на побачення: «Вибач, я запізнився». Відповідь: «Нічого страшного».","noteRu":"Кто-то немного опаздывает на свидание: «Прости, я опоздал». Ответ: «Ничего страшного».","around":[[72.4,73.6,"Hi."],[75.1,76.4,"Oh, no problem."]]},
+    {"v":"zFvs8WSz0ic","s":1000.64,"e":1001.8,"line":"Sorry I’m late.","note":"Jake comes on crutches to a secret meeting: Sorry I'm late.","noteUa":"Джейк приходить на милицях на таємну зустріч: «Вибачте, я запізнився».","noteRu":"Джейк приходит на костылях на тайную встречу: «Извините, я опоздал».","around":[[999,1000.5,"Hey, everyone."],[1001.8,1004,"So, what’s this secret meeting all about?"]]},
+    {"v":"3URyLOjWlPM","s":1123.78,"e":1125,"line":"Sorry I’m late, boss.","note":"The meeting is starting. He comes in: Sorry I'm late, boss.","noteUa":"Нарада вже починається. Він заходить: «Вибачте, я запізнився, шефе».","noteRu":"Совещание уже начинается. Он заходит: «Извините, я опоздал, шеф».","around":[[1121.5,1123.6,"Let’s start."],[1125,1126.4,"What’s going on?"]]}
   ]
 }

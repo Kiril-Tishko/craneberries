@@ -59,11 +59,13 @@ async function put(path, text, message){
 // The files stay easy to read: one clip per line.
 function wordText(w){
   const head = {en: w.en || '', ua: w.ua || '', pic: w.pic || ''};
+  if (w.ru) head.ru = w.ru;   // Russian: one student only (Nov 24), kept as it is
   if (w.hl) head.hl = w.hl;
   const clips = w.clips.map((c) => {
     const o = {v: c.v, s: c.s, e: c.e, line: c.line || ''};
     if (c.note) o.note = c.note;
     if (c.noteUa) o.noteUa = c.noteUa;
+    if (c.noteRu) o.noteRu = c.noteRu;
     if (c.around && c.around.length) o.around = c.around;
     if (Array.isArray(c.ctx) && c.ctx.length === 2) o.ctx = c.ctx;   // his own "With context" start and end
     if (c.hidden) o.hidden = true;
@@ -76,10 +78,13 @@ function wordText(w){
   // The tap dictionary (set phrases that stay whole, and every word of the lines), kept as it is.
   const tog = w.together && Object.keys(w.together).length ? `  "together": ${JSON.stringify(w.together)},\n` : '';
   // This word's own slang / hard dots (words/tags.json has the library's), kept as they are.
+  const togRu = w.togetherRu && Object.keys(w.togetherRu).length ? `  "togetherRu": ${JSON.stringify(w.togetherRu)},\n` : '';
   const tg = w.tags && Object.keys(w.tags).length ? `  "tags": ${JSON.stringify(w.tags)},\n` : '';
   const gl = w.gloss && Object.keys(w.gloss).length
     ? `  "gloss": {\n${Object.entries(w.gloss).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n  },\n` : '';
-  return `${JSON.stringify(head, null, 2).slice(0, -2)},\n${ver}${tog}${tg}${gl}  "clips": [${clips.length ? `\n${clips.join(',\n')}\n  ` : ''}]\n}\n`;
+  const glRu = w.glossRu && Object.keys(w.glossRu).length
+    ? `  "glossRu": {\n${Object.entries(w.glossRu).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n  },\n` : '';
+  return `${JSON.stringify(head, null, 2).slice(0, -2)},\n${ver}${tog}${togRu}${tg}${gl}${glRu}  "clips": [${clips.length ? `\n${clips.join(',\n')}\n  ` : ''}]\n}\n`;
 }
 const indexText = (list) => `[\n${list.map((x) => `  ${JSON.stringify(x)}`).join(',\n')}\n]\n`;
 

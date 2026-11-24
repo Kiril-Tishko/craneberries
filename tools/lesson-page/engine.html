@@ -309,7 +309,7 @@ const spk = (text) => (AUDIO[text] || (!/\(/.test(text) && 'speechSynthesis' in 
 function clipQuery(s){
   const slug = (t) => String(t).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
-  if (s.notes === 'ua') q.set('notes', 'ua');
+  if (s.notes === 'ua' || s.notes === 'ru') q.set('notes', s.notes);   // ru: Victoria only (Nov 24)
   if (s.listen) q.set('listen', '1');   // listen first: no caption until it is tapped
   return q;
 }
