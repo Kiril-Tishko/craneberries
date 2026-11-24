@@ -23,7 +23,9 @@ fs.mkdirSync(outDir, { recursive: true });
 const esc = (s = '') => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // [text] in a string marks a highlighted span.
-const mark = (s = '') => esc(s).replace(/\[([^\]]+)\]/g, '<span class="hl">$1</span>');
+// A highlight inside a word (Do[es], know[s], [DE]sert) has no side padding, so the word doesn't split.
+const mark = (s = '') => esc(s).replace(/\[([^\]]+)\]/g, (m, x, i, all) => `<span class="hl${
+  /\p{L}/u.test(all[i - 1] || '') || /\p{L}/u.test(all[i + m.length] || '') ? ' in' : ''}">${x}</span>`);
 // A word card's `en` may hold "\n": the rest starts on a new line ("It takes me …\nIt took me …").
 const brk = (s = '') => esc(s).replace(/\n/g, '<br>');
 // A word or phrase on a words card: all of it highlighted, or only the [bracketed] part ("[I want to] relax.").
@@ -70,9 +72,9 @@ const body = {
   phrases: (c) => kid ? `<div class="kph">${c.items.map((p, i) => `
     <div class="kprow t${(i + 2) % 6}"><span class="kemo md">${esc(p.emoji || '')}</span><span class="kphr">${mark(p.en)}</span></div>`).join('')}</div>`
     : c.items.some((p) => p.emoji) ? `<ol class="phrases">${c.items.map((p) => p.break ? '<li class="pbreak" aria-hidden="true"></li>' : `
-    <li class="pe"><span class="pemo2">${esc(p.emoji || '')}</span><div class="pet"><span class="ph">${mark(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</div></li>`).join('')}</ol>`
+    <li class="pe"><span class="pemo2">${esc(p.emoji || '')}</span><div class="pet"><span class="ph">${mark(p.en).replace(/\n/g, '<br>')}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</div></li>`).join('')}</ol>`
     : `<ol class="phrases">${c.items.map((p) => `
-    <li><span class="ph">${mark(p.en)}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</li>`).join('')}</ol>`,
+    <li><span class="ph">${mark(p.en).replace(/\n/g, '<br>')}</span>${p.note ? `<span class="note">${esc(p.note)}</span>` : ''}</li>`).join('')}</ol>`,
 
   grammar: (c) => `
     <div class="rule"><span class="hl">${esc(c.rule)}</span><span class="rule-ua">= ${esc(c.ruleUa)}</span></div>
@@ -159,6 +161,7 @@ const html = `<!doctype html>
   .kicker{font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--blue)}
   h1{font-size:31px;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin-top:6px;text-wrap:balance}
   .sub{font-size:16.5px;line-height:1.4;color:var(--muted);margin-top:8px}
+  .hl.in{padding:0}
   .hl{background:linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 92%, transparent 92%);padding:0 2px;
       -webkit-box-decoration-break:clone;box-decoration-break:clone}
   ol{list-style:none}
