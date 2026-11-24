@@ -469,7 +469,10 @@ huggingface.co, about 15 min per hour of audio).
     **Give `hint: 1` to every recall whose Ukrainian has more than one fair English translation** (Nov 23, his rule):
     «Я чекаю на дзвінок» could be "I'm waiting for a call", so the gap line shows from the start ("I'm ________ a call.").
     The brackets cover the whole phrase being practiced, so the Hint line never gives away its main word ("The bank
-    [won the lawsuit].", not "The bank [won] the lawsuit."; "He was [excited to meet] him.").
+    [won the lawsuit].", not "The bank [won] the lawsuit."; "He was [excited to meet] him."). But hide only the words
+    that carry it, not a whole long phrase (Nov 24, his words: "Please [follow these requirements]" is "very hard"):
+    small words between them stay visible, so two key words get two brackets ("Please [follow] these
+    [requirements]." · "I'm writing [regarding] the new sample." · "[Let me know] if you need anything.").
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - "My sentences" boxes stay empty: no example sentences in them.
