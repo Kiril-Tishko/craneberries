@@ -1,0 +1,42 @@
+{
+  "en": "wet wipes",
+  "ua": "вологі серветки",
+  "pic": "🧼",
+  "hl": "\\b(wet |baby )?wipes?\\b",
+  "together": {"running low on":"закінчуються (running low on = вже мало)","speaking of which":"до речі, коли вже про це","rub it in":"сипати сіль на рану","for God’s sake":"заради бога"},
+  "gloss": {
+    "someone": "комусь",
+    "needs": "треба (someone needs to = комусь треба)",
+    "to": "to — перед дієсловом: needs to go = треба піти",
+    "go": "піти, поїхати",
+    "costco": "Костко (великий магазин)",
+    "today": "сьогодні",
+    "we’re": {"*":"у нас (we’re running low = у нас закінчуються)","we’re having":"ми (we’re having dinner = ми вечеряємо)"},
+    "i": "я",
+    "got": "(I got it = я зроблю, беру на себе)",
+    "it": "це",
+    "give": "дай",
+    "get": "принеси",
+    "me": "мені",
+    "a": "a — одну (серветку)",
+    "the": "the — (наша) машина",
+    "car": "машина",
+    "oh": "ой",
+    "charlie": "Чарлі (ім’я)",
+    "having": "(we’re having dinner = ми вечеряємо)",
+    "dinner": "вечеря",
+    "don’t": "не",
+    "i’m": "у мене (I’m out of = у мене закінчилися)",
+    "out": "(out of = закінчилися)",
+    "of": {"*":"(out of = закінчилися)","boxes of":"(boxes of = коробки (чогось))"},
+    "bought": "купив (buy – bought)",
+    "you": "тобі",
+    "two": "дві",
+    "boxes": "коробки"
+  },
+  "clips": [
+    {"v":"frkv3G9jAps","s":9.44,"e":10.8,"line":"We’re running low on baby wipes.","note":"Morning in a busy family. Someone needs to go to the store today: they are running low on baby wipes.","noteUa":"Ранок у великій родині. Комусь треба сьогодні в магазин: закінчуються дитячі вологі серветки.","around":[[7.92,9.44,"Someone needs to go to Costco today."],[10.8,11.6,"I got it."]]},
+    {"v":"zVeOSk3b8-E","s":1092.48,"e":1093.6,"line":"Get the wipes.","note":"Monk is afraid of germs. He needs a wipe right now: go to the car and get the wipes!","noteUa":"Монк боїться мікробів. Йому негайно потрібна серветка: біжи до машини й принеси вологі серветки!","around":[[1090.16,1091.52,"Give me… give me a wipe."],[1091.52,1092.48,"Go to the car."]]},
+    {"v":"DZBBSQbNgw8","s":706.88,"e":709.6,"line":"Speaking of which, I’m out of baby wipes.","note":"At dinner, he says he has no more baby wipes. The answer: I bought you two boxes of baby wipes!","noteUa":"За вечерею він каже, що в нього закінчилися дитячі вологі серветки. Відповідь: я ж купив тобі дві коробки!","around":[[700.88,703.84,"Oh, for God’s sake, Charlie, we’re having dinner."],[703.84,706.68,"Don’t rub it in."],[709.88,711.6,"I bought you two boxes of baby wipes."]]}
+  ]
+}
