@@ -7,6 +7,7 @@
   "together": {"you guys":"хлопці, ви","a little":"трохи","in there":"там","Chicken McNuggets":"Чікен Макнаґетс (курячі шматочки)","with that":"до цього","how can I help you":"чим можу допомогти?","take your order":"прийняти ваше замовлення","an order of":"порцію","chicken strips":"курячі стріпси (смужки)","plum sauce":"сливовий соус","Big Mac":"Біг Мак (бургер)"},
   "togetherRu": {"you guys":"ребята, вы","a little":"немного","in there":"там","Chicken McNuggets":"Чикен Макнаггетс (куриные кусочки)","with that":"к этому","how can I help you":"чем могу помочь?","take your order":"принять ваш заказ","an order of":"порцию","chicken strips":"куриные стрипсы (полоски)","plum sauce":"сливовый соус","Big Mac":"Биг Мак (бургер)"},
   "gloss": {
+    "10": "10 (10-piece = 10 штук)",
     "can": "можна (Can I get…? = Можна мені…?)",
     "i": "я",
     "get": "отримати, взяти",
@@ -68,7 +69,6 @@
     "looking": "(came looking for me = приходив мене шукати)",
     "for": "(looking for me = шукати мене)",
     "me": "мене",
-    "10": "10 (10-piece = 10 штук)",
     "piece": "штук (10-piece = на 10 штук)",
     "and": "і, а",
     "what": "який",
@@ -89,6 +89,7 @@
     "hi": "привіт"
   },
   "glossRu": {
+    "10": "10 (10-piece = 10 штук)",
     "can": "можно (Can I get…? = Можно мне…?)",
     "i": "я",
     "get": "получить, взять",
@@ -150,7 +151,6 @@
     "looking": "(came looking for me = приходил меня искать)",
     "for": "(looking for me = искать меня)",
     "me": "меня",
-    "10": "10 (10-piece = 10 штук)",
     "piece": "штук (10-piece = на 10 штук)",
     "and": "и, а",
     "what": "какой",
@@ -174,7 +174,7 @@
     {"v":"FXjJrD8qqe0","s":1956,"e":1960.2,"line":"Actually, can I get some hot water with a little lemon?","note":"The friends order drinks at the coffee shop. One of them asks for hot water with lemon: he hurt his voice screaming.","noteUa":"Друзі замовляють напої в кафе. Один просить гарячої води з лимоном: він зірвав голос, коли кричав.","noteRu":"Друзья заказывают напитки в кафе. Один просит горячей воды с лимоном: он сорвал голос, когда кричал.","around":[[1949.72,1951.16,"So, you guys want coffees?"],[1960.24,1962.6,"I strained my voice screaming in there."]]},
     {"v":"qmgTn199WOE","s":1988.72,"e":1992,"line":"Hey Joey, uh, can I get some coffee?","note":"Joey now works as a waiter at the coffee shop. Ross orders: Can I get some coffee?","noteUa":"Джоуі тепер працює офіціантом у кафе. Росс замовляє: «Можна мені кави?»","noteRu":"Джоуи теперь работает официантом в кафе. Росс заказывает: «Можно мне кофе?»","around":[[1986.52,1988.52,"Yeah, why would it be weird?"],[1992,1995.08,"Okay, I guess it doesn’t seem that weird."]]},
     {"v":"dQ80ui7zur4","s":1199.08,"e":1200.6,"line":"No, but can I get a napkin?","note":"They eat very hot chicken wings with sauce on their hands. He asks for a napkin.","noteUa":"Вони їдять дуже гострі крильця, руки в соусі. Він просить серветку.","noteRu":"Они едят очень острые крылышки, руки в соусе. Он просит салфетку.","around":[[1197.88,1199.08,"Oh, no, did you touch your eyes?"],[1201.56,1203.04,"I got some sauce in the eye."]]},
-    {"v":"S6OmrCjmJuk","s":1327.76,"e":1329.3,"line":"Can I get some candy or something?","note":"Michael feels bad and asks for some candy. The answer: no candy, get him water.","noteUa":"Майклу погано, і він просить цукерку. Йому відповідають: ніяких цукерок, дайте йому води.","noteRu":"Майклу плохо, и он просит конфету. Ему отвечают: никаких конфет, дайте ему воды.","around":[[1329.4,1330.84,"No, you can’t have any candy."],[1330.84,1331.36,"Get him water."]]},
+    {"v":"S6OmrCjmJuk","s":1327.76,"e":1329.3,"line":"Can I get some candy or something?","note":"Michael feels bad and asks for some candy. The answer: no candy, get him water.","noteUa":"Майклу погано, і він просить цукерку. Йому відповідають: ніяких цукерок, дайте йому води.","noteRu":"Майклу плохо, и он просит конфету. Ему отвечают: никаких конфет, дайте ему воды.","around":[[1329.4,1330.84,"No, you can’t have any candy."],[1330.84,1331.36,"Get him water."]],"hidden":true},
     {"v":"frkv3G9jAps","s":171.12,"e":172.5,"line":"Can I get a beer?","note":"Frank comes back to his bar after a long time in the hospital. The first thing he says: Can I get a beer?","noteUa":"Френк повертається у свій бар після довгого часу в лікарні. Перше, що він каже: «Можна мені пива?»","noteRu":"Фрэнк возвращается в свой бар после долгого времени в больнице. Первое, что он говорит: «Можно мне пива?»","around":[[166.96,168.32,"I was in a coma."],[175.76,178.48,"Hospital said nobody came looking for me."]]},
     {"v":"djG52oBOeeg","s":21.8,"e":26.21,"line":"Hey, can I get a… 10-piece Chicken McNuggets.","note":"A McDonald’s ad: at the drive-thru, nobody can decide what to order. Finally he orders: Can I get a 10-piece Chicken McNuggets? Next question: what sauce?","noteUa":"Реклама Макдональдза: на драйв-тру ніхто не може вирішити, що замовити. Нарешті він замовляє: «Можна мені 10 Чікен Макнаґетс?» Наступне питання: який соус?","noteRu":"Реклама Макдоналдса: на драйв-тру никто не может решить, что заказать. Наконец он заказывает: «Можно мне 10 Чикен Макнаггетс?» Следующий вопрос: какой соус?","around":[[26.24,28.14,"And what sauce would you like with that?"],[28.14,30.5,"Uhhh…"]]},
     {"v":"ienYGQ8kKVA","s":2,"e":8,"line":"Can I please get a Big… a Chicken Big Mac?","note":"A McDonald’s ad: Kai Cenat orders at the drive-thru: Can I please get a Chicken Big Mac? Then they argue: is it a Big Mac or not?","noteUa":"Реклама Макдональдза: Кай Сенат замовляє на драйв-тру: «Можна мені, будь ласка, Чікен Біг Мак?» Потім сперечаються: це Біг Мак чи ні?","noteRu":"Реклама Макдоналдса: Кай Сенат заказывает на драйв-тру: «Можно мне, пожалуйста, Чикен Биг Мак?» Потом спорят: это Биг Мак или нет?","around":[[0.68,2,"McDonald’s, how can I help you?"],[8.12,10.64,"That’s not a Big Mac. – Actually, it is."]]},
