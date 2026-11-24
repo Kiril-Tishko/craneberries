@@ -1,6 +1,7 @@
 {
-  "slang": ["ain’t","dude","bro","cuz","cause","gonna","wanna","gotta","bucks","cop","cops","jerk","hell","plumb","dubs","funk",
-    "getting dubs","down for whatever","hit the road","i was like","sick burn","love fest","what the hell","how the hell","get out of that funk"],
+  "slang": ["dude","cause","gonna","wanna","gotta","bucks","cop","cops","jerk","hell","funk",
+    "hit the road","i was like","what the hell","how the hell","get out of that funk"],
+  "vslang": ["ain’t","bro","cuz","dubs","plumb","getting dubs","down for whatever","sick burn","love fest"],
   "rude": ["bitch"],
   "hard": ["energetics","intuitive","faculty","intuitive faculty","asymmetry","conclusive","jeopardizes","impasse","tribunal","hellbent",
     "overbearing","antler","spawned","supercell","environmental impact statement","slap such a lawsuit on","with god as my witness",

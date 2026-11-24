@@ -68,15 +68,17 @@ let INDEX = [], ORDER = [], cur = '', word = null;
 const SHELF = !Q.get('words') && !Q.has('embed');
 let GROUPS = [], shelf = '', shelfFor = null;
 const WORDS = {};
-// Words under the video that are slang, rude or just too hard to learn now get a small dot (his wish, Nov 24: "it has
-// to communicate somehow that it's slang, and you don't really need to learn it"). words/tags.json = {slang: [...],
-// rude: [...], hard: [...]} for the whole library (words and `together` phrases, written like gloss keys); a word file's
-// own "tags": {"word": "slang" | "rude" | "hard" | ""} wins for its clips ("" = no dot there).
+// Words under the video that are slang, rude or just too hard to learn now say so in their tap bubble: a dot and a
+// short, small note under the translation, the dot bigger the stronger the slang (his wish, Nov 24: nothing in the
+// captions themselves, only "when you hit on that word"). words/tags.json = {slang: [...], vslang: [...], rude: [...],
+// hard: [...]} for the whole library (words and `together` phrases, written like gloss keys); a word file's own
+// "tags": {"word": "slang" | "vslang" | "rude" | "hard" | ""} wins for its clips ("" = nothing there).
 let TAGS = new Map();
 const TAG_SAY = {
-  slang: 'Сленг, розмовне: досить розуміти, вчити не обов’язково',
-  rude: 'Грубе слово: розуміти, але не вживати',
-  hard: 'Складне, рідкісне: можна пропустити',
+  slang: 'сленг · можна не вчити',
+  vslang: 'дуже сленгове · не вчити',
+  rude: 'грубе слово · не вживати',
+  hard: 'складне · можна не вчити',
 };
 function tagMap(t){
   const m = new Map();
@@ -92,7 +94,7 @@ function tagOf(key){
   }
   return '';
 }
-const tagAttr = (kind) => (kind ? ` tg tg-${kind}" data-tag="${kind}" title="${TAG_SAY[kind]}` : '');
+const tagAttr = (kind) => (kind ? `" data-tag="${kind}` : '');   // nothing shows in the caption: the bubble reads it
 let clipN = 0, rate = 1, wantPlay = null, longerMode = false;
 // "With context" is for this clip only; press and hold it, and it stays on for the next clips too.
 let contextHeld = false;

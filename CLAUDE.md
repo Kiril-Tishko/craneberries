@@ -212,11 +212,13 @@ huggingface.co, about 15 min per hour of audio).
     known), note = the 💡 note in English, noteUa in Ukrainian, around = `[[start, end, line], …]` 1–2 lines before and
     after (for "With context"), hidden = kept but not shown, hl = a regex for other forms of the word ("rip[- ]?off"),
     tall = a YouTube Short (portrait; the player shows its top third at full width, where the faces are, and edit mode sets it for a /shorts/ link).
-    **Slang and too-hard words get a dot** under the video (his wish, Nov 24): `words/tags.json` = `{slang, rude, hard}`
-    lists for the whole library (words and `together` phrases, written like gloss keys); red = slang (ain't, dude,
-    gonna, hit the road), red with a ring = rude, gray = far too hard to learn now (energetics, impasse). A hover or a
-    tap says what it means in Ukrainian ("вчити не обов'язково"). A word file's own `"tags": {"bad": "slang"}` wins for
-    its clips (`""` = no dot there). When you add clips, add their clear slang and far-too-hard words to tags.json.
+    **Slang and too-hard words say so in their tap bubble** (his wish, Nov 24; nothing in the captions themselves): a
+    dot and a small note under the translation. `words/tags.json` = `{slang, vslang, rude, hard}` lists for the whole
+    library (words and `together` phrases, written like gloss keys): slang = small red dot "сленг · можна не вчити"
+    (dude, gonna, hit the road), vslang = big red dot "дуже сленгове · не вчити" (ain't, bro, dubs), rude = big red dot
+    with a ring, hard = gray dot "складне · можна не вчити" (energetics, impasse). A word file's own
+    `"tags": {"bad": "vslang"}` wins for its clips (`""` = nothing there). When you add clips, add their clear slang and
+    far-too-hard words to tags.json.
     **Every word under a clip is tappable** like on the song pages: one word at a time (its Ukrainian; a grammar word
     says why it's there), the yellow word whole (its `ua`), `together` phrases whole. `gloss` covers every word of every
     clip's line and lines around (same shape as the song pages' gloss, context keys for grammar words), so **when you
