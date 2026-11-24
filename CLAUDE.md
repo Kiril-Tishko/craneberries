@@ -285,6 +285,9 @@ huggingface.co, about 15 min per hour of audio).
     searches. **★ Super like** (his wish, Nov 24) beside ♡ Like (◀ ♡ ☆ ▶; on a phone ♡ loses its word): a like
     that comes before the others in its searches (kind super; order: ★, then ♥, then the rest; also first in ♥ Liked
     and in each phrase's group on the picks page); a second ★ makes it a plain like, ♥ takes either away. A small 🙈 on a result hides it and the same scene in other videos from every search (kind hide; Undo in place). Short scene clips rank before compilations.
+    Clips he has watched (played a second, or most of a shorter line) turn a little gray in the lists (`seen` table,
+    Nov 24). More results keeps the list where it is and adds the clips to the open player; the address keeps the clip
+    he is on (`clip`, `list`, `pages`), so a reload comes back to it.
     **His phone** on the home Wi-Fi opens it too: `http://<PC's address>:8770` and a PIN (both shown on the page),
     then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait. With **Tailscale** (free,
     on his PC and phone) the same page opens from anywhere at the PC's Tailscale address (100.x.y.z or its .ts.net
