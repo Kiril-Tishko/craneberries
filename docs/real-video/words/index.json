@@ -1,5 +1,5 @@
 [
-  {"slug":"accept","en":"accept","ua":"приймати","pic":"✅","n":3},
+  {"slug":"accept","en":"accept","ua":"приймати","pic":"✅","n":4},
   {"slug":"announce","en":"announce","ua":"оголошувати, оголосити","pic":"📢","n":3},
   {"slug":"as-far-as-i-know","en":"as far as I know","ua":"наскільки я знаю","pic":"💭","n":3},
   {"slug":"at-least","en":"at least","ua":"принаймні, хоча б","pic":"👍","n":3},
@@ -22,7 +22,6 @@
   {"slug":"go-to-bed","en":"Go to bed!","ua":"Іди спати!","pic":"😴","n":4},
   {"slug":"good-morning","en":"Good morning!","ua":"Доброго ранку!","pic":"☀️","n":3},
   {"slug":"good-night","en":"Good night!","ua":"Добраніч!","pic":"🛌","n":3},
-  {"slug":"i-know-she-knows","en":"I know she knows.","ua":"Я знаю, що вона знає.","pic":"🤫","n":1},
   {"slug":"watches","en":"he watches","ua":"він дивиться","pic":"📺","n":4},
   {"slug":"how-much-is-it","en":"How much is it?","ua":"Скільки це коштує?","pic":"💲","n":4},
   {"slug":"i-agree","en":"I agree.","ua":"Я згоден.","pic":"🤝","n":3},
@@ -37,6 +36,7 @@
   {"slug":"i-guess-so","en":"I guess so.","ua":"Мабуть, так.","pic":"🤔","n":3},
   {"slug":"i-have-an-announcement","en":"I have an announcement (to make).","ua":"У мене є оголошення.","pic":"📣","n":3},
   {"slug":"i-have-no-idea","en":"I have no idea.","ua":"Гадки не маю.","pic":"🤷","n":3},
+  {"slug":"i-know-she-knows","en":"I know she knows.","ua":"Я знаю, що вона знає.","pic":"🤫","n":1},
   {"slug":"made-it-up","en":"I made it up.","ua":"Я це вигадав.","pic":"🤥","n":3},
   {"slug":"i-owe-you-one","en":"I owe you one.","ua":"Я твій боржник.","pic":"🙏","n":3},
   {"slug":"i-went-shopping","en":"I went shopping.","ua":"Я ходила по магазинах.","pic":"🛍️","n":2},
