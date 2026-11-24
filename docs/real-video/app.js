@@ -205,7 +205,8 @@ function showClip(play){
   const c = L[clipN];
   setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || '');
   capHidden = (LISTEN || subsOff) && !App.editing; drawCC();
-  showLine(c.line);
+  loadSong(c);
+  showLine(lineOf(c));
   range = rangeOf(c, longerMode); drawTimeline(range.from);
   // The next clip may already be waiting in the hidden player: then it simply comes to the front.
   const other = slots[1 - act];
@@ -216,7 +217,7 @@ function showClip(play){
   }
   if (play) playClip(); else warm(S(), c, range.from);
   setCover();
-  if (L.length > 1) { const n = L[(clipN + 1) % L.length]; warm(slots[1 - act], n, rangeOf(n, longerMode).from); }
+  if (L.length > 1) { const n = L[(clipN + 1) % L.length]; loadSong(n); warm(slots[1 - act], n, rangeOf(n, longerMode).from); }
   if (App.onClip) App.onClip();
 }
 App.showClip = showClip;
@@ -225,7 +226,7 @@ App.refresh = () => {
   const c = clip(); if (!c) { showClip(false); return; }
   range = rangeOf(c, longerMode); shown = null;
   if (!started) drawTimeline(range.from);
-  showLine(c.line); setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || ''); sizeCaption();
+  showLine(lineOf(c)); setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || ''); sizeCaption();
   drawCount(list().length, clipN);
 };
 // In edit mode the note is always open, so it can be clicked and typed in.
@@ -311,7 +312,7 @@ function tapGloss(el){
 // Hidden subtitles: show (or blur again) the caption that belongs to this moment (with context, the line being said).
 function redrawLine(){
   const l = range && range.lines && started && !ended ? shown : null;
-  if (l) showLine(l[2], null, l); else if (clip()) showLine(clip().line);
+  if (l) showLine(l[2], null, l); else if (clip()) showLine(lineOf(clip()));
 }
 function showCaption(){
   if (!capHidden) return;
@@ -373,7 +374,7 @@ function sizeCaption(){
   probe.style.cssText = `position:absolute;visibility:hidden;left:-9999px;top:0;width:${bar.clientWidth}px;min-height:0`;
   document.body.appendChild(probe);
   let h = 0;
-  for (const c of word.clips) for (const t of [c.line || '', ...(c.around || []).map((l) => l[2])]) {
+  for (const c of word.clips) for (const t of [c.line || '', ...(c.around || []).map((l) => l[2]), ...(c.near || []).map((l) => l[2])]) {
     probe.innerHTML = `<span>${esc(t).replace(word.re, (m) => `<mark>${m}</mark>`)}</span>`;
     h = Math.max(h, probe.getBoundingClientRect().height);
   }
@@ -381,8 +382,50 @@ function sizeCaption(){
   fitEmbed();
 }
 App.sizeCaption = sizeCaption;
+/* ---------- Song clips: the words come live from lrclib.net, like the song pages (lyrics never go in the repo) ---------- */
+// A clip from a song has song = {lrclib: <lrclib.net id>, shift: <seconds the video is later than the lyrics>} and the
+// line "♪". When it is shown, its sung lines are loaded and kept on the clip in this page only (c.sung, never saved);
+// the caption bar then follows the line being sung, and every word taps like any other (the word file's gloss).
+// Edit mode shows "♪", so nothing typed there can put lyrics in the file.
+const lyricsCache = new Map();
+function lyricsOf(id){
+  if (!lyricsCache.has(id)) {
+    lyricsCache.set(id, fetch(`https://lrclib.net/api/get/${encodeURIComponent(id)}`).then((r) => (r.ok ? r.json() : null)).then((d) => {
+      const ls = ((d && d.syncedLyrics) || '').split('\n').map((l) => {
+        const m = l.match(/^\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)$/);
+        return m ? [+m[1] * 60 + +m[2], 0, m[3].replace(/'/g, '’')] : null;
+      }).filter(Boolean);
+      ls.forEach((l, n) => { l[1] = ls[n + 1] ? ls[n + 1][0] : l[0] + 5; });
+      return ls.filter((l) => l[2].trim());
+    }).catch(() => []));
+  }
+  return lyricsCache.get(id);
+}
+function loadSong(c){
+  if (!c || !c.song || c.allSung || c.songLoading) return;
+  c.songLoading = true;
+  lyricsOf(c.song.lrclib).then((ls) => {
+    const sh = +c.song.shift || 0;
+    c.allSung = ls.map((l) => [l[0] + sh, l[1] + sh, l[2]]);
+    c.sung = c.allSung.filter((l) => l[1] > c.s + 0.2 && l[0] < c.e - 0.2);
+    c.near = c.allSung.filter((l) => l[1] > c.s - LONGER_BEFORE + 0.2 && l[0] < c.e + LONGER_AFTER - 0.2);   // with context too: the caption bar fits them all
+    c.songLoading = false;
+    if (word && word.clips.includes(c)) sizeCaption();
+    if (clip() === c && !started) App.refresh();
+  });
+}
+// The line a clip shows when it isn't playing: its own, or for a song the sung line with the word in it.
+function lineOf(c){
+  if (!c.sung || !c.sung.length || App.editing) return c.line;
+  return (c.sung.find((l) => l[2].search(word.re) >= 0) || c.sung[0])[2];
+}
 // What a play covers: just the line, or with context the lines around it too.
 function rangeOf(c, longer){
+  if (c.sung && c.sung.length && !App.editing) {
+    const from = longer ? c.s - LONGER_BEFORE : c.s, to = longer ? c.e + LONGER_AFTER : c.e;
+    const lines = c.allSung.filter((l) => l[1] > from + 0.2 && l[0] < to - 0.2).map((l) => [Math.max(l[0], from), l[1], l[2]]);
+    return {from: Math.max(0, from - EXACT_BEFORE), to: to + 0.1, lines: lines.length ? lines : null, c, longer};
+  }
   const around = c.around || [], exact = !Number.isInteger(c.s);
   const before = around.filter((l) => l[0] < c.s), after = around.filter((l) => l[0] > c.s);
   if (longer && around.length) {
@@ -423,7 +466,7 @@ function playClip(at){
   range = rangeOf(c, longerMode); shown = null;
   if (!s.ready) { wantPlay = {at}; return; }
   started = true; ended = false; intent = true; loadedAt = performance.now();
-  showLine(c.line);
+  showLine(lineOf(c));
   const from = at ?? range.from;
   s.warming = false; if (MUTE || App.silent) s.p.mute(); else s.p.unMute();
   if (s.vid === c.v && s.loaded) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
@@ -484,7 +527,7 @@ setInterval(() => {
   if (playing && t >= range.to - 0.06) {
     P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
     // Listen first: the caption stays hidden at the end too; only a tap on it shows it (his rule, Nov 21).
-    if (range.lines) { showLine(range.c.line); shown = null; }
+    if (range.lines) { showLine(lineOf(range.c)); shown = null; }
     drawTimeline(range.to); setCover(); return;
   }
   if (!ended && !dragging) drawTimeline(t);
@@ -686,7 +729,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (App.toggleEdit) { App.toggleEdit(); return; }
-  const s = document.createElement('script'); s.src = 'edit.js?v=4'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
+  const s = document.createElement('script'); s.src = 'edit.js?v=5'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
 };
 let resizeT = null;
 window.addEventListener('resize', () => { hidePop(); clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });

@@ -22,6 +22,7 @@
   {"slug":"go-to-bed","en":"Go to bed!","ua":"Іди спати!","pic":"😴","n":4},
   {"slug":"good-morning","en":"Good morning!","ua":"Доброго ранку!","pic":"☀️","n":3},
   {"slug":"good-night","en":"Good night!","ua":"Добраніч!","pic":"🛌","n":3},
+  {"slug":"i-know-she-knows","en":"I know she knows.","ua":"Я знаю, що вона знає.","pic":"🤫","n":1},
   {"slug":"watches","en":"he watches","ua":"він дивиться","pic":"📺","n":4},
   {"slug":"how-much-is-it","en":"How much is it?","ua":"Скільки це коштує?","pic":"💲","n":4},
   {"slug":"i-agree","en":"I agree.","ua":"Я згоден.","pic":"🤝","n":3},

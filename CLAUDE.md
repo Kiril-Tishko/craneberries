@@ -331,7 +331,10 @@ huggingface.co, about 15 min per hour of audio).
     auto-captions' word times (one pass over the whole song, so a chorus can't pull a line a minute off; kind
     `lyrics`); with no captions at all only when the video is as long as the record. Taylor Swift's music videos had
     no captions and longer cuts (Nov 21): left out. Lyrics stay in the private index: **never in the repo**, so song
-    picks go online with their times only (`song: true`, line "♪"), and a song clip can't go into `words/` with its line. It holds only the American channels he picked
+    picks go online with their times only (`song: true`, line "♪"), and a song clip goes into `words/` without its line (Nov 24, "I know she knows", J. Cole): `line: "♪"` plus
+    `song: {lrclib: <lrclib.net id>, shift: <seconds the video runs ahead of the record>}`; the player loads the
+    words live from lrclib.net (they follow the line being sung, With context too). Glosses still cover every sung
+    word in the clip and its context. It holds only the American channels he picked
     (`tools/real-video/index/channels.json`: sitcoms, late-night shows, YouTubers) and grows by itself: a hidden
     scheduled task runs `collect.pl` logged out (no cookies), each channel's longest videos first, one caption
     request a video, a 4-hour rest after every 120 (YouTube said 429 after about 160 twice on Nov 19), about 400-500

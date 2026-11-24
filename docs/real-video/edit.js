@@ -66,6 +66,7 @@ function wordText(w){
     if (c.noteUa) o.noteUa = c.noteUa;
     if (c.around && c.around.length) o.around = c.around;
     if (c.hidden) o.hidden = true;
+    if (c.song) o.song = c.song;   // a song clip: its lyrics load live (app.js); only the lrclib id and shift are kept
     return `    ${JSON.stringify(o)}`;
   });
   // ↻ versions (groups of texts that can replace each other), kept as they are, one group per line.
