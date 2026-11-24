@@ -65,6 +65,7 @@ function wordText(w){
     if (c.note) o.note = c.note;
     if (c.noteUa) o.noteUa = c.noteUa;
     if (c.around && c.around.length) o.around = c.around;
+    if (Array.isArray(c.ctx) && c.ctx.length === 2) o.ctx = c.ctx;   // his own "With context" start and end
     if (c.hidden) o.hidden = true;
     if (c.tall) o.tall = true;   // a YouTube Short (portrait): the player crops it differently
     if (c.song) o.song = c.song;   // a song clip: its lyrics load live (app.js); only the lrclib id and shift are kept
@@ -266,8 +267,15 @@ const parseT = (v) => {
   const p = String(v).trim().replace(',', '.').split(':').map((x) => (x.trim() === '' ? NaN : Number(x)));
   return p.some(isNaN) ? NaN : p.reduce((a, x) => a * 60 + x, 0);
 };
+// Start / End of the clip (s, e), and while "With context" is on, the context's (cs, ce): App.ctxOf gives the range
+// it plays now (his own `ctx`, else the lines around it); a change sets the clip's own `ctx`.
+const tget = (c, f) => (f === 'cs' ? App.ctxOf(c)[0] : f === 'ce' ? App.ctxOf(c)[1] : c[f]);
+function tset(c, f, v){
+  if (f === 'cs' || f === 'ce') { const x = App.ctxOf(c); c.ctx = f === 'cs' ? [v, r2(x[1])] : [r2(x[0]), v]; }
+  else c[f] = v;
+}
 const timeBox = (f, name, c) => `<span class="etime"><span class="lbl">${name}</span>
-  <button data-nudge="${f}:-0.1" aria-label="${name} 0.1 s earlier">−</button><input type="text" inputmode="decimal" data-t="${f}" value="${fmt(c[f])}" aria-label="${name} (minutes:seconds)"><button data-nudge="${f}:0.1" aria-label="${name} 0.1 s later">+</button><button data-now="${f}" title="Where the video is now" aria-label="${name} where the video is now">⏱</button></span>`;
+  <button data-nudge="${f}:-0.1" aria-label="${name} 0.1 s earlier">−</button><input type="text" inputmode="decimal" data-t="${f}" value="${fmt(tget(c, f))}" aria-label="${name} (minutes:seconds)"><button data-nudge="${f}:0.1" aria-label="${name} 0.1 s later">+</button><button data-now="${f}" title="Where the video is now" aria-label="${name} where the video is now">⏱</button></span>`;
 // No key on this site yet: its box is the first thing in the bar (a lesson's clips screen has no room for ⋯). The
 // student site is another site, so it doesn't see the key kept in the clip library: one tap copies it over (key.html).
 const keyRow = () => (token ? '' : `
@@ -284,7 +292,9 @@ function render(){
   const typedKey = $('e-token') ? $('e-token').value : '';
   $('etools').innerHTML = `${keyRow()}
     ${c ? `${timeBox('s', 'Start', c)}${timeBox('e', 'End', c)}
-    <button class="btn" data-act="hide" aria-pressed="${!!c.hidden}">${c.hidden ? '🙈 Hidden' : '🙈 Hide'}</button>` : ''}
+    <button class="btn" data-act="hide" aria-pressed="${!!c.hidden}">${c.hidden ? '🙈 Hidden' : '🙈 Hide'}</button>
+    ${App.longer ? `<span class="ectx">${timeBox('cs', '↔ Start', c)}${timeBox('ce', '↔ End', c)}${c.ctx
+      ? '<button class="btn" data-act="ctx0" title="Back to the lines around it">↺</button>' : ''}</span>` : ''}` : ''}
     <span class="right">
       <button class="btn" id="e-mute" aria-pressed="${silent}" aria-label="${silent ? 'Sound off while editing' : 'Sound on'}" title="${silent ? 'Sound off while editing' : 'Sound on'}">${silent ? '🔇' : '🔊'}</button>
       <button class="btn primary" id="e-save">${saveLabel(changed().length)}</button>
@@ -313,6 +323,7 @@ function render(){
     ${token ? '<div class="row"><button class="btn" id="e-forget">Forget the GitHub key on this computer</button></div>' : ''}`;
 }
 App.onClip = render;
+App.onMode = render;   // "With context" on / off: its Start / End show or go
 App.newWord = (text) => {
   const slug = App.slugify(text);
   if (!slug) return;
@@ -361,7 +372,11 @@ let replayT = 0;
 // After a − / + on a time: play that bit again (from the new start, or the last second and a half before the end).
 function replay(f){
   clearTimeout(replayT);
-  replayT = setTimeout(() => { const c = App.clip(); if (c) App.playClip(f === 'e' ? Math.max(c.s - 0.1, c.e - 1.5) : undefined); }, 350);
+  replayT = setTimeout(() => {
+    const c = App.clip(); if (!c) return;
+    if (f === 'ce') { const x = App.ctxOf(c); App.playClip(Math.max(x[0], x[1] - 1.5)); }   // the context's last bit
+    else App.playClip(f === 'e' ? Math.max(c.s - 0.1, c.e - 1.5) : undefined);
+  }, 350);
 }
 const zone = (t) => t.closest && t.closest('#etools, #edit');
 document.addEventListener('input', (e) => {
@@ -382,6 +397,13 @@ document.addEventListener('input', (e) => {
 function badTime(c, f, v){
   const s = f === 's' ? v : c.s, e = f === 'e' ? v : c.e;
   if (isNaN(v) || v < 0) return 'Type the time like 21:58.3 (or just 58.3 for :58.3 in the same minute).';
+  if (f === 'cs' || f === 'ce') {   // the context goes around the clip, at most a minute
+    const x = App.ctxOf(c), cs = f === 'cs' ? v : x[0], ce = f === 'ce' ? v : x[1];
+    if (cs > c.s) return `The context has to start at the clip’s Start (${fmt(c.s)}) or before it.`;
+    if (ce < c.e) return `The context has to end at the clip’s End (${fmt(c.e)}) or after it.`;
+    if (ce - cs > 60) return 'That makes the context longer than a minute: check the minutes.';
+    return '';
+  }
   if (e <= s) return `End has to be after Start (${fmt(c.s)}).`;
   if (e - s > 30) return 'That makes the clip longer than 30 seconds: check the minutes.';
   return '';
@@ -391,10 +413,11 @@ document.addEventListener('change', (e) => {
   const t = e.target, c = App.clip(); if (!App.editing || !t.dataset || !t.dataset.t || !c) return;
   const f = t.dataset.t, raw = t.value.trim();
   let v = parseT(raw);
-  if (!isNaN(v) && !raw.includes(':')) v += Math.floor(c[f] / 60) * 60;
+  if (!isNaN(v) && !raw.includes(':')) v += Math.floor(tget(c, f) / 60) * 60;
   const why = badTime(c, f, v);
-  if (why) { say(why, true); t.value = fmt(c[f]); return; }
-  remember(null); c[f] = r2(v); t.value = fmt(c[f]); touch(); say(''); App.refresh(); replay(f);
+  if (why) { say(why, true); t.value = fmt(tget(c, f)); return; }
+  remember(null); tset(c, f, r2(v)); t.value = fmt(tget(c, f)); touch(); say(''); App.refresh(); replay(f);
+  if (f === 'cs' || f === 'ce') render();   // ↺ shows now
 });
 document.addEventListener('keydown', (e) => { if (App.editing && e.key === 'Enter' && e.target.dataset && e.target.dataset.t) e.target.blur(); });
 document.addEventListener('click', (e) => {
@@ -449,6 +472,10 @@ document.addEventListener('click', (e) => {
       remember(null);
       [w.clips[i], w.clips[j]] = [w.clips[j], w.clips[i]];
       App.clipN = App.list().indexOf(c); touch(); App.showClip(false);
+    } else if (b.dataset.act === 'ctx0') {
+      remember(null);
+      delete c.ctx; touch(); App.refresh(); render();
+      say('With context plays the lines around it again.');
     } else if (b.dataset.act === 'hide') {
       remember(null);
       c.hidden = !c.hidden; touch();
@@ -464,13 +491,15 @@ document.addEventListener('click', (e) => {
     const f = b.dataset.now, v = r2(App.now()), why = badTime(c, f, v);
     if (why) { say(why, true); return; }
     remember(null);
-    c[f] = v; touch(); App.refresh(); render();
+    tset(c, f, v); touch(); App.refresh(); render();
   } else if (b.dataset.nudge && c) {
-    const [f, d] = b.dataset.nudge.split(':'), v = r2(c[f] + parseFloat(d)), why = badTime(c, f, v);
+    const [f, d] = b.dataset.nudge.split(':'), v = r2(tget(c, f) + parseFloat(d)), why = badTime(c, f, v);
     if (why) { say(why, true); return; }
     remember(`nudge-${f}`);
-    c[f] = v; touch(); App.refresh();
-    const inp = $('etools').querySelector(`[data-t="${f}"]`); if (inp) inp.value = fmt(c[f]);
+    const had = !!c.ctx;
+    tset(c, f, v); touch(); App.refresh();
+    const inp = $('etools').querySelector(`[data-t="${f}"]`); if (inp) inp.value = fmt(tget(c, f));
+    if ((f === 'cs' || f === 'ce') && !had) render();   // ↺ appears with his own context
     replay(f);
   }
 });

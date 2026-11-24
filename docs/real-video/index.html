@@ -265,6 +265,8 @@ body.editing .capbar [contenteditable]{display:inline-block;padding:0 4px}
 /* The small bar under the video: where the line starts and ends, hide, save. */
 .etools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 14px;background:var(--tint);border-bottom:1px solid var(--line);font-size:13px}
 .etime{display:inline-flex;align-items:center;gap:3px}
+/* While "With context" is on: the context's own Start / End, set apart from the clip's. */
+.ectx{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:10px;border-left:2px solid var(--line)}
 .etime .lbl{font-weight:700;color:var(--muted);margin-right:3px}
 .etime button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer;padding:0}
 .etime input{width:84px;font:600 14px var(--font);font-variant-numeric:tabular-nums;color:var(--ink);padding:5px 4px;border-radius:8px;border:1px solid var(--line);background:var(--surface);text-align:center;-moz-appearance:textfield;appearance:textfield}
@@ -394,6 +396,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, song lyrics from <a href="https://lrclib.net" target="_blank" rel="noopener">lrclib.net</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=21"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>

@@ -236,7 +236,8 @@ huggingface.co, about 15 min per hour of audio).
   - **He edits it himself** on the page: 5 quick taps in the top-left corner open edit mode, where everything is
     edited where it is: he clicks the caption (with context: the line shown), the word, its Ukrainian, its emoji or
     the 💡 note and types; a small bar under the video has Start / End (minutes:seconds; − / + 0.1 s, then that bit plays again; ⏱ =
-    where the video is now), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
+    where the video is now; with "With context" on, ↔ Start / ↔ End too: how far the context goes, saved as the clip's
+    `ctx: [start, end]`, ↺ = back to the lines around it, Nov 24), 🙈 Hide, 🔇 (no sound while editing; students always have sound), Save (counts the words
     that really changed) and ⋯ (move, delete, add a clip by pasting a YouTube link with a time, lines around with their
     times, the note in the other language, other forms to highlight; while a site has no GitHub key its box comes first in the bar, and the student site, which
     keeps its own, gets it from the clip library with one tap: "Use my key from the clip library", key.html), ↻ beside the Ukrainian and the

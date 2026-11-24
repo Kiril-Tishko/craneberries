@@ -15,7 +15,7 @@ my $C = JSON::PP->new->canonical(1);                 # characters, for printing
 sub enc { my ($x, $J) = @_; $J //= $B; return $J->encode($x) unless ref $x eq 'HASH';
   my @k = ((exists $x->{'*'} ? ('*') : ()), sort grep { $_ ne '*' } keys %$x);
   return '{' . join(', ', map { $J->encode($_) . ': ' . $J->encode($x->{$_}) } @k) . '}'; }
-sub clip { my $c = shift; my @k = grep { exists $c->{$_} } qw(v s e line note noteUa around hidden tall song);
+sub clip { my $c = shift; my @k = grep { exists $c->{$_} } qw(v s e line note noteUa around ctx hidden tall song);
   return '{' . join(',', map { $B->encode($_) . ':' . $B->encode($c->{$_}) } @k) . '}'; }
 for my $slug (sort keys %$spec) {
   my $f = "$dir/$slug.json"; open my $fh, '<:raw', $f or die "$f: $!"; my $t = do { local $/; <$fh> }; close $fh;

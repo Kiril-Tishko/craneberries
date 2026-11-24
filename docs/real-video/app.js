@@ -455,7 +455,30 @@ function lineOf(c){
   return (c.sung.find((l) => l[2].search(word.re) >= 0) || c.sung[0])[2];
 }
 // What a play covers: just the line, or with context the lines around it too.
+// "With context" plays from … to …: the clip's own `ctx: [start, end]` when he set it in edit mode (Nov 24: "how long
+// the with context clip is, to adjust it a little bit"), else the lines around it, else 6 s before and 4 s after.
+function ctxOf(c){
+  if (Array.isArray(c.ctx) && c.ctx.length === 2 && c.ctx[0] < c.ctx[1]) return [Math.min(c.ctx[0], c.s), Math.max(c.ctx[1], c.e)];
+  const around = c.around || [];
+  if (around.length && !c.song) {
+    const lines = [...around.filter((l) => l[0] < c.s), [c.s, c.e], ...around.filter((l) => l[0] > c.s)];
+    return [lines[0][0], lines[lines.length - 1][1]];
+  }
+  return [Math.max(0, c.s - LONGER_BEFORE), c.e + LONGER_AFTER];
+}
+App.ctxOf = ctxOf;
 function rangeOf(c, longer){
+  const own = longer && Array.isArray(c.ctx) && c.ctx.length === 2 && c.ctx[0] < c.ctx[1];
+  if (own) {
+    // His own range: exactly from his start to his end. The caption follows the lines inside it (the first and last
+    // stretch to its edges, so a line always shows).
+    const [from, to] = ctxOf(c);   // never shorter than the clip itself
+    const src = c.sung && c.sung.length && !App.editing ? c.allSung
+      : [...(c.around || []).filter((l) => l[0] < c.s), [c.s, c.e, c.line], ...(c.around || []).filter((l) => l[0] > c.s)];
+    const lines = src.filter((l) => l[1] > from + 0.05 && l[0] < to - 0.05).map((l) => [l[0], l[1], l[2]]);
+    if (lines.length) { lines[0][0] = Math.min(lines[0][0], from); lines[lines.length - 1][1] = Math.max(lines[lines.length - 1][1], to); }
+    return {from: Math.max(0, from), to, lines: lines.length > 1 ? lines : null, c, longer};
+  }
   if (c.sung && c.sung.length && !App.editing) {
     const from = longer ? c.s - LONGER_BEFORE : c.s, to = longer ? c.e + LONGER_AFTER : c.e;
     const lines = c.allSung.filter((l) => l[1] > from + 0.2 && l[0] < to - 0.2).map((l) => [Math.max(l[0], from), l[1], l[2]]);
@@ -596,7 +619,9 @@ function setMode(longer){
   longerMode = longer; if (!longer) contextHeld = false;
   $('longer').setAttribute('aria-pressed', longer);
   $('longer').classList.toggle('held', longer && contextHeld);
+  if (App.onMode) App.onMode();   // edit mode shows the context's Start / End while it is on
 }
+Object.defineProperty(App, 'longer', {get: () => longerMode});
 // Another clip or word: "With context" goes off again, unless it was pressed and held.
 function resetContext(){ if (longerMode && !contextHeld) setMode(false); }
 
@@ -764,7 +789,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (App.toggleEdit) { App.toggleEdit(); return; }
-  const s = document.createElement('script'); s.src = 'edit.js?v=7'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
+  const s = document.createElement('script'); s.src = 'edit.js?v=8'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
 };
 let resizeT = null;
 window.addEventListener('resize', () => { hidePop(); clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });
