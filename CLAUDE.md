@@ -249,6 +249,10 @@ huggingface.co, about 15 min per hour of audio).
     never overwrite his edits.
   - **In lessons**: when a lesson page teaches words that have clips (or should), add a `{t:'clips', words:[…]}`
     screen (`tools/lesson-page`, after the part that teaches them; `notes:'ua'` for students who need Ukrainian;
+    `notes:'ru'` only for the one student whose `brief` says Russian (Nov 24): her words' files then carry `ru`,
+    `togetherRu`, `glossRu` (same keys as `gloss`) and `noteRu` on each clip, and the player shows those; edit.js keeps
+    them. Nov 24, his wish for her: reminder clips go **first**, before the recall tests, captions hidden (`listen:
+    true`), so she recognizes the phrases by ear; a drawn fork is in `tools/pics/fork.svg` (🍴 shows a knife too);
     `listen: true` = listen first: each clip starts with its caption blurred, which shows only on a tap (not when the
     clip ends: his rule, Nov 21);
     CC beside the timeline blurs the subtitles (a "censored" look) everywhere, every clip, screen and lesson, after a
