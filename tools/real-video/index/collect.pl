@@ -251,7 +251,7 @@ sub list_channel {
   my ($keep, $skip) = (0, 0);
   for my $x (@e) {
     my $d = $x->{duration};
-    my $ok = (!defined $d || ($d >= 60 && $d <= 3 * 3600))
+    my $ok = (!defined $d || ($d >= 60 && $d <= max_len($c)))
       && ($x->{live_status} // '') !~ /^(is_live|is_upcoming)$/
       && title_ok($c, $x->{title});
     $ok ? $keep++ : $skip++;
@@ -266,20 +266,34 @@ sub list_channel {
 
 # Queues the most-viewed videos of a channel, up to --per-channel.
 sub per_channel { my $key = shift; my $c = first { $_->{key} eq $key } channels(); $c && $c->{per} ? $c->{per} : $opt{per} }
+# The longest video taken from a channel: "max" seconds (a singer's concerts and compilations are left out), else 3 h
+# (chosen "videos" can be any length).
+sub max_len { my $c = shift; $c->{videos} ? 1e9 : $c->{max} || 3 * 3600 }
 # A channel's "titles" (must match) and "skip" (must not: a show's interviews, panels and music, a singer's
 # chats and premieres) for a video title.
 sub title_ok {
   my ($c, $t) = @_; $t //= '';
   (!$c->{titles} || $t =~ /$c->{titles}/) && (!$c->{skip} || $t !~ /$c->{skip}/);
 }
-# After channels.json changes: queued videos whose titles no longer pass are skipped (fetched ones stay; --drop).
+# After channels.json changes: queued videos whose titles no longer pass are skipped (fetched ones stay; --drop),
+# and skipped ones whose titles pass now go back in line (not the ones skipped for their length or dropped by hand).
 sub refilter {
-  for my $c (grep { $_->{titles} || $_->{skip} } channels()) {
-    my @k = map { $_->[0] } grep { !title_ok($c, $_->[1]) }
-      sql(sprintf "SELECT k, title FROM videos WHERE channel=%s AND status IN ('todo','later');", sql_quote($c->{key}));
-    next unless @k;
-    sql(sprintf "UPDATE videos SET status='skip' WHERE k IN (%s);", join ',', @k);
-    logl("$c->{name}: " . @k . " queued videos skipped (channels.json titles / skip)");
+  for my $c (channels()) {
+    my $ch = sql_quote($c->{key});
+    my $max = max_len($c);
+    my @k = map { $_->[0] } grep { !title_ok($c, $_->[1]) || ($_->[2] ne '' && $_->[2] > $max) }
+      sql("SELECT k, title, dur FROM videos WHERE channel=$ch AND status IN ('todo','later');");
+    if (@k) {
+      sql(sprintf "UPDATE videos SET status='skip' WHERE k IN (%s);", join ',', @k);
+      logl("$c->{name}: " . @k . " queued videos skipped (channels.json titles / skip / max)");
+    }
+    next if $c->{videos};
+    my @back = map { $_->[0] } grep { title_ok($c, $_->[1]) }
+      sql("SELECT k, title FROM videos WHERE channel=$ch AND status='skip' AND note IS NULL AND dur BETWEEN 60 AND $max;");
+    if (@back) {
+      sql(sprintf "UPDATE videos SET status='later' WHERE k IN (%s);", join ',', @back);
+      logl("$c->{name}: " . @back . " skipped videos back in line (channels.json titles / skip)");
+    }
   }
 }
 # Takes one video out of the index: its lines go, and it is skipped from now on.
@@ -299,6 +313,9 @@ sub promote {
   my $key = shift;
   my ($n) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE channel=%s AND status NOT IN ('later','skip');", sql_quote($key));
   my $room = per_channel($key) - ($n // 0);
+  if ($room < 0) {   # "per" made smaller, or a looser filter queued more: the least-viewed wait again
+    sql(sprintf "UPDATE videos SET status='later' WHERE k IN (SELECT k FROM videos WHERE channel=%s AND status='todo' ORDER BY views, k LIMIT %d);", sql_quote($key), -$room);
+  }
   return 0 if $room <= 0;
   sql(sprintf "UPDATE videos SET status='todo' WHERE k IN (SELECT k FROM videos WHERE channel=%s AND status='later' ORDER BY views DESC LIMIT %d);", sql_quote($key), $room);
   my ($m) = map { $_->[0] } sql(sprintf "SELECT count(*) FROM videos WHERE channel=%s AND status='todo';", sql_quote($key));
@@ -458,10 +475,14 @@ sub song_of {
   my ($title, $artist) = @_;
   my $t = $title // '';
   $t =~ s/\s*[\(\[][^\)\]]*[\)\]]//g;
+  $t =~ s/\s+\|\s.*$//;   # "Elvis Presley - Suspicious Minds | Elvis '68 Comeback Special"
   $t =~ s/\s+(?:ft\.?|feat\.?|featuring)\s.*$//i;
   my ($art, $trk) = $t =~ /^(.*?)\s+[-\x{2013}\x{2014}]\s+(.+)$/ ? ($1, $2) : ($artist, $t);
-  $art =~ s/\s*(?:,|&|\bx\b|\band\b)\s.*$//i;
+  # "Simon & Garfunkel" is the artist's own name; "Calvin Harris & Rihanna" is two.
+  $art =~ s/\s*(?:,|&|\bx\b|\band\b)\s.*$//i unless lc $art eq lc($artist // '');
   s/^\s+|\s+$//g for $art, $trk;
+  $trk =~ s/^\Q$art\E\s+[-\x{2013}\x{2014}]\s+//i;   # "The Beatles - The Beatles - Hey Jude"
+  $trk =~ s/^["\x{201C}]+|["\x{201D}]+$//g;   # Frank Sinatra - "My Way"
   ($art, $trk);
 }
 # The song's synced lyrics: {dur => seconds, lines => [[ms, text], …]} (empty lines are kept: they end the line before).
