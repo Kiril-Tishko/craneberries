@@ -28,7 +28,9 @@
     "ask": "запитати",
     "about": "о, про",
     "the": "the — ці (мідії з меню)",
-    "mussels": "мідії"
+    "mussels": "мідії",
+    "hi": "добрий день, привіт",
+    "for": "(get for you = принести вам)"
   },
   "glossRu": {
     "what": "что",
@@ -52,11 +54,14 @@
     "ask": "спросить",
     "about": "о, про",
     "the": "the — эти (мидии из меню)",
-    "mussels": "мидии"
+    "mussels": "мидии",
+    "hi": "здравствуйте, привет",
+    "for": "(get for you = принести вам)"
   },
   "clips": [
     {"v":"ghObqCnDfi0","s":1101.28,"e":1102.38,"line":"What can I get you today?","note":"Eleanor comes into a frozen yogurt shop. The worker greets her: What can I get you today?","noteUa":"Елеанор заходить у кафе із замороженим йогуртом. Продавець вітається: «Що вам сьогодні?»","noteRu":"Элеанор заходит в кафе с замороженным йогуртом. Продавец здоровается: «Что вам сегодня?»","around":[[1100.16,1101.28,"Good afternoon, Eleanor."]]},
     {"v":"S6OmrCjmJuk","s":990.48,"e":992.28,"line":"Hey folks, what can I get you?","note":"People from the office sit at a bar. The bartender comes over: Hey folks, what can I get you?","noteUa":"Колеги сидять у барі. Підходить бармен: «Привіт, хлопці, що вам принести?»","noteRu":"Коллеги сидят в баре. Подходит бармен: «Привет, ребята, что вам принести?»","around":[[992.32,992.92,"Oh, hey, man."]]},
-    {"v":"MCpz8UuGndM","s":782.64,"e":784,"line":"What can I get you this evening?","note":"At a restaurant, the waiter finally comes: What can I get you this evening? The customer asks about the mussels.","noteUa":"У ресторані нарешті підходить офіціант: «Що вам принести сьогодні ввечері?» Відвідувач питає про мідії.","noteRu":"В ресторане наконец подходит официант: «Что вам принести сегодня вечером?» Посетитель спрашивает про мидии.","around":[[781.92,782.64,"Thank the Lord."],[784,785.28,"I’d like to ask about the mussels."]]}
+    {"v":"MCpz8UuGndM","s":782.64,"e":784,"line":"What can I get you this evening?","note":"At a restaurant, the waiter finally comes: What can I get you this evening? The customer asks about the mussels.","noteUa":"У ресторані нарешті підходить офіціант: «Що вам принести сьогодні ввечері?» Відвідувач питає про мідії.","noteRu":"В ресторане наконец подходит официант: «Что вам принести сегодня вечером?» Посетитель спрашивает про мидии.","around":[[781.92,782.64,"Thank the Lord."],[784,785.28,"I’d like to ask about the mussels."]]},
+    {"v":"13rwuUlYstU","s":240.04,"e":242.2,"line":"Hi, what can I get for you?","note":"At a restaurant, someone comes to the table: Hi, what can I get for you?","noteUa":"У ресторані до столика підходять: «Добрий день, що вам принести?»","noteRu":"В ресторане к столику подходят: «Здравствуйте, что вам принести?»"}
   ]
 }

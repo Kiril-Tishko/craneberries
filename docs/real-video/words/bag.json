@@ -9,7 +9,7 @@
   "gloss": {
     "is": "is — дієслово be: is that …? = це …?",
     "that": {"*":"що, яка","is that":"то, це (is that a goose? = це гуска?)"},
-    "a": {"*":"a — (якась) гуска","a plastic":"a — (звичайний) пакет","a security":"a — (якусь) бирку"},
+    "a": {"*":"a — (якась) гуска","a plastic":"a — (звичайний) пакет","a security":"a — (якусь) бирку","a bag":"a — (один) пакет"},
     "goose": "гуска",
     "just": "щойно",
     "the": {"*":"the — (те) вікно","the bag":"the — (цей) пакет","the cashier":"the — (та) касирка"},
@@ -20,7 +20,7 @@
     "presents": "подарунки",
     "too": "теж",
     "open": "відкрий",
-    "you": "ти",
+    "you": {"*":"ти","would you":"ви (would you like = хочете?)","thank you":"(thank you = дякую)"},
     "no": "ні",
     "god": "боже (oh, God = о боже)",
     "these": "ці",
@@ -31,7 +31,7 @@
     "please": "будь ласка",
     "give": "дайте",
     "me": "мені",
-    "your": "свою",
+    "your": {"*":"свою","here’s your":"ваш (here’s your bag = ось ваш пакет)"},
     "well": "ну",
     "cashier": "касирка",
     "probably": "мабуть",
@@ -48,12 +48,19 @@
     "saw": "бачив (see – saw)",
     "some": "кілька",
     "in": "тут (in here = тут)",
-    "here": "тут"
+    "here": "тут",
+    "would": "(would you like = чи хочете, ввічливо)",
+    "like": "хочете (would you like = чи хочете)",
+    "thank": "дякую (thank you)",
+    "sure": "так, звісно",
+    "25": "двадцять п’ять",
+    "cents": "центів",
+    "here’s": "here’s = here is: ось"
   },
   "glossRu": {
     "is": "is — глагол be: is that …? = это …?",
     "that": {"*":"что, который","is that":"то, это (is that a goose? = это гусь?)"},
-    "a": {"*":"a — (какой-то) гусь","a plastic":"a — (обычный) пакет","a security":"a — (какую-то) бирку"},
+    "a": {"*":"a — (какой-то) гусь","a plastic":"a — (обычный) пакет","a security":"a — (какую-то) бирку","a bag":"a — (один) пакет"},
     "goose": "гусь",
     "just": "только что",
     "the": {"*":"the — (то) окно","the bag":"the — (этот) пакет","the cashier":"the — (та) кассирша"},
@@ -64,7 +71,7 @@
     "presents": "подарки",
     "too": "тоже",
     "open": "открой",
-    "you": "ты",
+    "you": {"*":"ты","would you":"вы (would you like = хотите?)","thank you":"(thank you = спасибо)"},
     "no": "нет",
     "god": "боже (oh, God = о боже)",
     "these": "эти",
@@ -75,7 +82,7 @@
     "please": "пожалуйста",
     "give": "дайте",
     "me": "мне",
-    "your": "свою",
+    "your": {"*":"свою","here’s your":"ваш (here’s your bag = вот ваш пакет)"},
     "well": "ну",
     "cashier": "кассирша",
     "probably": "наверное",
@@ -92,12 +99,21 @@
     "saw": "видел (see – saw)",
     "some": "несколько",
     "in": "здесь (in here = здесь)",
-    "here": "здесь"
+    "here": "здесь",
+    "would": "(would you like = хотите, вежливо)",
+    "like": "хотите (would you like = хотите ли)",
+    "thank": "спасибо (thank you)",
+    "sure": "да, конечно",
+    "25": "двадцать пять",
+    "cents": "центов",
+    "here’s": "here’s = here is: вот"
   },
   "clips": [
     {"v":"N8ON-qrgmK0","s":1095.12,"e":1096.7,"line":"Oh, it’s a plastic bag.","note":"Andy sees something fly by the window. Is it a goose? No, it’s a plastic bag.","noteUa":"Енді бачить, як щось пролетіло повз вікно. Гуска? Ні, це пластиковий пакет.","noteRu":"Энди видит, как что-то пролетело мимо окна. Гусь? Нет, это пластиковый пакет.","around":[[1090.88,1093.12,"Is that a goose"],[1093.12,1094.92,"that just flew by the window?"]]},
     {"v":"pDunfNO0dyk","s":2398.16,"e":2399.4,"line":"Open the bag.","note":"Someone brings presents in a bag: Open the bag! – Oh, you didn’t have to.","noteUa":"Хтось приносить подарунки в пакеті: «Відкрий пакет!» – «Ой, не треба було».","noteRu":"Кто-то приносит подарки в пакете: «Открой пакет!» – «Ой, не надо было».","around":[[2394.48,2395.76,"Presents, too."],[2402.4,2404.32,"Oh, you didn’t have to."]]},
     {"v":"3QUCiXOEPkw","s":423.45,"e":424.65,"line":"Sir, please give me your bag.","note":"The store alarm beeps when Cam walks out. The worker says: Sir, please give me your bag.","noteUa":"Коли Кем виходить із магазину, спрацьовує сигналізація. Працівниця каже: «Пане, дайте, будь ласка, вашу сумку».","noteRu":"Когда Кэм выходит из магазина, срабатывает сигнализация. Сотрудница говорит: «Сэр, дайте, пожалуйста, вашу сумку».","around":[[421.85,423.33,"Oh, God. These things have lie detectors now."],[424.69,428.93,"Oh, well, the cashier probably just forgot to take a security tag off of the…"]]},
-    {"v":"E-tL5lguo7U","s":134.08,"e":135.8,"line":"Can’t find garbage bags.","note":"Joey and Chandler are in a new apartment. One can’t find garbage bags; the other thinks he saw some in here.","noteUa":"Джоуі й Чендлер у новій квартирі. Один не може знайти пакети для сміття, інший думає, що бачив їх тут.","noteRu":"Джоуи и Чендлер в новой квартире. Один не может найти пакеты для мусора, другой думает, что видел их здесь.","around":[[135.84,138.16,"Oh, well, I think I saw some in here."]]}
+    {"v":"E-tL5lguo7U","s":134.08,"e":135.8,"line":"Can’t find garbage bags.","note":"Joey and Chandler are in a new apartment. One can’t find garbage bags; the other thinks he saw some in here.","noteUa":"Джоуі й Чендлер у новій квартирі. Один не може знайти пакети для сміття, інший думає, що бачив їх тут.","noteRu":"Джоуи и Чендлер в новой квартире. Один не может найти пакеты для мусора, другой думает, что видел их здесь.","around":[[135.84,138.16,"Oh, well, I think I saw some in here."]]},
+    {"v":"NsgkFHtGp2Y","s":180.48,"e":181.68,"line":"Would you like a bag?","note":"At the checkout: Would you like a bag? — Sure. — It’s 25 cents.","noteUa":"На касі: «Вам потрібен пакет?» — «Так». — «Це 25 центів».","noteRu":"На кассе: «Вам нужен пакет?» — «Да». — «Это 25 центов».","around":[[178.64,179.2,"Thank you."],[181.68,182.32,"Sure."],[182.32,183.84,"It’s 25 cents."]]},
+    {"v":"S6OmrCjmJuk","s":1599.12,"e":1600.68,"line":"Here’s your bag.","note":"Michael feels sick. They give him a bag, just in case: Here’s your bag.","noteUa":"Майклу погано. Йому дають пакет, про всяк випадок: «Ось ваш пакет».","noteRu":"Майклу плохо. Ему дают пакет, на всякий случай: «Вот ваш пакет».","around":[[1597.8,1598.6,"Sure."]]}
   ]
 }
