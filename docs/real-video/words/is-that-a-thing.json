@@ -12,6 +12,7 @@
     ["The speaker is 28 and wears knee-high socks. Is that normal for adults? Do other people do it too?","The speaker is 28 and wears knee-high socks. Is that a normal thing for adults? Do other people wear them too?","At 28, the speaker wears knee-high socks and asks: is that normal for adults? Do other people do it too?","Knee-high socks at 28: is that normal for an adult? The speaker wants to know if other people do it too."]
   ],
   "together": {"right now":"прямо зараз","learning from":"вчитися на (чомусь)","in neutral":"на нейтральній передачі","for too long":"занадто довго","dish detergent":"засіб для миття посуду","knee-high":"до колін"},
+  "tags": {"cause":""},
   "gloss": {
     "28": "двадцять вісім",
     "is": "is стоїть першим, бо це питання: That is… → Is that…? (is = є)",

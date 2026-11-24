@@ -310,6 +310,17 @@ body.editing .capbar .tw{cursor:text}
 .pop .pua{color:var(--word);margin-left:6px}
 .pop.long{text-align:left;width:min(340px,92vw)}
 .pop .why{display:block;margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:var(--word)}
+/* Slang, rude and too-hard words: a small dot at the word's top right (it takes no room, so nothing moves); a hover
+   says what it means, and so does the tap bubble, under the translation. Red = slang or rude, gray = too hard. */
+.tg-slang,.tg-rude{--tg:#ff5a5a}
+.tg-hard{--tg:#a7b6c8}
+/* A word's dot sits on the word; a phrase's on its last word (a phrase can wrap onto two lines). */
+.capbar .tw.tg,.capbar .ph.tg .tw:last-child{position:relative}
+.capbar .tw.tg::after,.capbar .ph.tg .tw:last-child::after{content:'';position:absolute;top:.08em;right:-.28em;width:.3em;height:.3em;
+  border-radius:50%;background:var(--tg);pointer-events:none}
+.capbar .tw.tg-rude::after,.capbar .ph.tg-rude .tw:last-child::after{box-shadow:0 0 0 .09em rgba(255,90,90,.35)}
+.pop .tagl{display:block;margin-top:6px;font-size:13.5px;font-weight:600;line-height:1.35;color:#c9d3de;text-align:left}
+.pop .tagl::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--tg);margin-right:7px;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -383,6 +394,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, song lyrics from <a href="https://lrclib.net" target="_blank" rel="noopener">lrclib.net</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=20"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>

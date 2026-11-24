@@ -68,6 +68,31 @@ let INDEX = [], ORDER = [], cur = '', word = null;
 const SHELF = !Q.get('words') && !Q.has('embed');
 let GROUPS = [], shelf = '', shelfFor = null;
 const WORDS = {};
+// Words under the video that are slang, rude or just too hard to learn now get a small dot (his wish, Nov 24: "it has
+// to communicate somehow that it's slang, and you don't really need to learn it"). words/tags.json = {slang: [...],
+// rude: [...], hard: [...]} for the whole library (words and `together` phrases, written like gloss keys); a word file's
+// own "tags": {"word": "slang" | "rude" | "hard" | ""} wins for its clips ("" = no dot there).
+let TAGS = new Map();
+const TAG_SAY = {
+  slang: 'Сленг, розмовне: досить розуміти, вчити не обов’язково',
+  rude: 'Грубе слово: розуміти, але не вживати',
+  hard: 'Складне, рідкісне: можна пропустити',
+};
+function tagMap(t){
+  const m = new Map();
+  if (t && typeof t === 'object') for (const kind of Object.keys(TAG_SAY)) for (const k of t[kind] || []) m.set(wbase(String(k)), kind);
+  return m;
+}
+function tagOf(key){
+  const own = word && word.tags;
+  const k = wbase(key).replace(/^’+|’+$/g, '');
+  for (const x of [k, k.replace(/’s$/, '')]) {
+    if (own && Object.prototype.hasOwnProperty.call(own, x)) return TAG_SAY[own[x]] ? own[x] : '';
+    if (TAGS.has(x)) return TAGS.get(x);
+  }
+  return '';
+}
+const tagAttr = (kind) => (kind ? ` tg tg-${kind}" data-tag="${kind}" title="${TAG_SAY[kind]}` : '');
 let clipN = 0, rate = 1, wantPlay = null, longerMode = false;
 // "With context" is for this clip only; press and hold it, and it stays on for the next clips too.
 let contextHeld = false;
@@ -106,6 +131,7 @@ async function init(){
   INDEX = await App.getJSON('index.json').catch(() => []);
   if (!Array.isArray(INDEX)) INDEX = [];
   if (SHELF) { GROUPS = await App.getJSON('groups.json').catch(() => []); if (!Array.isArray(GROUPS)) GROUPS = []; }
+  TAGS = tagMap(await App.getJSON('tags.json').catch(() => null));
   const want = Q.get('words');
   ORDER = want ? want.split(',').map(slugify).filter(Boolean) : INDEX.map((x) => x.slug);
   if (Q.get('title')) { $('ltitle').textContent = `🎬 ${Q.get('title')}`; $('ltitle').hidden = false; }
@@ -280,11 +306,13 @@ function glossFor(w, line, at){
 }
 let phraseN = 0;
 function tapLine(text){
-  const n = text.length, mk = new Array(n).fill(false), gp = new Array(n).fill(0);
+  const n = text.length, mk = new Array(n).fill(false), gp = new Array(n).fill(0), gtag = {};
   text.replace(word.re, (m, ...r) => { const a = r[r.length - 2]; for (let c = a; c < a + m.length; c++) mk[c] = true; return m; });
-  findIn(text, Object.keys(word.together || {})).forEach(([a, b]) => {
+  const tk = Object.keys(word.together || {});
+  findIn(text, tk).forEach(([a, b, k]) => {
     for (let c = a; c < b; c++) if (mk[c] || gp[c]) return;   // never inside the yellow word or another phrase
     const g = ++phraseN; for (let c = a; c < b; c++) gp[c] = g;
+    gtag[g] = tagOf(tk[k]);   // a slang / hard phrase gets one dot, at its end
   });
   const re = /[A-Za-z0-9’']+|[^A-Za-z0-9’']+/g;
   let h = '', open = false, og = 0, m;
@@ -292,8 +320,10 @@ function tapLine(text){
     const a = m.index, t = m[0], g = gp[a];
     if (og && g !== og) { h += '</span>'; og = 0; }
     if (mk[a] !== open) { h += open ? '</mark>' : '<mark>'; open = mk[a]; }
-    if (g && g !== og) { h += '<span class="ph">'; og = g; }
-    h += /[A-Za-z0-9]/.test(t) ? `<span class="tw">${esc(t)}</span>` : esc(t);
+    if (g && g !== og) { h += `<span class="ph${tagAttr(gtag[g])}">`; og = g; }
+    // A word on its own (not the yellow word, not inside a phrase) can carry a dot too.
+    const tw = !g && !mk[a] && /[A-Za-z]/.test(t) ? tagAttr(tagOf(t)) : '';
+    h += /[A-Za-z0-9]/.test(t) ? `<span class="tw${tw}">${esc(t)}</span>` : esc(t);
   }
   return h + (og ? '</span>' : '') + (open ? '</mark>' : '');
 }
@@ -343,7 +373,9 @@ function showPop(el){
   if (!g) return;
   const p = $('pop'), r = el.getBoundingClientRect(), why = g.ua.length > 32;
   // A short translation sits beside the word; a longer explanation (why a grammar word is there) goes under it.
-  p.innerHTML = `<b>${esc(g.en)}</b><span class="${why ? 'why' : 'pua'}">${esc(g.ua)}</span>`;
+  const kind = g.box.dataset.tag;   // slang / rude / hard: said under the translation
+  p.innerHTML = `<b>${esc(g.en)}</b><span class="${why ? 'why' : 'pua'}">${esc(g.ua)}</span>`
+    + (TAG_SAY[kind] ? `<span class="tagl tg-${kind}">${TAG_SAY[kind]}</span>` : '');
   p.classList.toggle('long', why); p.hidden = false;
   const half = p.offsetWidth / 2 + 8;
   p.style.left = `${Math.min(innerWidth - half, Math.max(half, r.left + r.width / 2))}px`;
@@ -732,7 +764,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (App.toggleEdit) { App.toggleEdit(); return; }
-  const s = document.createElement('script'); s.src = 'edit.js?v=6'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
+  const s = document.createElement('script'); s.src = 'edit.js?v=7'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
 };
 let resizeT = null;
 window.addEventListener('resize', () => { hidePop(); clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });
