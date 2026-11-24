@@ -452,6 +452,9 @@ huggingface.co, about 15 min per hour of audio).
   - Recall (repeating words): short, easy sentences with the key word in brackets, `R('Це обов’язково?', 'Is it [mandatory]?')`.
     The screen shows only the Ukrainian; one button gives three steps: 💡 Hint (the sentence with a blank, "Is it ____?"),
     💡 First letter ("Is it m________?"), Answer. Natural, everyday Ukrainian prompts (no odd words like «здирство»).
+    **The sentence never moves between the steps** (Nov 24, his wish): it is one line, the same size from the blanks to
+    the answer; the hidden words are their own letters in clear ink, each over a short line, so the first letters and
+    then the words appear right where their blanks were (`.gapline` in engine.html, `data-step` 1 → 3).
     `hint: 1` on a recall shows the gap line from the start, as if Hint were already pressed (the button then gives the
     first letter). Only when he asks: on Nov 21 he wanted the older words' gap lines hidden again until Hint.
     The blanks have one place per letter: "a" or "I" gets one blank, never two (Nov 23).
