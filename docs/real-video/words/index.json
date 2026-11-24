@@ -23,6 +23,7 @@
   {"slug":"good-morning","en":"Good morning!","ua":"Доброго ранку!","pic":"☀️","n":3},
   {"slug":"good-night","en":"Good night!","ua":"Добраніч!","pic":"🛌","n":3},
   {"slug":"i-didnt-expect-that","en":"I didn’t expect that.","ua":"Я цього не очікувала.","pic":"😮","n":2},
+  {"slug":"something-is-off","en":"Something is off.","ua":"Щось не так.","pic":"🤨","n":2},
   {"slug":"watches","en":"he watches","ua":"він дивиться","pic":"📺","n":4},
   {"slug":"how-much-is-it","en":"How much is it?","ua":"Скільки це коштує?","pic":"💲","n":4},
   {"slug":"i-agree","en":"I agree.","ua":"Я згоден.","pic":"🤝","n":3},
