@@ -3,7 +3,7 @@
   "ua": "приватна власність",
   "pic": "🚫",
   "hl": "private property",
-  "together": {"on camera":"на камеру","hit the road":"забирайся звідси (розм.)","need to":"треба","makes his way":"пробирається, йде","you guys":"ви (до кількох людей)"},
+  "together": {"on camera":"на камеру","hit the road":"забирайся звідси (розм.)","call down":"подзвонити (куди слід)","need to":"треба","makes his way":"пробирається, йде","you guys":"ви (до кількох людей)"},
   "gloss": {
     "this": "це",
     "is": "є (is — бо одне: this)",
@@ -16,7 +16,7 @@
     "okay": "гаразд",
     "now": "а тепер",
     "shouldn’t": "хіба не повинні",
-    "you": "ви",
+    "you": {"*":"ви","told you":"вам (who told you = хто вам сказав)","gave you":"вам (gave you permission = дав вам дозвіл)"},
     "guys": "хлопці",
     "be": "бути",
     "in": "в",
@@ -53,12 +53,37 @@
     "ain’t": "(розм.) is not: this ain’t no … = це зовсім не …",
     "no": "(ain’t no = зовсім не: розмовне подвійне заперечення)",
     "state": "державна (state property = державна власність)",
-    "oh": "о"
+    "oh": "о",
+    "uh": "е-е (пауза)",
+    "who": "хто",
+    "told": "сказав (tell – told)",
+    "could": "можете (you could fish = вам можна рибалити)",
+    "fish": "рибалити",
+    "and": "і, а",
+    "i": "я",
+    "thought": "думав (think – thought)",
+    "it": "це",
+    "was": "було",
+    "yeah": "так, ага",
+    "name": "ім’я",
+    "man": "чоловіче (звертання)",
+    "want": "хочу",
+    "your": "ваше (your name = ваше ім’я)",
+    "huh": "га? (перепитує)",
+    "so": "щоб (so I can = щоб я міг)",
+    "can": "міг (so I can = щоб я міг)",
+    "call": "(call down = подзвонити куди слід)",
+    "down": "(call down = подзвонити куди слід)",
+    "see": "дізнатися",
+    "gave": "дав (give – gave)",
+    "permission": "дозвіл",
+    "my": "моє (my name = моє ім’я)",
+    "hubert": "Г’юберт (ім’я)"
   },
   "clips": [
     {"v":"HV6SV_ne2m0","s":765.6,"e":766.88,"line":"This is private property here.","note":"A man finds some kids on his land. He says it's private property, and they should be at school.","around":[[764.079,765.6,"That doesn’t count."],[766.88,767.76,"Okay."],[767.76,769.44,"Now, shouldn’t you guys be in school?"]]},
     {"v":"NfNHImQPHJc","s":82.76,"e":84.12,"line":"’Cause this is private property.","note":"A reporter is in front of a company's office. She can't film inside: it's private property. ('Cause = because.)","around":[[78.64,82.76,"This is the headquarters for Taylor Farms."],[84.92,88.28,"Taylor Farms won’t talk to us on camera today."]]},
     {"v":"GuiiyhsKR3Q","s":18353.12,"e":18354.76,"line":"This is private property.","note":"He tells a comic book story. A man shouts: Is anybody there? This is private property. You need to leave.","around":[[18351.36,18353.12,"Right, “Hello, is anybody there?"],[18354.76,18357.64,"You need to leave.” But as he makes his way through here,"]]},
-    {"v":"7zNnR_5R0yE","s":10.6,"e":12.32,"line":"This is private property.","note":"A man in a truck finds someone fishing on his land. The fisherman thought it was state land, but the man says it's private property and tells him to leave.","noteUa":"Чоловік у пікапі бачить, що хтось рибалить на його землі. Рибалка думав, що це державна земля, але чоловік каже, що це приватна власність, і проганяє його.","around":[[8,9.12,"Hit the road, dude."],[9.12,10.6,"This ain’t no state property."],[12.6,13.2,"Oh, okay."]],"ctx":[0,19.7],"tall":true}
+    {"v":"7zNnR_5R0yE","s":10.6,"e":12.32,"line":"This is private property.","note":"A man in a truck finds someone fishing on his land. The fisherman thought it was state land, but the man says it's private property and tells him to leave.","noteUa":"Чоловік у пікапі бачить, що хтось рибалить на його землі. Рибалка думав, що це державна земля, але чоловік каже, що це приватна власність, і проганяє його.","around":[[0,1.76,"Uh, who told you you could fish here?"],[1.76,3.52,"And I thought it was state property."],[3.96,4.76,"State?"],[4.84,5.4,"Yeah."],[5.4,6,"Fish?"],[6,6.48,"Yeah."],[6.48,7.2,"State?"],[7.2,8,"Ain’t…"],[8,9.12,"Hit the road, dude."],[9.12,10.6,"This ain’t no state property."],[12.6,13.2,"Oh, okay."],[13.2,13.76,"…name, man?"],[13.76,14.96,"I want your name."],[14.96,15.16,"Huh?"],[15.16,17.8,"So I can call down and see who gave you permission"],[17.8,19.44,"on state property."],[19.44,20.48,"My name… Hubert."]],"ctx":[0,19.7],"tall":true}
   ]
 }
