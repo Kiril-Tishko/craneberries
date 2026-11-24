@@ -258,16 +258,23 @@ function params() {
   if ($('#human').checked) p.set('human', '1');
   return p;
 }
+let loadingMore = false;
 async function go(more) {
   const p = params(); if (!p.get('q')) return;
   if (!more) { page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); setTab('results'); }
   p.set('page', page); p.set('n', 15);
-  $('#summary').textContent = more ? 'Loading more…' : 'Searching…';
-  $('#more').hidden = true;
+  // "More results" stays where it is while the next ones load (it only says so), so nothing in the list moves
+  // (his bug, Nov 24: the list jumped).
+  const btn = $('#more');
+  if (more) { loadingMore = true; btn.disabled = true; btn.textContent = 'Loading…'; }
+  else { $('#summary').textContent = 'Searching…'; btn.hidden = true; }
   let d;
   try { d = await api('/api/search?' + p.toString()); }
   catch (e) { d = {error: 'Can’t reach the index. Is site.pl running?'}; }
-  if (d.error) { $('#summary').innerHTML = '<span class="error">' + esc(d.error) + '</span>'; return; }
+  if (more) { loadingMore = false; btn.disabled = false; btn.textContent = 'More results'; }
+  if (d.error) { if (more) page--; $('#summary').innerHTML = '<span class="error">' + esc(d.error) + '</span>'; return; }
+  // A next page that came back empty (its videos were gone from YouTube): nothing more, so no button.
+  if (more && !d.results.length) d.more = false;
   current = d;
   items.push(...d.results);
   const scenes = d.scenes < d.videos ? `, ${fmt(d.scenes)} scenes` : '';
@@ -280,7 +287,7 @@ async function go(more) {
   // The first clip is ready in the video (not playing) as soon as the results come.
   if (!more && items.length) play('results', 0, undefined, true);
 }
-$('#more').addEventListener('click', () => { page++; go(true); });
+$('#more').addEventListener('click', () => { if (loadingMore) return; page++; go(true); });
 $('#f').addEventListener('submit', e => { e.preventDefault(); go(); });
 $('#show').addEventListener('change', () => { loadStatus(); if ($('#q').value.trim()) go(); });
 $('#human').addEventListener('change', () => { if ($('#q').value.trim()) go(); });
@@ -323,14 +330,16 @@ function drawList() {
   const res = tab === 'results' && current ? patterns(current.query || $('#q').value) : [];
   $('#list').innerHTML = rows.map((r, i) => item(r, i, res)).join('');
   if (tab === 'liked' && !rows.length) $('#list').innerHTML = '<li class="summary">No liked clips yet: ♡ Like under the video.</li>';
-  markNow();
+  markNow(false);
 }
-function markNow() {
+// The clip that plays is marked in the list; only a new clip (scroll = true) brings it into view: a redrawn list
+// (More results, 🙈, ♥) stays where he scrolled it.
+function markNow(scroll = true) {
   if (tab === 'caps') return;
   document.querySelectorAll('.item.now').forEach(x => x.classList.remove('now'));
   if (P.list !== tab) return;
   const el = document.querySelector(`.item[data-i="${P.i}"]`);
-  if (el) { el.classList.add('now'); el.scrollIntoView({block: 'nearest'}); }
+  if (el) { el.classList.add('now'); if (scroll) el.scrollIntoView({block: 'nearest'}); }
 }
 $('#list').addEventListener('click', e => {
   const li = e.target.closest('.item'); if (!li) return;
@@ -432,7 +441,7 @@ async function hide(r, li, on) {
   r.hidden = on;
   const res = current ? patterns(current.query || $('#q').value) : [];
   li.outerHTML = item(r, Number(li.dataset.i), res);
-  markNow();
+  markNow(false);
 }
 function mark(r, kind) {
   const p = new URLSearchParams({lid: r.lid, last: r.last, kind, q: (current && current.query) || r.query || ''});
