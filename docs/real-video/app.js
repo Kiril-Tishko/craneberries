@@ -318,8 +318,10 @@ function showCaption(){
   if (!capHidden) return;
   capHidden = false; drawCC(); redrawLine();
 }
+// The button shows what is on the screen now: a caption tapped open shows CC on, so one press hides it again
+// (Nov 24: it used to stay "off", and the first press only switched CC back on with nothing to see).
 function drawCC(){
-  const off = (capHidden || subsOff) && !App.editing;
+  const off = capHidden && !App.editing;
   $('cc').setAttribute('aria-pressed', String(off));
   $('ccicon').setAttribute('href', off ? '#i-ccoff' : '#i-cc');
   const t = off ? 'Show subtitles' : 'Hide subtitles';
@@ -328,7 +330,7 @@ function drawCC(){
 function setSubs(off){
   subsOff = off; capHidden = off && !App.editing; drawCC(); if (clip()) redrawLine();
 }
-$('cc').onclick = () => { setSubs(!(capHidden || subsOff)); saveSubs(); };
+$('cc').onclick = () => { setSubs(App.editing ? !subsOff : !capHidden); saveSubs(); };
 // CC changed in another clip page (another screen of the lesson, already loaded): this one follows.
 addEventListener('storage', (e) => { if (e.key === SUBS && (e.newValue === '1') !== subsOff) setSubs(e.newValue === '1'); });
 // The lesson moved on to another screen: a clip left playing here stops.
