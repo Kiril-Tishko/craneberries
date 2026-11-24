@@ -145,6 +145,7 @@ button.more { display: block; margin: 6px auto 16px; padding: 8px 16px; border-r
   <form id="f" autocomplete="off">
     <input type="search" id="q" name="q" placeholder="Search a phrase, e.g. it depends" aria-label="Phrase to find">
     <select id="show" aria-label="Show"><option value="">All shows and channels</option></select>
+    <label class="check" title="shake also finds shakes, shook, shaken, shaking, shake his hand; didn’t = did not"><input type="checkbox" id="forms"> Any forms</label>
     <label class="check"><input type="checkbox" id="human"> Exact captions only</label>
     <button class="go" type="submit">Search</button>
     <button type="button" id="gear" aria-label="Show, exact captions, how far it has got" title="More">⚙</button>
@@ -233,6 +234,18 @@ function patterns(q) {
     const ws = words(alt); return ws.length ? [toRe(ws)] : [];
   }).map(src => new RegExp('(?<![\\p{L}\\p{N}])' + src + '(?![\\p{L}\\p{N}])', 'giu'));
 }
+// The words to mark in this search's lines: with "Any forms", the forms it found (search.pl sends them as hl), so
+// "shook hands" is marked for shake hands; else the words as typed.
+let hlFor = null, hlRes = [];
+function searchRes() {
+  if (!current) return [];
+  if (!Array.isArray(current.hl) || !current.hl.length) return patterns(current.query || $('#q').value);
+  if (hlFor !== current.hl) {
+    hlFor = current.hl;
+    hlRes = current.hl.flatMap(src => { try { return [new RegExp('(?<![\\p{L}\\p{N}])' + src + '(?![\\p{L}\\p{N}])', 'giu')]; } catch (e) { return []; } });
+  }
+  return hlRes;
+}
 function highlight(text, res) {
   const plain = text.normalize('NFD').replace(/\p{Mn}/gu, '');
   if (plain.length !== text.length) return esc(text);
@@ -259,15 +272,32 @@ function params() {
   const p = new URLSearchParams();
   p.set('q', $('#q').value.trim());
   if ($('#show').value) p.set('show', $('#show').value);
+  if ($('#forms').checked) p.set('forms', '1');
   if ($('#human').checked) p.set('human', '1');
   return p;
 }
-let loadingMore = false;
+// "Any forms" stays as he left it (in this browser), also for searches opened from a link without it.
+const formsKey = 'ci-forms';
+function rememberForms() { try { localStorage.setItem(formsKey, $('#forms').checked ? '1' : '0'); } catch (e) {} }
+function savedForms() { try { return localStorage.getItem(formsKey) === '1'; } catch (e) { return false; } }
+let loadingMore = false, morePromise = null;
+// The next page, once: the button, the end of the list coming into view, ▶ Next and a reload all ask here, so two of
+// them at once still load one page.
+function loadMore() {
+  if (!morePromise) { page++; morePromise = go(true).finally(() => { morePromise = null; }); }
+  return morePromise;
+}
 // more: the next page of the same search. quiet: no clip is made ready (the page is coming back to his clip).
+// The next pages are always of the search on screen (not of what is typed in the box since), and a page that comes
+// back after a new search started is dropped.
+let searchGen = 0, lastSearch = '';
 async function go(more, quiet) {
-  const p = params(); if (!p.get('q')) return;
-  if (!more) { page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); setTab('results'); }
-  p.set('page', page); p.set('n', 15);
+  let p;
+  if (more && lastSearch) p = new URLSearchParams(lastSearch);
+  else { p = params(); if (!p.get('q')) return; }
+  if (!more) { searchGen++; lastSearch = p.toString(); page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); setTab('results'); }
+  const gen = searchGen;
+  p.set('page', page); p.set('n', 30);
   // "More results" stays where it is while the next ones load (it only says so), so nothing in the list moves
   // (his bug, Nov 24: the list jumped).
   const btn = $('#more');
@@ -277,6 +307,7 @@ async function go(more, quiet) {
   try { d = await api('/api/search?' + p.toString()); }
   catch (e) { d = {error: 'Can’t reach the index. Is site.pl running?'}; }
   if (more) { loadingMore = false; btn.disabled = false; btn.textContent = 'More results'; }
+  if (gen !== searchGen) return;
   if (d.error) { if (more) page--; $('#summary').innerHTML = '<span class="error">' + esc(d.error) + '</span>'; return; }
   // A next page that came back empty (its videos were gone from YouTube): nothing more, so no button.
   if (more && !d.results.length) d.more = false;
@@ -305,10 +336,17 @@ async function addToPlayer(rows) {
   A.word.clips.push(...w.clips);
   P.slug = slugOf('results');
 }
-$('#more').addEventListener('click', () => { if (loadingMore) return; page++; go(true); });
+$('#more').addEventListener('click', () => loadMore());
 $('#f').addEventListener('submit', e => { e.preventDefault(); go(); });
 $('#show').addEventListener('change', () => { loadStatus(); if ($('#q').value.trim()) go(); });
 $('#human').addEventListener('change', () => { if ($('#q').value.trim()) go(); });
+$('#forms').addEventListener('change', () => { rememberForms(); if ($('#q').value.trim()) go(); });
+// The next results load by themselves when the end of the list comes into view (his wish, Nov 24: less paging);
+// "More results" stays as the button for it. Nothing in the list moves: the new ones are added under it.
+$('#side').addEventListener('scroll', () => {
+  const s = $('#side');
+  if (s.scrollTop + s.clientHeight >= s.scrollHeight - 300 && !loadingMore && tab === 'results' && current && current.more && !$('#more').hidden) loadMore();
+}, {passive: true});
 
 // ---- the list on the side: a small picture of the video, the channel and title, the captions under them ----
 const rowsOf = list => list === 'liked' ? picks : items;
@@ -345,7 +383,7 @@ function item(r, i, res) {
 }
 function drawList() {
   const rows = rowsOf(tab);
-  const res = tab === 'results' && current ? patterns(current.query || $('#q').value) : [];
+  const res = tab === 'results' && current ? searchRes() : [];
   $('#list').innerHTML = rows.map((r, i) => item(r, i, res)).join('');
   if (tab === 'liked' && !rows.length) $('#list').innerHTML = '<li class="summary">No liked clips yet: ♡ Like under the video.</li>';
   markNow(false);
@@ -430,7 +468,7 @@ window.CI = {
   async next() {
     const rows = rowsOf(P.list);
     if (P.i < rows.length - 1) return play(P.list, P.i + 1);
-    if (P.list === 'results' && current && current.more) { const n = P.i + 1; page++; await go(true); play('results', n); }
+    if (P.list === 'results' && current && current.more) { const n = P.i + 1; await loadMore(); play('results', n); }
   },
   // ♥ Like / Liked: a tap on a liked (or super-liked) clip takes the like away.
   async like() {
@@ -469,7 +507,7 @@ async function hide(r, li, on) {
   await api('/api/mark?' + new URLSearchParams({lid: r.lid, last: r.last, kind: on ? 'hide' : 'none',
     q: (current && current.query) || '', scene: (r.scene || []).join(',')}).toString());
   r.hidden = on;
-  const res = current ? patterns(current.query || $('#q').value) : [];
+  const res = current ? searchRes() : [];
   li.outerHTML = item(r, Number(li.dataset.i), res);
   markNow(false);
 }
@@ -540,7 +578,7 @@ function showCaps() {
   capsFor = key;
   // The editor starts from what plays now (his own start / end on the clip's line).
   const screens = (c.screens || [{s: c.s, e: c.e, t: c.line}]).map((x, k) => k === c.star ? {...x, s: c.s, e: c.e} : x);
-  editor.set(screens, c.star || 0, P.list === 'results' && current ? patterns(current.query || '') : []);
+  editor.set(screens, c.star || 0, P.list === 'results' && current ? searchRes() : []);
 }
 // Saved a moment after the last change (at once when another clip's lines are waiting); null = back to the original.
 function saveCaps(c, data) {
@@ -600,6 +638,7 @@ setInterval(() => {
 (async () => {
   const u = new URLSearchParams(location.search);
   $('#q').value = u.get('q') || ''; $('#human').checked = u.get('human') === '1';
+  $('#forms').checked = u.has('forms') ? u.get('forms') === '1' : savedForms();
   $('#examples').innerHTML = ['what do you mean', 'it depends', 'are you kidding me', 'I’m tired', 'can I call you back'].map(x => `<button type="button" class="chip">${esc(x)}</button>`).join('');
   await loadStatus();
   const liked = loadPicked();
@@ -611,7 +650,7 @@ setInterval(() => {
     await go(false, !!back);
     if (back && !fromLiked) {
       const n = Math.min(Number(u.get('pages')) || 1, 10);
-      while (page < n && current && current.more && !items.some(r => r.lid === back)) { page++; await go(true); }
+      while (page < n && current && current.more && !items.some(r => r.lid === back)) await loadMore();
       const i = items.findIndex(r => r.lid === back);
       if (i >= 0) { play('results', i, undefined, true); found = true; }
     }

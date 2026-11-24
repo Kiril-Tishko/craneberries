@@ -397,6 +397,7 @@ sub search {
   push @args, '--show', $q->{show} if length($q->{show} // '');
   push @args, '--channel', $q->{channel} if length($q->{channel} // '');
   push @args, '--human' if $q->{human};
+  push @args, '--forms' if $q->{forms};   # "Any forms": shake = shook, shaking…; didn't = did not
   my $err = gensym;
   my $pid = open3(my $in, my $out, $err, $^X, "$BIN/search.pl", @args);
   close $in;

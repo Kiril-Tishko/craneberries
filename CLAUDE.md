@@ -287,7 +287,13 @@ huggingface.co, about 15 min per hour of audio).
     and in each phrase's group on the picks page); a second ★ makes it a plain like, ♥ takes either away. A small 🙈 on a result hides it and the same scene in other videos from every search (kind hide; Undo in place). Short scene clips rank before compilations.
     Clips he has watched (played a second, or most of a shorter line) turn a little gray in the lists (`seen` table,
     Nov 24). More results keeps the list where it is and adds the clips to the open player; the address keeps the clip
-    he is on (`clip`, `list`, `pages`), so a reload comes back to it.
+    he is on (`clip`, `list`, `pages`), so a reload comes back to it. 30 results a load, and the next 30 load by
+    themselves when the list's end comes into view (Nov 24, "less paging"). **Any forms** (a switch by the search box,
+    remembered in his browser; Nov 24, his words: "if I press any forms then it should be any forms"; `search.pl
+    --forms`, `WordForms.pm`): shake = shakes, shook, shaken, shaking (irregular verbs, -s / -ed / -ing, plurals),
+    didn't = did not = didnt (I'm, can't, gonna…), and up to 2 words between two words that carry meaning ("shake his
+    hand"; never next to I, am, to, the…); only forms that really occur in the index. Order: ★ / ♥ first as always,
+    then the phrase as typed, then with words between, then other forms. Off = exact, as before.
     **His phone** on the home Wi-Fi opens it too: `http://<PC's address>:8770` and a PIN (both shown on the page),
     then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait. With **Tailscale** (free,
     on his PC and phone) the same page opens from anywhere at the PC's Tailscale address (100.x.y.z or its .ts.net
@@ -314,7 +320,7 @@ huggingface.co, about 15 min per hour of audio).
     you mean" [how many, default 10]` prints results like the Caption Search tool (channel, title, youtu.be link with
     the time, exact start and end, the line with two before and after; plus `words` times where YouTube gave them,
     human or auto captions, and an online check that drops gone videos), with no daily limit. `--page 2`, `--human`
-    (uploaded captions only, exact text), `--channel office,friends`, `--not snl`, `"a | b"` (either), `"call ~3
+    (uploaded captions only, exact text), `--forms` (any forms, as on the page), `--channel office,friends`, `--not snl`, `"a | b"` (either), `"call ~3
     back"` (near), `"tire*"`; `--channels` lists them; `--clip` adds each result's ready clip entry for `words/`
     (`v`, `s`, `e`, `line`, `around`; write the note after watching). A scene found in several videos (a compilation
     and its own clip) shows once, with "same scene also in …". **A student's favorite show**: `--show breaking-bad`

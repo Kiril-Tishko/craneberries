@@ -69,7 +69,9 @@ sub sql_quote {   # a text value; numbers go in as int($n)
 # Words as FTS5's unicode61 tokenizer (remove_diacritics 2) sees them: letters and digits, lower case, no accents.
 # "I’m tired." -> i, m, tired
 sub tokens {
-  my $t = NFD(lc(shift // ''));
+  my $t = lc(shift // '');
+  return $t =~ /[a-z0-9]+/g unless $t =~ /[^\x00-\x7f]/;   # plain ASCII (most lines): the same words, much faster
+  $t = NFD($t);
   $t =~ s/\p{Mn}+//g;
   return $t =~ /[\p{L}\p{N}\p{Co}]+/g;
 }

@@ -846,7 +846,7 @@ sub install {
   # running: its new copy starts at its next start, as before).
   system('powershell.exe', '-NoProfile', '-NonInteractive', '-Command',
     q{Get-CimInstance Win32_Process -Filter "Name='perl.exe'" | Where-Object { $_.CommandLine -match 'caption-index\\\\(site|sync)\.pl' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }});
-  for my $f (qw(collect.pl search.pl CaptionIndex.pm channels.json site.pl site.html sync.pl)) {
+  for my $f (qw(collect.pl search.pl CaptionIndex.pm WordForms.pm channels.json site.pl site.html sync.pl)) {
     copy("$BIN/$f", "$to/$f") or die "can't copy $f to $to: $!\n";
   }
   # The clip library's player, for the page when there is no internet (site.pl takes the live one when it can).
