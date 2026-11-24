@@ -58,6 +58,11 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .video iframe{position:absolute;left:0;top:-40%;width:100%;height:180%;border:0;opacity:0}
 /* Two players lie on top of each other; only the one in use is seen, the other preloads the next clip. */
 .video iframe.on{opacity:1}
+/* A tall clip (a YouTube Short, `tall: true`): the picture fills the player's whole height, so the usual crop would
+   cut off heads. It moves up to show the top of the picture (YouTube's title and captions still stay out of view),
+   and our big button moves down onto YouTube's own play icon, which sits in the middle of the player (Nov 24). */
+.video.tall iframe{top:-18%}
+.video.tall .cover .big{position:relative;top:22%}
 /* Our cover sits on the video all the time, so no YouTube buttons ever show. Before a clip starts it darkens the
    picture; once started, a pause only dims it a little. Tap = play/pause, double-tap a side = 1 s back/forward. */
 .cover{position:absolute;inset:0;border:0;padding:0;background:rgba(10,12,16,.86);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
@@ -379,6 +384,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, song lyrics from <a href="https://lrclib.net" target="_blank" rel="noopener">lrclib.net</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=19"></script>
+<script src="app.js?v=20"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
   "ua": "приватна власність",
   "pic": "🚫",
   "hl": "private property",
-  "together": {"on camera":"на камеру","need to":"треба","makes his way":"пробирається, йде","you guys":"ви (до кількох людей)"},
+  "together": {"on camera":"на камеру","hit the road":"забирайся звідси (розм.)","need to":"треба","makes his way":"пробирається, йде","you guys":"ви (до кількох людей)"},
   "gloss": {
     "this": "це",
     "is": "є (is — бо одне: this)",
@@ -46,11 +46,19 @@
     "makes": "(makes his way = пробирається)",
     "his": "свій",
     "way": "шлях",
-    "through": "через"
+    "through": "через",
+    "hit": "(hit the road = забирайся звідси)",
+    "road": "дорога (hit the road = забирайся звідси)",
+    "dude": "чувак",
+    "ain’t": "(розм.) is not: this ain’t no … = це зовсім не …",
+    "no": "(ain’t no = зовсім не: розмовне подвійне заперечення)",
+    "state": "державна (state property = державна власність)",
+    "oh": "о"
   },
   "clips": [
     {"v":"HV6SV_ne2m0","s":765.6,"e":766.88,"line":"This is private property here.","note":"A man finds some kids on his land. He says it's private property, and they should be at school.","around":[[764.079,765.6,"That doesn’t count."],[766.88,767.76,"Okay."],[767.76,769.44,"Now, shouldn’t you guys be in school?"]]},
     {"v":"NfNHImQPHJc","s":82.76,"e":84.12,"line":"’Cause this is private property.","note":"A reporter is in front of a company's office. She can't film inside: it's private property. ('Cause = because.)","around":[[78.64,82.76,"This is the headquarters for Taylor Farms."],[84.92,88.28,"Taylor Farms won’t talk to us on camera today."]]},
-    {"v":"GuiiyhsKR3Q","s":18353.12,"e":18354.76,"line":"This is private property.","note":"He tells a comic book story. A man shouts: Is anybody there? This is private property. You need to leave.","around":[[18351.36,18353.12,"Right, “Hello, is anybody there?"],[18354.76,18357.64,"You need to leave.” But as he makes his way through here,"]]}
+    {"v":"GuiiyhsKR3Q","s":18353.12,"e":18354.76,"line":"This is private property.","note":"He tells a comic book story. A man shouts: Is anybody there? This is private property. You need to leave.","around":[[18351.36,18353.12,"Right, “Hello, is anybody there?"],[18354.76,18357.64,"You need to leave.” But as he makes his way through here,"]]},
+    {"v":"7zNnR_5R0yE","s":10.6,"e":12.32,"line":"This is private property.","note":"A man in a truck finds someone fishing on his land. The fisherman thought it was state land, but the man says it's private property and tells him to leave.","noteUa":"Чоловік у пікапі бачить, що хтось рибалить на його землі. Рибалка думав, що це державна земля, але чоловік каже, що це приватна власність, і проганяє його.","around":[[8,9.12,"Hit the road, dude."],[9.12,10.6,"This ain’t no state property."],[12.6,13.2,"Oh, okay."]],"tall":true}
   ]
 }

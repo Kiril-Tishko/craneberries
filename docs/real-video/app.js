@@ -205,6 +205,7 @@ function showClip(play){
   const c = L[clipN];
   setNote(NOTES === 'ua' && c.noteUa ? c.noteUa : c.note || '');
   capHidden = (LISTEN || subsOff) && !App.editing; drawCC();
+  document.querySelector('.video').classList.toggle('tall', !!c.tall);   // a YouTube Short: index.html moves the crop up
   loadSong(c);
   showLine(lineOf(c));
   range = rangeOf(c, longerMode); drawTimeline(range.from);
@@ -731,7 +732,7 @@ $('corner').onclick = () => {
   if (corner.length < 5) return;
   corner = [];
   if (App.toggleEdit) { App.toggleEdit(); return; }
-  const s = document.createElement('script'); s.src = 'edit.js?v=5'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
+  const s = document.createElement('script'); s.src = 'edit.js?v=6'; s.onload = () => App.toggleEdit(); document.head.appendChild(s);
 };
 let resizeT = null;
 window.addEventListener('resize', () => { hidePop(); clearTimeout(resizeT); resizeT = setTimeout(sizeCaption, 150); });

@@ -66,6 +66,7 @@ function wordText(w){
     if (c.noteUa) o.noteUa = c.noteUa;
     if (c.around && c.around.length) o.around = c.around;
     if (c.hidden) o.hidden = true;
+    if (c.tall) o.tall = true;   // a YouTube Short (portrait): the player crops it differently
     if (c.song) o.song = c.song;   // a song clip: its lyrics load live (app.js); only the lrclib id and shift are kept
     return `    ${JSON.stringify(o)}`;
   });
@@ -254,7 +255,7 @@ function parseLink(text){
   let s = 0;
   if (/^\d+(\.\d+)?$/.test(t)) s = parseFloat(t);
   else { const m = t.match(/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/); s = (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0); }
-  return {v, s};
+  return {v, s, tall: /\/shorts\//.test(u.pathname)};
 }
 
 // Times show like on YouTube, minutes:seconds to a tenth (48:54.3); she can type them that way too (or in seconds).
@@ -433,6 +434,7 @@ document.addEventListener('click', (e) => {
     if (!p) { say('That doesn’t look like a YouTube link.', true); return; }
     remember(null);
     const nc = {v: p.v, s: p.s, e: r2(p.s + 2), line: '', note: ''};
+    if (p.tall) nc.tall = true;
     const i = c ? w.clips.indexOf(c) + 1 : w.clips.length;
     w.clips.splice(i, 0, nc); App.clipN = App.list().indexOf(nc);
     touch(); say('Clip added. Play it, set Start and End (⏱ or − / +), click the caption to type the line, then save.');

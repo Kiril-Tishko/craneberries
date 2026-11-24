@@ -68,7 +68,7 @@
   {"slug":"not-yet","en":"Not yet.","ua":"Ще ні.","pic":"⏳","n":3},
   {"slug":"out-of-stock","en":"out of stock","ua":"немає в наявності","pic":"📦","n":1},
   {"slug":"overrated","en":"overrated","ua":"переоцінений","pic":"📉","n":4},
-  {"slug":"private-property","en":"private property","ua":"приватна власність","pic":"🚫","n":3},
+  {"slug":"private-property","en":"private property","ua":"приватна власність","pic":"🚫","n":4},
   {"slug":"ran-a-red-light","en":"ran a red light","ua":"проїхав на червоне світло","pic":"🚦","n":4},
   {"slug":"right-next-to","en":"right next to","ua":"прямо поруч із","pic":"📍","n":4},
   {"slug":"rip-off","en":"rip-off","ua":"грабіж, завищена ціна","pic":"💸","n":5},
