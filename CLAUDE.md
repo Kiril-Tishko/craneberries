@@ -260,9 +260,9 @@ huggingface.co, about 15 min per hour of audio).
     forward on the last; no "Next clip" button there, his choice, so it isn't confused with the lesson's Next;
     a low, wide screen (a phone on its side) puts the speed under the timeline and the caption, "With context" and
     the dots beside the video; **💡 What's happening?** beside "With context" (Nov 20, his wish) opens the clip's 💡 note over
-    the video (across the screen's bottom on a low screen; a tap closes it, so does the next clip; just 💡 on a phone); **smart loading**: the
+    the video (across the screen's bottom on a low screen; a tap closes it, so does the next clip; just 💡 on a phone); **her presses reach his page** (Nov 24: the clip page posts `clipsEv` {next / prev / play / pause / end, k, n, playing} to the lesson, and takes `clipsCmd` {k, playing, flash}: the student site's live helper shows them and his 👀 Follow follows them); **smart loading**: the
     engine loads the next clips screen ahead in the background (its first clip waits on its first frame) and keeps
-    the last three, so a clips screen opens at once (`Clips` in `engine.html`; pages built before Nov 19 lack it);
+    the last three, so a clips screen opens at once; a page with clips opens its connections to the library and YouTube when it loads, and the clip page asks for its files at once, not one by one (Nov 24) (`Clips` in `engine.html`; pages built before Nov 19 lack it);
     `body.embed` in `docs/real-video/index.html`). It
     opens the player with those words in a new tab, as one flow with the lesson. Every word on it must have a library
     file: for a missing one, create it (`en`, `ua`, `pic`, `clips: []`), add the clips if you can pick them (below),

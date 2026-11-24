@@ -129,12 +129,18 @@ const label = (slug) => {
   return w ? `${w.pic ? w.pic + ' ' : ''}${w.en}` : slug.replace(/-/g, ' ');
 };
 
+// Word files asked for ahead (the first word of ?words, while the rest loads): slug → its fetch.
+const PRE = {};
 async function init(){
-  INDEX = await App.getJSON('index.json').catch(() => []);
-  if (!Array.isArray(INDEX)) INDEX = [];
-  if (SHELF) { GROUPS = await App.getJSON('groups.json').catch(() => []); if (!Array.isArray(GROUPS)) GROUPS = []; }
-  TAGS = tagMap(await App.getJSON('tags.json').catch(() => null));
+  // Everything the first clip needs is asked for at once (it waited for each file in turn: slower, Nov 24).
   const want = Q.get('words');
+  const firstSlug = want ? slugify(want.split(',')[0]) : '';
+  if (firstSlug) PRE[firstSlug] = App.getJSON(`${firstSlug}.json`);
+  const [idx, gr, tg] = await Promise.all([App.getJSON('index.json').catch(() => []),
+    SHELF ? App.getJSON('groups.json').catch(() => []) : Promise.resolve([]), App.getJSON('tags.json').catch(() => null)]);
+  INDEX = Array.isArray(idx) ? idx : [];
+  GROUPS = Array.isArray(gr) ? gr : [];
+  TAGS = tagMap(tg);
   ORDER = want ? want.split(',').map(slugify).filter(Boolean) : INDEX.map((x) => x.slug);
   if (Q.get('title')) { $('ltitle').textContent = `🎬 ${Q.get('title')}`; $('ltitle').hidden = false; }
   if (Q.get('from') === 'lesson') $('back').hidden = false;
@@ -183,7 +189,7 @@ async function pick(slug, play){
   const seq = ++pickSeq;
   let w = WORDS[slug];
   if (!w) {
-    try { w = norm(await App.getJSON(`${slug}.json`), slug); } catch (e) { w = null; }
+    try { const pre = PRE[slug]; delete PRE[slug]; w = norm(await (pre || App.getJSON(`${slug}.json`)), slug); } catch (e) { w = null; }
     if (seq !== pickSeq) return;
     if (!w) {
       // Not in the library: say so, with an empty card and player (edit mode offers to create it).
@@ -367,7 +373,31 @@ $('cc').onclick = () => { setSubs(App.editing ? !subsOff : !capHidden); saveSubs
 // CC changed in another clip page (another screen of the lesson, already loaded): this one follows.
 addEventListener('storage', (e) => { if (e.key === SUBS && (e.newValue === '1') !== subsOff) setSubs(e.newValue === '1'); });
 // The lesson moved on to another screen: a clip left playing here stops.
-addEventListener('message', (e) => { if (e.data && e.data.clipsPause) App.pause(); });
+addEventListener('message', (e) => {
+  const d = e.data; if (!d) return;
+  if (d.clipsPause) App.pause();
+  if (d.clipsCmd) { remote = true; try { lessonCmd(d.clipsCmd); } finally { remote = false; } }
+});
+// Inside a lesson: what she does here (another clip, ▶ / ❚❚) goes to the lesson page, so the teacher sees it and his
+// 👀 Follow follows it; the lesson page moves this page the same way: {k, playing, flash} (Nov 24, his wish).
+let remote = false;
+function tellLesson(kind){
+  if (!EMBED || parent === window || remote) return;
+  try { parent.postMessage({clipsEv: kind, k: clipN, n: list().length, playing: isPlaying()}, '*'); } catch (e) {}
+}
+function flashCtl(what){
+  const el = $({play: 'pp', pause: 'pp', next: 'snext', prev: 'sprev'}[what] || 'pp');
+  if (!el || !el.animate) return;
+  el.animate([{boxShadow: '0 0 0 0 rgb(30 142 78 / 0)'}, {boxShadow: '0 0 0 7px rgb(30 142 78 / .85)', offset: .25},
+    {boxShadow: '0 0 0 0 rgb(30 142 78 / 0)'}], {duration: 1500});
+}
+function lessonCmd(c){
+  const n = list().length;
+  if (typeof c.k === 'number' && c.k >= 0 && c.k < n && c.k !== clipN) { clipN = c.k; resetContext(); showClip(!!c.playing); }
+  else if (c.playing === true && !isPlaying()) { if (started && !ended && ready()) { intent = true; P().playVideo(); setCover(); } else playClip(); }
+  else if (c.playing === false) App.pause();
+  if (c.flash) flashCtl(c.flash);
+}
 function hidePop(){ const p = $('pop'); if (p) p.hidden = true; document.querySelectorAll('#capbar .on').forEach((x) => x.classList.remove('on')); }
 function showPop(el){
   const g = tapGloss(el);
@@ -551,6 +581,7 @@ function toggle(){
   else if (started && !ended) { intent = true; P().playVideo(); }
   else if (!(ended && performance.now() - endedAt < 700)) playClip();
   setCover();
+  tellLesson(isPlaying() ? 'play' : 'pause');
 }
 // 1 second back or forward, inside the clip. A paused clip stays paused.
 function seekBy(d){
@@ -588,7 +619,7 @@ setInterval(() => {
     P().pauseVideo(); ended = true; intent = false; endedAt = performance.now();
     // Listen first: the caption stays hidden at the end too; only a tap on it shows it (his rule, Nov 21).
     if (range.lines) { showLine(lineOf(range.c)); shown = null; }
-    drawTimeline(range.to); setCover(); return;
+    drawTimeline(range.to); setCover(); tellLesson('end'); return;
   }
   if (!ended && !dragging) drawTimeline(t);
   if (range.lines && !ended && !capFocus()) {
@@ -674,7 +705,7 @@ $('cover').onclick = (e) => {
   tapWas = isPlaying() ? 'playing' : started && !ended ? 'paused' : null;
   toggle();
 };
-$('pp').onclick = toggle;
+$('pp').onclick = () => toggle();
 // The timeline: tap or drag to move; letting go plays from there.
 const pointT = (e) => {
   const box = $('tl').getBoundingClientRect();
@@ -688,9 +719,9 @@ $('tlhit').onpointermove = (e) => { if (dragging) drawTimeline(pointT(e)); };
 $('tlhit').onpointerup = (e) => {
   if (!dragging) return;
   dragging = false; const t = pointT(e);
-  if (!started) { playClip(t); return; }
+  if (!started) { playClip(t); tellLesson('play'); return; }
   ended = false; intent = true; shown = null; drawTimeline(t);
-  P().seekTo(t, true); P().playVideo(); setCover();
+  P().seekTo(t, true); P().playVideo(); setCover(); tellLesson('play');
 };
 $('tlhit').onpointercancel = () => { dragging = false; };
 // "With context": a tap turns it on or off for this clip and plays the clip again the new way. Press and hold: it
@@ -711,16 +742,16 @@ $('longer').onpointercancel = stopHold;
 $('longer').oncontextmenu = (e) => e.preventDefault();
 $('longer').onclick = () => {
   if (held) { held = false; return; }
-  contextHeld = false; setMode(!longerMode); playClip();
+  contextHeld = false; setMode(!longerMode); playClip(); tellLesson('play');
 };
 const step = (d) => { const n = list().length; if (!n) return; clipN = (clipN + d + n) % n; resetContext(); showClip(true); };
-$('next').onclick = () => step(1);
-$('prev').onclick = () => step(-1);
+$('next').onclick = () => { step(1); tellLesson('next'); };
+$('prev').onclick = () => { step(-1); tellLesson('prev'); };
 // The arrows beside the video and the dots (inside a lesson) go to a clip without going round.
 const goClip = (k) => { const n = list().length; if (k < 0 || k >= n || k === clipN) return; clipN = k; resetContext(); showClip(true); };
-$('snext').onclick = () => goClip(clipN + 1);
-$('sprev').onclick = () => goClip(clipN - 1);
-$('cdots').onclick = (e) => { const d = e.target.closest('[data-k]'); if (d) goClip(+d.dataset.k); };
+$('snext').onclick = () => { goClip(clipN + 1); tellLesson('next'); };
+$('sprev').onclick = () => { goClip(clipN - 1); tellLesson('prev'); };
+$('cdots').onclick = (e) => { const d = e.target.closest('[data-k]'); if (d) { const k = clipN; goClip(+d.dataset.k); tellLesson(clipN > k ? 'next' : 'prev'); } };
 $('speed').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   rate = +b.dataset.r;

@@ -548,6 +548,13 @@ function drawBar(){
    box in the card, the others unseen under the card at the same size, paused. */
 const Clips = (() => {
   if (!window.LESSON_KEY) return {render(){}};
+  // A page with clips opens its connections to the clip library and YouTube at once, before the first clips screen.
+  if (SECTIONS.some((x) => x.slides.some((s) => s.t === 'clips'))) {
+    for (const h of ['https://kiril-tishko.github.io', 'https://www.youtube.com', 'https://i.ytimg.com']) {
+      const l = document.createElement('link'); l.rel = 'preconnect'; l.href = h; if (h.includes('github')) l.crossOrigin = 'anonymous';
+      document.head.appendChild(l);
+    }
+  }
   const frames = new Map(), KEEP = 3;   // src → its frame
   let box = null, shown = null, aheadT = 0, showT = 0;
   // Where a clips screen's box is, or would be (the card's inside: the stage less its padding, the card's border and padding).
@@ -578,7 +585,7 @@ const Clips = (() => {
     if (shown.ready){ box.classList.add('ready'); shown.classList.add('on'); }
   }
   function render(){
-    clearTimeout(aheadT); clearTimeout(showT);
+    clearTimeout(aheadT); clearTimeout(showT); pending = null;
     box = card.querySelector('.clipbox');
     const now = box ? frame(box.dataset.src) : null;
     frames.forEach((f) => {
@@ -610,8 +617,23 @@ const Clips = (() => {
   addEventListener('message', (e) => {
     if (!e.data || !e.data.clipsReady) return;
     frames.forEach((f) => { if (f.contentWindow === e.source){ f.ready = true; if (f === shown) reveal(); } });
+    if (shown && shown.contentWindow === e.source && pending){ const c = pending; pending = null; tell(c); }
   });
-  return {render};
+  // The live helper hears what she does in the clips on show (a clip changed, ▶ / ❚❚) as a 'lesson-clip' event, and can
+  // move the clips on show the same way (his 👀 Follow): clipCmd({k, playing, flash}). A command for a page still
+  // loading waits until it is ready (Nov 24, his wish: he saw her slides, not her clips).
+  let pending = null;
+  const tell = (c) => { try { shown.contentWindow.postMessage({clipsCmd: c}, '*'); } catch (e) {} };
+  addEventListener('message', (e) => {
+    if (!e.data || !e.data.clipsEv || !shown || shown.contentWindow !== e.source) return;
+    document.dispatchEvent(new CustomEvent('lesson-clip', {detail: {kind: e.data.clipsEv, k: e.data.k, n: e.data.n, playing: !!e.data.playing}}));
+  });
+  function clipCmd(c){
+    if (!shown) return false;
+    if (shown.ready) tell(c); else pending = c;
+    return true;
+  }
+  return {render, clipCmd};
 })();
 function go(d){
   const slides = SECTIONS[sec].slides;
@@ -624,6 +646,8 @@ function go(d){
    helper, hears every change of screen. Nothing uses these on a Claude page. */
 window.Lesson = Object.assign(window.Lesson || {}, {
   at: () => [sec, idx],
+  // the clips on show (a clips screen on the student site): go to clip k, play or pause, light up a button
+  clipCmd: (c) => (Clips.clipCmd ? Clips.clipCmd(c) : false),
   jump(s, i){ if ((s === sec && i === idx) || !SECTIONS[s] || !SECTIONS[s].slides[i]) return; sec = s; idx = i; render(); },
   // parts kept in reserve that are open now; setExtras makes these the open ones (the part on show stays open)
   extras: () => [...opened].filter((n) => SECTIONS[n] && SECTIONS[n].extra).sort((a, b) => a - b),
