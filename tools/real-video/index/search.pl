@@ -337,6 +337,11 @@ sub json_out {
     $res[-1]{timed} = JSON::PP::true if $cv && $cv->{timed};
     $res[-1]{edited} = JSON::PP::true if $cv && $cv->{edited};
   }
+  # Clips he has already watched on the page: grayed there.
+  if (@res) {
+    my %seen = map { $_->[0] => 1 } eval { sql('SELECT lid FROM seen WHERE lid IN (' . join(',', map { $_->{lid} } @res) . ');') };
+    $_->{seen} = JSON::PP::true for grep { $seen{$_->{lid}} } @res;
+  }
   my $st = read_state();
   print JSON::PP->new->canonical->encode({indexed => 0 + $indexed, query => $shown, total => $total,
     videos => $nvideos, scenes => scalar @videos, channels => scalar keys %by, from => $from, page => $page,

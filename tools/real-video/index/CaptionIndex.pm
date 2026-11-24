@@ -135,7 +135,9 @@ sub page_tables {
   sql(join "\n",
     "CREATE TABLE IF NOT EXISTS marks(lid INTEGER PRIMARY KEY, last INTEGER, kind TEXT NOT NULL, query TEXT, at INTEGER);",
     "CREATE TABLE IF NOT EXISTS times(lid INTEGER PRIMARY KEY, s REAL NOT NULL, e REAL NOT NULL, at INTEGER);",
-    "CREATE TABLE IF NOT EXISTS caps(lid INTEGER PRIMARY KEY, last INTEGER, data TEXT, at INTEGER);");
+    "CREATE TABLE IF NOT EXISTS caps(lid INTEGER PRIMARY KEY, last INTEGER, data TEXT, at INTEGER);",
+    # Clips he has watched on the page (played for a second or more): grayed in the lists (his wish, Nov 24).
+    "CREATE TABLE IF NOT EXISTS seen(lid INTEGER PRIMARY KEY, at INTEGER);");
   sql('ALTER TABLE times ADD COLUMN last INTEGER;') unless grep { $_->[1] eq 'last' } sql('PRAGMA table_info(times);');
 }
 

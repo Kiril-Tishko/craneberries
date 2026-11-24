@@ -109,7 +109,12 @@ sub handle {
     return login($c, \%q, $path) unless ($ck{ci} // '') eq $TOKEN;
   }
   # Changes come only from the page's own script (another website can't send this header to it).
-  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark|times|caps)} && ($h{'x-ci'} // '') ne '1';
+  return reply($c, 403, 'text/plain', 'from the page only') if $path =~ m{^/api/(mark|times|caps|seen)} && ($h{'x-ci'} // '') ne '1';
+  if ($path eq '/api/seen') {   # a clip he watched (the page tells once it has played a second)
+    return json($c, {error => 'no clip'}) unless ($q{lid} // '') =~ /^\d+$/;
+    sql(sprintf "INSERT OR REPLACE INTO seen(lid, at) VALUES(%d, %d);", $q{lid}, time);
+    return json($c, {ok => JSON::PP::true});
+  }
   return json($c, mark(\%q)) if $path eq '/api/mark';
   return json($c, set_times(\%q)) if $path eq '/api/times';
   return json($c, set_caps(\%q)) if $path eq '/api/caps';
@@ -229,14 +234,14 @@ sub set_caps {
 # The ♥ Liked list (marks of kind keep, and super: those first), newest first: each with its line, the lines around and its ready
 # clip entry (with his own times where he moved them).
 sub kept {
-  my @m = sql("SELECT lid, last, ifnull(query,''), at, kind FROM marks WHERE kind IN ('keep','super') ORDER BY kind='super' DESC, at DESC;");
+  my @m = sql("SELECT m.lid, m.last, ifnull(m.query,''), m.at, m.kind, s.lid IS NOT NULL FROM marks m LEFT JOIN seen s ON s.lid = m.lid WHERE m.kind IN ('keep','super') ORDER BY m.kind='super' DESC, m.at DESC;");
   my @v = clip_views(map { [$_->[0], $_->[1]] } @m);
   my @out;
   for my $n (0 .. $#m) {
-    my ($lid, $last, $query, $at, $kind) = @{$m[$n]};
+    my ($lid, $last, $query, $at, $kind, $seen) = @{$m[$n]};
     my $c = $v[$n] or next;
     push @out, {lid => 0 + $lid, last => 0 + $c->{last}, query => $query, at => 0 + $at, id => $c->{v}, title => $c->{title},
-      kept => JSON::PP::true, super => ($kind eq 'super' ? JSON::PP::true : JSON::PP::false),
+      kept => JSON::PP::true, super => ($kind eq 'super' ? JSON::PP::true : JSON::PP::false), seen => ($seen ? JSON::PP::true : JSON::PP::false),
       channel => $c->{channel}, kind => $c->{kind}, line => $c->{line}, s => $c->{s}, e => $c->{e},
       timed => $c->{timed} ? JSON::PP::true : JSON::PP::false, edited => $c->{edited} ? JSON::PP::true : JSON::PP::false,
       lines => [map { {s => $c->{screens}[$_]{s}, e => $c->{screens}[$_]{e}, text => $c->{screens}[$_]{t}, hit => $_ == $c->{clip} ? JSON::PP::true : JSON::PP::false} } 0 .. $#{$c->{screens}}],
