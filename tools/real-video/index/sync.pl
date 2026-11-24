@@ -18,7 +18,7 @@ use strict; use warnings; use utf8;
 # This script's folder, also when started as C:\...\sync.pl (FindBin gets that wrong in Git Bash's Perl).
 our $BIN; BEGIN { ($BIN = __FILE__) =~ tr{\\}{/}; $BIN =~ s{/[^/]*$}{} or $BIN = '.'; unshift @INC, $BIN }
 use CaptionIndex;
-use JSON::PP; use Fcntl qw(:flock); use POSIX qw(strftime); use List::Util qw(max first);
+use JSON::PP; use Fcntl qw(:flock); use POSIX qw(strftime); use List::Util qw(max first); use File::Path qw(remove_tree);
 binmode STDOUT, ':encoding(UTF-8)'; binmode STDERR, ':encoding(UTF-8)';
 $| = 1;
 
@@ -66,6 +66,22 @@ sub ensure_clone {
   git('config', 'user.name', 'caption-index sync');
   git('config', 'user.email', 'caption-index-sync@users.noreply.github.com');
   1;
+}
+# The small clone can break when the PC goes off while git writes a file (Nov 23: a branch file full of zeros, and
+# every fetch failed for a day). It is only a copy (his picks live in the index and online), so it is made again.
+my $BROKEN = qr/reference broken|cannot lock ref|bad object|corrupt|not a git repository|unable to read|invalid (?:object|sha1|reference)|bad signature|index file/i;
+sub fetch_branch {
+  my ($rc, $o) = git('fetch', '--depth', '1', 'origin', $BRANCH);
+  if ($rc && $o =~ $BROKEN) {
+    logl('the small clone is broken (' . ((grep { /$BROKEN/ } split /\n/, $o)[0] // '?') . '): making it again');
+    my $old = "$CLONE-broken";
+    remove_tree($old) if -d $old;
+    rename($CLONE, $old) or remove_tree($CLONE);
+    remove_tree($old) if -d $old;
+    return (1, 'the clone could not be made again') unless ensure_clone();
+    ($rc, $o) = git('fetch', '--depth', '1', 'origin', $BRANCH);
+  }
+  ($rc, $o);
 }
 
 # ---- the picks on the PC ----
@@ -140,7 +156,7 @@ sub file_text {   # one clip per line, newest first within each searched phrase
 sub sync_once {
   return 0 unless ensure_clone();
   for my $try (1 .. 3) {
-    my ($rc, $o) = git('fetch', '--depth', '1', 'origin', $BRANCH);
+    my ($rc, $o) = fetch_branch();
     if ($rc) { logl("fetch failed: $o"); return 0 }
     git('reset', '--hard', 'FETCH_HEAD');
     my $file = "$CLONE/$PATH";
@@ -181,7 +197,7 @@ sub sync_once {
 }
 sub git_blob { my ($rc, $o) = git('rev-parse', "HEAD:$PATH"); $rc ? '' : ($o =~ /([0-9a-f]{40})/)[0] // '' }
 sub remote_blob {
-  my ($rc, $o) = git('fetch', '--depth', '1', 'origin', $BRANCH);
+  my ($rc, $o) = fetch_branch();
   return undef if $rc;
   ($rc, $o) = git('rev-parse', "FETCH_HEAD:$PATH");
   $rc ? '' : ($o =~ /([0-9a-f]{40})/)[0] // '';
