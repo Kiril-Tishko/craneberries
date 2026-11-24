@@ -520,6 +520,10 @@ huggingface.co, about 15 min per hour of audio).
     Moving pictures: `anim` on a screen with `pic` (hop, swim, fly, run, climb, dance, crawl, ring for an alarm clock, sleep). Games: `{t:'game', words:
     [[word, emoji]…], rounds}` (listen, tap the word) and `{t:'quiz', q, pic, anim, opts:[[text, emoji]…], ans}` (tap
     the answer: stars when right, a shake when wrong). Check them with `node tools/lesson-page/qa-play.js <work-dir>`.
+  - **No lone words in the recordings** (Nov 24, his rule: the voice says about one single word in 10–20 wrong, and he
+    can't check every one before a lesson): sound screens and listening games use short phrases ("take the bus" ·
+    "my boss"), never a word on its own. When a single word has to stay (a kids' page), name it in the reply so he
+    plays it once before the lesson.
   - Pictures: when presenting new words or phrases that are easy to picture, give the screen a big emoji
     (`pic`, the last argument of `P`/`R`, or `pic` on a `flip`). When an emoji doesn't show the thing (🛒 is not a
     checkout), draw an SVG (`pic` and card `svg` take one; keep it on one line in content.js). Reusable drawings: `tools/pics/`.
