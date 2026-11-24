@@ -90,6 +90,7 @@ ol.list { list-style: none; margin: 0; padding: 4px 6px 10px; }
 .item .title { font-size: 12.5px; color: var(--soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .item .info { font-size: 11.5px; color: var(--faint); margin-top: 2px; }
 .item .info .liked { color: var(--like); }
+.item .info .super { color: var(--warn); font-weight: 600; }
 .item .info .bad { color: var(--bad); }
 .item .cp, .item .hd { position: absolute; top: 6px; right: 6px; border: 0; background: none; color: var(--faint); cursor: pointer; padding: 3px 5px; border-radius: 6px; font-size: 13px; line-height: 1.2; }
 .item .hd { right: 30px; opacity: .55; }
@@ -303,7 +304,8 @@ function item(r, i, res) {
   if (r.alive === 404) info.push('<span class="bad">video gone</span>');
   if (r.timed) info.push('your times');
   if (r.edited) info.push('your captions');
-  if (r.kept || tab === 'liked') info.push('<span class="liked">♥ liked</span>');
+  if (r.super) info.push('<span class="super">★ super liked</span>');
+  else if (r.kept || tab === 'liked') info.push('<span class="liked">♥ liked</span>');
   let caps;
   if (r.lines) {
     const h = r.lines.findIndex(l => l.hit);
@@ -379,7 +381,7 @@ function drawNow() {
   const rows = rowsOf(P.list), r = rows[P.i]; if (!r) return;
   $('#what').innerHTML = `<b>${esc(r.channel)}</b> · <a href="https://youtu.be/${esc(r.id)}?t=${Math.floor(r.s)}" target="_blank" rel="noopener">${esc(r.title || r.id)}</a> · ${P.i + 1} of ${rows.length}`;
   const B = (() => { try { return $('#player').contentWindow.CI_Buttons; } catch (e) { return null; } })();
-  if (B) B.set({prev: P.i > 0, next: P.i < rows.length - 1 || (P.list === 'results' && current && current.more), liked: P.list === 'liked' || !!r.kept});
+  if (B) B.set({prev: P.i > 0, next: P.i < rows.length - 1 || (P.list === 'results' && current && current.more), liked: P.list === 'liked' || !!r.kept, super: !!r.super});
   showTimes();
   if (tab === 'caps') showCaps();
 }
@@ -391,21 +393,38 @@ window.CI = {
     if (P.i < rows.length - 1) return play(P.list, P.i + 1);
     if (P.list === 'results' && current && current.more) { const n = P.i + 1; page++; await go(true); play('results', n); }
   },
+  // ♥ Like / Liked: a tap on a liked (or super-liked) clip takes the like away.
   async like() {
     const r = rowsOf(P.list)[P.i]; if (!r) return;
     const on = P.list === 'liked' ? false : !r.kept;
-    await mark(r, on ? 'keep' : 'none');
-    for (const x of items) if (x.lid === r.lid) x.kept = on;
-    r.kept = on;
+    await setMark(r, on ? 'keep' : 'none');
+    await afterMark(r);
+  },
+  // ★ Super like (his wish, Nov 24): a like that comes before the others in its searches; a second tap makes it a
+  // plain like again.
+  async superLike() {
+    const r = rowsOf(P.list)[P.i]; if (!r) return;
+    await setMark(r, r.super ? 'keep' : 'super');
+    await afterMark(r);
+  },
+};
+async function setMark(r, kind) {
+  await mark(r, kind);
+  const kept = kind !== 'none', sup = kind === 'super';
+  for (const x of [...items, ...picks]) if (x.lid === r.lid) { x.kept = kept; x.super = sup; }
+  r.kept = kept; r.super = sup;
+}
+async function afterMark(r) {
+    const on = r.kept;
     await loadPicked();
-    if (P.list === 'liked') {   // took one off the Liked list: the next one plays in its place
+    if (P.list === 'liked' && !on) {   // took one off the Liked list: the next one plays in its place
       P.slug = null;
       if (picks.length) play('liked', Math.min(P.i, picks.length - 1)); else { drawList(); }
       return;
     }
+    if (P.list === 'liked') { const n = picks.findIndex(x => x.lid === r.lid); if (n >= 0 && n !== P.i) { P.slug = null; return play('liked', n); } }
     drawNow(); if (tab === 'results') drawList();
-  },
-};
+}
 // 🙈 Hide (or Undo): this line and the same scene in the other videos; the row turns thin in place, nothing moves.
 async function hide(r, li, on) {
   await api('/api/mark?' + new URLSearchParams({lid: r.lid, last: r.last, kind: on ? 'hide' : 'none',

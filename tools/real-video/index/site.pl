@@ -176,7 +176,7 @@ HTML
   reply($c, 401, 'text/html; charset=utf-8', $html);
 }
 
-# ⭐ keep / 🙈 hide / none (undo) a clip. Hide covers the same scene in the other videos too (scene = their lines).
+# ♥ keep / ★ super (a like that comes first in its searches) / 🙈 hide / none (undo) a clip. Hide covers the same scene in the other videos too (scene = their lines).
 sub mark {
   my $q = shift;
   my $kind = $q->{kind} // '';
@@ -186,9 +186,9 @@ sub mark {
   my $query = sql_quote(do { my $t = $q->{q} // ''; utf8::decode($t); $t });
   # Undone marks stay as kind 'none' with their time, so the sync with the online copy knows which side is newer.
   if ($kind eq 'none') { sql(join "\n", 'BEGIN;', (map { sprintf "INSERT INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'none', %s, %d) ON CONFLICT(lid) DO UPDATE SET kind='none', at=excluded.at;", $_, $_ == $lid ? $last : $_, $query, time } @lids), 'COMMIT;') }
-  elsif ($kind eq 'keep') { sql(sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'keep', %s, %d);", $lid, $last, $query, time) }
+  elsif ($kind eq 'keep' || $kind eq 'super') { sql(sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, '%s', %s, %d);", $lid, $last, $kind, $query, time) }
   elsif ($kind eq 'hide') { sql(join "\n", 'BEGIN;', (map { sprintf "INSERT OR REPLACE INTO marks(lid, last, kind, query, at) VALUES(%d, %d, 'hide', %s, %d);", $_, $_ == $lid ? $last : $_, $query, time } @lids), 'COMMIT;') }
-  else { return {error => 'keep, hide or none'} }
+  else { return {error => 'keep, super, hide or none'} }
   {ok => JSON::PP::true, kind => $kind};
 }
 
@@ -226,16 +226,17 @@ sub set_caps {
   {ok => JSON::PP::true, clip => player_clip(clip_view($lid, $last))};
 }
 
-# The ♥ Liked list (stored as marks of kind keep), newest first: each with its line, the lines around and its ready
+# The ♥ Liked list (marks of kind keep, and super: those first), newest first: each with its line, the lines around and its ready
 # clip entry (with his own times where he moved them).
 sub kept {
-  my @m = sql("SELECT lid, last, ifnull(query,''), at FROM marks WHERE kind='keep' ORDER BY at DESC;");
+  my @m = sql("SELECT lid, last, ifnull(query,''), at, kind FROM marks WHERE kind IN ('keep','super') ORDER BY kind='super' DESC, at DESC;");
   my @v = clip_views(map { [$_->[0], $_->[1]] } @m);
   my @out;
   for my $n (0 .. $#m) {
-    my ($lid, $last, $query, $at) = @{$m[$n]};
+    my ($lid, $last, $query, $at, $kind) = @{$m[$n]};
     my $c = $v[$n] or next;
     push @out, {lid => 0 + $lid, last => 0 + $c->{last}, query => $query, at => 0 + $at, id => $c->{v}, title => $c->{title},
+      kept => JSON::PP::true, super => ($kind eq 'super' ? JSON::PP::true : JSON::PP::false),
       channel => $c->{channel}, kind => $c->{kind}, line => $c->{line}, s => $c->{s}, e => $c->{e},
       timed => $c->{timed} ? JSON::PP::true : JSON::PP::false, edited => $c->{edited} ? JSON::PP::true : JSON::PP::false,
       lines => [map { {s => $c->{screens}[$_]{s}, e => $c->{screens}[$_]{e}, text => $c->{screens}[$_]{t}, hit => $_ == $c->{clip} ? JSON::PP::true : JSON::PP::false} } 0 .. $#{$c->{screens}}],
@@ -279,6 +280,9 @@ sub player {
 .tools .group{flex-wrap:nowrap!important}.ci-nav{display:inline-flex;gap:8px;align-items:center}.ci-prev,.ci-next{min-width:44px;justify-content:center;font-size:16px}.ci-like{white-space:nowrap}
 .ci-nav .btn:disabled{opacity:.35;pointer-events:none}
 .ci-like[aria-pressed="true"]{background:#e0245e!important;border-color:#e0245e!important;color:#fff!important}
+.ci-super{min-width:44px;justify-content:center;font-size:17px}
+.ci-super[aria-pressed="true"]{background:#f2c200!important;border-color:#f2c200!important;color:#1d1d1f!important}
+\@media (max-width:520px){.ci-like .ci-t{display:none}.ci-nav{gap:5px}.ci-nav .btn{min-width:38px;padding-left:0;padding-right:0;justify-content:center}#longer{white-space:nowrap}}
 </style></head>};
     utf8::encode($h);
     return reply($c, 200, 'text/html; charset=utf-8', $h);
@@ -319,15 +323,22 @@ App.playAt = (at) => {
     return r;
   };
 })();
-// ◀ Previous, ♡ Like, Next ▶ in the row with "With context"; the results page (parent.CI) does the work and tells
-// them what to show (CI_Buttons.set).
+// ◀ Previous, ♡ Like, ☆ Super like, Next ▶ in the row with "With context"; the results page (parent.CI) does the work
+// and tells them what to show (CI_Buttons.set).
 (function () {
   const row = document.querySelector('.tools .group'); if (!row) return;
   const ci = () => (window.parent !== window && window.parent.CI) || null;
   const mk = (cls, text, title, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + cls; b.textContent = text; b.title = title; b.onclick = () => { const c = ci(); if (c) c[fn](); }; return b; };
   const prev = mk('ci-prev', '◀', 'Previous clip', 'prev'), like = mk('ci-like', '♡ Like', 'Like this clip', 'like'), next = mk('ci-next', '▶', 'Next clip', 'next');
-  const box = document.createElement('span'); box.className = 'ci-nav'; box.append(prev, like, next); row.appendChild(box);
-  window.CI_Buttons = { set(o) { prev.disabled = !o.prev; next.disabled = !o.next; like.setAttribute('aria-pressed', o.liked ? 'true' : 'false'); like.textContent = o.liked ? '♥ Liked' : '♡ Like'; } };
+  const sup = mk('ci-super', '☆', 'Super like: it comes before the others in its searches', 'superLike');
+  const box = document.createElement('span'); box.className = 'ci-nav'; box.append(prev, like, sup, next); row.appendChild(box);
+  window.CI_Buttons = { set(o) {
+    prev.disabled = !o.prev; next.disabled = !o.next;
+    like.setAttribute('aria-pressed', o.liked ? 'true' : 'false');
+    like.innerHTML = (o.liked ? '♥' : '♡') + '<span class="ci-t"> ' + (o.liked ? 'Liked' : 'Like') + '</span>';
+    sup.setAttribute('aria-pressed', o.super ? 'true' : 'false'); sup.textContent = o.super ? '★' : '☆';
+    sup.title = o.super ? 'Super liked: it comes first in its searches (tap: a plain like again)' : 'Super like: it comes before the others in its searches';
+  } };
 })();
 JS
     utf8::encode($js);

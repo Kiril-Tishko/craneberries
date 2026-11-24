@@ -282,7 +282,9 @@ huggingface.co, about 15 min per hour of audio).
     under it: they took too much room). Under the video, small: what plays and the clip's Start / End (− / + 0.1 s,
     ⏱ now, ↺ original; the `times` table; the clip entry uses them). **Every player for him gets a Like that is
     remembered** (his rule, Nov 21: "always"); here likes are `marks` of kind keep, liked clips come first in
-    searches. A small 🙈 on a result hides it and the same scene in other videos from every search (kind hide; Undo in place). Short scene clips rank before compilations.
+    searches. **★ Super like** (his wish, Nov 24) beside ♡ Like (◀ ♡ ☆ ▶; on a phone ♡ loses its word): a like
+    that comes before the others in its searches (kind super; order: ★, then ♥, then the rest; also first in ♥ Liked
+    and in each phrase's group on the picks page); a second ★ makes it a plain like, ♥ takes either away. A small 🙈 on a result hides it and the same scene in other videos from every search (kind hide; Undo in place). Short scene clips rank before compilations.
     **His phone** on the home Wi-Fi opens it too: `http://<PC's address>:8770` and a PIN (both shown on the page),
     then a 30-day cookie; only the home network's addresses, 5 wrong PINs = 15 minutes' wait. With **Tailscale** (free,
     on his PC and phone) the same page opens from anywhere at the PC's Tailscale address (100.x.y.z or its .ts.net
@@ -296,11 +298,11 @@ huggingface.co, about 15 min per hour of audio).
     (`clip_views` in CaptionIndex.pm).
   - **His picks online** (Nov 21): every clip he ♥ liked, re-timed or whose captions he fixed is in
     `docs/real-video/picks/picks.json` (one clip per line: `id` = its line in his index, `q` = the phrase he searched,
-    `liked`, `timed`, `edited`, `v`, `s`, `e` (his times), `s0` / `e0` (the clip line's own), `line`, `around` (his
+    `liked`, `super` (★: his favourite for that phrase), `timed`, `edited`, `v`, `s`, `e` (his times), `s0` / `e0` (the clip line's own), `line`, `around` (his
     fixed lines when `edited`; `orig` = the index's), `channel`, `show`, `title`, `kind`, `at`). The hidden
     "Caption index sync" task (`sync.pl`) keeps it the same as his PC **both ways**, the newer change winning per clip.
     **https://kiril-tishko.github.io/craneberries/real-video/picks/** plays them in our own player (it stops at the
-    line's end, With context, ◀ ♡ Like ▶) and saves ♥, Start / End and ✎ Captions (same editor) to picks.json with
+    line's end, With context, ◀ ♡ Like ☆ ▶) and saves ♥, ★, Start / End and ✎ Captions (same editor) to picks.json with
     his GitHub key (the clip editor's, same site); a song's lines stay on his PC, so they are fixed there only.
     **To put his picks into a lesson**: read picks.json (the phrase he searched tells which word it is for), take `v`,
     `s`, `e`, `line`, `around` as they are (his fixes included) into that word's file in `words/`, then the note and

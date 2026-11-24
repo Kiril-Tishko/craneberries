@@ -74,10 +74,10 @@ sub local_state {
   my %p;
   for my $r (sql("SELECT x.lid, m.last, m.kind, ifnull(m.query,''), ifnull(m.at,0), t.last, t.s, t.e, ifnull(t.at,0),
       c.last, length(ifnull(c.data,'')), ifnull(c.at,0)
-      FROM (SELECT lid FROM marks WHERE kind IN ('keep','none') UNION SELECT lid FROM times UNION SELECT lid FROM caps) x
+      FROM (SELECT lid FROM marks WHERE kind IN ('keep','super','none') UNION SELECT lid FROM times UNION SELECT lid FROM caps) x
       LEFT JOIN marks m ON m.lid = x.lid LEFT JOIN times t ON t.lid = x.lid LEFT JOIN caps c ON c.lid = x.lid;")) {
     my ($lid, $mlast, $kind, $q, $mat, $tlast, $s, $e, $tat, $clast, $clen, $cat) = @$r;
-    $p{$lid} = {id => "$lid", last => 0 + ($mlast || $tlast || $clast || $lid), q => $q, liked => ($kind // '') eq 'keep' ? 1 : 0,
+    $p{$lid} = {id => "$lid", last => 0 + ($mlast || $tlast || $clast || $lid), q => $q, liked => (($kind // '') eq 'keep' || ($kind // '') eq 'super') ? 1 : 0, super => ($kind // '') eq 'super' ? 1 : 0,
       timed => (length($s // '') && $s >= 0) ? 1 : 0, edited => ($clen || 0) > 0 ? 1 : 0, at => max(0 + $mat, 0 + $tat, 0 + $cat)};
   }
   %p;
@@ -89,7 +89,7 @@ sub entry {
   my $c = clip_view($p->{id}, $p->{last}) or return;
   my $song = $c->{show} =~ /^Songs\b/;
   my $B = sub { $_[0] ? JSON::PP::true : JSON::PP::false };
-  {id => "$p->{id}", last => 0 + $c->{last}, q => $p->{q}, liked => $B->($p->{liked}), timed => $B->($c->{timed}),
+  {id => "$p->{id}", last => 0 + $c->{last}, q => $p->{q}, liked => $B->($p->{liked}), super => $B->($p->{super}), timed => $B->($c->{timed}),
    edited => $B->($c->{edited} && !$song), at => 0 + $p->{at},
    v => $c->{v}, s => $c->{s}, e => $c->{e}, s0 => $c->{s0}, e0 => $c->{e0}, line => $c->{line}, around => $c->{around},
    ($c->{edited} && !$song ? (orig => $c->{orig}) : ()),
@@ -106,7 +106,7 @@ sub apply_remote {
   my $q = sql_quote($r->{q} // '');
   my @s = ('BEGIN;');
   push @s, sprintf "INSERT INTO marks(lid, last, kind, query, at) VALUES(%d, %d, '%s', %s, %d) ON CONFLICT(lid) DO UPDATE SET kind=excluded.kind, at=excluded.at, last=excluded.last;",
-    $lid, $last, ($r->{liked} ? 'keep' : 'none'), $q, $at;
+    $lid, $last, ($r->{liked} ? ($r->{super} ? 'super' : 'keep') : 'none'), $q, $at;
   if ($r->{timed} && defined $r->{s} && defined $r->{e} && $r->{e} > $r->{s}) {
     push @s, sprintf "INSERT OR REPLACE INTO times(lid, s, e, at, last) VALUES(%d, %.2f, %.2f, %d, %d);", $lid, $r->{s}, $r->{e}, $at, $last;
   } else {
@@ -128,13 +128,13 @@ sub apply_remote {
   push @s, 'COMMIT;';
   sql(join "\n", @s);
 }
-sub fingerprint { my %p = local_state(); join ',', map { "$_:$p{$_}{at}:$p{$_}{liked}:$p{$_}{timed}:$p{$_}{edited}" } sort keys %p }
+sub fingerprint { my %p = local_state(); join ',', map { "$_:$p{$_}{at}:$p{$_}{liked}:$p{$_}{super}:$p{$_}{timed}:$p{$_}{edited}" } sort keys %p }
 
 # ---- one sync ----
 sub file_text {   # one clip per line, newest first within each searched phrase
   my @c = sort { lc($a->{q}) cmp lc($b->{q}) || $b->{at} <=> $a->{at} } @_;
   my $J = JSON::PP->new->canonical;
-  "{\n  \"_\": \"His picks from the private caption index (his PC syncs this file both ways; edit it only through the picks page). One clip per line: id = the line in his index, q = the phrase he searched, liked, timed = his own start / end (s0 / e0 = the clip line's own), edited = his own caption lines (orig = the index's), at = last change.\",\n" .
+  "{\n  \"_\": \"His picks from the private caption index (his PC syncs this file both ways; edit it only through the picks page). One clip per line: id = the line in his index, q = the phrase he searched, liked, super = super liked (first in its searches), timed = his own start / end (s0 / e0 = the clip line's own), edited = his own caption lines (orig = the index's), at = last change.\",\n" .
   "  \"clips\": [\n" . join(",\n", map { '    ' . $J->encode($_) } @c) . "\n  ]\n}\n";
 }
 sub sync_once {
@@ -168,7 +168,8 @@ sub sync_once {
     open my $h, '>:raw', $file or do { logl("can't write $file: $!"); return 0 };
     my $t = $text; utf8::encode($t); print $h $t; close $h;
     my $liked = grep { $_->{liked} } @out; my $timed = grep { $_->{timed} } @out; my $edited = grep { $_->{edited} } @out;
-    my $what = "$liked liked, $timed re-timed" . ($edited ? ", $edited with his captions" : '');
+    my $super = grep { $_->{super} } @out;
+    my $what = "$liked liked" . ($super ? " ($super super)" : '') . ", $timed re-timed" . ($edited ? ", $edited with his captions" : '');
     git('add', $PATH);
     ($rc, $o) = git('commit', '-q', '-m', "Caption index picks: $what (synced from his PC)");
     ($rc, $o) = git('push', '-q', 'origin', "HEAD:$BRANCH");

@@ -62,6 +62,10 @@ header input[type=search] { margin-left: auto; flex: 0 1 260px; min-width: 0; fo
 .btn:disabled { opacity: .35; cursor: default; }
 .nav { display: flex; gap: 8px; }
 .like[aria-pressed="true"] { background: var(--like); border-color: var(--like); color: #fff; }
+.super { min-width: 44px; font-size: 16px; }
+.super[aria-pressed="true"] { background: #f2c200; border-color: #f2c200; color: #1d1d1f; }
+.item .info .sup { color: #c79a00; font-weight: 600; }
+@media (max-width: 520px) { .like .t { display: none; } }
 .under { flex: none; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; font-size: 13px; color: var(--soft); }
 .under .what { min-width: 0; flex: 1 1 240px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .under .what b { color: var(--ink); } .under .what a { color: var(--soft); }
@@ -124,7 +128,7 @@ ol.list { list-style: none; margin: 0; padding: 4px 6px 8px; }
     <div class="cap" id="cap" hidden></div>
     <div class="row" id="row" hidden>
       <button type="button" class="btn" id="ctx" aria-pressed="false" title="Play the lines before and after it too">↔ With context</button>
-      <span class="nav"><button type="button" class="btn" id="prev" title="Previous clip">◀</button><button type="button" class="btn like" id="like" aria-pressed="false">♡ Like</button><button type="button" class="btn" id="next" title="Next clip">▶</button></span>
+      <span class="nav"><button type="button" class="btn" id="prev" title="Previous clip">◀</button><button type="button" class="btn like" id="like" aria-pressed="false">♡ Like</button><button type="button" class="btn super" id="super" aria-pressed="false" title="Super like: it comes before the others in its searches">☆</button><button type="button" class="btn" id="next" title="Next clip">▶</button></span>
     </div>
     <div class="under" id="under" hidden>
       <span class="what" id="what"></span>
@@ -223,18 +227,20 @@ function draw() {
   const groups = {};
   for (const c of shown) (groups[c.q || ''] ||= []).push(c);
   const names = Object.keys(groups).sort((a, b) => Math.max(...groups[b].map(c => c.at)) - Math.max(...groups[a].map(c => c.at)));
-  order = names.flatMap(n => groups[n].sort((a, b) => b.at - a.at));
+  // In each phrase's group: ★ super liked first (his wish, Nov 24), then the newest change.
+  order = names.flatMap(n => groups[n].sort((a, b) => (!!b.super - !!a.super) || b.at - a.at));
   $('#list').innerHTML = names.map(n => `<section class="group"><h2>${esc(n || 'Other clips')} <small>${groups[n].length}</small></h2><ol class="list">${groups[n].map(c => {
     const i = order.indexOf(c);
     const info = [esc(c.channel), clock(c.s)];
-    if (c.liked) info.push('<span class="liked">♥</span>');
+    if (c.super) info.push('<span class="sup">★ super</span>');
+    else if (c.liked) info.push('<span class="liked">♥</span>');
     if (c.timed) info.push('your times');
     if (c.edited) info.push('your captions');
     return `<li class="item${c.liked || c.timed || c.edited ? '' : ' off'}" data-i="${i}"><div class="thumb" style="background-image:url('https://i.ytimg.com/vi/${encodeURIComponent(c.v)}/mqdefault.jpg')"><span class="tm">${clock(c.s)}</span></div>
       <div class="meta"><div class="line">${c.song ? '♪ ' + esc(c.title) : hl(c.line, c.q)}</div><div class="info">${info.join(' · ')}</div><div class="info">${esc(c.title)}</div></div></li>`;
   }).join('')}</ol></section>`).join('') || '<p class="empty">No picks yet: ♥ Like or re-time clips on the caption index page on your PC.</p>';
-  const liked = picks.filter(c => c.liked).length, timed = picks.filter(c => c.timed).length, edited = picks.filter(c => c.edited).length;
-  $('#stat').textContent = `${liked} liked · ${timed} re-timed` + (edited ? ` · ${edited} with your captions` : '');
+  const liked = picks.filter(c => c.liked).length, timed = picks.filter(c => c.timed).length, edited = picks.filter(c => c.edited).length, sup = picks.filter(c => c.super).length;
+  $('#stat').textContent = `${liked} liked` + (sup ? ` (${sup} super)` : '') + ` · ${timed} re-timed` + (edited ? ` · ${edited} with your captions` : '');
   mark();
 }
 // My picks / ✎ Captions (the clip that plays now).
@@ -339,8 +345,20 @@ document.addEventListener('keydown', e => {
 });
 
 // ---- ♥ and the clip's start / end, saved to GitHub ----
-function drawLike() { const c = clip(); const b = $('#like'); b.setAttribute('aria-pressed', !!c.liked); b.textContent = c.liked ? '♥ Liked' : '♡ Like'; }
-$('#like').addEventListener('click', () => { const c = clip(); if (!c) return; c.liked = !c.liked; c._touched = true; drawLike(); const keep = c; draw(); cur = order.indexOf(keep); mark(); save(strip(c), c.liked ? 'liked' : 'unliked'); });
+function drawLike() {
+  const c = clip(), b = $('#like'), s = $('#super');
+  b.setAttribute('aria-pressed', !!c.liked); b.innerHTML = (c.liked ? '♥' : '♡') + '<span class="t"> ' + (c.liked ? 'Liked' : 'Like') + '</span>';
+  s.setAttribute('aria-pressed', !!c.super); s.textContent = c.super ? '★' : '☆';
+  s.title = c.super ? 'Super liked: it comes first in its searches (tap: a plain like again)' : 'Super like: it comes before the others in its searches';
+}
+function setLike(c, liked, sup, what) {
+  c.liked = liked; c.super = liked && sup; c._touched = true; drawLike();
+  const keep = c; draw(); cur = order.indexOf(keep); mark(); save(strip(c), what);
+}
+// ♥ on a liked (or super-liked) clip takes the like away; ★ makes it a super like (a like that comes first in its
+// searches), and a second ★ a plain like again.
+$('#like').addEventListener('click', () => { const c = clip(); if (c) setLike(c, !c.liked, false, c.liked ? 'unliked' : 'liked'); });
+$('#super').addEventListener('click', () => { const c = clip(); if (c) setLike(c, true, !c.super, c.super ? 'plain like' : 'super liked'); });
 function strip(c) { const o = {...c}; delete o._touched; return o; }
 function drawTimes() { const c = clip(); $('#ts').textContent = tenth(c.s); $('#te').textContent = tenth(c.e);
   $('#rs').style.visibility = Math.abs(c.s - c.s0) < 0.01 && Math.abs(c.e - c.e0) < 0.01 ? 'hidden' : 'visible'; }

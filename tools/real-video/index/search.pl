@@ -174,9 +174,12 @@ sub matches {
   grep { $_->[0] < $n0 && !$seen{"$_->[0]"}++ } sort { $a->[0] <=> $b->[0] } @m;
 }
 
-# Clips he marked on the page (site.pl): 🙈 hidden ones never come back; ⭐ kept ones are marked in the results.
+# Clips he marked on the page (site.pl): 🙈 hidden ones never come back; ♥ liked and ★ super-liked ones come first.
 my %hide = map { $_->[0] => 1 } eval { sql("SELECT lid FROM marks WHERE kind='hide';") };
-my %keep = map { $_->[0] => 1 } eval { sql("SELECT lid FROM marks WHERE kind='keep';") };
+my %keep = map { $_->[0] => 1 } eval { sql("SELECT lid FROM marks WHERE kind IN ('keep','super');") };
+my %super = map { $_->[0] => 1 } eval { sql("SELECT lid FROM marks WHERE kind='super';") };
+# 0 = ★ super liked, 1 = ♥ liked, 2 = the rest (his wish, Nov 24: super likes before the others of that search).
+sub mark_rank { my $lid = shift; $super{$lid} ? 0 : $keep{$lid} ? 1 : 2 }
 my %video;
 for my $r (@rows) {
   my ($lid, $s, $e, $text, $w, $ntext, $ne, $nw, $ns, $k, $vid, $title, $views, $kind, $alive, $checked, $ckey, $cname, $dur) = @$r;
@@ -222,7 +225,8 @@ my $nvideos = @videos;
 # The same scene is often in a compilation and in its own clip (or in two compilations): it is shown once, from the
 # video with human captions if there is one, and the others are named under it ("same scene also in …").
 my %scene;
-for my $v (sort { ($b->{kind} eq 'human') <=> ($a->{kind} eq 'human') || $a->{best}{score} <=> $b->{best}{score}
+# (A scene he liked stays as the clip he liked, not its copy in another video.)
+for my $v (sort { mark_rank($a->{best}{lid}) <=> mark_rank($b->{best}{lid}) || ($b->{kind} eq 'human') <=> ($a->{kind} eq 'human') || $a->{best}{score} <=> $b->{best}{score}
     || $b->{views} <=> $a->{views} || $a->{id} cmp $b->{id} } @videos) {
   my $rep = first { defined } map { $scene{$_} } @{$v->{best}{keys}};
   if ($rep) { push @{$rep->{same}}, $v; $v->{dup} = 1 } else { $rep = $v }
@@ -236,8 +240,8 @@ for (values %by) { @$_ = sort { $a->{best}{score} <=> $b->{best}{score} || $b->{
 my @order = sort { $by{$a}[0]{best}{score} <=> $by{$b}[0]{best}{score} || @{$by{$b}} <=> @{$by{$a}} } keys %by;
 my @list;
 while (grep { @{$by{$_}} } @order) { for (@order) { push @list, shift @{$by{$_}} if @{$by{$_}} } }
-# Clips he liked (♥ on the page) come first.
-@list = ((grep { $keep{$_->{best}{lid}} } @list), (grep { !$keep{$_->{best}{lid}} } @list));
+# Clips he super-liked (★ on the page) come first, then the ones he liked (♥), then the rest, each in the same order.
+@list = map { my $r = $_; grep { mark_rank($_->{best}{lid}) == $r } @list } 0 .. 2;
 
 my $from = ($page - 1) * $limit;
 my @pagev = @list[$from .. min($from + $limit, scalar @list) - 1];
@@ -327,7 +331,7 @@ sub json_out {
       same => [map { $_->{id} } @{$v->{same} || []}], lines => \@lines,
       # 🙈 on the page hides this line and the same scene in the other videos; ⭐ = kept already
       scene => [0 + $bm->{lid}, map { 0 + $_->{best}{lid} } @{$v->{same} || []}],
-      kept => ($keep{$bm->{lid}} ? JSON::PP::true : JSON::PP::false),
+      kept => ($keep{$bm->{lid}} ? JSON::PP::true : JSON::PP::false), super => ($super{$bm->{lid}} ? JSON::PP::true : JSON::PP::false),
       clip => ($cv ? {v => $cv->{v}, s => $cv->{s}, e => $cv->{e}, line => $cv->{line}, note => '', around => $cv->{around}}
         : JSON::PP->new->decode(clip_json($v, $bm, $base, $last)))};
     $res[-1]{timed} = JSON::PP::true if $cv && $cv->{timed};
