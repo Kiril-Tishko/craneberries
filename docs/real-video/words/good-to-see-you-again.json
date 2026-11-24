@@ -1,0 +1,37 @@
+{
+  "en": "Good to see you again.",
+  "ua": "Приємно знову тебе бачити.",
+  "pic": "🤗",
+  "hl": "(it[’']s )?good to see you again",
+  "together": {"thank you":"дякую","look awful nice":"виглядаєш дуже гарно"},
+  "gloss": {
+    "you": "тебе, вас",
+    "remember": "пам’ятаєш",
+    "my": "мою, мого",
+    "mother": "маму",
+    "martha": "Марта (ім’я)",
+    "and": "а",
+    "this": "це",
+    "is": "is — дієслово be: this is = це",
+    "father": "тато",
+    "tom": "Том (ім’я)",
+    "too": "теж",
+    "how": "як (How are you? = Як справи?)",
+    "are": "are — дієслово be: How are you? = Як ти?",
+    "sweetheart": "сонечко, люба",
+    "i’m": "я (I’m good = у мене все добре)",
+    "good": "добре",
+    "well": "ну",
+    "look": "виглядаєш",
+    "awful": "(розм.) дуже",
+    "nice": "гарно",
+    "today": "сьогодні",
+    "steve": "Стів (ім’я)",
+    "doris": "Доріс (ім’я)"
+  },
+  "clips": [
+    {"v":"GqYsfieTR0o","s":1606.24,"e":1607.2,"line":"Good to see you again.","note":"Charlie meets someone’s parents. He already knows the mother: Good to see you again. – You, too.","noteUa":"Чарлі знайомиться з батьками. Маму він уже знає: «Приємно знову вас бачити». – «Мені теж».","around":[[1603.2,1604.48,"You remember my mother, Martha."],[1604.48,1606.24,"And this is my father, Tom."],[1607.28,1608.32,"You, too."]]},
+    {"v":"usjUWrtYUIk","s":16.48,"e":17.5,"line":"Good to see you again.","note":"A little girl comes back to Steve Harvey’s show. They say hello: Good to see you again. – Good to see you again, too.","noteUa":"Маленька дівчинка знову приходить на шоу Стіва Гарві. Вони вітаються: «Приємно знову тебе бачити». – «Мені теж приємно знову тебе бачити».","around":[[13.44,14.88,"How are you, sweetheart?"],[15.12,16.24,"I’m good."],[17.52,18.64,"Good to see you again, too."]]},
+    {"v":"DLuNPOWANLg","s":95.53,"e":96.9,"line":"Doris, good to see you again.","note":"A family plays a TV game again. The host says hello to the mom: Doris, good to see you again. – Thank you, Steve.","noteUa":"Родина знову грає в телегру. Ведучий вітається з мамою: «Доріс, приємно знову вас бачити». – «Дякую, Стіве».","around":[[96.9,97.9,"Thank you, Steve."]]}
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "en": "get rid of",
+  "ua": "позбутися, викинути",
+  "pic": "🗑️",
+  "hl": "(get|gets|got|getting) rid of",
+  "together": {"how long":"як довго","under there":"там, під (ковдрою)","all right":"гаразд","back to brown":"знову каштанове","I was like":"я така: … (розм.)"},
+  "gloss": {
+    "have": "(have you been sleeping = ти спиш (уже давно))",
+    "you": {"*":"ти","you told":"ти (you told him = ти сказала йому)"},
+    "been": "(have been sleeping = спиш уже якийсь час)",
+    "sleeping": "спиш",
+    "a": {"*":"a — (один) місяць","a grenade":"a — (якась) граната: згадують уперше"},
+    "month": "місяць",
+    "whatever": "та байдуже, як знаєш",
+    "just": "просто",
+    "your": "своє",
+    "trash": "сміття",
+    "it’s": {"*":"(it’s = it is) це","it’s back":"воно (it’s back = воно знову)"},
+    "i": "я",
+    "told": "сказала (tell – told)",
+    "him": "йому",
+    "to": "to — перед дієсловом: told him to do = сказала йому зробити",
+    "do": "зробити",
+    "it": "це (волосся)",
+    "blonde": "блонд, світлим",
+    "and": "і",
+    "then": "потім",
+    "looked": "виглядало",
+    "orange": "помаранчевим",
+    "so": "тож",
+    "oh": "о",
+    "i’m": "я (I’m fine = зі мною все гаразд)",
+    "fine": "гаразд, нормально",
+    "grenade": "граната"
+  },
+  "clips": [
+    {"v":"L8fE9M8tTLk","s":31.36,"e":32.68,"line":"Just get rid of your trash.","note":"Brick has been sleeping in a blanket fort for a month, with snacks. The answer: whatever, just get rid of your trash.","noteUa":"Брік уже місяць спить у куполі з ковдр, разом із їжею. Йому кажуть: як знаєш, тільки викинь своє сміття.","around":[[27.36,29,"How long have you been sleeping under there?"],[29.44,30.04,"A month."],[30.36,31.32,"All right. Whatever."]]},
+    {"v":"CVe7xf4tBSo","s":1084.88,"e":1087.05,"line":"So I was like, “Get rid of it.”","note":"A guest talks about a man’s hair: she told him to go blonde, but it looked orange, so she said: get rid of it. Now it’s back to brown.","noteUa":"Гостя розповідає про волосся одного чоловіка: вона сказала пофарбуватися в блонд, вийшло помаранчеве, і вона сказала: «Позбудься цього». Тепер воно знову каштанове.","around":[[1081.92,1082.56,"It’s back to brown."],[1082.56,1084.88,"I told him to do it blonde and then it looked orange,"],[1087.12,1088.64,"Oh, you told him to do it blonde."]]},
+    {"v":"DR9QSPYiKpM","s":2082.32,"e":2083.2,"line":"Get rid of it.","note":"They find a grenade. Get rid of it, now!","noteUa":"Вони знаходять гранату. «Позбудься її, швидко!»","around":[[2077.6,2078.64,"I’m fine."],[2081.44,2082.32,"It’s a grenade."]]}
+  ]
+}
