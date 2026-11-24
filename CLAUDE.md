@@ -90,6 +90,8 @@ huggingface.co, about 15 min per hour of audio).
 ## What the teacher asked for
 
 - **Replies in chat are short**: say briefly what you did and give the links; don't list the lesson content.
+- **Present first, test after** (Nov 24, his rule): as soon as a page is published, give him the link; run qa.js and
+  the live checks after that, and tell him only if something is wrong (then fix it). Don't make him wait for tests.
 - **Questions to him are multiple choice** (AskUserQuestion, recommended option first), never open questions in chat.
   When a request is unclear ("a review sheet": page, picture or text?), ask that way before building.
   When the options are words or phrases to teach, put a short example sentence under each one (the option's
