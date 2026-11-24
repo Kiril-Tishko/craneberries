@@ -6,13 +6,38 @@
   "gloss": {
     "it": "it — тут не перекладається: it could have been worse = могло бути гірше",
     "could": "могло (б)",
-    "have": "(could have been = могло бути)",
+    "have": {"*":"(could have been = могло бути)","might have":"(might have saved = можливо, врятував)"},
     "been": "бути (could have been = могло бути)",
-    "worse": "гірше",
+    "worse": {"*":"гірше","worse weather":"гіршої (worse weather = гіршої погоди)"},
     "so": "тож, отже",
-    "doug": "Даг (ім’я ведучого)"
+    "doug": "Даг (ім’я ведучого)",
+    "why": "чому",
+    "does": "does — допоміжне в питанні: why does … break? = чому … ламається?",
+    "my": "мій",
+    "bike": "велосипед",
+    "always": "завжди",
+    "break": "ламається",
+    "when": "коли",
+    "we’re": "we’re = we are: ми",
+    "far": "далеко",
+    "from": "від",
+    "civilization": "цивілізація",
+    "well": "ну",
+    "in": "у, в",
+    "the": "the — (той самий) тунель",
+    "tunnel": "тунель",
+    "a": "(a lot worse = набагато гірше)",
+    "lot": "набагато (a lot worse = набагато гірше)",
+    "true": "правда",
+    "you": "ти",
+    "might": "можливо (might have saved = можливо, врятував)",
+    "saved": "врятував (save – saved)",
+    "us": "нас",
+    "weather": "погода"
   },
   "clips": [
-    {"v":"gH-p-DTABCY","s":339.4,"e":342,"line":"So, it could have been worse, Doug.","note":"A man talks about his years in prison. It was bad, but it could have been worse.","noteUa":"Чоловік розповідає про роки у в’язниці. Було погано, але могло бути й гірше."}
+    {"v":"gH-p-DTABCY","s":339.4,"e":342,"line":"So, it could have been worse, Doug.","note":"A man talks about his years in prison. It was bad, but it could have been worse.","noteUa":"Чоловік розповідає про роки у в’язниці. Було погано, але могло бути й гірше."},
+    {"v":"EcB5H9ACGFU","s":30733.76,"e":30734.96,"line":"It could have been a lot worse.","note":"They are on a long bike trip, and his bike broke far from any town. But it could have been worse: it could have happened in the tunnel.","noteUa":"Вони в довгій велопоїздці, і його велосипед зламався далеко від міста. Але могло бути гірше: це могло статися в тунелі.","around":[[30729.4,30732.24,"Why does my bike always break when we’re far from civilization?"],[30732.4,30733.76,"Well, it could have been in the tunnel."],[30735.84,30736.6,"True."]]},
+    {"v":"fuArgEt8X-o","s":4169.92,"e":4170.72,"line":"It could have been worse.","note":"It is raining on their bike trip. A friend joins them, and they joke: it could have been worse, maybe you saved us from worse weather.","noteUa":"Під час велопоїздки йде дощ. До них приєднується друг, і вони жартують: могло бути гірше, може, ти врятував нас від гіршої погоди.","around":[[4169.44,4169.92,"Why?"],[4170.72,4173.5,"You might have saved us from worse weather."]]}
   ]
 }
