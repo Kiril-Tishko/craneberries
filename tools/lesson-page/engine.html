@@ -311,6 +311,7 @@ function clipQuery(s){
   const q = new URLSearchParams({words: s.words.map(slug).join(','), title: document.title, from: 'lesson'});
   if (s.notes === 'ua' || s.notes === 'ru') q.set('notes', s.notes);   // ru: Victoria only (Nov 24)
   if (s.listen) q.set('listen', '1');   // listen first: no caption until it is tapped
+  if (s.only) q.set('only', [].concat(s.only).join(','));   // just these clips (YouTube ids): about 3 a word (Nov 24)
   return q;
 }
 function clipSrc(s){

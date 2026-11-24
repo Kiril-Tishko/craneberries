@@ -132,7 +132,15 @@ function norm(w, slug){
 }
 App.norm = norm;
 // Hidden clips are skipped, except in edit mode.
-const list = () => (!word ? [] : App.editing ? word.clips : word.clips.filter((c) => !c.hidden));
+// ?only=<YouTube id>,… = a lesson shows just these clips of the word (Nov 24, his wish: about 3 clips a word, not every
+// clip the library has); an id that isn't there is ignored, and with none left the word shows all its clips.
+const ONLY = (Q.get('only') || '').split(',').filter(Boolean);
+const list = () => {
+  if (!word) return [];
+  if (App.editing) return word.clips;
+  const vis = word.clips.filter((c) => !c.hidden), pick = ONLY.length ? vis.filter((c) => ONLY.includes(c.v)) : vis;
+  return pick.length ? pick : vis;
+};
 const clip = () => list()[clipN];
 const label = (slug) => {
   const w = WORDS[slug] || INDEX.find((x) => x.slug === slug);

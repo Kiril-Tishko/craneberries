@@ -279,7 +279,9 @@ huggingface.co, about 15 min per hour of audio).
   **How he wants clips in a lesson** (Nov 16): the word or phrase on its own screen as usual, then right after it one
   clips screen with `listen: true` (no subtitles until tapped), 💡 notes in Ukrainian for A2 students unless their `brief`
   says English (then the notes are simple A2 English: short sentences, everyday words), about
-  3 clips a word. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
+  3 clips a word, never many more (Nov 24: Victoria's opening with up to 8 a word was "kind of too much"): when the
+  word's library file has more, give its clips screen `only: ['<YouTube id>', …]` (the player's `?only=`), his ★ / ♥
+  picks first. Few clip screens a page. Vova (Nov 24): test him first, then 3–4 words with clips. Before a lesson, suggest the words that suit clips (common in real speech, easy to hear: "Can I call
   you back?"), he picks them, then pick the clips.
   Pick the clips before the lesson, never live:
   - **He uses it as a page on his PC: http://localhost:8770** (Nov 21; `site.pl` + `site.html`, started hidden at
