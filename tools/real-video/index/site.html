@@ -259,7 +259,8 @@ function params() {
   return p;
 }
 let loadingMore = false;
-async function go(more) {
+// more: the next page of the same search. quiet: no clip is made ready (the page is coming back to his clip).
+async function go(more, quiet) {
   const p = params(); if (!p.get('q')) return;
   if (!more) { page = 1; items = []; history.replaceState(null, '', '?' + p.toString()); setTab('results'); }
   p.set('page', page); p.set('n', 15);
@@ -284,8 +285,21 @@ async function go(more) {
   $('#nres').textContent = items.length ? `(${items.length}${d.more ? '+' : ''})` : '';
   drawList();
   $('#more').hidden = !d.more;
+  if (more) { await addToPlayer(d.results); if (P.list === 'results') drawNow(); }
   // The first clip is ready in the video (not playing) as soon as the results come.
-  if (!more && items.length) play('results', 0, undefined, true);
+  if (!more && !quiet && items.length) play('results', 0, undefined, true);
+}
+// More results: the new clips join the player that is open, so the clip he watches goes on and the next one opens
+// without loading the player again (his wish, Nov 24: no jump away from the video he was watching).
+async function addToPlayer(rows) {
+  const A = playerApp();
+  if (!A || !A.word || P.list !== 'results' || !rows.length || A.word.clips.length !== items.length - rows.length) return;
+  let w;
+  try { w = await fetch('/player/words/' + rows.map(r => `c-${r.lid}-${r.last}`).join('-') + '.json').then(r => r.json()); } catch (e) { return; }
+  // Only when every new clip came (else the next one loads the player with the whole list, as before).
+  if (!w || !Array.isArray(w.clips) || w.clips.length !== rows.length || A.word.clips.length !== items.length - rows.length) return;
+  A.word.clips.push(...w.clips);
+  P.slug = slugOf('results');
 }
 $('#more').addEventListener('click', () => { if (loadingMore) return; page++; go(true); });
 $('#f').addEventListener('submit', e => { e.preventDefault(); go(); });
@@ -365,6 +379,7 @@ function play(list, i, at, ready) {
   const rows = rowsOf(list); if (!rows[i]) return;
   $('#empty').hidden = true; $('#player').hidden = false; $('#under').hidden = false;
   P.i = i;
+  remember(list, rows[i]);
   const start = () => {
     const A = playerApp();
     if (!A || !A.word || A.word.clips.length !== rows.length) return false;
@@ -376,14 +391,25 @@ function play(list, i, at, ready) {
     drawNow();
     return true;
   };
+  const slug = slugOf(list), same = P.slug === slug && P.list === list;
+  P.list = list;   // before marking it in the list (a first clip, or one a reload came back to, is marked too)
   markNow(); drawNow();
-  const slug = slugOf(list);
-  if (P.slug === slug && P.list === list && start()) return;
-  P.list = list; P.slug = slug;
+  if (same && start()) return;
+  P.slug = slug;
   const f = $('#player'); let tries = 0;
   const wait = () => { if (!start() && ++tries < 100) setTimeout(wait, 100); };
   f.onload = wait;
   f.src = '/player/?words=' + encodeURIComponent(slug) + '&embed';
+}
+// The address keeps the clip he is on (clip = its line, list = liked, pages = how many result pages were open), so a
+// reload comes back to it instead of the first result.
+function remember(list, r) {
+  if (!r) return;
+  const u = new URLSearchParams(location.search);
+  u.set('clip', r.lid);
+  if (list === 'liked') u.set('list', 'liked'); else u.delete('list');
+  if (list === 'results' && page > 1) u.set('pages', page); else u.delete('pages');
+  history.replaceState(null, '', '?' + u.toString());
 }
 // What plays (under the video) and the buttons in the player's row: Previous, Like, Next.
 function drawNow() {
@@ -554,9 +580,27 @@ async function loadPicked() {
   $('#q').value = u.get('q') || ''; $('#human').checked = u.get('human') === '1';
   $('#examples').innerHTML = ['what do you mean', 'it depends', 'are you kidding me', 'I’m tired', 'can I call you back'].map(x => `<button type="button" class="chip">${esc(x)}</button>`).join('');
   await loadStatus();
-  loadPicked();
+  const liked = loadPicked();
   if (u.get('show')) { $('#show').value = u.get('show'); }
-  if ($('#q').value) go(); else $('#q').focus();
+  // After a reload: back to the clip he was on (ready, not playing), with as many result pages as were open.
+  const back = Number(u.get('clip')) || 0, fromLiked = u.get('list') === 'liked';
+  let found = false;
+  if ($('#q').value) {
+    await go(false, !!back);
+    if (back && !fromLiked) {
+      const n = Math.min(Number(u.get('pages')) || 1, 10);
+      while (page < n && current && current.more && !items.some(r => r.lid === back)) { page++; await go(true); }
+      const i = items.findIndex(r => r.lid === back);
+      if (i >= 0) { play('results', i, undefined, true); found = true; }
+    }
+  } else $('#q').focus();
+  if (back && fromLiked) {
+    await liked;
+    const i = picks.findIndex(r => r.lid === back);
+    if (i >= 0) { setTab('liked'); play('liked', i, undefined, true); found = true; }
+  }
+  // That clip isn't there any more (unliked, hidden): the first result, as usual.
+  if (back && !found && items.length) play('results', 0, undefined, true);
   setInterval(loadStatus, 60000);
 })();
 $('#gear').addEventListener('click', () => $('header').classList.toggle('open'));
