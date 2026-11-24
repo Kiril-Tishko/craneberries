@@ -211,7 +211,7 @@ huggingface.co, about 15 min per hour of audio).
     note, noteUa?, around?, hidden?}]}`: v = YouTube id, s/e = where the line starts/ends (seconds; exact decimals when
     known), note = the 💡 note in English, noteUa in Ukrainian, around = `[[start, end, line], …]` 1–2 lines before and
     after (for "With context"), hidden = kept but not shown, hl = a regex for other forms of the word ("rip[- ]?off"),
-    tall = a YouTube Short (portrait; the player crops it higher so heads show, and edit mode sets it for a /shorts/ link).
+    tall = a YouTube Short (portrait; the player shows its top third at full width, where the faces are, and edit mode sets it for a /shorts/ link).
     **Every word under a clip is tappable** like on the song pages: one word at a time (its Ukrainian; a grammar word
     says why it's there), the yellow word whole (its `ua`), `together` phrases whole. `gloss` covers every word of every
     clip's line and lines around (same shape as the song pages' gloss, context keys for grammar words), so **when you
