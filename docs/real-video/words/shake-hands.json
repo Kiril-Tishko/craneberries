@@ -1,0 +1,39 @@
+{
+  "en": "shake hands",
+  "ua": "потиснути руки",
+  "pic": "🤝",
+  "hl": "sh(?:ake|ook|aking) hands",
+  "together": {"get over it":"забудьте вже, переживіть це","you know what":"знаєте що"},
+  "gloss": {
+    "shake": {"*": "потиснути (руки)", "not a shake": "потиск (рук)"},
+    "hands": "руки",
+    "guys": "хлопці",
+    "you": "ви",
+    "know": "знаєте",
+    "what": "що",
+    "i": "я",
+    "want": "хочу",
+    "to": "to — перед дієсловом: want you to do = хочу, щоб ви зробили",
+    "do": "зробили",
+    "get": "(get over it = забудьте вже)",
+    "over": "(get over it = забудьте вже)",
+    "it": "це",
+    "that": "то",
+    "was": "було",
+    "not": "не",
+    "a": "a — один (потиск)",
+    "dwight": "Двайт (ім’я)",
+    "whoa": "ого, стоп",
+    "we": "ми",
+    "like": "подобається",
+    "your": "твоя",
+    "smile": "усмішка",
+    "shook": "потиснули (shake – shook)",
+    "believe": "вірю"
+  },
+  "clips": [
+    {"v":"8kBBnWF32H4","s":314.24,"e":315.12,"line":"Shake hands.","note":"Two men at work are angry with each other. The boss says: shake hands and forget it.","around":[[312.92,314.24,"Guys, you know what I want you to do?"],[315.12,319.919,"Get over it."],[320.04,321.84,"That was not a shake, Dwight."]]},
+    {"v":"foqotWFPMgU","s":3014.4,"e":3015.52,"line":"We shook hands.","note":"A fighter tells a story from the past: he and another man shook hands, and he believed him.","around":[[3013.52,3014.4,"I like your smile."],[3015.52,3016.8,"I believe you."]]},
+    {"v":"4at2bVIhLgc","s":1863.84,"e":1865.039,"line":"We shake hands.","note":"Levy watches a chess game. The players stop and shake hands: the game is over.","around":[[1863.279,1863.84,"Whoa, whoa, whoa."]]}
+  ]
+}
