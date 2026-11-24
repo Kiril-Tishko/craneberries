@@ -74,7 +74,7 @@
   {"slug":"rip-off","en":"rip-off","ua":"грабіж, завищена ціна","pic":"💸","n":5},
   {"slug":"route","en":"route","ua":"маршрут","pic":"🗺️","n":1},
   {"slug":"shake-hands","en":"shake hands","ua":"потиснути руки","pic":"🤝","n":5},
-  {"slug":"something-is-off","en":"Something is off.","ua":"Щось не так.","pic":"🤨","n":2},
+  {"slug":"something-is-off","en":"Something is off.","ua":"Щось не так.","pic":"🤨","n":3},
   {"slug":"sooner-or-later","en":"sooner or later","ua":"рано чи пізно","pic":"⏳","n":3},
   {"slug":"sorry-for-the-late-reply","en":"Sorry for the late reply.","ua":"Вибачте за пізню відповідь.","pic":"📨","n":1},
   {"slug":"sorry-im-late","en":"Sorry I’m late.","ua":"Вибачте, я запізнилася.","pic":"⏰","n":3},
