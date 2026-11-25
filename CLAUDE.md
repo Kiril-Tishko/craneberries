@@ -359,7 +359,10 @@ huggingface.co, about 15 min per hour of audio).
     Louis Armstrong, Stevie Wonder, Lionel Richie, Bon Jovi, Simon & Garfunkel, Eagles, Madonna, Tina Turner, Celine
     Dion, Dean Martin, Nat King Cole, Johnny Cash, The Beach Boys, Journey) come `first`, their 80 most-viewed songs
     each: titles "<Artist> - <Song>" only, `max` 600 s (no concerts or compilations), real TV and concert performances
-    allowed (the crooners have few music videos); the 14 pop artists stay in but take no new songs first. Videos only (lyric videos have the words in the picture, audio uploads a still image; `skip` also
+    allowed (the crooners have few music videos); the 14 pop artists stay in but take no new songs first. One song
+    he asks for = an entry with `videos` and `"song": true` ("Songs · Three Days Grace", Over and Over, Nov 25: no
+    official music video exists, so the band's official audio upload, whose length matches lrclib's lyrics; then
+    `collect.pl --list <key>` and `--once <id>` fetch it at once). Videos only (lyric videos have the words in the picture, audio uploads a still image; `skip` also
     drops chats, premieres and making-of videos, and applies to the queue when the collector starts; `collect.pl --drop
     <id>` takes a wrong video out of the index). Uploaded
     lyrics captions are used as they are; otherwise the words come from lrclib.net's synced lyrics, lined up with the

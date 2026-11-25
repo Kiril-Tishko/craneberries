@@ -80,6 +80,7 @@
     {"name": "Judge Judy", "id": "UCzMPPxbQG6iZttQhq3ukXSg", "handle": "@JudgeJudy", "show": "Judge Judy", "first": true, "per": 300},
     {"name": "Hot Bench", "id": "UCsrax31ReJ5BOkl9Ui2-7HA", "handle": "@HotBench", "show": "Hot Bench"},
     {"name": "Family Feud", "id": "UCt8jfvd9skBAOT6XJwc_mJg", "handle": "@familyfeud", "show": "Family Feud", "first": true, "per": 300},
-    {"name": "Steve Harvey", "id": "UCNnnebGhmIJ8MQ4X1HwphRw", "handle": "@SteveHarvey", "show": "Steve Harvey", "first": true, "per": 300}
+    {"name": "Steve Harvey", "id": "UCNnnebGhmIJ8MQ4X1HwphRw", "handle": "@SteveHarvey", "show": "Steve Harvey", "first": true, "per": 300},
+    {"name": "Songs · Three Days Grace", "show": "Songs · Three Days Grace", "song": true, "first": true, "videos": ["fbiZYoWVqrA"], "about": "Over and Over (his wish, Nov 25). It has no official music video, only fan uploads; this is the band's official upload of the record (a still picture, 3:12), with lrclib's synced lyrics of the same length."}
   ]
 }
