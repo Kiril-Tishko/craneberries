@@ -125,6 +125,8 @@ huggingface.co, about 15 min per hour of audio).
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
   For A2 and below, write the mouth tips in the student's language ("Опустіть щелепу", not "Drop your jaw").
+  A tip says only how to say it right, never the wrong way (Nov 25: he crossed out "Not «па-у-за»" on Sergii's
+  pause card; "One sound: «поз». Ends in z." stayed). One word alone is fine when that word is the problem.
   Never repeat a pair the student already had (check their earlier lessons' cards and their `brief` first).
   Fast-speech forms from the lesson (let me → "lemme") are a good alternative.
 - The **full mistakes report** is for the teacher only, on the site, with timestamps and priorities.
