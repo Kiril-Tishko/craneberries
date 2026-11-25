@@ -440,6 +440,8 @@ huggingface.co, about 15 min per hour of audio).
     **Then ask again once it is built** (Nov 23, his wish: "I want to answer it every time"): before you hand over the
     link, ask him about what you added (anything to cut or change) and what else to add, to the lesson and to its 🏠 homework
     (AskUserQuestion, multiple choice, several answers allowed, an example under each option), then make his changes.
+    **The link goes in that question's text** (Nov 25, his words: "how should I know, give me the link first"): the
+    dialog hides the chat, so a link only in the reply above it is never seen.
     **"Make it fast"** = no questions, before or after: build with your own picks and give him the link.
   - **One topic per lesson** by default (e.g. "At the dentist"). When he lists the parts he wants, follow his
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
