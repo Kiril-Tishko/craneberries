@@ -538,6 +538,9 @@ huggingface.co, about 15 min per hour of audio).
     Moving pictures: `anim` on a screen with `pic` (hop, swim, fly, run, climb, dance, crawl, ring for an alarm clock, sleep). Games: `{t:'game', words:
     [[word, emoji]…], rounds}` (listen, tap the word) and `{t:'quiz', q, pic, anim, opts:[[text, emoji]…], ans}` (tap
     the answer: stars when right, a shake when wrong). Check them with `node tools/lesson-page/qa-play.js <work-dir>`.
+    **No voice-led games on kids' pages** (Nov 25, his words: "get rid of AI narrated exercises, they are annoying"):
+    no listening games where the voice says a phrase and she taps a picture; picture taps, building and gaps instead,
+    and the voice only plays when she taps a line herself.
   - **No lone words in the recordings** (Nov 24, his rule: the voice says about one single word in 10–20 wrong, and he
     can't check every one before a lesson): sound screens and listening games use short phrases ("take the bus" ·
     "my boss"), never a word on its own. When a single word has to stay (a kids' page), name it in the reply so he
