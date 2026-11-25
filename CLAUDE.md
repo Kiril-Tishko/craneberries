@@ -435,7 +435,8 @@ huggingface.co, about 15 min per hour of audio).
     (forgotten words, corrected phrases, uncorrected mistakes, one sound, saved topics, her real situations), with
     your pick first. Build only what he chose. **Her missed words open the lesson** (Nov 22, his choice): the words
     she missed most in Practice in her 📖 dictionary on the student site (`python3 tools/missed-words.py <siteCode>` in
-    the lessons repo) go into the opening recall; offer them first in that question. **His open promises come first** (`promises/<slug>` without a tick in
+    the lessons repo) go into the opening recall; offer them first in that question, with her wrong typed answers
+    (`tools/missed-answers.py`). **His open promises come first** (`promises/<slug>` without a tick in
     `state/promises-<slug>`, "next lesson" ones above all): offer each one as an option, and put them in `nextLesson`.
     **Then ask again once it is built** (Nov 23, his wish: "I want to answer it every time"): before you hand over the
     link, ask him about what you added (anything to cut or change) and what else to add, to the lesson and to its 🏠 homework
@@ -482,6 +483,12 @@ huggingface.co, about 15 min per hour of audio).
     [requirements]." · "I'm writing [regarding] the new sample." · "[Let me know] if you need anything.").
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
+  - **Her answers are kept** (Nov 25, his wish: "when they answer remember the answer for later to review, especially the
+    homework"; not only drills, every exercise): each recall, flip and turn screen has a ✍️ box; she types, Answer shows
+    the right one and the box turns green when they match (amber when not, never red). A quiz keeps her first tap, a
+    listening game its score. Saved like "My sentences" (`a` in her answers row: prompt, her answer, the right one,
+    part, 🏠 or not); he sees them live and in **📝 Answers** in his bar (tap one to go there). Her wrong ones join
+    her missed words in the next lesson's opening (`python3 tools/missed-answers.py <siteCode>` in the lessons repo).
   - "My sentences" boxes stay empty: no example sentences in them.
     What is typed there must survive a reload or a closed tab: the engine saves on every keystroke, in the browser
     and in the student's account (the student site does this by itself; a Claude page needs
