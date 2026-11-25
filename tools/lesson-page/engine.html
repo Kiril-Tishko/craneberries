@@ -143,6 +143,12 @@ a.btn.main{color:#fff}
 .mine input{width:100%;font:inherit;font-size:20px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
 .mine input:focus{outline:none;border-color:var(--accent)}
 .saved{font-size:14px;font-weight:600;color:var(--muted);min-height:1.3em}
+/* Her typed answer on an exercise (Nov 25, his wish): kept for later review; green when it matches the answer. */
+input.typed{width:100%;max-width:560px;font:inherit;font-size:clamp(17px,2.6vh,20px);font-weight:600;padding:10px 14px;border-radius:14px;
+  border:2px dashed var(--line);background:var(--bg);color:var(--ink);text-align:center}
+input.typed:focus{outline:none;border-style:solid;border-color:var(--accent)}
+input.typed.ok{border:2px solid #1E8E4E;background:#EEF8F1;color:#0F5A30}
+input.typed.no{border:2px solid #E0A500}
 
 .nav{flex:none;display:flex;gap:12px;justify-content:space-between;align-items:center}
 .nav button{border:0;border-radius:18px;font-weight:600;font-size:18px;padding:14px 22px}
@@ -256,6 +262,25 @@ let G = { cur: null, right: 0, total: 0 };
 // The student's language for the few interface words (content may set `const LANG = 'ru'`; default Ukrainian).
 const RU = typeof LANG !== 'undefined' && LANG === 'ru';
 const T_ = (uk, ru) => RU ? ru : uk;
+/* ---------- her answers (Nov 25, his wish: "when they answer remember the answer for later to review, especially the
+   homework") ----------
+   Every exercise where she gives an answer (recall, flip, turn) has a box: she types her answer, then Answer shows the
+   right one and the box turns green when they match (amber when not: no red, nothing harsh). A quiz keeps her first tap,
+   a listening game her score. All of it is kept like "My sentences" (this browser and, on the student site, her
+   account: `a` in her answers row, {key: {t, ok, r, q, p, h, at, seen}}), so the teacher sees it later (📝 Answers in
+   his bar) and the wrong ones can open her next lesson (lessons repo: tools/missed-answers.py). */
+const ANS_T = {recall: 1, flip: 1, turn: 1};
+const ansKey = (s) => s.t === 'quiz' ? 'quiz:' + s.q : s.t === 'game' ? 'game:' + s.words.map((w) => w[0]).join('|') : s.t + ':' + (s.en || s.ans || '');
+const ansRight = (s) => String(s.t === 'recall' ? s.en : s.ans || '').replace(/[\[\]]/g, '').replace(/~~/g, '');
+const ansNorm = (x) => ' ' + String(x || '').toLowerCase().replace(/[’‘`]/g, "'")
+  .replace(/\bcan't\b/g, 'can not').replace(/\bwon't\b/g, 'will not').replace(/n't\b/g, ' not').replace(/'re\b/g, ' are')
+  .replace(/'m\b/g, ' am').replace(/'ll\b/g, ' will').replace(/'ve\b/g, ' have').replace(/'d\b/g, ' would')
+  .replace(/\b(it|he|she|that|what|where|there|who|how)'s\b/g, '$1 is').replace(/\bcannot\b/g, 'can not')
+  .replace(/\b(do|does|did|is|are|was|were|has|have|had|could|would|should)nt\b/g, '$1 not').replace(/\bcant\b/g, 'can not').replace(/\bim\b/g, 'i am')
+  .replace(/[^\p{L}\p{N}' ]+/gu, ' ').replace(/\s+/g, ' ').trim() + ' ';
+const ansSame = (a, b) => ansNorm(a) === ansNorm(b);
+const typedBox = (s) => `<input class="typed" type="text" data-typed="${esc(ansKey(s))}" placeholder="${T_('✍️ Напишіть відповідь', '✍️ Напишите ответ')}"
+  autocomplete="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="done" aria-label="Your answer">`;
 /* ---------- state ---------- */
 let sec = 0, idx = 0;
 const pick = {};            // which option each change-one-thing screen shows
@@ -348,6 +373,7 @@ function view(s){
       <div class="cue">${xs(s.cue)}</div>
       <div class="hint" data-part="hint" hidden>${esc(s.hint)}</div>
       <div class="ans" data-part="ans" hidden><span class="row" style="justify-content:flex-start;align-items:center">${esc(s.ans)} ${spk(s.ans)}</span></div></div>
+    ${typedBox(s)}
     <div class="row"><button class="btn" data-show="hint">💡 Hint</button><button class="btn" data-show="ans">Answer</button></div>
     ${s.after ? `<div class="after row" data-part="after" hidden style="align-items:center">They say: “${esc(s.after)}” ${spk(s.after)}</div>` : ''}`;
   }
@@ -420,6 +446,7 @@ function view(s){
     <div class="recall-ua">${xs(s.ua)}</div>
     ${hinted ? `<div class="ans big2 gapline" data-step="${h0}"><span class="row" style="align-items:center"><span>${sentence}</span> ${spk(plain)}</span></div>`
       : `<div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${esc(s.en)}</span> ${spk(plain)}</span></div>`}
+    ${typedBox(s)}
     <div class="row">${hinted ? `<button class="btn" data-hint="${h0}">${h0 ? '💡 First letter' : '💡 Hint'}</button>` : '<button class="btn" data-show="ans">Answer</button>'}</div>`;
   }
   if (s.t === 'sound') return `
@@ -462,9 +489,11 @@ function view(s){
     ${inPlace ? `<div class="stack">
       <div class="big" data-hide-on-ans>${xs(s.subj)}${s.dots === false ? '' : ' …'}</div>
       <div class="big inplace" data-part="ans" hidden>${hl}</div></div>
+    ${typedBox(s)}
     <div class="row"><button class="btn" data-show="ans">Answer</button>${spk(full) ? `<button class="btn" data-say="${esc(full)}" data-listen hidden>🔊 Listen</button>` : ''}</div>` : `
     <div class="big">${xs(s.subj)}</div>
     <div class="ans big2" data-part="ans" hidden><span class="row" style="align-items:center"><span>${hl}</span> ${spk(full)}</span></div>
+    ${typedBox(s)}
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`}`;
   }
   if (s.t === 'mine'){
@@ -516,6 +545,7 @@ function render(){
     + (slides.length > 1 ? slides.map((_, n) => `<i class="${n === idx ? 'on' : ''}"></i>`).join('') : '');
   jawDeg = 0; G = { cur: null, right: 0, total: 0 };
   card.innerHTML = view(slides[idx]);
+  ansFill();
   card.classList.toggle('full', !!(window.LESSON_KEY && slides[idx].t === 'clips'));   // the clips fill the screen
   card.classList.remove('in'); void card.offsetWidth; card.classList.add('in');
   Clips.render();
@@ -652,6 +682,23 @@ window.Lesson = Object.assign(window.Lesson || {}, {
   jump(s, i){ if ((s === sec && i === idx) || !SECTIONS[s] || !SECTIONS[s].slides[i]) return; sec = s; idx = i; render(); },
   // parts kept in reserve that are open now; setExtras makes these the open ones (the part on show stays open)
   extras: () => [...opened].filter((n) => SECTIONS[n] && SECTIONS[n].extra).sort((a, b) => a - b),
+  // Her answers, for the teacher: typed(k, e) takes one as she types it (live); answers() lists them in page order.
+  typed(k, e){
+    if (!k || !e) return;
+    ansMem[k] = e;
+    const box = card.querySelector('[data-typed]');
+    if (box && box.dataset.typed === k && document.activeElement !== box){ box.value = e.t || ''; if (ansShown() && e.t) ansMark(box, !!e.ok); }
+    document.dispatchEvent(new CustomEvent('lesson-answers'));
+  },
+  answers(){
+    const out = [];
+    SECTIONS.forEach((x, n) => x.slides.forEach((s, i) => {
+      if (!ANS_T[s.t] && s.t !== 'quiz' && s.t !== 'game') return;
+      const e = ansMem[ansKey(s)]; if (!e || !e.t) return;
+      out.push({s: n, i, part: x.label, home: !!x.home, q: e.q || '', r: e.r || ansRight(s), t: e.t, ok: !!e.ok, seen: !!e.seen, at: e.at || 0});
+    }));
+    return out;
+  },
   setExtras(list){
     const want = new Set((list || []).filter((n) => SECTIONS[n] && SECTIONS[n].extra));
     if (SECTIONS[sec].extra) want.add(sec);
@@ -720,6 +767,7 @@ card.addEventListener('click', (e) => {
     const s = SECTIONS[sec].slides[idx], i = Number(qz.dataset.quiz), ok = i === s.ans;
     qz.classList.remove('right', 'wrong', 'shake'); void qz.offsetWidth;
     qz.classList.add(ok ? 'right' : 'wrong'); if (ok){ burst(qz); say(s.opts[i][0]); } else qz.classList.add('shake');
+    if (!ansMem[ansKey(s)]) ansPut(s, {t: s.opts[i][0], ok, r: s.opts[s.ans][0], q: s.q});   // her first tap
     return;
   }
   const ga = e.target.closest('[data-gans]');
@@ -732,7 +780,7 @@ card.addEventListener('click', (e) => {
     if (!ok) card.querySelector(`[data-gans="${G.cur}"]`).classList.add('right');
     G.cur = null;
     sc.textContent = `${ok ? '✓' : '✗'}  ${G.right} / ${G.total}` + (G.total >= s.rounds ? (G.right >= s.rounds - 1 ? '  🎉' : T_('  · ще раз?', '  · ещё раз?')) : '');
-    if (G.total >= s.rounds){ G.right = 0; G.total = 0; }
+    if (G.total >= s.rounds){ ansPut(s, {t: `${G.right} / ${G.total}`, ok: G.right >= s.rounds - 1, r: '', q: s.words.map((w) => w[0]).join(' · ')}); G.right = 0; G.total = 0; }
     return;
   }
 
@@ -743,7 +791,7 @@ card.addEventListener('click', (e) => {
     card.querySelectorAll('.gapline').forEach((x) => { x.dataset.step = Math.min(n, 3); });
     if (n === 1) hb.textContent = '💡 First letter';
     if (n === 2) hb.textContent = 'Answer';
-    if (n >= 3){ card.querySelectorAll('[data-part="ans"]').forEach((x) => { x.hidden = false; }); hb.style.visibility = 'hidden'; }
+    if (n >= 3){ card.querySelectorAll('[data-part="ans"]').forEach((x) => { x.hidden = false; }); hb.style.visibility = 'hidden'; ansReveal(); }
     return;
   }
   const sh = e.target.closest('[data-show]');
@@ -756,6 +804,7 @@ card.addEventListener('click', (e) => {
       card.querySelectorAll('[data-hide-on-ans]').forEach((x) => { x.hidden = true; });   // the full sentence takes the place of its gap or start
       const l = card.querySelector('[data-listen]'); if (l){ l.hidden = false; sh.hidden = true; }   // Answer button becomes Listen, same size
       const r = sh.closest('.row'); if (r && r.querySelector('[data-show="hint"]')) r.style.visibility = 'hidden';
+      ansReveal();
     } else if (part === 'hint') sh.style.visibility = 'hidden';
     return;
   }
@@ -777,6 +826,54 @@ card.addEventListener('click', (e) => {
    helper sets window.LessonStore ({get, set} like a database document) to keep them in the student's account too. */
 const MINE_KEY = window.LESSON_KEY || 'lesson-mine';
 let mineMem = null, mineDoc = null, mineTimer = 0;
+// The teacher's browser reads her answers and never keeps its own (live.js sets LessonStore.readOnly there).
+const ansRO = () => !!(window.LessonStore && window.LessonStore.readOnly);
+const ANS_LKEY = MINE_KEY + ':answers';
+let ansMem = (() => { try { const a = JSON.parse(localStorage.getItem(ANS_LKEY) || '{}'); return a && typeof a === 'object' && !Array.isArray(a) ? a : {}; } catch (e) { return {}; } })();
+function docSave(){
+  if (!mineDoc || ansRO()) return;
+  clearTimeout(mineTimer);
+  mineTimer = setTimeout(() => { mineDoc.set({ s: mineLoad(), a: ansMem, at: Date.now() }).then(() => mineMark('✓ Saved'), () => {}); }, 700);
+}
+// Where on the page an answer is: its part's name, at home or not (for his list and the next lesson's opening).
+function ansWhere(s){
+  for (const x of SECTIONS) if (x.slides.includes(s)) return {p: x.label, h: x.home ? 1 : 0};
+  return {p: '', h: 0};
+}
+function ansPut(s, e){
+  if (ansRO()) return;
+  const k = ansKey(s);
+  ansMem[k] = {...ansWhere(s), ...e, at: Date.now()};
+  try { localStorage.setItem(ANS_LKEY, JSON.stringify(ansMem)); } catch (e2) {}
+  document.dispatchEvent(new CustomEvent('lesson-typed', {detail: {k, e: ansMem[k]}}));
+  docSave();
+}
+const ansShown = () => !!card.querySelector('[data-part="ans"]:not([hidden]), .gapline[data-step="3"]');
+function ansMark(box, ok){ box.classList.toggle('ok', ok === true); box.classList.toggle('no', ok === false); }
+// Typing: kept at once. The box turns green / amber only once the right answer is on the screen.
+function ansTyped(box){
+  const s = SECTIONS[sec].slides[idx], t = box.value.trim(), seen = ansShown();
+  const ok = t ? ansSame(t, ansRight(s)) : null;
+  ansMark(box, seen && t ? ok : null);
+  ansPut(s, {t, ok, r: ansRight(s), q: String(s.ua || s.from || s.cue || s.subj || '').replace(/~~/g, ''), seen: seen ? 1 : 0});
+}
+function ansReveal(){
+  const box = card.querySelector('[data-typed]'); if (!box) return;
+  const t = box.value.trim(); if (t) ansMark(box, ansSame(t, ansRight(SECTIONS[sec].slides[idx])));
+}
+function ansFill(){
+  const box = card.querySelector('[data-typed]'); if (!box) return;
+  const e = ansMem[box.dataset.typed]; box.value = e && e.t ? e.t : '';
+}
+card.addEventListener('input', (e) => { const b = e.target.closest('[data-typed]'); if (b) ansTyped(b); });
+card.addEventListener('keydown', (e) => {
+  const b = e.target.closest('[data-typed]'); if (!b || e.key !== 'Enter') return;
+  e.preventDefault();
+  const hb = card.querySelector('[data-hint]');
+  if (hb){ while (Number(hb.dataset.hint) < 3) hb.click(); }
+  else { const sh = card.querySelector('[data-show="ans"]'); if (sh && !sh.hidden) sh.click(); }
+  ansReveal(); b.blur();
+});
 function mineLoad(){
   if (mineMem) return mineMem;
   try { mineMem = JSON.parse(localStorage.getItem(MINE_KEY) || '[]'); } catch (e) { mineMem = []; }
@@ -788,9 +885,7 @@ function mineSave(all){
   mineMem = all; let ok = false;
   try { localStorage.setItem(MINE_KEY, JSON.stringify(all)); ok = true; } catch (e) {}
   mineMark(ok ? '✓ Saved' : '…');
-  if (!mineDoc) return;
-  clearTimeout(mineTimer);
-  mineTimer = setTimeout(() => { mineDoc.set({ s: all, at: Date.now() }).then(() => mineMark('✓ Saved'), () => {}); }, 700);
+  docSave();
 }
 card.addEventListener('input', (e) => {
   if (!e.target.closest('[data-mine]')) return;
@@ -805,7 +900,18 @@ card.addEventListener('input', (e) => {
       const id = db && user ? await user.id() : null; if (!id) return;
       mineDoc = db.collection('data/users/' + id).doc('mine');
     }
-    const snap = await mineDoc.get(), remote = snap.exists ? (snap.data().s || []) : [];
+    const snap = await mineDoc.get(), data = snap.exists ? snap.data() : {}, remote = data.s || [];
+    // Her answers: the newer copy of each wins (this browser or her account); the teacher's browser shows hers only.
+    const ra = data.a && typeof data.a === 'object' ? data.a : {};
+    if (ansRO()) ansMem = {...ra};
+    else {
+      let push = false;
+      for (const [k, e] of Object.entries(ra)) if (!ansMem[k] || (e && e.at || 0) > (ansMem[k].at || 0)) ansMem[k] = e;
+      for (const [k, e] of Object.entries(ansMem)) if (!ra[k] || (e.at || 0) > (ra[k].at || 0)) push = true;
+      try { localStorage.setItem(ANS_LKEY, JSON.stringify(ansMem)); } catch (e) {}
+      if (push) docSave();
+    }
+    ansFill();
     const local = mineLoad();
     if (local.some(Boolean)){ if (JSON.stringify(local) !== JSON.stringify(remote)) mineSave(local); return; }
     if (!remote.some(Boolean)) return;
