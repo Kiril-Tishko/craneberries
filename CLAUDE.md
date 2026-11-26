@@ -462,6 +462,15 @@ huggingface.co, about 15 min per hour of audio).
     instead (`flip`: every day → now / yesterday / tomorrow) with the tenses the student has had.
   - When the student knows a rule but forgets it in speech (he/she + s), don't explain it: use
     `flip` screens (`{t:'flip', from, subj, ans}` with the changed part in [brackets]) so she says it herself.
+  - **A new grammar point, his way** (Nov 26, Julia's "would"): teach only the one use the student needed (her "If it
+    were …, I would …"), never every use of it: the point is to get the structure out there so later, when the whole
+    topic comes, she has something to connect it to. Order: **notice** (`{t:'notice', label, lines}`: about 5 very
+    simple, natural, useful sentences with the same shape, "If I had time, I would help you."; nothing that raises
+    side questions, like "by the sea"; she reads and says what she notices; 👀 Show marks the key words, written
+    `{had|минула форма: have → had}`, and a tap or the mouse on one shows its note) → a very short **story** with the
+    structure (`{t:'notice', text: true, title, lines}`: ▶ Read it aloud and 👀 Show) → one simple `rule` screen →
+    drills (recall, then flips) → **Your turn** (`{t:'write', ua, prompts:[…]}`: she writes 1–2 of her own; they go to
+    his 📝 Answers).
   - Keep each drill set short (about 4 items). A rule he asks for gets one `rule` screen
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
     Say it directly (✅ where it goes, ❌ where it doesn't); don't build up from theory.
