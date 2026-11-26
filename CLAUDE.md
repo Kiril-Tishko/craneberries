@@ -444,7 +444,8 @@ huggingface.co, about 15 min per hour of audio).
     link, ask him about what you added (anything to cut or change) and what else to add, to the lesson and to its 🏠 homework
     (AskUserQuestion, multiple choice, several answers allowed, an example under each option), then make his changes.
     **The link goes in that question's text** (Nov 25, his words: "how should I know, give me the link first"): the
-    dialog hides the chat, so a link only in the reply above it is never seen.
+    dialog hides the chat, so a link only in the reply above it is never seen. **And in the reply too** (Nov 26: "I can't
+    copy the link from here"): a link in the dialog can't be copied, so it also goes on its own line in the chat.
     **"Make it fast"** = no questions, before or after: build with your own picks and give him the link.
   - **One topic per lesson** by default (e.g. "At the dentist"). When he lists the parts he wants, follow his
     order (for example: repeat old phrases → new useful phrases → change the time → grammar). Start with recall of
