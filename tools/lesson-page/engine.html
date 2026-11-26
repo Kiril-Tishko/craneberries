@@ -149,6 +149,16 @@ input.typed{width:100%;max-width:560px;font:inherit;font-size:clamp(17px,2.6vh,2
 input.typed:focus{outline:none;border-style:solid;border-color:var(--accent)}
 input.typed.ok{border:2px solid #1E8E4E;background:#EEF8F1;color:#0F5A30}
 input.typed.no{border:2px solid #E0A500}
+/* A "notice" screen (Nov 26, his idea): sentences first, she looks for what they share, then 👀 Show marks the key
+   words; a tap (or the mouse) on a marked word says what it is. */
+.ntc{list-style:none;margin:0;padding:0;display:grid;gap:clamp(6px,1.5vh,14px);width:100%;max-width:680px;text-align:left}
+.ntc li{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:clamp(18px,3vh,26px);font-weight:700;line-height:1.35}
+.ntc.txt{gap:clamp(4px,1vh,8px)}
+.ntc.txt li{font-weight:500;font-size:clamp(17px,2.7vh,23px)}
+.nz{position:relative;border-radius:6px;transition:background .25s,color .25s}
+.ntc.shown .nz{color:var(--swap);background:var(--swap-bg);box-shadow:0 0 0 2px var(--swap-bg);cursor:help;outline:none}
+.ntc.shown .nz:hover::after,.ntc.shown .nz.tip::after{content:attr(data-note);position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);font-size:15px;font-weight:600;line-height:1.3;padding:6px 10px;border-radius:9px;white-space:nowrap;z-index:6;pointer-events:none}
 
 .nav{flex:none;display:flex;gap:12px;justify-content:space-between;align-items:center}
 .nav button{border:0;border-radius:18px;font-weight:600;font-size:18px;padding:14px 22px}
@@ -270,6 +280,12 @@ const T_ = (uk, ru) => RU ? ru : uk;
    account: `a` in her answers row, {key: {t, ok, r, q, p, h, at, seen}}), so the teacher sees it later (📝 Answers in
    his bar) and the wrong ones can open her next lesson (lessons repo: tools/missed-answers.py). */
 const ANS_T = {recall: 1, flip: 1, turn: 1};
+// {words|note} in a notice line: the words are marked on 👀 Show, the note shows on a tap or under the mouse.
+const noticePlain = (l) => String(l).replace(/\{([^|}]+)\|[^}]*\}/g, '$1');
+const noticeMarks = (l) => String(l).split(/(\{[^|}]+\|[^}]*\})/).map((x) => {
+  const m = x.match(/^\{([^|}]+)\|([^}]*)\}$/);
+  return m ? `<span class="nz" tabindex="0" data-note="${esc(m[2])}">${esc(m[1])}</span>` : esc(x);
+}).join('');
 const ansKey = (s) => s.t === 'quiz' ? 'quiz:' + s.q : s.t === 'game' ? 'game:' + s.words.map((w) => w[0]).join('|') : s.t + ':' + (s.en || s.ans || '');
 const ansRight = (s) => String(s.t === 'recall' ? s.en : s.ans || '').replace(/[\[\]]/g, '').replace(/~~/g, '');
 const ansNorm = (x) => ' ' + String(x || '').toLowerCase().replace(/[’‘`]/g, "'")
@@ -496,6 +512,19 @@ function view(s){
     ${typedBox(s)}
     <div class="row"><button class="btn" data-show="ans">Answer</button></div>`}`;
   }
+  if (s.t === 'notice'){
+    const lines = s.lines.map((l) => `<li><span class="nl">${noticeMarks(l)}</span>${spk(noticePlain(l))}</li>`).join('');
+    return `
+    <div class="who">${esc(s.label || '👀 Read. What do you notice?')}</div>
+    ${s.title ? `<div class="big" style="font-size:clamp(20px,3.4vh,28px)">${esc(s.title)}</div>` : ''}
+    <ul class="ntc${s.text ? ' txt' : ''}">${lines}</ul>
+    <div class="row">${s.text ? '<button class="btn" data-playall>▶ Read it aloud</button>' : ''}<button class="btn main" data-show="mark">${esc(s.button || '👀 Show')}</button></div>`;
+  }
+  if (s.t === 'write') return `
+    <div class="who">✍️ ${esc(s.label || 'Your turn')}</div>
+    ${s.ua ? `<div class="when">${xs(s.ua)}</div>` : ''}
+    <div class="mine">${s.prompts.map((p) => `<input class="typed" type="text" data-typed="${esc('write:' + p)}" placeholder="${esc(p)}"
+      autocomplete="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="next" aria-label="${esc(p)}">`).join('')}</div>`;
   if (s.t === 'mine'){
     const saved = mineLoad();
     return `
@@ -686,13 +715,17 @@ window.Lesson = Object.assign(window.Lesson || {}, {
   typed(k, e){
     if (!k || !e) return;
     ansMem[k] = e;
-    const box = card.querySelector('[data-typed]');
-    if (box && box.dataset.typed === k && document.activeElement !== box){ box.value = e.t || ''; if (ansShown() && e.t) ansMark(box, !!e.ok); }
+    const box = [...card.querySelectorAll('[data-typed]')].find((x) => x.dataset.typed === k);
+    if (box && document.activeElement !== box){ box.value = e.t || ''; if (!e.free && ansShown() && e.t) ansMark(box, !!e.ok); }
     document.dispatchEvent(new CustomEvent('lesson-answers'));
   },
   answers(){
     const out = [];
     SECTIONS.forEach((x, n) => x.slides.forEach((s, i) => {
+      if (s.t === 'write'){
+        s.prompts.forEach((p) => { const e = ansMem['write:' + p]; if (e && e.t) out.push({s: n, i, part: x.label, home: !!x.home, q: p, r: '', t: e.t, ok: false, free: true, at: e.at || 0}); });
+        return;
+      }
       if (!ANS_T[s.t] && s.t !== 'quiz' && s.t !== 'game') return;
       const e = ansMem[ansKey(s)]; if (!e || !e.t) return;
       out.push({s: n, i, part: x.label, home: !!x.home, q: e.q || '', r: e.r || ansRight(s), t: e.t, ok: !!e.ok, seen: !!e.seen, at: e.at || 0});
@@ -784,7 +817,7 @@ card.addEventListener('click', (e) => {
     return;
   }
 
-  if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map((l) => Array.isArray(l) ? l[1] : l).filter((t) => AUDIO[t])); return; }
+  if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map((l) => (Array.isArray(l) ? l[1] : s.t === 'notice' ? noticePlain(l) : l)).filter((t) => AUDIO[t])); return; }
   const hb = e.target.closest('[data-hint]');
   if (hb){
     const n = Number(hb.dataset.hint) + 1; hb.dataset.hint = n;
@@ -794,7 +827,10 @@ card.addEventListener('click', (e) => {
     if (n >= 3){ card.querySelectorAll('[data-part="ans"]').forEach((x) => { x.hidden = false; }); hb.style.visibility = 'hidden'; ansReveal(); }
     return;
   }
+  const nz = e.target.closest('.ntc.shown .nz');
+  if (nz){ card.querySelectorAll('.nz.tip').forEach((x) => { if (x !== nz) x.classList.remove('tip'); }); nz.classList.toggle('tip'); return; }
   const sh = e.target.closest('[data-show]');
+  if (sh && sh.dataset.show === 'mark'){ card.querySelectorAll('.ntc').forEach((x) => x.classList.add('shown')); sh.style.visibility = 'hidden'; return; }
   if (sh){
     const part = sh.dataset.show;
     card.querySelectorAll(`[data-part="${part}"]`).forEach((x) => { x.hidden = false; });
@@ -840,9 +876,9 @@ function ansWhere(s){
   for (const x of SECTIONS) if (x.slides.includes(s)) return {p: x.label, h: x.home ? 1 : 0};
   return {p: '', h: 0};
 }
-function ansPut(s, e){
+function ansPut(s, e, key){
   if (ansRO()) return;
-  const k = ansKey(s);
+  const k = key || ansKey(s);
   ansMem[k] = {...ansWhere(s), ...e, at: Date.now()};
   try { localStorage.setItem(ANS_LKEY, JSON.stringify(ansMem)); } catch (e2) {}
   document.dispatchEvent(new CustomEvent('lesson-typed', {detail: {k, e: ansMem[k]}}));
@@ -853,6 +889,9 @@ function ansMark(box, ok){ box.classList.toggle('ok', ok === true); box.classLis
 // Typing: kept at once. The box turns green / amber only once the right answer is on the screen.
 function ansTyped(box){
   const s = SECTIONS[sec].slides[idx], t = box.value.trim(), seen = ansShown();
+  if (s.t === 'write'){   // her own sentence: nothing to match, kept for him to read
+    ansPut(s, {t, ok: null, r: '', q: box.placeholder, free: 1}, box.dataset.typed); return;
+  }
   const ok = t ? ansSame(t, ansRight(s)) : null;
   ansMark(box, seen && t ? ok : null);
   ansPut(s, {t, ok, r: ansRight(s), q: String(s.ua || s.from || s.cue || s.subj || '').replace(/~~/g, ''), seen: seen ? 1 : 0});
@@ -862,13 +901,17 @@ function ansReveal(){
   const t = box.value.trim(); if (t) ansMark(box, ansSame(t, ansRight(SECTIONS[sec].slides[idx])));
 }
 function ansFill(){
-  const box = card.querySelector('[data-typed]'); if (!box) return;
-  const e = ansMem[box.dataset.typed]; box.value = e && e.t ? e.t : '';
+  card.querySelectorAll('[data-typed]').forEach((box) => { const e = ansMem[box.dataset.typed]; box.value = e && e.t ? e.t : ''; });
 }
 card.addEventListener('input', (e) => { const b = e.target.closest('[data-typed]'); if (b) ansTyped(b); });
 card.addEventListener('keydown', (e) => {
   const b = e.target.closest('[data-typed]'); if (!b || e.key !== 'Enter') return;
   e.preventDefault();
+  if (SECTIONS[sec].slides[idx].t === 'write'){   // Enter = the next box
+    const all = [...card.querySelectorAll('[data-typed]')], n = all.indexOf(b);
+    if (all[n + 1]) all[n + 1].focus(); else b.blur();
+    return;
+  }
   const hb = card.querySelector('[data-hint]');
   if (hb){ while (Number(hb.dataset.hint) < 3) hb.click(); }
   else { const sh = card.querySelector('[data-show="ans"]'); if (sh && !sh.hidden) sh.click(); }
