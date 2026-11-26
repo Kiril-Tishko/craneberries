@@ -295,7 +295,10 @@ const ansNorm = (x) => ' ' + String(x || '').toLowerCase().replace(/[’‘`]/g,
   .replace(/\b(do|does|did|is|are|was|were|has|have|had|could|would|should)nt\b/g, '$1 not').replace(/\bcant\b/g, 'can not').replace(/\bim\b/g, 'i am')
   .replace(/[^\p{L}\p{N}' ]+/gu, ' ').replace(/\s+/g, ' ').trim() + ' ';
 const ansSame = (a, b) => ansNorm(a) === ansNorm(b);
-const typedBox = (s) => `<input class="typed" type="text" data-typed="${esc(ansKey(s))}" placeholder="${T_('✍️ Напишіть відповідь', '✍️ Напишите ответ')}"
+// Where the box goes (Nov 26, his words: "there are too many open fields"): at home, and in a part (or on a screen)
+// with type: true (her opening recall); a part or screen with type: false never has one.
+const typeOn = (s) => s.type != null ? !!s.type : SECTIONS[sec].type != null ? !!SECTIONS[sec].type : !!SECTIONS[sec].home;
+const typedBox = (s) => !typeOn(s) ? '' : `<input class="typed" type="text" data-typed="${esc(ansKey(s))}" placeholder="✍️ Write your answer"
   autocomplete="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="done" aria-label="Your answer">`;
 /* ---------- state ---------- */
 let sec = 0, idx = 0;
