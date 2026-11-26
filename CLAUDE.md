@@ -436,7 +436,9 @@ huggingface.co, about 15 min per hour of audio).
     your pick first. Build only what he chose. **Her missed words open the lesson** (Nov 22, his choice): the words
     she missed most in Practice in her 📖 dictionary on the student site (`python3 tools/missed-words.py <siteCode>` in
     the lessons repo) go into the opening recall; offer them first in that question, with her wrong typed answers
-    (`tools/missed-answers.py`). **His open promises come first** (`promises/<slug>` without a tick in
+    (`tools/missed-answers.py`). Only words she has **learned** (taught on a page): a 📖 word that only came up in talk
+    stays out (Nov 26: essential and "the film comes out" were in her missed list but never taught). Opening-recall
+    sentences are as simple as possible ("Головний офіс у Чикаго.", "Заспокойся.", not "Заспокойся, все добре."). **His open promises come first** (`promises/<slug>` without a tick in
     `state/promises-<slug>`, "next lesson" ones above all): offer each one as an option, and put them in `nextLesson`.
     **Then ask again once it is built** (Nov 23, his wish: "I want to answer it every time"): before you hand over the
     link, ask him about what you added (anything to cut or change) and what else to add, to the lesson and to its 🏠 homework
@@ -466,8 +468,9 @@ huggingface.co, about 15 min per hour of audio).
     were …, I would …"), never every use of it: the point is to get the structure out there so later, when the whole
     topic comes, she has something to connect it to. Order: **notice** (`{t:'notice', label, lines}`: about 5 very
     simple, natural, useful sentences with the same shape, "If I had time, I would help you."; nothing that raises
-    side questions, like "by the sea"; she reads and says what she notices; 👀 Show marks the key words, written
-    `{had|минула форма: have → had}`, and a tap or the mouse on one shows its note) → a very short **story** with the
+    side questions, like "by the sea"; she reads and says what she notices; 👀 Show marks only the key words (the past
+    form and would, not If), written `{had|минула форма: have → had}`, and a tap or the mouse on one shows its note;
+    the sentence she wanted to say goes in too, in general words: "If it happened in another country, I would sue him.") → a very short **story** with the
     structure (`{t:'notice', text: true, title, lines}`: ▶ Read it aloud and 👀 Show) → one simple `rule` screen →
     drills (recall, then flips) → **Your turn** (`{t:'write', ua, prompts:[…]}`: she writes 1–2 of her own; they go to
     his 📝 Answers).
@@ -493,7 +496,9 @@ huggingface.co, about 15 min per hour of audio).
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
   - **Her answers are kept** (Nov 25, his wish: "when they answer remember the answer for later to review, especially the
-    homework"; not only drills, every exercise): each recall, flip and turn screen has a ✍️ box; she types, Answer shows
+    homework"). The ✍️ box ("Write your answer", English) is only at home and in the opening recall (`type: true` on
+    that part); new material and the rest of the lesson get the plain Answer (Nov 26: "there are too many open fields";
+    `type: false` / `true` on a part or a screen changes it). Each such screen: she types, Answer shows
     the right one and the box turns green when they match (amber when not, never red). A quiz keeps her first tap, a
     listening game its score. Saved like "My sentences" (`a` in her answers row: prompt, her answer, the right one,
     part, 🏠 or not); he sees them live and in **📝 Answers** in his bar (tap one to go there). Her wrong ones join
