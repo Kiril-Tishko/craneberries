@@ -472,8 +472,8 @@ huggingface.co, about 15 min per hour of audio).
     form and would, not If), written `{had|минула форма: have → had}`, and a tap or the mouse on one shows its note;
     the sentence she wanted to say goes in too, in general words: "If it happened in another country, I would sue him.") → a very short **story** with the
     structure (`{t:'notice', text: true, title, lines}`: ▶ Read it aloud and 👀 Show) → one simple `rule` screen →
-    drills (recall, then flips) → **Your turn** (`{t:'write', ua, prompts:[…]}`: she writes 1–2 of her own; they go to
-    his 📝 Answers).
+    drills (recall, then flips) → **Your turn** (`{t:'write', ua, prompts:[…]}`: she writes 1–2 of her own; he sees them in
+    the boxes).
   - Keep each drill set short (about 4 items). A rule he asks for gets one `rule` screen
     (`{t:'rule', label, rows[[icon, head, ukrainian note, "example · example"]]}`) in Ukrainian, then quick practice.
     Say it directly (✅ where it goes, ❌ where it doesn't); don't build up from theory.
@@ -501,7 +501,7 @@ huggingface.co, about 15 min per hour of audio).
     `type: false` / `true` on a part or a screen changes it). Each such screen: she types, Answer shows
     the right one and the box turns green when they match (amber when not, never red). A quiz keeps her first tap, a
     listening game its score. Saved like "My sentences" (`a` in her answers row: prompt, her answer, the right one,
-    part, 🏠 or not); he sees them live and in **📝 Answers** in his bar (tap one to go there). Her wrong ones join
+    part, 🏠 or not); he sees them in the boxes, live and later (no list in his bar: he removed 📝 Answers, Nov 26). Her wrong ones join
     her missed words in the next lesson's opening (`python3 tools/missed-answers.py <siteCode>` in the lessons repo).
   - "My sentences" boxes stay empty: no example sentences in them.
     What is typed there must survive a reload or a closed tab: the engine saves on every keystroke, in the browser
