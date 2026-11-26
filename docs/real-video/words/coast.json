@@ -1,0 +1,41 @@
+{
+  "en": "coast",
+  "ua": "узбережжя",
+  "pic": "🌊",
+  "hl": "coast",
+  "together": {"P. Diddy":"Пі Дідді (репер)","drum up":"роздмухати","back then":"тоді, в ті часи","why’d you want to":"навіщо тобі було"},
+  "gloss": {
+    "and": "і",
+    "create": "створити",
+    "the": "the — те саме (відоме всім)",
+    "west": "західне",
+    "east": "східне",
+    "beef": "ворожнеча (сленг)",
+    "you": "ти",
+    "came": "прийшов (come – came)",
+    "on": "на",
+    "show": "шоу",
+    "with": "з",
+    "that": "це",
+    "was": "було",
+    "in": "в",
+    "middle": "середина (in the middle of = посеред)",
+    "of": "(in the middle of = посеред)",
+    "what": "того, що",
+    "they": "вони",
+    "were": "(were trying = намагалися)",
+    "trying": "намагалися",
+    "to": "to — перед дієсловом",
+    "it": "це",
+    "really": "дуже",
+    "tense": "напружено",
+    "do": "робити",
+    "like": "ніби",
+    "something": "щось",
+    "p": "P. (Пі Дідді, репер)",
+    "diddy": "Дідді (репер)"
+  },
+  "clips": [
+    {"v":"cP_3KTSk9HA","s":67,"e":70.28,"line":"and create the West Coast East Coast beef.","note":"Steve Harvey talks to Snoop Dogg about the 1990s: rappers from the West Coast and the East Coast had a big fight (a “beef”).","around":[[62.44,63.72,"And you came on the show with P."],[63.72,67.16,"Diddy. That was in the middle of that what they were trying to drum up"],[70.28,72.68,"It was really tense back then."],[72.68,75.44,"Why’d you want to do like something like that?"]]}
+  ]
+}
