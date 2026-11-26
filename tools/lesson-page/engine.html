@@ -148,7 +148,7 @@ input.typed{width:100%;max-width:560px;font:inherit;font-size:clamp(17px,2.6vh,2
   border:2px dashed var(--line);background:var(--bg);color:var(--ink);text-align:center}
 input.typed:focus{outline:none;border-style:solid;border-color:var(--accent)}
 input.typed.ok{border:2px solid #1E8E4E;background:#EEF8F1;color:#0F5A30}
-input.typed.no{border:2px solid #E0A500}
+
 /* A "notice" screen (Nov 26, his idea): sentences first, she looks for what they share, then 👀 Show marks the key
    words; a tap (or the mouse) on a marked word says what it is. */
 .ntc{list-style:none;margin:0;padding:0;display:grid;gap:clamp(6px,1.5vh,14px);width:100%;max-width:680px;text-align:left}
@@ -295,6 +295,10 @@ const ansNorm = (x) => ' ' + String(x || '').toLowerCase().replace(/[’‘`]/g,
   .replace(/\b(do|does|did|is|are|was|were|has|have|had|could|would|should)nt\b/g, '$1 not').replace(/\bcant\b/g, 'can not').replace(/\bim\b/g, 'i am')
   .replace(/[^\p{L}\p{N}' ]+/gu, ' ').replace(/\s+/g, ' ').trim() + ' ';
 const ansSame = (a, b) => ansNorm(a) === ansNorm(b);
+// Right = the whole sentence, or just its key words (the [bracketed] part: "hit" for "The ball [hit] the window."),
+// each found as whole words in what she typed (Nov 26: she typed "hit" and the box went amber, which looked wrong).
+const ansKeys = (s) => (String(s.t === 'recall' ? s.en : s.ans || '').match(/\[([^\]]+)\]/g) || []).map((x) => x.slice(1, -1));
+const ansOk = (t, s) => ansSame(t, ansRight(s)) || (ansKeys(s).length > 0 && ansKeys(s).every((k) => ansNorm(t).includes(ansNorm(k))));
 // Where the box goes (Nov 26, his words: "there are too many open fields"): at home, and in a part (or on a screen)
 // with type: true (her opening recall); a part or screen with type: false never has one.
 const typeOn = (s) => s.type != null ? !!s.type : SECTIONS[sec].type != null ? !!SECTIONS[sec].type : !!SECTIONS[sec].home;
@@ -888,20 +892,21 @@ function ansPut(s, e, key){
   docSave();
 }
 const ansShown = () => !!card.querySelector('[data-part="ans"]:not([hidden]), .gapline[data-step="3"]');
-function ansMark(box, ok){ box.classList.toggle('ok', ok === true); box.classList.toggle('no', ok === false); }
+// Green when right; nothing at all when not (no amber: it looked like "wrong" even for a fair answer, Nov 26).
+function ansMark(box, ok){ box.classList.toggle('ok', ok === true); box.classList.remove('no'); }
 // Typing: kept at once. The box turns green / amber only once the right answer is on the screen.
 function ansTyped(box){
   const s = SECTIONS[sec].slides[idx], t = box.value.trim(), seen = ansShown();
   if (s.t === 'write'){   // her own sentence: nothing to match, kept for him to read
     ansPut(s, {t, ok: null, r: '', q: box.placeholder, free: 1}, box.dataset.typed); return;
   }
-  const ok = t ? ansSame(t, ansRight(s)) : null;
+  const ok = t ? ansOk(t, s) : null;
   ansMark(box, seen && t ? ok : null);
   ansPut(s, {t, ok, r: ansRight(s), q: String(s.ua || s.from || s.cue || s.subj || '').replace(/~~/g, ''), seen: seen ? 1 : 0});
 }
 function ansReveal(){
   const box = card.querySelector('[data-typed]'); if (!box) return;
-  const t = box.value.trim(); if (t) ansMark(box, ansSame(t, ansRight(SECTIONS[sec].slides[idx])));
+  const t = box.value.trim(); if (t) ansMark(box, ansOk(t, SECTIONS[sec].slides[idx]));
 }
 function ansFill(){
   card.querySelectorAll('[data-typed]').forEach((box) => { const e = ansMem[box.dataset.typed]; box.value = e && e.t ? e.t : ''; });

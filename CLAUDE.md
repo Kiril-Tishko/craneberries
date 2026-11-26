@@ -499,7 +499,7 @@ huggingface.co, about 15 min per hour of audio).
     homework"). The ✍️ box ("Write your answer", English) is only at home and in the opening recall (`type: true` on
     that part); new material and the rest of the lesson get the plain Answer (Nov 26: "there are too many open fields";
     `type: false` / `true` on a part or a screen changes it). Each such screen: she types, Answer shows
-    the right one and the box turns green when they match (amber when not, never red). A quiz keeps her first tap, a
+    the right one and the box turns green when they match, the whole sentence or just its key words (nothing when not: no amber, no red, Nov 26). A quiz keeps her first tap, a
     listening game its score. Saved like "My sentences" (`a` in her answers row: prompt, her answer, the right one,
     part, 🏠 or not); he sees them in the boxes, live and later (no list in his bar: he removed 📝 Answers, Nov 26). Her wrong ones join
     her missed words in the next lesson's opening (`python3 tools/missed-answers.py <siteCode>` in the lessons repo).
