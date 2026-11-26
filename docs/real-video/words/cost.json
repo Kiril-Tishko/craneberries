@@ -1,0 +1,32 @@
+{
+  "en": "cost",
+  "ua": "коштувати",
+  "pic": "💵",
+  "hl": "costs?",
+  "together": {"Lykan Hypers Sport":"Лайкан Гіперспорт (машина)","the most expensive":"найдорожчі","one of":"одна з"},
+  "gloss": {
+    "it": "вона (машина)",
+    "what’s": "what is: яка",
+    "one": "одна",
+    "of": "з",
+    "the": "the — най- (the most)",
+    "most": "най-",
+    "expensive": "дорогих",
+    "cars": "машин",
+    "them": "них",
+    "is": "є",
+    "lykan": "Лайкан (назва машини)",
+    "hypers": "Гіпер- (назва машини)",
+    "sport": "-спорт (назва машини)",
+    "applause": "оплески",
+    "for": "за",
+    "a": "a — одну, якусь",
+    "car": "машину",
+    "3": "3 (3,400,000 = три мільйони чотириста тисяч)",
+    "400": "(3,400,000 = три мільйони чотириста тисяч)",
+    "000": "(3,400,000 = три мільйони чотириста тисяч)"
+  },
+  "clips": [
+    {"v":"UWG4aiB0sxM","s":1296.72,"e":1298.16,"line":"It costs $3,400,000","note":"A boy on Steve Harvey’s show knows a lot about cars. One of the most expensive cars costs $3,400,000.","around":[[1291.44,1294,"What’s one of the most expensive cars?"],[1294.08,1296.72,"One of them is the Lykan Hypers Sport."],[1299.94,1300.74,"[Applause]"],[1301.28,1302.56,"for a car."]]}
+  ]
+}
