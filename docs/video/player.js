@@ -15,6 +15,7 @@
 //             ("making you cry" for "make you cry"), and a tap on it gives its Ukrainian in every part
 //   gloss     {word: Ukrainian}: tap any word in the captions (lowercase, ’ for apostrophes)
 //   later     [[phrase, Ukrainian]]: words left for a later lesson; tapping one says so
+//   yellow    [phrases]: hard words shown in yellow wherever they are sung, with no word card (numb, ’til, wanna)
 // Steps: every line of a part (its key words first, then just that line plays), then the whole part, "All together".
 // At the end, My words: the words she added with +, as gap sentences.
 // The player follows docs/real-video: our own panel, no YouTube UI, steady layout, presses count even while loading.
@@ -285,8 +286,9 @@ if (L.captions.type === 'lrc') {
 
 /* ---------- Words: key words in yellow, every word tappable ---------- */
 function hlFor(s){
-  if (s.kind === 'line') return s.hl;
-  if (s.kind === 'all') return PARTS[s.pn].lines.flatMap((l) => l.hl);
+  const y = L.yellow || [];               // yellow only: no word card, a tap gives the word's gloss
+  if (s.kind === 'line') return (s.hl || []).concat(y);
+  if (s.kind === 'all') return PARTS[s.pn].lines.flatMap((l) => l.hl || []).concat(y);
   return (dict[pr.n] || {}).hl || [];
 }
 function find(text, phrases){              // → [[from, to, index]] where each phrase is in the text (whole words only)

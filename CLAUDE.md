@@ -183,6 +183,8 @@ huggingface.co, about 15 min per hour of audio).
   verbs (listen to, pass by, pick up) and set phrases whose words alone mislead (after all, take a look, out of luck);
   splitting "I'm only human" or "make mistakes" is fine. In edit mode a dragged phrase has a Keep together switch.
   The tap bubble is solid (not click-through) and its text can be selected; tapping the same word again closes it.
+  **Hard words in yellow, no card** (Nov 26, Rebirthing: numb, 'til, wanna): `"yellow": [phrases]` in lesson.json
+  paints them yellow wherever they are sung (line screens and All together); a tap gives their gloss.
   A video from his device in portrait (Threads, Reels) still uses the wide layout (`"tall": false`) when he wants the
   subtitles wide and easy to read (The Bridge).
   Phrases left for later (`later`) also say
