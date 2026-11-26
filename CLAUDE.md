@@ -468,8 +468,8 @@ huggingface.co, about 15 min per hour of audio).
     were …, I would …"), never every use of it: the point is to get the structure out there so later, when the whole
     topic comes, she has something to connect it to. Order: **notice** (`{t:'notice', label, lines}`: about 5 very
     simple, natural, useful sentences with the same shape, "If I had time, I would help you."; nothing that raises
-    side questions, like "by the sea"; she reads and says what she notices; 👀 Show marks only the key words (the past
-    form and would, not If), written `{had|минула форма: have → had}`, and a tap or the mouse on one shows its note;
+    side questions, like "by the sea"; she reads and says what she notices; 👀 Show marks only the past forms (not If,
+    not would: his choice, Nov 26), written `{had|минула форма: have → had}`, and a tap or the mouse on one shows its note;
     the sentence she wanted to say goes in too, in general words: "If it happened in another country, I would sue him.") → a very short **story** with the
     structure (`{t:'notice', text: true, title, lines}`: ▶ Read it aloud and 👀 Show) → one simple `rule` screen →
     drills (recall, then flips) → **Your turn** (`{t:'write', ua, prompts:[…]}`: she writes 1–2 of her own; he sees them in
