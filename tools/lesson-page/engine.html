@@ -318,7 +318,10 @@ let clip = null, queue = [];
 let voice = null;
 function pickVoice(){ try { const v = speechSynthesis.getVoices().filter((x) => /^en[-_]US$/i.test(x.lang)); voice = v.find((x) => /Samantha|Google US|Aria|Jenny|Ava|Allison/i.test(x.name)) || v[0] || null; } catch (e) {} }
 if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.addEventListener('voiceschanged', pickVoice); }
-function stopAll(){ queue = []; try { if (clip){ clip.pause(); clip = null; } } catch (e) {} try { speechSynthesis.cancel(); } catch (e) {} }
+// The "Read it aloud" button that is playing now: a second tap stops it (Nov 27, his wish: it read on for half a minute).
+let allBtn = null;
+function allDone(){ if (allBtn){ allBtn.textContent = allBtn.dataset.label; allBtn.classList.remove('on'); allBtn = null; } }
+function stopAll(){ queue = []; allDone(); try { if (clip){ clip.pause(); clip = null; } } catch (e) {} try { speechSynthesis.cancel(); } catch (e) {} }
 function play(text, done){
   if (AUDIO[text]){
     try { clip = new Audio(AUDIO[text]); clip.onended = () => { clip = null; if (done) done(); }; clip.play().catch(() => {}); return; } catch (e) {}
@@ -336,9 +339,14 @@ function burst(el){   // a few stars fly up from a right answer (fixed position:
     document.body.appendChild(b); setTimeout(() => b.remove(), 1300);
   });
 }
-function playAll(lines){
+function playAll(lines, btn){
   stopAll(); queue = lines.slice();
-  const next = () => { const t = queue.shift(); if (t) setTimeout(() => play(t, next), 350); };
+  if (btn){   // it says ⏹ Stop while it reads, at the same width (nothing moves)
+    btn.dataset.label = btn.dataset.label || btn.textContent;
+    btn.style.minWidth = btn.offsetWidth + 'px'; btn.textContent = '⏹ Stop'; btn.classList.add('on'); allBtn = btn;
+  }
+  const mine = queue;
+  const next = () => { if (queue !== mine) return; const t = queue.shift(); if (t) setTimeout(() => { if (queue === mine) play(t, next); }, 350); else allDone(); };
   next();
 }
 function fallback(text){
@@ -403,7 +411,7 @@ function view(s){
   if (s.t === 'email') return `
     <div class="who">${s.icon != null ? s.icon : '✉️'} ${esc(s.label || 'The whole email')}</div>
     <div class="mail">${s.subject ? `<div class="mh">Subject: ${esc(s.subject)}</div>` : ''}${s.lines.map((t) => t ? `<p${AUDIO[t] ? ` data-say="${esc(t)}"` : ''}>${esc(t)}</p>` : '<div class="gap"></div>').join('')}</div>
-    <button class="btn playall" data-playall>▶ Read it aloud</button>`;
+    <button class="btn playall" data-playall>🔊 Read it aloud</button>`;
   if (s.t === 'listen'){
     const id = s.yt || (typeof SONG !== 'undefined' ? SONG.id : '');
     const clip = `https://www.youtube.com/embed/${id}?start=${s.start}&end=${s.end}&autoplay=1&cc_load_policy=1&rel=0`;
@@ -449,7 +457,7 @@ function view(s){
     <div class="ua">${xs(s.ua)}</div>
     ${s.ex ? `<div class="row" style="align-items:center"><span class="ex">${esc(s.ex)}</span>${spk(s.ex)}</div>` : ''}`;
   if (s.t === 'convo') return `
-    <button class="btn playall" data-playall>${esc(s.play || '▶ Play the whole call')}</button>
+    <button class="btn playall" data-playall>${esc(s.play || '🔊 Play the whole call')}</button>
     <div class="chat">${s.lines.map(([w, t]) => `<div class="bub ${w}">${esc(t)}</div>`).join('')}</div>`;
   if (s.t === 'recall'){
     // en may mark the key word: 'Is it [mandatory]?'. Then one 💡 button gives three steps:
@@ -525,7 +533,7 @@ function view(s){
     <div class="who">${esc(s.label || '👀 Read. What do you notice?')}</div>
     ${s.title ? `<div class="big" style="font-size:clamp(20px,3.4vh,28px)">${esc(s.title)}</div>` : ''}
     <ul class="ntc${s.text ? ' txt' : ''}">${lines}</ul>
-    <div class="row">${s.text ? '<button class="btn" data-playall>▶ Read it aloud</button>' : ''}<button class="btn main" data-show="mark">${esc(s.button || '👀 Show')}</button></div>`;
+    <div class="row">${s.text ? '<button class="btn" data-playall>🔊 Read it aloud</button>' : ''}<button class="btn main" data-show="mark">${esc(s.button || '👀 Show')}</button></div>`;
   }
   if (s.t === 'write') return `
     <div class="who">✍️ ${esc(s.label || 'Your turn')}</div>
@@ -845,7 +853,11 @@ card.addEventListener('click', (e) => {
     return;
   }
 
-  if (e.target.closest('[data-playall]')){ const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map((l) => (Array.isArray(l) ? l[1] : s.t === 'notice' ? noticePlain(l) : l)).filter((t) => AUDIO[t])); return; }
+  const pa = e.target.closest('[data-playall]');
+  if (pa){
+    if (allBtn === pa){ stopAll(); return; }   // a second tap stops the reading
+    const s = SECTIONS[sec].slides[idx]; playAll(s.lines.map((l) => (Array.isArray(l) ? l[1] : s.t === 'notice' ? noticePlain(l) : l)).filter((t) => AUDIO[t]), pa); return;
+  }
   const hb = e.target.closest('[data-hint]');
   if (hb){
     const n = Number(hb.dataset.hint) + 1; hb.dataset.hint = n;
