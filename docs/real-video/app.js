@@ -331,6 +331,8 @@ function glossFor(w, line, at){
   return v['*'] || '';
 }
 let phraseN = 0;
+// The caption words she tapped (inside a lesson, shown on the teacher's side only: the lesson sends them, Nov 27).
+const tapped = new Set();
 function tapLine(text){
   const n = text.length, mk = new Array(n).fill(false), gp = new Array(n).fill(0), gtag = {};
   text.replace(word.re, (m, ...r) => { const a = r[r.length - 2]; for (let c = a; c < a + m.length; c++) mk[c] = true; return m; });
@@ -349,7 +351,7 @@ function tapLine(text){
     if (g && g !== og) { h += `<span class="ph${tagAttr(gtag[g])}">`; og = g; }
     // A word on its own (not the yellow word, not inside a phrase) can carry a dot too.
     const tw = !g && !mk[a] && /[A-Za-z]/.test(t) ? tagAttr(tagOf(t)) : '';
-    h += /[A-Za-z0-9]/.test(t) ? `<span class="tw${tw}">${esc(t)}</span>` : esc(t);
+    h += /[A-Za-z0-9]/.test(t) ? `<span class="tw${tapped.has(text + '|' + a) ? ' tapd' : ''}${tw}" data-o="${a}">${esc(t)}</span>` : esc(t);
   }
   return h + (og ? '</span>' : '') + (open ? '</mark>' : '');
 }
@@ -401,19 +403,26 @@ addEventListener('message', (e) => {
 // Inside a lesson: what she does here (another clip, ▶ / ❚❚) goes to the lesson page, so the teacher sees it and his
 // 👀 Follow follows it; the lesson page moves this page the same way: {k, playing, flash} (Nov 24, his wish).
 let remote = false;
-function tellLesson(kind){
+function tellLesson(kind, more){
   if (!EMBED || parent === window || remote) return;
-  try { parent.postMessage({clipsEv: kind, k: clipN, n: list().length, playing: isPlaying()}, '*'); } catch (e) {}
+  try { parent.postMessage({clipsEv: kind, k: clipN, n: list().length, playing: isPlaying(), ctx: longerMode, held: contextHeld, ...more}, '*'); } catch (e) {}
 }
 function flashCtl(what){
-  const el = $({play: 'pp', pause: 'pp', next: 'snext', prev: 'sprev'}[what] || 'pp');
+  const el = $({play: 'pp', pause: 'pp', next: 'snext', prev: 'sprev', ctx: 'longer'}[what] || 'pp');
   if (!el || !el.animate) return;
   el.animate([{boxShadow: '0 0 0 0 rgb(30 142 78 / 0)'}, {boxShadow: '0 0 0 7px rgb(30 142 78 / .85)', offset: .25},
     {boxShadow: '0 0 0 0 rgb(30 142 78 / 0)'}], {duration: 1500});
 }
 function lessonCmd(c){
-  const n = list().length;
-  if (typeof c.k === 'number' && c.k >= 0 && c.k < n && c.k !== clipN) { clipN = c.k; resetContext(); showClip(!!c.playing); }
+  const n = list().length, ctx = typeof c.ctx === 'boolean';
+  // Her "With context" (Nov 27, his wish): his clips take it too; with 👀 Follow her press plays his clip again that way.
+  if (ctx && (c.ctx !== longerMode || (c.ctx && !!c.held !== contextHeld))) { contextHeld = c.ctx && !!c.held; setMode(c.ctx); }
+  if (Array.isArray(c.marks) && c.marks.length) {
+    c.marks.forEach((m) => { if (m && m.ln != null) tapped.add(m.ln + '|' + m.o); });
+    if (clip() && !$('capbar').querySelector('[contenteditable]')) redrawLine();
+  }
+  if (typeof c.k === 'number' && c.k >= 0 && c.k < n && c.k !== clipN) { clipN = c.k; if (!ctx) resetContext(); showClip(!!c.playing); }
+  else if (c.replay) playClip();
   else if (c.playing === true && !isPlaying()) { if (started && !ended && ready()) { intent = true; P().playVideo(); setCover(); } else playClip(); }
   else if (c.playing === false) App.pause();
   if (c.flash) flashCtl(c.flash);
@@ -422,6 +431,9 @@ function hidePop(){ const p = $('pop'); if (p) p.hidden = true; document.querySe
 function showPop(el){
   const g = tapGloss(el);
   hidePop();
+  // Inside a lesson the tapped word goes to the lesson page: the teacher sees a small mark on it (Nov 27, his wish).
+  const cap = el.closest('#capbar > span');
+  if (cap && el.dataset.o != null) tellLesson('word', {w: el.textContent, ln: cap.textContent, o: +el.dataset.o, ws: word && word.slug});
   if (!g) return;
   const p = $('pop'), r = el.getBoundingClientRect(), why = g.ua.length > 32;
   // A short translation sits beside the word; a longer explanation (why a grammar word is there) goes under it.
@@ -579,6 +591,7 @@ function playClip(at){
   showLine(lineOf(c));
   const from = at ?? range.from;
   s.warming = false; if (MUTE || App.silent) s.p.mute(); else s.p.unMute();
+  try { s.p.setVolume(vol); } catch (e) {}
   if (s.vid === c.v && s.loaded) { s.p.seekTo(from, true); s.p.playVideo(); loadedAt -= 150; }
   else { s.vid = c.v; s.loaded = false; s.p.loadVideoById({videoId: c.v, startSeconds: from}); }
   s.p.setPlaybackRate(rate);
@@ -678,6 +691,24 @@ Object.defineProperty(App, 'longer', {get: () => longerMode});
 // Another clip or word: "With context" goes off again, unless it was pressed and held.
 function resetContext(){ if (longerMode && !contextHeld) setMode(false); }
 
+// Volume (Nov 27, his wish): a small slider, kept in this browser for every clip page. iPhones and iPads let only their
+// own buttons change the sound, so it isn't shown there.
+const VOLK = 'clips-volume';
+let vol = 100, volBefore = 100;
+try { const v = localStorage.getItem(VOLK); if (v !== null && +v >= 0 && +v <= 100) vol = +v; } catch (e) {}
+if (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) document.body.classList.add('novol');
+function applyVol(){ slots.forEach((s) => { if (s.ready && s.p && s.p.setVolume) try { s.p.setVolume(vol); } catch (e) {} }); }
+function drawVol(){ $('vol').value = vol; $('volicon').setAttribute('href', vol ? '#i-vol' : '#i-volx'); }
+function setVol(v){ vol = Math.max(0, Math.min(100, Math.round(v))); try { localStorage.setItem(VOLK, String(vol)); } catch (e) {} applyVol(); drawVol(); }
+$('vol').oninput = () => { setVol(+$('vol').value); if (vol) volBefore = vol; };
+$('volb').onclick = () => {
+  if (matchMedia('(max-width:560px)').matches) { $('volw').classList.toggle('open'); return; }
+  if (vol) { volBefore = vol; setVol(0); } else setVol(volBefore || 100);
+};
+document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#volw')) $('volw').classList.remove('open'); });
+addEventListener('storage', (e) => { if (e.key === VOLK && e.newValue !== null && +e.newValue !== vol) { vol = +e.newValue; applyVol(); drawVol(); } });
+drawVol();
+
 window.onYouTubeIframeAPIReady = () => {
   slots.forEach((s, i) => {
     s.p = new YT.Player(s.el, {
@@ -686,6 +717,7 @@ window.onYouTubeIframeAPIReady = () => {
       events: {
         onReady: () => {
           s.ready = true; s.p.getIframe().classList.toggle('on', i === act);
+          try { s.p.setVolume(vol); } catch (e) {}
           if (s === S() && wantPlay) { const w = wantPlay; wantPlay = null; playClip(w.at); }
           else if (s.pending) { const q = s.pending; s.pending = null; warm(s, q.c, q.from); }
         },
@@ -754,6 +786,7 @@ $('longer').onpointerdown = (e) => {
   holdT = setTimeout(() => {
     held = true; contextHeld = true;
     if (longerMode) setMode(true); else { setMode(true); playClip(); }
+    tellLesson('ctx');
   }, 550);
 };
 $('longer').onpointerup = stopHold;
@@ -762,7 +795,7 @@ $('longer').onpointercancel = stopHold;
 $('longer').oncontextmenu = (e) => e.preventDefault();
 $('longer').onclick = () => {
   if (held) { held = false; return; }
-  contextHeld = false; setMode(!longerMode); playClip(); tellLesson('play');
+  contextHeld = false; setMode(!longerMode); playClip(); tellLesson('ctx');
 };
 const step = (d) => { const n = list().length; if (!n) return; clipN = (clipN + d + n) % n; resetContext(); showClip(true); };
 $('next').onclick = () => { step(1); tellLesson('next'); };

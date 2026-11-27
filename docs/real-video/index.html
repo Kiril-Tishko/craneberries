@@ -93,6 +93,9 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .capbar{min-height:60px;display:flex;align-items:center;justify-content:center;padding:4px 16px 10px;
   font-size:clamp(17px,2.2vw,22px);font-weight:600;text-align:center;line-height:1.3}
 .capbar mark{background:var(--word);color:#141B24;border-radius:4px;padding:0 3px}
+/* A word she tapped in a lesson: a small dot over it, on the teacher's side only (Nov 27, his wish). */
+.capbar .tw.tapd{position:relative}
+.capbar .tw.tapd::after{content:"";position:absolute;left:50%;top:-3px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#1E8E4E;pointer-events:none}
 
 .tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--soft);border-top:1px solid var(--line)}
 .group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -125,6 +128,21 @@ main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:16
 .ccb{--ccbg:var(--surface);width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--ccbg);color:var(--muted);
   display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:none}
 .ccb svg{width:22px;height:22px}
+/* Volume (Nov 27, his wish): a small slider beside CC; on a narrow screen the speaker opens it above. iPhones and iPads
+   let only their own buttons change the sound, so it isn't shown there (app.js 'novol'). */
+.vol{position:relative;flex:none;display:flex;align-items:center;gap:4px}
+.volb{width:28px;height:38px;border:0;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.volb svg{width:20px;height:20px;fill:currentColor}
+.volb:hover{color:var(--accent)}
+.volpop{display:flex;align-items:center}
+.vol input{width:72px;margin:0;accent-color:var(--accent);cursor:pointer}
+@media (max-width:560px){
+  .volpop{display:none;position:absolute;bottom:calc(100% + 6px);right:-46px;padding:10px 14px;z-index:30;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+  .vol.open .volpop{display:flex}
+  .vol input{width:120px}
+}
+body.novol .vol{display:none}
 .ccb:hover{color:var(--accent)}
 .ccb[aria-pressed="true"]{--ccbg:var(--tint);color:var(--accent);border-color:var(--accent)}
 
@@ -333,6 +351,8 @@ body.editing .capbar .tw{cursor:text}
   <symbol id="i-wide" viewBox="0 0 24 24"><path d="M7 7 2 12l5 5v-3.5h10V17l5-5-5-5v3.5H7z"/></symbol>
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="m8.6 5.4 6.6 6.6-6.6 6.6L10 20l8-8-8-8z"/></symbol>
+  <symbol id="i-vol" viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></symbol>
+  <symbol id="i-volx" viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M15.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-cc" viewBox="0 0 24 24"><path d="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1z"/></symbol>
   <symbol id="i-ccoff" viewBox="0 0 24 24"><path d="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1z"/><path d="M2.6 2.6 21.4 21.4" fill="none" style="stroke:var(--ccbg)" stroke-width="4.4"/><path d="M2.6 2.6 21.4 21.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></symbol>
@@ -365,6 +385,7 @@ body.editing .capbar .tw{cursor:text}
         <button class="pp" id="pp" aria-label="Play" title="Play / pause (Space)"><svg><use id="ppicon" href="#i-play"/></svg></button>
         <div class="tlhit" id="tlhit" title="Tap or drag to move"><div class="tl" id="tl"><div class="tl-word" id="tlword"></div><div class="tl-fill" id="tlfill"></div><div class="tl-dot" id="tldot"></div></div></div>
         <span class="tltime" id="tltime"></span>
+        <div class="vol" id="volw"><button class="volb" id="volb" aria-label="Volume" title="Volume"><svg><use id="volicon" href="#i-vol"/></svg></button><span class="volpop"><input type="range" id="vol" min="0" max="100" step="5" value="100" aria-label="Volume"></span></div>
         <button class="ccb" id="cc" aria-pressed="false" aria-label="Hide subtitles" title="Hide subtitles"><svg><use id="ccicon" href="#i-cc"/></svg></button>
       </div>
       <div class="capbar" id="capbar"></div>
@@ -396,6 +417,6 @@ body.editing .capbar .tw{cursor:text}
   <footer class="foot"><button id="about" aria-expanded="false" aria-label="About these clips" title="About these clips">ⓘ</button>
     <span id="credits" hidden>Clips found with <a href="https://captionsearch.app" target="_blank" rel="noopener">Caption Search</a> and <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a>, song lyrics from <a href="https://lrclib.net" target="_blank" rel="noopener">lrclib.net</a>, played from YouTube (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>).</span></footer>
 </div>
-<script src="app.js?v=25"></script>
+<script src="app.js?v=26"></script>
 </body>
 </html>

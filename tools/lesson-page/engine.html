@@ -639,6 +639,7 @@ const Clips = (() => {
     let f = frames.get(src);
     if (!f){
       f = document.createElement('iframe');
+      f.words = (new URLSearchParams(src.split('?')[1] || '').get('words') || '').split(',').filter(Boolean);
       f.className = 'clipframe'; f.title = 'Real video clips'; f.tabIndex = -1;
       f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
       frames.set(src, f); place(f); f.src = src; document.body.appendChild(f);
@@ -683,7 +684,7 @@ const Clips = (() => {
   // A clip page says when it is laid out: the grey shapes give way to it.
   addEventListener('message', (e) => {
     if (!e.data || !e.data.clipsReady) return;
-    frames.forEach((f) => { if (f.contentWindow === e.source){ f.ready = true; if (f === shown) reveal(); } });
+    frames.forEach((f) => { if (f.contentWindow === e.source){ f.ready = true; marksTo(f); if (f === shown) reveal(); } });
     if (shown && shown.contentWindow === e.source && pending){ const c = pending; pending = null; tell(c); }
   });
   // The live helper hears what she does in the clips on show (a clip changed, ▶ / ❚❚) as a 'lesson-clip' event, and can
@@ -693,15 +694,34 @@ const Clips = (() => {
   const tell = (c) => { try { shown.contentWindow.postMessage({clipsCmd: c}, '*'); } catch (e) {} };
   addEventListener('message', (e) => {
     if (!e.data || !e.data.clipsEv || !shown || shown.contentWindow !== e.source) return;
-    document.dispatchEvent(new CustomEvent('lesson-clip', {detail: {kind: e.data.clipsEv, k: e.data.k, n: e.data.n, playing: !!e.data.playing}}));
+    const d = e.data;
+    // A caption word she tapped: kept with her answers (tap:… keys, nothing to grade) and shown to him as a small mark.
+    if (d.clipsEv === 'word'){ clipTap(d); return; }
+    document.dispatchEvent(new CustomEvent('lesson-clip', {detail: {kind: d.clipsEv, k: d.k, n: d.n, playing: !!d.playing, ctx: !!d.ctx, held: !!d.held}}));
   });
+  // His side: the words she tapped in these clips get a small mark (sent when a clip page is ready, and as she taps).
+  const tapsFor = (f) => Object.values(ansMem).filter((t) => t && t.tw && f.words && f.words.includes(t.ws));
+  function marksTo(f){
+    if (!ansRO()) return;
+    const m = tapsFor(f);
+    if (m.length) try { f.contentWindow.postMessage({clipsCmd: {marks: m}}, '*'); } catch (e) {}
+  }
+  function mark(t){ frames.forEach((f) => { if (f.ready && f.words && f.words.includes(t.ws)) try { f.contentWindow.postMessage({clipsCmd: {marks: [t]}}, '*'); } catch (e) {} }); }
   function clipCmd(c){
     if (!shown) return false;
-    if (shown.ready) tell(c); else pending = c;
+    if (shown.ready) tell(c); else pending = {...(pending || {}), ...c};
     return true;
   }
-  return {render, clipCmd};
+  return {render, clipCmd, mark, marks: () => frames.forEach((f) => { if (f.ready) marksTo(f); })};
 })();
+function clipTap(d){
+  if (ansRO() || !d.ws || d.ln == null) return;
+  const k = `tap:${d.ws}|${d.o}|${d.ln}`;
+  ansMem[k] = {tw: String(d.w || ''), ws: d.ws, ln: String(d.ln), o: +d.o || 0, ...ansWhere(SECTIONS[sec].slides[idx]), at: Date.now()};
+  try { localStorage.setItem(ANS_LKEY, JSON.stringify(ansMem)); } catch (e) {}
+  document.dispatchEvent(new CustomEvent('lesson-typed', {detail: {k, e: ansMem[k]}}));
+  docSave();
+}
 function go(d){
   const slides = SECTIONS[sec].slides;
   if (d > 0){ if (idx < slides.length - 1) idx++; else { const n = nextOpen(sec, 1); if (n >= 0){ sec = n; idx = 0; } } }
@@ -722,6 +742,7 @@ window.Lesson = Object.assign(window.Lesson || {}, {
   typed(k, e){
     if (!k || !e) return;
     ansMem[k] = e;
+    if (e.tw){ if (Clips.mark) Clips.mark(e); return; }   // a caption word she tapped in the clips
     const box = [...card.querySelectorAll('[data-typed]')].find((x) => x.dataset.typed === k);
     if (box && document.activeElement !== box){ box.value = e.t || ''; if (!e.free && ansShown() && e.t) ansMark(box, !!e.ok); }
     document.dispatchEvent(new CustomEvent('lesson-answers'));
@@ -954,7 +975,7 @@ card.addEventListener('input', (e) => {
     const snap = await mineDoc.get(), data = snap.exists ? snap.data() : {}, remote = data.s || [];
     // Her answers: the newer copy of each wins (this browser or her account); the teacher's browser shows hers only.
     const ra = data.a && typeof data.a === 'object' ? data.a : {};
-    if (ansRO()) ansMem = {...ra};
+    if (ansRO()){ ansMem = {...ra}; if (Clips.marks) Clips.marks(); }
     else {
       let push = false;
       for (const [k, e] of Object.entries(ra)) if (!ansMem[k] || (e && e.at || 0) > (ansMem[k].at || 0)) ansMem[k] = e;

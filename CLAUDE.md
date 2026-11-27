@@ -205,7 +205,7 @@ huggingface.co, about 15 min per hour of audio).
   YouTube player in one panel (no YouTube buttons, title or timeline; play/pause, a timeline to tap or drag, our caption
   bar; a "With context" switch (1–2 lines before and after, the caption bar follows them; the yellow part of the
   timeline shows only then; a tap = this clip only, the next clip plays without it; press and hold = it stays on for
-  the next clips, a small dot on the button, until tapped off); 1× / 0.75× / 0.5×; a big "Next clip" with a small ‹ back arrow; no "Again" button: at the
+  the next clips, a small dot on the button, until tapped off); 1× / 0.75× / 0.5×; a small volume slider beside CC (Nov 27: kept in the browser; on a narrow screen the speaker opens it above; not shown on iPhone / iPad, which let only their own buttons change the sound); a big "Next clip" with a small ‹ back arrow; no "Again" button: at the
   end the play button turns into ↻). A hidden second player preloads the next clip so Next starts at once; replays
   jump back instead of reloading. The caption bar keeps the height of the word's longest line, so nothing below it
   moves. No text explaining the controls and no "Speed" label: he wants it quiet; the
@@ -272,7 +272,7 @@ huggingface.co, about 15 min per hour of audio).
     forward on the last; no "Next clip" button there, his choice, so it isn't confused with the lesson's Next;
     a low, wide screen (a phone on its side) puts the speed under the timeline and the caption, "With context" and
     the dots beside the video; **💡 What's happening?** beside "With context" (Nov 20, his wish) opens the clip's 💡 note over
-    the video (across the screen's bottom on a low screen; a tap closes it, so does the next clip; just 💡 on a phone); **her presses reach his page** (Nov 24: the clip page posts `clipsEv` {next / prev / play / pause / end, k, n, playing} to the lesson, and takes `clipsCmd` {k, playing, flash}: the student site's live helper shows them and his 👀 Follow follows them); **smart loading**: the
+    the video (across the screen's bottom on a low screen; a tap closes it, so does the next clip; just 💡 on a phone); **her presses reach his page** (Nov 24: the clip page posts `clipsEv` {next / prev / play / pause / end / ctx, k, n, playing, ctx, held} to the lesson, and takes `clipsCmd` {k, playing, flash, ctx, held, replay, marks}: the student site's live helper shows them and his 👀 Follow follows them; Nov 27, his wish: her With context switches his clips too, and with 👀 Follow her press plays his clip again that way; every caption word she taps gets a small green dot on his side only, live and later: `word` events, kept in her answers row as `tap:<word file>|<offset>|<line>` = {tw, ws, ln, o, p, h, at}, nothing to grade, so missed-answers skips them); **smart loading**: the
     engine loads the next clips screen ahead in the background (its first clip waits on its first frame) and keeps
     the last three, so a clips screen opens at once; a page with clips opens its connections to the library and YouTube when it loads, and the clip page asks for its files at once, not one by one (Nov 24) (`Clips` in `engine.html`; pages built before Nov 19 lack it);
     `body.embed` in `docs/real-video/index.html`). It
