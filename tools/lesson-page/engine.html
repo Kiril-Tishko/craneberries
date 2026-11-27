@@ -157,8 +157,10 @@ input.typed.ok{border:2px solid #1E8E4E;background:#EEF8F1;color:#0F5A30}
 .ntc.txt li{font-weight:500;font-size:clamp(17px,2.7vh,23px)}
 .nz{position:relative;border-radius:6px;transition:background .25s,color .25s}
 .ntc.shown .nz{color:var(--swap);background:var(--swap-bg);box-shadow:0 0 0 2px var(--swap-bg);cursor:help;outline:none}
-.ntc.shown .nz:hover::after,.ntc.shown .nz.tip::after{content:attr(data-note);position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);
+.ntc.shown .nz.tip::after{content:attr(data-note);position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);
   background:var(--ink);color:var(--bg);font-size:15px;font-weight:600;line-height:1.3;padding:6px 10px;border-radius:9px;white-space:nowrap;z-index:6;pointer-events:none}
+@media (hover:hover){.ntc.shown .nz:hover::after{content:attr(data-note);position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);font-size:15px;font-weight:600;line-height:1.3;padding:6px 10px;border-radius:9px;white-space:nowrap;z-index:6;pointer-events:none}}
 
 .nav{flex:none;display:flex;gap:12px;justify-content:space-between;align-items:center}
 .nav button{border:0;border-radius:18px;font-weight:600;font-size:18px;padding:14px 22px}
@@ -817,6 +819,8 @@ tabBar.addEventListener('click', (e) => {
   const b = e.target.closest('[data-sec]'); if (!b) return;
   sec = Number(b.dataset.sec); idx = 0; render();
 });
+// The note of a marked word stays until a tap anywhere else (Nov 27, his wish: it stayed on for a long time).
+document.addEventListener('click', (e) => { if (!e.target.closest('.nz')) document.querySelectorAll('.nz.tip').forEach((x) => x.classList.remove('tip')); }, true);
 card.addEventListener('click', (e) => {
   const sp = e.target.closest('[data-say]'); if (sp){ say(sp.dataset.say); return; }
   const pb = e.target.closest('[data-pair]');
@@ -870,7 +874,16 @@ card.addEventListener('click', (e) => {
   const nz = e.target.closest('.ntc.shown .nz');
   if (nz){ card.querySelectorAll('.nz.tip').forEach((x) => { if (x !== nz) x.classList.remove('tip'); }); nz.classList.toggle('tip'); return; }
   const sh = e.target.closest('[data-show]');
-  if (sh && sh.dataset.show === 'mark'){ card.querySelectorAll('.ntc').forEach((x) => x.classList.add('shown')); sh.style.visibility = 'hidden'; return; }
+  // 👀 Show marks the words and becomes 🙈 Hide (Nov 27, his wish: it used to disappear); same width, nothing moves.
+  if (sh && sh.dataset.show === 'mark'){
+    const on = !card.querySelector('.ntc.shown');
+    sh.dataset.label = sh.dataset.label || sh.textContent;
+    sh.style.minWidth = Math.max(sh.offsetWidth, parseFloat(sh.style.minWidth) || 0) + 'px';
+    card.querySelectorAll('.ntc').forEach((x) => x.classList.toggle('shown', on));
+    if (!on) card.querySelectorAll('.nz.tip').forEach((x) => x.classList.remove('tip'));
+    sh.textContent = on ? '🙈 Hide' : sh.dataset.label;
+    return;
+  }
   if (sh){
     const part = sh.dataset.show;
     card.querySelectorAll(`[data-part="${part}"]`).forEach((x) => { x.hidden = false; });
