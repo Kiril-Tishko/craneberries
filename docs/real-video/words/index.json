@@ -86,7 +86,7 @@
   {"slug":"my-phone-died","en":"My phone died.","ua":"У мене сів телефон.","pic":"🪫","n":3},
   {"slug":"napkin","en":"napkin","ua":"серветка","pic":"🧻","n":3},
   {"slug":"not-yet","en":"Not yet.","ua":"Ще ні.","pic":"⏳","n":3},
-  {"slug":"off-the-record","en":"off the record","ua":"між нами, неофіційно","pic":"🤫","n":0},
+  {"slug":"off-the-record","en":"off the record","ua":"між нами, неофіційно","pic":"🤫","n":1},
   {"slug":"opportunity","en":"opportunity","ua":"можливість","pic":"🌟","n":0},
   {"slug":"out-of-stock","en":"out of stock","ua":"немає в наявності","pic":"📦","n":1},
   {"slug":"overrated","en":"overrated","ua":"переоцінений","pic":"📉","n":4},
