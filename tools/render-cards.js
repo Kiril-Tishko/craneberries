@@ -132,8 +132,8 @@ const body = {
   // In the word, [DE]sert highlights the stressed syllable.
   pron: (c) => `
     ${c.label ? `<div class="flabel" style="margin-top:18px">${esc(c.label)}</div>` : ''}
-    <div class="${c.pairs.some((p) => p.emoji) ? 'prows' : 'pairs'}">${c.pairs.map((p) => p.emoji ? `
-      <div class="prow"><span class="pemo">${esc(p.emoji)}</span>
+    <div class="${c.pairs.some((p) => p.emoji || p.svg) ? 'prows' : 'pairs'}">${c.pairs.map((p) => p.emoji || p.svg ? `
+      <div class="prow">${p.svg ? `<span class="pemo psvg">${p.svg}</span>` : `<span class="pemo">${esc(p.emoji)}</span>`}
         <div><div class="pw${p.word.includes('[') ? ' stress' : ''}"${p.word.replace(/[\[\]]/g, '').length >= 13 ? ' style="font-size:32px"' : ''}>${mark(p.word)}</div><div class="ptip">${esc(p.tip)}</div></div></div>` : `
       <div class="pair"><div class="pw">${mark(p.word)}</div>${p.ipa ? `<div class="ipa">${esc(p.ipa)}</div>` : ''}
         <div class="ptip">${esc(p.tip)}</div></div>`).join('')}</div>
