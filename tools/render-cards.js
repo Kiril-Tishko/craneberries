@@ -100,7 +100,8 @@ const body = {
   compare: (c) => `<div class="cmp">${c.cols.map((col) => `
     <div class="cmp-col"><div class="cmp-h"><span class="cmp-emo">${esc(col.emoji)}</span>
       <div><div class="cmp-verb"><span class="hl">${esc(col.head)}</span></div><div class="cmp-rule">${esc(col.rule)}</div></div></div>
-      <div class="cmp-items">${col.items.map((i) => `<span class="chip2">${esc(i)}</span>`).join('')}</div></div>`).join('')}</div>
+      <div class="cmp-items">${col.items.map((i) => `<span class="chip2">${esc(i)}</span>`).join('')}</div>
+      ${col.tip ? `<p class="tip cmp-tip">${esc(col.tip)}</p>` : ''}</div>`).join('')}</div>
     ${c.examples && c.examples.length ? `<div class="practice"><div class="flabel">In a sentence</div>
       ${c.examples.map((s) => `<div class="say small-say">${mark(s)}</div>`).join('')}</div>` : ''}
     ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}`,
@@ -217,6 +218,7 @@ const html = `<!doctype html>
   .en.big{font-size:30px;line-height:1.15}
   .prow{background:var(--tile);border-radius:16px;padding:16px;display:flex;gap:16px;align-items:center}
   .pemo{font-size:56px;line-height:1;font-family:"Noto Color Emoji",sans-serif;flex:none}
+  .cmp-tip{margin:14px 0 0}
   .psvg{display:flex;justify-content:center;line-height:0;width:1.2em}
   .psvg svg{width:62px;height:62px}
   .pw.stress{font-weight:500;color:var(--ink)}

@@ -125,6 +125,7 @@ huggingface.co, about 15 min per hour of audio).
 - **Pronunciation card**: one pair only, with practice sentences. No extra "same sound" lists or side notes.
   Big emoji beside each word; highlight the stressed (or key) part in yellow, like `[DE]sert`.
   For A2 and below, write the mouth tips in the student's language ("Опустіть щелепу", not "Drop your jaw").
+  Card tips speak to the student with «ви» ("У листі пишіть", not "пиши": Nov 27, his wish).
   A tip says only how to say it right, never the wrong way (Nov 25: he crossed out "Not «па-у-за»" on Sergii's
   pause card; "One sound: «поз». Ends in z." stayed). One word alone is fine when that word is the problem.
   Never repeat a pair the student already had (check their earlier lessons' cards and their `brief` first).
@@ -610,7 +611,7 @@ studentCards[] one of:
   {type: "qa",      kicker, title, q, pics[{emoji, en}], answers[{emoji, text, tone: yes|no}]}
                     children's cheat sheet: a question bubble with pictures, then big answer tiles
   {type: "grammar", kicker, title, rule, ruleUa, examples[{text, note}], forms[{label, text}], tip}
-  {type: "compare", kicker, title, cols[{emoji, head, rule, items[]}], examples[], tip}
+  {type: "compare", kicker, title, cols[{emoji, head, rule, items[], tip?}], examples[], tip}
                     visual cheat sheet for "A vs B vs C" topics (drive / ride / go), emojis in items
   {type: "verbs",   kicker, title, sub, focus (0|1|2), head[{label, hint}], rows[{emoji, base, past, pp}], examples[]}
                     irregular verbs: all 3 forms, highlight the column the lesson needs, emojis, no subtitle
