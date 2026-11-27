@@ -3,10 +3,10 @@
   "ua": "можливість",
   "pic": "🌟",
   "hl": "opportunit(?:y|ies)",
-  "together": {"crack your way into":"пробитися в","show business":"шоу-бізнес","been able to":"зміг","have to":"мусиш","when the day comes":"коли настане день"},
+  "together": {"crack your way into":"пробитися в","show business":"шоу-бізнес","been able to":"зміг","have to":"мусиш","when the day comes":"коли настане день","called in sick":"взяли лікарняний","all alone":"зовсім сам","to do it":"зробити це"},
   "gloss": {
     "after": "після",
-    "all": "всіх",
+    "all": {"*":"всіх","all alone":"(all alone = зовсім сам)"},
     "your": "твоїх",
     "years": "років",
     "of": "(years of struggling = років боротьби)",
@@ -32,7 +32,7 @@
     "great": "чудову",
     "look": "слухай",
     "you’re": "you are: ти (є)",
-    "the": {"*":"the — саме та, єдина","the day":"the — той (день)"},
+    "the": {"*":"the — саме та, єдина","the day":"the — той (день)","the guys":"the — ті самі","the truck":"the — той самий","the perfect time":"the — саме той"},
     "only": "єдина",
     "person": "людина",
     "who": "яка",
@@ -66,11 +66,33 @@
     "wrong": "неправий",
     "fully": "повністю",
     "plan": "планую",
-    "admit": "визнати"
+    "admit": "визнати",
+    "i’m": "I am: я",
+    "jason": "Джейсон (ім’я)",
+    "jeff": "Джефф (ім’я)",
+    "guys": "хлопці",
+    "hire": "наймаю",
+    "truck": "фургон (з їжею)",
+    "called": "(called in sick = взяли лікарняний)",
+    "in": "(called in sick = взяли лікарняний)",
+    "sick": "хворі",
+    "alone": "сам",
+    "what": "яка (what a … = яка …!)",
+    "fun": "весела",
+    "yeah": "ага, так",
+    "that’s": "that is: це",
+    "time": "час",
+    "never": "ніколи (не)",
+    "had": "мав (have – had – had)",
+    "do": "зробити",
+    "before": "раніше",
+    "work": "працювати (в)"
   },
   "clips": [
     {"v":"FTtTcxJUS0E","s":1080.3,"e":1083.6,"line":"Listen, I just want to thank you for this great opportunity.","note":"Someone finally gets a job in show business. He says: Thank you for this great opportunity.","noteUa":"Хтось нарешті отримав роботу в шоу-бізнесі і каже: дякую за цю чудову можливість.","around":[[1075.3,1078.8,"After all your years of struggling, you’ve finally been able to crack your way into show business."]]},
     {"v":"wvhI4N92Uds","s":411.76,"e":413.76,"line":"And this is the perfect opportunity.","note":"Someone has a secret. A friend says: You must tell people, and this is the perfect opportunity (the right moment).","noteUa":"У когось є таємниця. Подруга каже: ти мусиш розповісти, і зараз ідеальна можливість (слушний момент).","around":[[405.2,408.64,"Look, you’re the only person who knows, so please don’t tell anyone."],[408.96,411.76,"Well, I won’t, but you have to, Ro."]]},
-    {"v":"OWW1R50YiPE","s":566.16,"e":567.92,"line":"It was a learning opportunity.","note":"Sheldon talks about a mistake. He says it was a learning opportunity: he learned something from it.","noteUa":"Шелдон говорить про помилку: це була можливість чогось навчитися.","around":[[563.76,566.08,"Dr. Sturgis was a wise man."],[568.4,573.2,"And when the day comes that I am wrong, I fully plan to admit it."]]}
+    {"v":"OWW1R50YiPE","s":566.16,"e":567.92,"line":"It was a learning opportunity.","note":"Sheldon talks about a mistake. He says it was a learning opportunity: he learned something from it.","noteUa":"Шелдон говорить про помилку: це була можливість чогось навчитися.","around":[[563.76,566.08,"Dr. Sturgis was a wise man."],[568.4,573.2,"And when the day comes that I am wrong, I fully plan to admit it."]]},
+    {"v":"ADhIOrMY_NA","s":845.52,"e":847.12,"line":"What a fun opportunity.","note":"Boyle is alone at his food truck: his workers are sick. His friend says: What a fun opportunity! (a chance to help him)","noteUa":"Бойл сам у своєму фургоні з їжею: працівники захворіли. Друг каже: яка весела можливість! (шанс йому допомогти)","around":[[841.44,845.52,"Jason and Jeff, the guys I hire to work the truck, called in sick, so I’m all alone."]]},
+    {"v":"ZDWdASh0nvk","s":832.5,"e":834.79,"line":"Yeah, that’s the perfect time. Perfect opportunity.","note":"A game show joke: someone never had time to do it before, so now is the perfect time, the perfect opportunity.","noteUa":"Жарт на ігровому шоу: раніше на це не було часу, тож зараз саме час, ідеальна можливість.","around":[[828.7,831.08,"I never had time to do it before."],[831.08,832.5,"You never had time to do it before?"]]}
   ]
 }

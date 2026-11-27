@@ -24,7 +24,7 @@
     "let": "(let go of = відпустити)",
     "go": "(let go of = відпустити)",
     "of": "(let go of = відпустити)",
-    "what": {"*":"те, що","what did he do":"що"},
+    "what": {"*":"те, що","what did he do":"що","what are you doing":"що"},
     "can’t": "не можемо (can not)",
     "change": "змінити",
     "so": "тож",
@@ -52,12 +52,25 @@
     "on": "(come on = та годі)",
     "don’t": "не (do not)",
     "try": "намагайся",
-    "to": "to — перед дієсловом",
-    "run": "тікати"
+    "to": {"*":"to — перед дієсловом","going to":"(going to = збираюся)"},
+    "run": "тікати",
+    "okay": "добре",
+    "i’m": "I am: я",
+    "going": "(going to = збираюся)",
+    "letting": "(letting go = відпускаю)",
+    "joe": "Джо (ім’я)",
+    "are": "(are … doing = робиш зараз)",
+    "doing": "робиш",
+    "we’re": "we are: ми (зараз)",
+    "leaving": "йдемо",
+    "see": "бачиш?"
   },
   "clips": [
     {"v":"rBZXFLaAtos","s":484.8,"e":491.06,"line":"It has been said that we should laugh when we can, apologize when we should, and let go of what we can’t change.","note":"In a video about couples, a wise saying: laugh, say sorry, and let go of the things you can’t change.","noteUa":"У відео про пари звучить мудра думка: смійтеся, просіть вибачення і відпускайте те, чого не можна змінити.","around":[[481.45,484.8,"Couples who laugh together, last together."],[491.06,495.96,"So laugh out loud, laugh often, and most importantly, laugh together."]]},
     {"v":"KoUUHOipShQ","s":620.24,"e":620.8,"line":"Let go of me.","note":"A woman is very angry: How dare you come into my house? Then she says: Let go of me! (Stop holding me.)","noteUa":"Жінка дуже сердита: як ти смієш приходити в мій дім? А потім: відпусти мене! (Перестань мене тримати.)","around":[[618,620.24,"How dare you come into my house and insult my daughter?"]]},
-    {"v":"lN6XBCVPa3U","s":1382.16,"e":1383.12,"line":"Come on, let go of me.","note":"Someone shouts: Stop him! People hold a man, and he says: Come on, let go of me.","noteUa":"Хтось кричить: зупиніть його! Чоловіка тримають, і він каже: та годі, відпустіть мене.","around":[[1379.28,1380.32,"Stop him."],[1380.32,1382.16,"Hey, what did he do?"],[1383.12,1384.08,"Don’t try to run."]]}
+    {"v":"lN6XBCVPa3U","s":1382.16,"e":1383.12,"line":"Come on, let go of me.","note":"Someone shouts: Stop him! People hold a man, and he says: Come on, let go of me.","noteUa":"Хтось кричить: зупиніть його! Чоловіка тримають, і він каже: та годі, відпустіть мене.","around":[[1379.28,1380.32,"Stop him."],[1380.32,1382.16,"Hey, what did he do?"],[1383.12,1384.08,"Don’t try to run."]]},
+    {"v":"PCkEKz4Z5Cc","s":2252.24,"e":2252.8,"line":"Don’t let go.","note":"Someone holds another person and says: I’m going to let go. The other one is scared: Don’t let go!","noteUa":"Хтось тримає іншого і каже: зараз відпущу. А той боїться: не відпускай!","around":[[2251.44,2252.24,"I’m going to let go."],[2252.8,2253.6,"I’m letting go."]]},
+    {"v":"11q1Ku_5RvE","s":336.03,"e":337.11,"line":"Joe! Let go!","note":"Joe holds on and won’t stop. Someone shouts: Joe, what are you doing? Let go!","noteUa":"Джо вчепився і не відпускає. Хтось кричить: Джо, що ти робиш? Відпусти!","around":[[334.74,336,"Joe, what are you doing?"],[337.32,338.61,"We’re leaving. See?"]]},
+    {"v":"uVWLoRFalFU","s":646.16,"e":647.4,"line":"Let go of me!","note":"Someone holds a girl, and she shouts: Let go of me!","noteUa":"Дівчину хтось тримає, і вона кричить: відпусти мене!","around":[[645.32,646.12,"What?"]]}
   ]
 }
