@@ -3,5 +3,31 @@
   "ua": "випадково зустріти",
   "pic": "💥",
   "hl": "bump(?:ed|s|ing)? into",
-  "clips": []
+  "together": {"funny story":"кумедна історія","must have been":"мабуть, було"},
+  "gloss": {
+    "hey": "гей",
+    "uh": "е-е (пауза)",
+    "rach": "Рейч (Рейчел)",
+    "funny": "кумедна",
+    "story": "історія",
+    "i": "я",
+    "bumped": "(bumped into = випадково зустрів)",
+    "into": "(bumped into = випадково зустрів)",
+    "joanna": "Джоанна (ім’я)",
+    "on": "на",
+    "the": "the — та сама, відома",
+    "street": "вулиця",
+    "yesterday": "вчора",
+    "my": "моя",
+    "boss": "начальниця",
+    "wow": "ого",
+    "that": "це",
+    "must": "(must have been = мабуть, було)",
+    "have": "(must have been = мабуть, було)",
+    "been": "(must have been = мабуть, було)",
+    "awkward": "ніяково"
+  },
+  "clips": [
+    {"v":"WYl7fsIligs","s":792.76,"e":795.88,"line":"I bumped into Joanna on the street yesterday.","note":"A friend tells Rachel: I bumped into Joanna on the street. Joanna is Rachel’s boss, so Rachel is surprised.","noteUa":"Друг каже Рейчел: я випадково зустрів Джоанну на вулиці. Джоанна — начальниця Рейчел, тож вона здивована.","around":[[791.24,792.76,"Hey uh Rach, funny story."],[795.88,797.4,"My boss, Joanna?"],[797.4,798.68,"Wow, that must have been awkward."]]}
+  ]
 }
