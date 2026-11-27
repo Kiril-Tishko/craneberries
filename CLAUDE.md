@@ -500,6 +500,10 @@ huggingface.co, about 15 min per hour of audio).
     [requirements]." · "I'm writing [regarding] the new sample." · "[Let me know] if you need anything.").
   - Every drill sentence must be one people really say often ("Do you have any plans for the weekend?", not
     "The bank didn’t refuse any applications"). Recycle the student's words inside such common sentences.
+    **Naturalness first** (Nov 27, his words: "I'm big on naturalness": she should be able to use a phrase and sound right):
+    read every sentence as a native speaker would say it before building ("What's the source of this news?" sounded off;
+    "What's your main source of income?" · "Check your sources." did not); habits take the plural day ("on Saturdays"),
+    and set phrases beat word-for-word ones ("sleep late", not "sleep more"). When unsure, offer him a few natural options.
   - **Her answers are kept** (Nov 25, his wish: "when they answer remember the answer for later to review, especially the
     homework"). The ✍️ box ("Write your answer", English) is only at home and in the opening recall (`type: true` on
     that part); new material and the rest of the lesson get the plain Answer (Nov 26: "there are too many open fields";
