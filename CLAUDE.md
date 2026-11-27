@@ -101,7 +101,8 @@ huggingface.co, about 15 min per hour of audio).
   /wɜːk/) and goes on the teacher site only: **no phonetic transcription on student cards**.
 - **Student cards**: readable on a phone, no student name, no page count, no "lesson notes" caption
   (only a small, quiet date beside the kicker), no homework or mini-task. No big title that only repeats the kicker
-  ("Don't forget" twice): leave `title` empty (he crossed it out, Nov 17).
+  ("Don't forget" twice): leave `title` empty (he crossed it out, Nov 17). No kicker that only repeats the card's own
+  headings ("gotta · gonna" over the gotta and gonna boxes): leave `kicker` empty (Nov 27).
 - **Which cards** (a general guide, not a hard rule): after he chooses (step 2), make a "Don't forget" words card,
   "Say it like this", 3 pronunciation cards (he sends one) and anything else the lesson calls for (e.g. a picture
   cheat sheet for the main topic). He decides what to send; often just one card. Keep subtitles short or leave
