@@ -1,0 +1,41 @@
+{
+  "en": "Is there a problem?",
+  "ua": "Є якась проблема?",
+  "pic": "🤨",
+  "hl": "is there a problem",
+  "together": {"making sure":"перевіряю, щоб","no one":"ніхто","has to":"мусить","what’s wrong":"що не так?"},
+  "gloss": {
+    "is": {"*": "є", "is there": "Is на початку = питання: Is there …? = Чи є …?"},
+    "there": "Is there …? = Чи є …?",
+    "a": "a: одна, якась (a problem = якась проблема)",
+    "problem": "проблема",
+    "sir": "пане (ввічливо до чоловіка)",
+    "another": "ще одну",
+    "please": "будь ласка",
+    "i’m": "I’m = I am: я",
+    "just": "просто",
+    "making": "making sure = перевіряю, щоб",
+    "sure": "making sure = перевіряю, щоб",
+    "no": "no one = ніхто",
+    "one": "no one = ніхто",
+    "ever": "ніколи",
+    "has": "has to = мусить",
+    "to": "has to = мусить",
+    "eat": "їсти",
+    "this": "це",
+    "it’s": "it’s = it is: це",
+    "very": "дуже",
+    "valuable": "цінне",
+    "what’s": "what’s = what is: що",
+    "wrong": "не так",
+    "you": "ви, ти",
+    "hi": "привіт",
+    "mrs": "місіс (пані)",
+    "nethercott": "Незеркотт (прізвище)"
+  },
+  "clips": [
+    {"v":"tLetr2NtVX4","s":28.48,"e":30.16,"line":"Sir, is there a problem?","note":"Someone politely asks a man: Sir, is there a problem?","noteUa":"Хтось ввічливо питає чоловіка (Sir), чи все гаразд: Is there a problem?","around":[[22, 23.36, "Another, please."], [30.16, 33.28, "I’m just making sure no one ever has to eat this."]]},
+    {"v":"7bciBnlpEes","s":15.32,"e":16.52,"line":"Is there a problem?","note":"Parents come to the school and ask: Is there a problem?","noteUa":"Батьки приходять до школи й питають: Is there a problem?","around":[[12.12, 12.72, "It’s you."], [13.2, 14.88, "Hi, Mrs. Nethercott."], [17.88, 19.48, "Is there a problem?"]]},
+    {"v":"8BlZWaVmAHM","s":376.24,"e":377.68,"line":"Is there a problem?","note":"Someone sees that something is off and asks: Is there a problem?","noteUa":"Хтось бачить, що щось не так, і питає: Is there a problem?","around":[[366, 367.28, "It’s very valuable."], [379.12, 379.68, "What’s wrong?"]]}
+  ]
+}
