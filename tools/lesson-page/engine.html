@@ -831,7 +831,11 @@ card.addEventListener('click', (e) => {
   }
   if (e.target.closest('[data-gplay]')){
     const s = SECTIONS[sec].slides[idx];
-    if (!G.cur) G.cur = s.words[Math.floor(Math.random() * s.words.length)][0];
+    // Each phrase once, in a random order, before any comes again (Nov 28, his wish: "don't repeat the same thing").
+    if (!G.cur){
+      if (!G.deck || !G.deck.length){ G.deck = s.words.map((w) => w[0]); for (let i = G.deck.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [G.deck[i], G.deck[j]] = [G.deck[j], G.deck[i]]; } }
+      G.cur = G.deck.pop();
+    }
     card.querySelectorAll('[data-gans]').forEach((b) => b.classList.remove('right', 'wrong'));
     say(G.cur); return;
   }
